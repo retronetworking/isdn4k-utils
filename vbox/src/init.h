@@ -46,7 +46,7 @@ typedef struct
 	char				vboxrcname[SETUP_MAX_VBOXRC + 1];
 	char				vboxctrl[SETUP_MAX_VBOXCTRL + 1];
 	char				spool[SETUP_MAX_SPOOLNAME + 1];
-	char				logname[SETUP_MAX_LOGNAME + 1];
+	char				*logname;
 	int				freespace;
 } setup_t;
 
