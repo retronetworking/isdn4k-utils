@@ -29,13 +29,18 @@ READLINE_LDFLAGS= -lncurses -lreadline
 endif
 
 eftp.o:	eftp.c
-	cc $(CFLAGS) $(EFT_INCDIR_FLAGS) -c $(READLINE_CFLAGS) eftp.c -o eftp.o
+	$(CC) $(CFLAGS) $(EFT_INCDIR_FLAGS) -c $(READLINE_CFLAGS) eftp.c -o eftp.o
 
 eftp: eftp.o $(READLINE_O)
-	cc -g eftp.o $(EFT_LIBDIR_FLAGS) $(READLINE_LDFLAGS) -left -o eftp
+	$(LINK.C) eftp.o $(EFT_LIBDIR_FLAGS) $(READLINE_LDFLAGS) -left -o eftp
+
+install: eftp
+	$(INSTALL_PROGRAM) eftp $(BINDIR)/
+ifeq ($(CONFIG_EFTP_SETUID),y)
+	chmod u+s $(BINDIR)/eftp 
+endif	
 
 clean:
 	rm -f eftp *.o 
 
 .PHONY: clean default
-

@@ -1,7 +1,6 @@
-/*@EFT_AUTOCONF_WARNING@
+/* @configure_input@
 
 generated from $Id$
 */
 #define CONFIG_I4L_CONFDIR "@I4LCONFDIR@"
 #define USE_I4L_CONFDIR /* for wuauth pathnames.h */
-#define @HAVE_GETDELIM@

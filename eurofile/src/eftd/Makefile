@@ -44,7 +44,10 @@ eftd.o:	eftd.c
 eftd: eftd.o 
 	$(LINK.o) eftd.o $(EFT_LIBDIR_FLAGS) $(AUTH_LIB) -left $(CRYPTLIB) -o eftd
 
-.PHONY: clean default
+install: eftd
+	$(INSTALL_PROGRAM) eftd $(SBINDIR)/
+
+.PHONY: clean default install
 
 clean:
 	rm -f eftd *.o 
