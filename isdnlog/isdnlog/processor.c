@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.68  1999/06/16 23:37:35  akool
+ * fixed zone-processing
+ *
  * Revision 1.67  1999/06/15 20:04:09  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -3570,9 +3573,12 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   if (call[chan].intern[CALLING])
     call[chan].Rate.src    = mynum;
   else {
-    static char src[BUFSIZ];
+    static char src[BUFSIZ], *text;
     auto   int	l;
 
+
+    l = getAreacode(DTAG, call[chan].num[CALLING] + 3, &text);
+    print_msg(PRT_NORMAL, "getAreacode(49,%s,\"%s\")=%d\n", call[chan].num[CALLING] + 3, text, l);
 
     if ((get_areacode(call[chan].num[CALLING], &l, C_NO_WARN | C_NO_EXPAND | C_NO_ERROR)))
       Strncpy(src, call[chan].num[CALLING], l + 1);
@@ -3583,9 +3589,11 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   }
 
   {
-    static char dst[BUFSIZ];
+    static char dst[BUFSIZ], *text;
     auto   int	l;
 
+    l = getAreacode(DTAG, call[chan].num[CALLED] + 3, &text);
+    print_msg(PRT_NORMAL, "getAreacode(49,%s,\"%s\")=%d\n", call[chan].num[CALLED] + 3, text, l);
     if ((get_areacode(call[chan].num[CALLED], &l, C_NO_WARN | C_NO_EXPAND | C_NO_ERROR)))
       Strncpy(dst, call[chan].num[CALLED], l + 1);
     else
