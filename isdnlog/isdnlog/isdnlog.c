@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.57  2000/02/02 22:43:09  akool
+ * isdnlog-4.07
+ *  - many new rates per 1.2.2000
+ *
  * Revision 1.56  1999/12/31 13:30:01  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -1436,7 +1440,7 @@ int main(int argc, char *argv[], char *envp[])
             mynum = strdup(s);
             myicountry = atoi(mycountry + strlen(countryprefix));
 
-#ifndef Q931
+      	    if (!Q931dmp) {
 	    initHoliday(holifile, &version);
 
 	    if (*version)
@@ -1451,7 +1455,7 @@ int main(int argc, char *argv[], char *envp[])
 
 	    if (*version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
-#endif
+	    } /* if */
 
             loop();
 
