@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2003/01/14 13:47:15  calle
+ * New Commands to only load modules, only initialize cards,
+ * only reset cards, inititialize a single card or reset a single card.
+ *
  * Revision 1.10  2002/10/25 13:50:44  calle
  * The protocol value was not tranfered to the patchinfo. Because of
  * this for example NI1 did not work ...
@@ -68,6 +72,7 @@ static char capidevnamenew[] = "/dev/isdn/capi20";
 static char *capidevname = capidevnameold;
 
 static char *firmwarepath[] = {
+	"/usr/share/isdn",
 	"/usr/lib/isdn",
 	"/lib/isdn",
 	0
