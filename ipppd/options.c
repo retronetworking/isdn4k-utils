@@ -1938,6 +1938,9 @@ static int setbsdcomp(int slot,char **argv)
 		progname, BSD_MIN_BITS, BSD_MAX_BITS);
 	return 0;
     }
+
+    fprintf(stderr,"BsdComp: %d %d\n",rbits,abits);
+
     if (rbits > 0) {
 	ccp_wantoptions[slot].bsd_compress = 1;
 	ccp_wantoptions[slot].bsd_bits = rbits;

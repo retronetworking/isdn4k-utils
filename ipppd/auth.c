@@ -403,6 +403,7 @@ static void network_phase(int linkunit)
 				(*ipxcp_protent.open)(lns[linkunit].ipxcp_unit);
 		}
 		if(ccp_protent.enabled_flag) {
+				syslog(LOG_NOTICE,"CCP enabled! Trying CCP.\n");
 				lns[linkunit].ccp_unit = ccp_getunit(linkunit);
 				(*ccp_protent.lowerup)(lns[linkunit].ccp_unit);
 				(*ccp_protent.open)(lns[linkunit].ccp_unit);

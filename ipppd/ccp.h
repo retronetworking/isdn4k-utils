@@ -35,6 +35,7 @@ typedef struct ccp_options {
     u_short bsd_bits;		/* # bits/code for BSD Compress */
     u_short deflate_size;	/* lg(window size) for Deflate */
 	short method;			/* code for chosen compression method */
+    unsigned long protos;
 } ccp_options;
 
 extern fsm ccp_fsm[];
