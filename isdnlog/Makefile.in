@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.37  1998/03/29 23:17:47  luethje
+## mySQL-Patch of Sascha Matzke
+##
 ## Revision 1.36  1998/03/29 19:54:04  luethje
 ## idnrep: added html feature (incoming/outgoing calls)
 ##
@@ -264,7 +267,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 2.99.27
+VERSION     = 2.99.28
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
