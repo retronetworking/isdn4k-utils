@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/07/22 22:36:08  luethje
+ * isdnrep:  Use "&nbsp;" for blanks
+ * isdnctrl: Add the option "reset"
+ *
  * Revision 1.2  1997/06/26 21:25:14  luethje
  * Added the trigger function to the config file.
  *
@@ -87,9 +91,9 @@ static int readinterfaces(int fd, section* CSec, section *PSec)
 	char s[BUFSIZ];
 	char *p;
 
-	if ((iflst = fopen("/proc/net/dev", "r")) == NULL)
+	if ((iflst = fopen(FILE_PROC, "r")) == NULL)
 	{
-		perror("/proc/net/dev");
+		perror(FILE_PROC);
 		return -1;
 	}
 
@@ -529,9 +533,9 @@ static int interface_exist(int fd, char *name)
 	char *p;
 
 
-	if ((iflst = fopen("/proc/net/dev", "r")) == NULL)
+	if ((iflst = fopen(FILE_PROC, "r")) == NULL)
 	{
-		perror("/proc/net/dev");
+		perror(FILE_PROC);
 		return -1;
 	}
 

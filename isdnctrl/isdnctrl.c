@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/07/22 22:36:10  luethje
+ * isdnrep:  Use "&nbsp;" for blanks
+ * isdnctrl: Add the option "reset"
+ *
  * Revision 1.5  1997/07/20 16:36:26  calle
  * isdnctrl trigger was not working.
  *
@@ -90,6 +94,7 @@
 #undef  ISDN_DEBUG_MODEM_SENDOPT
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -107,6 +112,9 @@
 #	include "ctrlconf.h"
 #endif /* I4L_CTRL_CONF */
 
+#define CMD_IFCONFIG "ifconfig"
+#define CMD_OPT_IFCONFIG "down"
+
 char nextlistif[10];
 
 int exec_args(int fd, int argc, char **argv);
@@ -119,8 +127,8 @@ void usage(void)
         fprintf(stderr, "where <command> is one of the following:\n");
         fprintf(stderr, "\n");
         fprintf(stderr, "    addif [name]               add net-interface\n");
-        fprintf(stderr, "    delif name                 remove net-interface\n");
-        fprintf(stderr, "    reset                      remove all net-interfaces\n");
+        fprintf(stderr, "    delif name [force]         remove net-interface\n");
+        fprintf(stderr, "    reset [force]              remove all net-interfaces\n");
         fprintf(stderr, "    addphone name in|out num   add phone-number to interface\n");
         fprintf(stderr, "    delphone name in|out num   remove phone-number from interface\n");
         fprintf(stderr, "    eaz name [eaz|msn]         get/set eaz for interface\n");
@@ -171,18 +179,24 @@ int key2num(char *key, char **keytable, int *numtable)
         return -1;
 }
 
-int reset_interfaces(int fd)
+int reset_interfaces(int fd, char *option)
 {
 	FILE *iflst;
 	char *p;
 	char s[255];
 	char name[255];
-	char *argv[3] = {cmds[DELIF].cmd, name, NULL};
+	char *argv[4] = {cmds[DELIF].cmd, name, option, NULL};
 	isdn_net_ioctl_cfg cfg;
 
 
-	if ((iflst = fopen("/proc/net/dev", "r")) == NULL) {
-		perror("/proc/net/dev");
+	if (option != NULL && strcmp(option, "force"))
+	{
+		usage();
+		return -1;
+	}
+
+	if ((iflst = fopen(FILE_PROC, "r")) == NULL) {
+		perror(FILE_PROC);
 		return -1;
 	}
 
@@ -197,7 +211,8 @@ int reset_interfaces(int fd)
 		  if (ioctl(fd, IIOCNETGCF, &cfg) < 0)
 	      continue;
 
-			exec_args(fd, 2, argv);
+			if (exec_args(fd, 2 + (option?1:0), argv) == -2)
+				return -1;
 		}
 	}
 
@@ -405,9 +420,9 @@ int exec_args(int fd, int argc, char **argv)
 		}
 
 #ifdef I4L_CTRL_CONF
-		if (id != NULL && i != GETCONF && i != WRITECONF && i != READCONF) {
+		if (id != NULL && i != RESET && i != GETCONF && i != WRITECONF && i != READCONF) {
 #else
-		if (id != NULL && i != GETCONF) {
+		if (id != NULL && i != RESET && i != GETCONF) {
 #endif /* I4L_CTRL_CONF */
 			if (strlen(id) > 8) {
 				fprintf(stderr, "Interface name must not exceed 8 characters!\n");
@@ -453,6 +468,18 @@ int exec_args(int fd, int argc, char **argv)
 			        break;
 
 			case DELIF:
+			        if (args == 2)
+			        	if (!strcmp(arg1, "force"))
+			        	{
+			        		char command[255];
+			        		sprintf(command,"%s %s %s",CMD_IFCONFIG, id, CMD_OPT_IFCONFIG);
+
+			        		if (system(command))
+			        			return -2;
+			        	}
+			        	else
+			        		usage();
+
 			        if ((result = ioctl(fd, IIOCNETDIF, id)) < 0) {
 			        	perror(id);
 			        	return -1;
@@ -644,8 +671,8 @@ int exec_args(int fd, int argc, char **argv)
 			case LIST:
 			        if (!strcmp(id, "all")) {
 			        	char name[10];
-			        	if ((iflst = fopen("/proc/net/dev", "r")) == NULL) {
-			        		perror("/proc/net/dev");
+			        	if ((iflst = fopen(FILE_PROC, "r")) == NULL) {
+			        		perror(FILE_PROC);
 			        		return -1;
 			        	}
 			        	while (!feof(iflst)) {
@@ -1041,7 +1068,7 @@ int exec_args(int fd, int argc, char **argv)
 			        break;
 
 			case RESET:
-			        reset_interfaces(fd);
+			        reset_interfaces(fd, args?id:NULL);
 			        break;
 #ifdef I4L_CTRL_CONF
 			case WRITECONF:
@@ -1070,9 +1097,11 @@ int exec_args(int fd, int argc, char **argv)
 #endif /* I4L_CTRL_CONF */
 		}
 
+#if DEBUG
 		if (argc > 1) {
 			printf("args=%d nextcmd %s\n",args, argv[1]);
 		}
+#endif /* DEBUG */
 	}
 
 	return 0;
