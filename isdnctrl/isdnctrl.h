@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/09/06 08:03:26  fritz
+ * Changed my mail-address.
+ *
  * Revision 1.14  1999/06/07 19:25:42  paul
  * isdnctrl.man.in
  *
@@ -287,6 +290,28 @@ _EXTERN char * num2key(int num, char **keytable, int *numtable);
 _EXTERN int exec_args(int fd, int argc, char **argv);
 
 _EXTERN char * defs_basic(char *id);
+
+_EXTERN int MSNLEN_COMPATIBILITY;
+
+/*
+ * do_phonenumber handle back/forward compatibility between
+ * version 5 and version 6 of isdn_net_ioctl_phone
+ *
+ */
+ 
+typedef struct {
+  char name[10];
+  char phone[20];
+  int  outgoing;
+} isdn_net_ioctl_phone_old;
+
+typedef struct {
+  char name[10];
+  char phone[32];
+  int  outgoing;
+} isdn_net_ioctl_phone_new;
+
+_EXTERN int do_phonenumber(void *p, char *number, int outflag);
 
 #undef _EXTERN
 

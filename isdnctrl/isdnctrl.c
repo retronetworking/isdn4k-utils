@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.35  1999/10/27 14:36:19  keil
+ * make the phone number struct compatible between NET_DV 5 and 6
+ *
  * Revision 1.34  1999/09/06 08:03:25  fritz
  * Changed my mail-address.
  *
@@ -273,18 +276,6 @@ char nextslaveif[10];
  *
  */
  
-typedef struct {
-  char name[10];
-  char phone[20];
-  int  outgoing;
-} isdn_net_ioctl_phone_old;
-
-typedef struct {
-  char name[10];
-  char phone[32];
-  int  outgoing;
-} isdn_net_ioctl_phone_new;
-
 int do_phonenumber(void *p, char *number, int outflag) {
 	isdn_net_ioctl_phone_old *phone_old = (isdn_net_ioctl_phone_old *) p;
 	isdn_net_ioctl_phone_new *phone_new = (isdn_net_ioctl_phone_new *) p;
