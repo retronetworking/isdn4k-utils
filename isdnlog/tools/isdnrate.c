@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1999/06/30 20:53:28  akool
+ * added "-t" option to "isdnrate"
+ *
  * Revision 1.3  1999/06/30 17:17:37  akool
  * isdnlog Version 3.39
  *
@@ -119,7 +122,6 @@ static void post_init()
 
   sprintf(s, "%s%s", mycountry, myarea);
   mynum = strdup(s);
-  /* myicountry = atoi(mycountry + strlen(countryprefix)); */
 } /* post_init */
 
 
@@ -245,7 +247,7 @@ static void splittime()
 
 static void numsplit(char *num, char *country, char *area, char *msn)
 {
-  register int   l1;
+  register int   l1, l3;
   auto	   int	 l2;
   register char *p;
   auto	   char *s;
@@ -271,19 +273,17 @@ static void numsplit(char *num, char *country, char *area, char *msn)
         print_msg(PRT_NORMAL, " Number %s\n", msn);
     } /* if */
 
-#if 0
-    num += i;
-
     p = country;
 
     while (*p && !isdigit(*p))
       p++;
 
-    icountry = atoi(p);
-    l = getAreacode(icountry, num, s);
+    l3 = getAreacode(atoi(p), num + l1, &s);
 
-    print_msg(PRT_NORMAL, "l=%d, icountry=%d, num=``%s'', s=``%s''\n", l, icountry, num, s);
-#endif
+    if (l3 != UNKNOWN) {
+      print_msg(PRT_NORMAL, "getAreacode(%d, %s, %s)=%d\n", atoi(p), num + l1, s, l3);
+      free(s);
+    } /* if */
   } /* if */
 
 } /* numsplit */
@@ -303,8 +303,16 @@ static int normalizeNumber(char *target)
       return(0);
     } /* else */
   }
-  else
-    strcpy(num, target);
+  else {
+    if (*target == '+')
+      strcpy(num, target);
+    else if (!memcmp(target, "00", 2))
+      sprintf(num, "+%s", target + 2);
+    else if (*target == '0')
+      sprintf(num, "%s%s", mycountry, target + 1);
+    else
+      sprintf(num, "%s%s%s", mycountry, myarea, target);
+  } /* else */
 
   numsplit(num, country, area, msn);
   return(1);
@@ -500,28 +508,26 @@ static void printTable()
       else
         px = getProvider(last[i].prefix);
 
-      if (!i)
-        print_msg(PRT_NORMAL, "    %02d:00 .. %02d:59 %s%02d:%s%*s = %s %s (%s)\n",
-          lasthour, hour - 1, vbn, last[i].prefix, px,
-          max(WIDTH, strlen(px)) - strlen(px), "", currency,
-          double2str(last[i].rate, 5, 3, DEB),
-          last[i].explain);
+      if (!i) {
+        if ((lasthour == 7) && (hour == 7))
+          print_msg(PRT_NORMAL, "    immer          %s%02d:%s%*s = %s %s (%s)\n",
+            vbn, last[i].prefix, px,
+            max(WIDTH, strlen(px)) - strlen(px), "", currency,
+            double2str(last[i].rate, 5, 3, DEB),
+            last[i].explain);
+        else
+          print_msg(PRT_NORMAL, "    %02d:00 .. %02d:59 %s%02d:%s%*s = %s %s (%s)\n",
+            lasthour, hour - 1, vbn, last[i].prefix, px,
+            max(WIDTH, strlen(px)) - strlen(px), "", currency,
+            double2str(last[i].rate, 5, 3, DEB),
+            last[i].explain);
+      }
       else
         print_msg(PRT_NORMAL, "                   %s%02d:%s%*s = %s %s (%s)\n",
           vbn, last[i].prefix, px,
           max(WIDTH, strlen(px)) - strlen(px), "", currency,
           double2str(last[i].rate, 5, 3, DEB),
           last[i].explain);
-#if 0
-    if ((lasthour == 7) && (hour == 7))
-      print_msg(PRT_NORMAL, "    immer          %s%02d:%s%*s = %s %s (%s)\n",
-        vbn, last[0].prefix, px, max(WIDTH, strlen(px)) - strlen(px), "",
-        currency, double2str(last[0].rate, 5, 3, DEB), last[0].explain);
-    else
-      print_msg(PRT_NORMAL, "    %02d:00 .. %02d:59 %s%02d:%s%*s = %s %s (%s)\n",
-        lasthour, hour - 1, vbn, last[0].prefix, px, max(WIDTH, strlen(px)) - strlen(px), "",
-        currency, double2str(last[0].rate, 5, 3, DEB), last[0].explain);
-#endif
     } /* for */
 
     used[last[0].prefix] = 1;
@@ -550,15 +556,6 @@ int main(int argc, char *argv[], char *envp[])
     init();
     post_init();
 
-#if 0
-    print_msg(PRT_NORMAL, "currency=%s\n", currency);
-    print_msg(PRT_NORMAL, "vbn=%s\n", vbn);
-    print_msg(PRT_NORMAL, "mycountry=%s\n", mycountry);
-    print_msg(PRT_NORMAL, "myarea=%s\n", myarea);
-    print_msg(PRT_NORMAL, "countryprefix=%s\n", countryprefix);
-    print_msg(PRT_NORMAL, "mynum=%s\n", mynum);
-    print_msg(PRT_NORMAL, "myicountry=%d\n", myicountry);
-#endif
 
     while (i < argc) {
       if (normalizeNumber(argv[i])) {
