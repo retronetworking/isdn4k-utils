@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1998/03/25 20:58:34  luethje
+ * isdnrep: added html feature (verbose on/off)
+ * processor.c: Patch of Oliver Lauer
+ *
  * Revision 1.16  1998/03/08 12:37:58  luethje
  * last changes in Wuerzburg
  *
@@ -3026,17 +3030,39 @@ static void huptime(int chan, int bchan)
 #endif
       call[chan].huptimeout = oldhuptimeout = cfg.onhtime;
 
+      if (!oldhuptimeout) {
+        sprintf(sx, "HUPTIMEOUT %s is *disabled* - unchanged", known[c]->interface, oldhuptimeout);
+        info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+      	return; 
+      } /* if */
+
       newchargeint = (int)cheap96(cur_time, known[c]->zone, &zeit);
       
       sprintf(why, "%s, %s", z2s(known[c]->zone), t2tz(zeit));
 
-      if (!memcmp(call[chan].provider, "01019", 5)) { /* Mobilcom 60/60 Takt */
+      if (!memcmp(call[chan].provider + 3, "19", 2)) { /* Mobilcom 60/60 Takt */
         newchargeint = 60;
-      	sprintf(why, "via Mobilcom");
+      	sprintf(why, "via %s", Providername(call[chan].provider));
       }
-      else if (!memcmp(call[chan].provider, "01070", 5)) { /* Arcor 1/1 Takt */
+      else if (!memcmp(call[chan].provider + 3, "24", 2)) { /* TelePasswort 1s Takt */
         newchargeint = 1;
-      	sprintf(why, "via Arcor");
+      	sprintf(why, "via %s", Providername(call[chan].provider));
+      }
+      else if (!memcmp(call[chan].provider + 3, "70", 2)) { /* Arcor 1s Takt */
+        newchargeint = 1;
+      	sprintf(why, "via %s", Providername(call[chan].provider));
+      }
+      else if (!memcmp(call[chan].provider + 3, "30", 2)) { /* TelDaFax 1s Takt */
+        newchargeint = 1;
+      	sprintf(why, "via %s", Providername(call[chan].provider));
+      }
+      else if (!memcmp(call[chan].provider + 3, "13", 2)) { /* Tele 2 1s Takt */
+        newchargeint = 1;
+      	sprintf(why, "via %s", Providername(call[chan].provider));
+      }
+      else if (!memcmp(call[chan].provider + 3, "24", 2)) { /* TelePassport 1/1 Takt */
+        newchargeint = 1;
+      	sprintf(why, "via %s", Providername(call[chan].provider));
       } /* else */
 
 #if NET_DV >= NETDV_CHARGEINT

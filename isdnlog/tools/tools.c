@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1998/03/08 11:43:16  luethje
+ * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
+ *
  * Revision 1.8  1997/05/11 22:41:43  luethje
  * README completed
  * changed the E-mail address for the switch -V
@@ -597,6 +600,20 @@ char *Providername(char *number)
     return("WorldCom");
   else if (!memcmp(number + 3, "25", 2))
     return("Citykom Muenster");
+  else if (!memcmp(number + 3, "13", 2))
+    return("Tele 2");
+  else if (!memcmp(number + 3, "49", 2))
+    return("ACC");
+  else if (!memcmp(number + 3, "18", 2))
+    return("Debitel");
+  else if (!memcmp(number + 3, "55", 2))
+    return("Esprit");
+  else if (!memcmp(number + 3, "14", 2))
+    return("EWE");
+  else if (!memcmp(number + 3, "41", 2))
+    return("HanseNet");
+  else if (!memcmp(number + 3, "36", 2))
+    return("Hutchison Telekom");
   else
     return("UNKNOWN PROVIDER");
 } /* Providername */
@@ -885,6 +902,7 @@ char *z2s(int zone)
     case 14 : return("Inmar");        break;
     case 15 : return("C-Box");        break;
     case 16 : return("T-Box");        break;
+    case 21 : return("City");         break; /* City Plus */
     default : return("");             break;
   } /* switch */
 } /* z2s */
