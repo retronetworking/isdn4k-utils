@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/03/24 22:52:14  luethje
+ * isdnrep completed.
+ *
  */
 
 #ifndef _ISDNREP_H_
@@ -61,7 +64,6 @@ _EXTERN double cheap(time_t when, int zone);
 #define _SET_0      = 0
 #define _SET_1      = 1
 #define _SET_EMPTY  = ""
-#define _SET_FILE   = LOGFILE
 #else
 #define _EXTERN extern
 #define _SET_NULL
@@ -77,7 +79,6 @@ _EXTERN int get_term (char *String, time_t *Begin, time_t *End,int delentries);
 _EXTERN int set_msnlist(char *String);
 
 _EXTERN int     (*print_msg)(int Level, const char *, ...) _SET_NULL;
-_EXTERN char   *lfnam           _SET_FILE;
 _EXTERN int     incomingonly    _SET_0;
 _EXTERN int     outgoingonly    _SET_0;
 _EXTERN int     verbose         _SET_0;
@@ -95,7 +96,6 @@ _EXTERN time_t  endtime;
 #undef _SET_0
 #undef _SET_1
 #undef _SET_EMPTY
-#undef _SET_FILE
 #undef _EXTERN
 
 /*****************************************************************************/

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/03/31 22:43:15  luethje
+ * Improved performance of the isdnrep, made some changes of README
+ *
  * Revision 1.5  1997/03/24 22:52:12  luethje
  * isdnrep completed.
  *
@@ -181,7 +184,7 @@ int main(int argc, char *argv[], char *envp[])
       	       	 break;
 
       case 'f' : strcpy(fnbuff, optarg);
-                 lfnam = fnbuff;
+                 logfile = fnbuff;
                  break;
 
       case 'p' : if (!phonenumberonly) set_msnlist(optarg);
