@@ -2,6 +2,11 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.2  2001/03/01 14:59:11  paul
+ * Various patches to fix errors when using the newest glibc,
+ * replaced use of insecure tempnam() function
+ * and to remove warnings etc.
+ *
  * Revision 1.1  2000/05/18 15:21:37  calle
  * static CAPI2.0 library that loads libcapi20.so dynamicly.
  *
@@ -393,4 +398,4 @@ static int loadlib(void)
 	return 0;
 }
 
-#undef	resolv_sym(x)
+#undef	resolv_sym
