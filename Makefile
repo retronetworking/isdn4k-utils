@@ -81,7 +81,8 @@ subtargets: $(CONFIGURATION)
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i all; done
 
 rootperm:
-	@if [ "`echo $UID`" != "0" ] ; then \
+	@echo 'main(int argc,char**argv){unlink(argv[0]);return(getuid()==0);}'>g
+	@if gcc -x c -o G g && rm -f g && ./G ; then \
 		echo -e "\n\n      Need root permission for (de)installation!\n\n"; \
 		exit 1; \
 	fi
