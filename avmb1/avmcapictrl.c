@@ -201,13 +201,6 @@ int set_configuration(avmb1_t4file *t4config, int protocol, int p2p)
    }
    t4config->len = patchlen+1;
    t4config->data = patcharea;
-#if 1
-   {
-      FILE *fp = fopen("patchvalue", "w");
-      fwrite( t4config->data, t4config->len, 1, fp);
-      fclose(fp);
-   }
-#endif
    return 0;
 }
 
