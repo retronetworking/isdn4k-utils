@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.64  1999/11/28 19:32:42  akool
+ * isdnlog-3.71
+ *
  * Revision 1.63  1999/11/28 11:15:42  akool
  * isdnlog-3.70
  *   - patch from Jochen Erwied (j.erwied@gmx.de)
@@ -395,6 +398,11 @@
  * char *getSpecialName(char *number)
  *   get the Service Name of a special number
  *
+ * char *getServiceNum(char *name)
+ *   returns the first Tel-Number for Service 'name',
+ *   call it with name=NULL to get the next number
+ *   returns NULL if no mor numbers
+ *
  * void clearRate (RATE *Rate)
  *   setzt alle Felder von *Rate zurück
  *
@@ -436,6 +444,9 @@
  *
  * int isProviderValid(int prefix, time_t when)
  *   returns true, if the G:tag entries match when
+ *
+ * inline int isProviderBooked( int prefix)
+ *   returns true if Provider is booked (i.e. listed int rate.conf)
  *
  */
 
@@ -783,6 +794,10 @@ char   *prefix2provider_variant(int prefix, char *s)
 
 inline int getNProvider( void ) {
   return nProvider;
+}
+
+inline int isProviderBooked( int i) {
+  return Provider[i].booked;
 }
 
 int isProviderValid(int i, time_t when)
@@ -1587,6 +1602,24 @@ char *getSpecialName(char *number) {
       if(strmatch(Service[i].Codes[j], number)>=l)
         return Service[i].Name;
   return 0;
+}
+
+char *getServiceNum(char *name) {
+  static int serv, cod;
+  int i;
+
+  if(name && *name) {
+    for (i=0; i<nService; i++)
+      if(strcmp(name, Service[i].Name) == 0) {
+        serv=i;
+	cod=0;
+	return Service[i].Codes[0];
+     }
+     return NULL; /* Unknown Service */
+  }
+  if(++cod < Service[serv].nCode)
+    return Service[serv].Codes[cod];
+  return NULL;
 }
 
 void clearRate (RATE *Rate)

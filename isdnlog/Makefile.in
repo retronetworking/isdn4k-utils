@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.126  1999/11/28 19:32:41  akool
+## isdnlog-3.71
+##
 ## Revision 1.125  1999/11/28 11:15:41  akool
 ## isdnlog-3.70
 ##   - patch from Jochen Erwied (j.erwied@gmx.de)
@@ -864,7 +867,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.71
+VERSION     = 3.72
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \

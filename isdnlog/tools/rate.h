@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1999/11/25 22:58:40  akool
+ * isdnlog-3.68
+ *  - new utility "isdnbill" added
+ *  - patch from Jochen Erwied (j.erwied@gmx.de)
+ *  - new rates
+ *  - small fixes
+ *
  * Revision 1.15  1999/11/08 21:09:41  akool
  * isdnlog-3.65
  *   - added "B:" Tag to "rate-xx.dat"
@@ -180,6 +187,7 @@ int   initRate(char *conf, char *dat, char *dom, char **msg);
 char *getProvider(int prefix);
 int   getSpecial(char *number);
 char* getSpecialName(char *number);
+char *getServiceNum(char *name);
 char *getComment(int prefix, char *key);
 void  clearRate (RATE *Rate);
 int   getRate(RATE *Rate, char **msg);
@@ -195,4 +203,5 @@ inline int getNProvider( void );
 /* char   *prefix2provider(int prefix, char *s) is defined in telnum.h */
 char   *prefix2provider_variant(int prefix, char *s);
 int isProviderValid(int prefix, time_t when);
+inline int isProviderBooked( int i);
 #endif
