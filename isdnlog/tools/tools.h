@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.50  1999/11/02 21:01:58  akool
+ * isdnlog-3.62
+ *  - many new rates
+ *  - next try to fix "Sonderrufnummern"
+ *
  * Revision 1.49  1999/10/29 19:46:01  akool
  * isdnlog-3.60
  *  - sucessfully ported/tested to/with:

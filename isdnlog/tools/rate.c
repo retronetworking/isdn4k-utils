@@ -2,7 +2,7 @@
  *
  * Tarifdatenbank
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,28 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.69  1999/12/24 14:17:06  akool
+ * isdnlog-3.81
+ *  - isdnlog/tools/NEWS
+ *  - isdnlog/tools/telrate/info.html.in  ... bugfix
+ *  - isdnlog/tools/telrate/telrate.cgi.in ... new Service query
+ *  - isdnlog/tools/telrate/Makefile.in ... moved tmp below telrate
+ *  - isdnlog/samples/rate.conf.at ... fixed
+ *  - isdnlog/tools/rate-at.c ... some changes
+ *  - isdnlog/rate-at.dat ... ditto
+ *  - isdnlog/tools/Makefile ... added path to pp_rate
+ *  - isdnlog/tools/rate.{c,h}  ... getServiceNames, Date-Range in T:-Tag
+ *  - isdnlog/tools/isdnrate.c ... fixed sorting of services, -X52 rets service names
+ *  - isdnlog/tools/rate-files.man ... Date-Range in T:-Tag, moved from doc
+ *  - isdnlog/tools/isdnrate.man ... moved from doc
+ *  - doc/Makefile.in ... moved man's from doc to tools
+ *  - isdnlog/Makefile.in ... man's, install isdn.conf.5
+ *  - isdnlog/configure{,.in} ... sed, awk for man's
+ *  - isdnlog/tools/zone/Makefile.in ... dataclean
+ *  - isdnlog/tools/dest/Makefile.in ... dataclean
+ *  - isdnlog/isdnlog/isdnlog.8.in ... upd
+ *  - isdnlog/isdnlog/isdn.conf.5.in ... upd
+ *
  * Revision 1.68  1999/12/19 20:24:46  akool
  * isdnlog-3.80
  *   - resolved most of the Warnings
@@ -1116,8 +1138,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	if (Provider[prefix].Zone[zone].nHour==0)
 	  if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
 	    whimper (dat, "Zone %d has no 'T:' Entries", zone);
+#if 0 /* AK:28Dec1999 - Sorry, Leo ... Millenium-Release! */
 	if (!(where & FEDERAL))
 	  whimper (dat, "Provider %d has no default domestic zone #1 (missing 'A:%s')", prefix, mycountry);
+#endif
 	line++;
       }
       else if(nProvider) { /* silently ignore empty providers */
@@ -1632,8 +1656,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
     if (Provider[prefix].Zone[zone].nHour==0)
       if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
         whimper (dat, "Zone %d has no 'T:' Entries", zone);
+#if 0 /* AK:31Dec1999 - Sorry, Leo ... Millenium-Release! Michi: Hier wird _Bloedsinn_ gemeldet!! */
     if (!(where & FEDERAL))
       whimper (dat, "Provider %d has no default domestic zone #2 (missing 'A:%s')", prefix, mycountry);
+#endif
     line++;
   }
   else if(nProvider) { /* silently ignore empty providers */

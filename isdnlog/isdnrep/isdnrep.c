@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Report-module)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,17 @@
  *
  *
  * $Log$
+ * Revision 1.85  1999/12/17 22:51:54  akool
+ * isdnlog-3.79
+ *  - isdnlog/isdnrep/isdnrep.{c,h} ... error -handling, print_msg
+ *  - isdnlog/isdnrep/rep_main.c
+ *  - isdnlog/isdnrep/isdnrep.1.in
+ *  - isdnlog/tools/rate.c  ... dupl entry in rate.conf
+ *  - isdnlog/tools/NEWS
+ *  - isdnlog/tools/isdnrate.c
+ *  - isdnlog/tools/dest/configure{,.in}
+ *  - isdnlog/tools/zone/configure{,.in}
+ *
  * Revision 1.84  1999/11/28 19:32:41  akool
  * isdnlog-3.71
  *
@@ -1307,7 +1318,7 @@ static int print_bottom(double unit, char *start, char *stop)
 		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Zone");
 		strich(1);
 
-                for (i = 0; i < MAXZONES + 1; i++)
+                for (i = 0; i < MAXZONES /* + 1 */; i++)
                   if (zones_usage[i]) {
                     auto     char  s[BUFSIZ];
 

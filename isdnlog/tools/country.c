@@ -2,7 +2,7 @@
  *
  * Länderdatenbank
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1999/09/26 10:55:20  akool
+ * isdnlog-3.55
+ *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *     added hup3 to option file
+ *   - changed country-de.dat to ISO 3166 Countrycode / Airportcode
+ *
  * Revision 1.5  1999/06/22 19:41:03  akool
  * zone-1.1 fixes
  *

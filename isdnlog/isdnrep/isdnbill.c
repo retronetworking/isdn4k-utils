@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Billing-module)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -493,7 +493,12 @@ static char *beautify(char *num)
   static char res[BUFSIZ];
 
 
-  normalizeNumber(num, &number, TN_ALL);
+  if (*num)
+    normalizeNumber(num, &number, TN_ALL);
+  else {
+    sprintf(res, "%*s", -COUNTRYLEN, "UNKNOWN");
+    return(res);
+  } /* else */
 
   if (*number.msn)
     sprintf(sx, "%s%s%s", number.area, (*number.area ? "/" : ""), number.msn);
@@ -647,7 +652,7 @@ static char *numtonam(int n, int other)
   auto     UC  s[32];
 
 
-  if (onlynumbers) {
+  if (onlynumbers || !*c.num[n]) {
     c.known[n] = UNKNOWN;
     return(NULL);
   } /* if */

@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Utilities)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1999/10/25 18:30:03  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.29  1999/06/15 20:05:08  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files

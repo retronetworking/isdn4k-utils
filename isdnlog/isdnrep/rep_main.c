@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Report-module)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1999/12/17 22:51:55  akool
+ * isdnlog-3.79
+ *  - isdnlog/isdnrep/isdnrep.{c,h} ... error -handling, print_msg
+ *  - isdnlog/isdnrep/rep_main.c
+ *  - isdnlog/isdnrep/isdnrep.1.in
+ *  - isdnlog/tools/rate.c  ... dupl entry in rate.conf
+ *  - isdnlog/tools/NEWS
+ *  - isdnlog/tools/isdnrate.c
+ *  - isdnlog/tools/dest/configure{,.in}
+ *  - isdnlog/tools/zone/configure{,.in}
+ *
  * Revision 1.10  1999/07/18 08:40:57  akool
  * fix from Michael
  *
