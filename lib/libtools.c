@@ -18,6 +18,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1998/10/13 22:17:22  luethje
+ * isdnlog: evaluate the variable PATH for program starts.
+ *
  * Revision 1.7  1998/10/13 21:53:36  luethje
  * isdnrep and lib: bugfixes
  *
@@ -690,18 +693,6 @@ const char *Pathfind(const char *path, const char *name, char *mode)
 	if (name == NULL)
 		return NULL;
 
-	if (path == NULL)
-	{
-		if ((ptr = getenv(PATH_ENV)) == NULL)
-			return NULL;
-
-		Strncpy(_path,ptr,PATH_MAX);
-		ptr = _path;
-		_mode = X_OK;
-	}
-	else
-		Strncpy(_path,path,PATH_MAX);
-
 	if (mode != NULL)
 		while (*mode)
 		{
@@ -717,12 +708,23 @@ const char *Pathfind(const char *path, const char *name, char *mode)
 			}
 		}
 
-
 	if (strchr(name,C_SLASH) != NULL)
 		if (!access(name,_mode))
 			return name;
 		else
 			return NULL;
+
+	if (path == NULL)
+	{
+		if ((ptr = getenv(PATH_ENV)) == NULL)
+			return NULL;
+
+		Strncpy(_path,ptr,PATH_MAX);
+		ptr = _path;
+		_mode |= X_OK;
+	}
+	else
+		Strncpy(_path,path,PATH_MAX);
 
 	while((ptr = strtok(ptr,":")) != NULL)
 	{
