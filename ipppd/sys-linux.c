@@ -71,13 +71,13 @@ char sys_rcsid[] = "$Id$";
 # include <netipx/ipx.h>
 #endif
 
+#include "fsm.h"
+#include "ipppd.h"
+
 #ifdef IPPP_FILTER
-#include <net/bpf.h>
 #include <linux/filter.h>
 #endif /* IPPP_FILTER */
 
-#include "fsm.h"
-#include "ipppd.h"
 #include "ipcp.h"
 #include "ipxcp.h"
 #include "ccp.h"
