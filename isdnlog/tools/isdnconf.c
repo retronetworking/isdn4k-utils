@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1997/05/25 19:41:13  luethje
+ * isdnlog:  close all files and open again after kill -HUP
+ * isdnrep:  support vbox version 2.0
+ * isdnconf: changes by Roderich Schupp <roderich@syntec.m.EUnet.de>
+ * conffile: ignore spaces at the end of a line
+ *
  * Revision 1.10  1997/05/15 22:21:45  luethje
  * New feature: isdnrep can transmit via HTTP fax files and vbox files.
  *
@@ -1173,6 +1179,9 @@ static info_args** Set_Flags(section *SPtr, int *Flags)
 	}
 
 	RetCode = Set_Flags(SPtr->next,Flags);
+
+	if (strcmp(SPtr->name,CONF_SEC_FLAG))
+		return RetCode;
 
 	RetCode = realloc(RetCode, sizeof(info_args*) * (NumArgs+2));
 	RetCode[NumArgs] = (info_args*) calloc(1, sizeof(info_args));

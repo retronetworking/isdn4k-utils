@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.12  1997/05/25 19:40:58  luethje
+ * isdnlog:  close all files and open again after kill -HUP
+ * isdnrep:  support vbox version 2.0
+ * isdnconf: changes by Roderich Schupp <roderich@syntec.m.EUnet.de>
+ * conffile: ignore spaces at the end of a line
+ *
  * Revision 1.11  1997/05/09 23:30:47  luethje
  * isdnlog: new switch -O
  * isdnrep: new format %S
@@ -868,8 +874,8 @@ int main(int argc, char *argv[], char *envp[])
 
         if (!verbose || ((fprot = fopen(tmpout, "a")) != (FILE *)NULL)) {
 
-          for (i = 0; i < MAXCHAN; i++)
-	    clearchan(i, 1);
+      for (i = 0; i < MAXCHAN; i++)
+				clearchan(i, 1);
 
 #ifdef Q931
           if (q931dmp) {

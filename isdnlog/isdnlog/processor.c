@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1997/05/29 17:07:22  akool
+ * 1TR6 fix
+ * suppress some noisy messages (Bearer, Channel, Progress) - can be reenabled with log-level 0x1000
+ * fix from Bodo Bellut (bodo@garfield.ping.de)
+ * fix from Ingo Schneider (schneidi@informatik.tu-muenchen.de)
+ * limited support for Info-Element 0x76 (Redirection number)
+ *
  * Revision 1.7  1997/05/28 21:22:53  luethje
  * isdnlog option -b is working again ;-)
  * isdnlog has new \$x variables
@@ -1226,10 +1233,13 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version)
                   if (*num != '0')
                     sprintf(result, "%s%s", mycountry, myarea);
                   else {
-                    strcpy(result, mycountry);
+                  	if (num[1] != '0') /* Falls es doch Ausland ist -> nichts machen!!! */
+                    	strcpy(result, mycountry);
+                    else
+                    	strcpy(result, countryprefix);
 
-                    while (*num && (*num == '0'))
-                      num++;
+                   	while (*num && (*num == '0'))
+                   		num++;
                   } /* else */
                 } /* if */
                 break;

@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1997/06/15 23:49:38  luethje
+ * Some new variables for the isdnlog
+ * isdnlog starts programs noe with the file system rights
+ * bugfixes
+ *
  * Revision 1.8  1997/05/28 22:03:10  luethje
  * some changes
  *
@@ -101,24 +106,29 @@ static int set_user(char *User, char *File)
 	struct passwd* Ptr = NULL;
 	struct stat   filestat;
 
-	if (User == NULL || User[0] == '\0')
-		return 0;
 
-	setpwent();
-
-	while ((Ptr = getpwent()) != NULL)
+	if (User != NULL && User[0] != '\0')
 	{
-		if (!strcmp(Ptr->pw_name,User) || atoi(User) == (int) Ptr->pw_uid)
+		setpwent();
+
+		while ((Ptr = getpwent()) != NULL)
 		{
-			endpwent();
-			return setuid(Ptr->pw_uid);
+			if (!strcmp(Ptr->pw_name,User) || (isdigit(*User) && atoi(User) == (int) Ptr->pw_uid))
+			{
+				endpwent();
+				print_msg(PRT_DEBUG_RING, "New user is %d set by USER\n",(int) Ptr->pw_uid);
+				return setuid(Ptr->pw_uid);
+			}
 		}
+
+		endpwent();
 	}
 
-	endpwent();
-
 	if (!stat(File,&filestat))
+	{
+		print_msg(PRT_DEBUG_RING, "New user is %d set by filestat\n",(int) filestat.st_uid);
 		return setuid(filestat.st_uid);
+	}
 
 	return 0;
 }
@@ -131,25 +141,28 @@ static int set_group(char *Group, char *File)
 	struct stat   filestat;
 
 
-	if (Group == NULL || Group[0] == '\0')
-		return 0;
-
-	setgrent();
-
-
-	while ((Ptr = getgrent()) != NULL)
+	if (Group != NULL && Group[0] != '\0')
 	{
-		if (!strcmp(Ptr->gr_name,Group) || atoi(Group) == (int) Ptr->gr_gid)
+		setgrent();
+
+		while ((Ptr = getgrent()) != NULL)
 		{
-			endgrent();
-			return setgid(Ptr->gr_gid);
+			if (!strcmp(Ptr->gr_name,Group) || (isdigit(*Group) && atoi(Group) == (int) Ptr->gr_gid))
+			{
+				endgrent();
+				print_msg(PRT_DEBUG_RING, "New group is %d set by GROUP\n",(int) Ptr->gr_gid);
+				return setgid(Ptr->gr_gid);
+			}
 		}
+
+		endgrent();
 	}
 
-	endgrent();
-
 	if (!stat(File,&filestat))
+	{
+		print_msg(PRT_DEBUG_RING, "New group is %d set by filestat\n",(int) filestat.st_gid);
 		return setgid(filestat.st_gid);
+	}
 
 	return 0;
 }
