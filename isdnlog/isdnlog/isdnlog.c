@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.58  2000/02/03 18:24:50  akool
+ * isdnlog-4.08
+ *   isdnlog/tools/rate.c ... LCR patch again
+ *   isdnlog/tools/isdnrate.c ... LCR patch again
+ *   isdnbill enhanced/fixed
+ *   DTAG AktivPlus fixed
+ *
  * Revision 1.57  2000/02/02 22:43:09  akool
  * isdnlog-4.07
  *  - many new rates per 1.2.2000
@@ -432,9 +439,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:ou:B:U:1";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1d:q";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1d:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -689,6 +696,7 @@ static void init_variables(int argc, char* argv[])
   dual = 0;
   hfcdual = 0;
   hup3 = 240;
+  abclcr = 0;
 
   myname = argv[0];
   myshortname = basename(myname);
@@ -882,6 +890,9 @@ int set_options(int argc, char* argv[])
 
       case 'B' : free(vbn);
       	         vbn = strdup(optarg);
+      	       	 break;
+
+      case 'd' : abclcr = atoi(optarg);
       	       	 break;
 
       case '?' : printf(usage, myshortname, myshortname, options);

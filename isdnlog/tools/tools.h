@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.51  1999/12/31 13:57:20  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *  - resolved *any* warnings against rate-de.dat
+ *  - Many new rates
+ *  - CREDITS file added
+ *
  * Revision 1.50  1999/11/02 21:01:58  akool
  * isdnlog-3.62
  *  - many new rates
@@ -1051,7 +1058,8 @@ _EXTERN int     	CityWeekend;
 _EXTERN	int	 preselect;
 _EXTERN int	dual;
 _EXTERN int	hfcdual;
-_EXTERN char    	mlabel[BUFSIZ];
+_EXTERN int	abclcr;
+_EXTERN char    mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;
 _EXTERN int	ignoreCOLP;
