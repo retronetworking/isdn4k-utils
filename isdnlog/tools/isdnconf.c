@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1998/05/19 15:55:57  paul
+ * Moved config stuff for City Weekend from isdnlog.c to tools/isdnconf.c, so
+ * that isdnrep also understands a "cityweekend=y" line in isdn.conf.
+ *
  * Revision 1.15  1998/03/08 11:43:13  luethje
  * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
  *
@@ -1050,8 +1054,10 @@ static int Set_Globals(section *SPtr)
 	{
 		while (sPtr != NULL)
 		{
-			free(sPtr[0]);
-			free(sPtr[1]);
+			if (sPtr[0])
+				free(sPtr[0]);
+			if (sPtr[1])
+				free(sPtr[1]);
 			free(sPtr);
 
 			sPtr++;
