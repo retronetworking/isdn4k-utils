@@ -19,6 +19,12 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.26  1997/05/19 22:58:02  luethje
+## - bugfix: it is possible to install isdnlog now
+## - improved performance for read files for vbox files and mgetty files.
+## - it is possible to decide via config if you want to use avon or
+##   areacode.
+##
 ## Revision 1.25  1997/05/17 01:08:11  luethje
 ## some bugfixes
 ##
@@ -314,7 +320,7 @@ install: depend all rootperm installdirs
 		 && mv $(I4LCONFDIR)/$(OLDCONFFILE) $(I4LCONFDIR)/$(OLDCONFFILE).old
 		$(GENCONF) $(I4LCONFDIR)/$(CONFFILE) $(I4LCONFDIR)/$(CALLERIDFILE)
 		@echo "Generate config files. Wait a moment..."
-		@$(ISDNCONF) -c 040 1>/dev/null 2>&1
+		-@$(ISDNCONF) -c 040 1>/dev/null 2>&1 || echo "Can not read areacode/avon lib."
 		$(INSTALL_BIN) $(ISDNLOG)  $(SBINDIR)
 		$(INSTALL_BIN) $(ISDNREP)  $(BINDIR)
 		$(INSTALL_BIN) $(ISDNCONF) $(BINDIR)
