@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.47  1999/09/22 09:03:00  akool
+ * isdnlog-3.54
+ *
  * Revision 1.46  1999/09/20 18:42:30  akool
  * cosmetics
  *
@@ -351,8 +354,6 @@ extern const char *basename (const char *name);
 #else
 #include "isdnlog.h"
 #include "tools.h"
-#define verbose 2
-/*extern int verbose;*/
 #endif
 
 #include "holiday.h"

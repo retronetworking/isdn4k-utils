@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/06/22 19:41:03  akool
+ * zone-1.1 fixes
+ *
  * Revision 1.4  1999/06/16 19:12:53  akool
  * isdnlog Version 3.34
  *   fixed some memory faults
@@ -302,6 +305,7 @@ int initCountry(char *path, char **msg)
       Country[Index].Alias[0]=strdup(xlat(s));
       break;
 
+    case 'E': /* E:English */
     case 'A': /* A:Alias[,Alias...] */
       if (Index<0) {
 	warning (path, "Unexpected tag '%c'", *s);
@@ -363,6 +367,10 @@ int initCountry(char *path, char **msg)
       s+=2; while(isblank(*s)) s++;
       strcpy(version, s);
       break;
+      
+    case 'R':
+    case 'T':
+      break;  
 
     default:
       warning(path, "Unknown tag '%c'", *s);
@@ -445,11 +453,11 @@ void main (int argc, char *argv[])
   char    *msg;
   int      d, i;
 
-  initCountry ("../prefixes.dat", &msg);
-  printf ("%s\n", msg);
+  initCountry ("/usr/lib/isdn/country-de.dat", &msg);
+//  fprintf (stderr, "%s\n", msg);
 
   for (i=1; i<argc; i++) {
-#if 0
+#if 1
     d=getCountry(argv[i], &country);
     if (country==NULL)
       printf ("<%s> unknown country!\n", argv[i]);

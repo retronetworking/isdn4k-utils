@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1999/09/09 11:21:06  akool
+ * isdnlog-3.49
+ *
  * Revision 1.11  1999/08/25 17:07:18  akool
  * isdnlog-3.46
  *
@@ -150,7 +153,7 @@ typedef struct {
   double     Duration;  /* Länge eines Tarifimpulses */
   int        Units;     /* verbrauchte Tarifimpulse */
   double     Charge;    /* gesamte Verbindungskosten */
-  double     Rhythm[2]; /* Taktung */  
+  double     Rhythm[2]; /* Taktung */
   time_t     Time;      /* gesamte Verbindungszeit */
   time_t     Rest;      /* bezahlte, aber noch nicht verbrauchte Zeit */
 } RATE;
@@ -165,6 +168,7 @@ char *getComment(int prefix, char *key);
 void  clearRate (RATE *Rate);
 int   getRate(RATE *Rate, char **msg);
 int   getLeastCost(RATE *Current, RATE *Cheapest, int booked, int skip);
+int   getZoneRate(RATE* Rate, int domestic, int first);
 int   guessZone (RATE *Rate, int aoc_units);
 char *explainRate (RATE *Rate);
 char *printRate (double value);

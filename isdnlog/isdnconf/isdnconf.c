@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.37  1999/08/20 19:28:05  akool
+ * isdnlog-3.45
+ *  - removed about 1 Mb of (now unused) data files
+ *  - replaced areacodes and "vorwahl.dat" support by zone databases
+ *  - fixed "Sonderrufnummern"
+ *  - rate-de.dat :: V:1.10-Germany [20-Aug-1999 21:23:27]
+ *
  * Revision 1.36  1999/07/03 10:24:02  akool
  * fixed Makefile
  *
@@ -255,6 +262,8 @@
  * some bugfixes
  *
  */
+
+#define _ISDN_CONF_C_
 
 #include "isdnconf.h"
 

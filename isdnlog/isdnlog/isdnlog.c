@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.49  1999/09/11 22:28:23  akool
+ * isdnlog-3.50
+ *   added 3. parameter to "-h" Option: Controls CHARGEHUP for providers like
+ *   DTAG (T-Online) or AOL.
+ *   Many thanks to Martin Lesser <m-lesser@lesser-com.de>
+ *
  * Revision 1.48  1999/08/20 19:28:12  akool
  * isdnlog-3.45
  *  - removed about 1 Mb of (now unused) data files
@@ -953,7 +959,12 @@ static int read_param_file(char *FileName)
                  		    *p = 0;
                  		    hup1 = atoi(Ptr->value);
                  		    hup2 = atoi(p + 1);
-      	       	 		  } /* if */
+
+				    if ((p = strchr(p + 1, ':')))
+				      hup3 = atoi(p + 1);
+				  } /* if */
+				  else
+				    printf("%s: WARNING: \"-h\" Option requires 2 .. 3 arguments\n", myshortname);
 				}
 				else
                                 if (!strcmp(Ptr->name, CONF_ENT_TRIM)) {

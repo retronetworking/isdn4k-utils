@@ -19,6 +19,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/05/04 19:32:27  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.4  1999/04/10 16:35:18  akool
  * isdnlog Version 3.13
  *
@@ -73,6 +81,8 @@
 #else
 #define _EXTERN extern
 #endif
+
+_EXTERN int     verbose;
 
 #undef _EXTERN
 
