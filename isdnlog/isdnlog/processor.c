@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/04/20 22:52:14  luethje
+ * isdnrep has new features:
+ *   -variable format string
+ *   -can create html output (option -w1 or ln -s isdnrep isdnrep.cgi)
+ *    idea and design from Dirk Staneker (dirk.staneker@student.uni-tuebingen.de)
+ * bugfix of processor.c from akool
+ *
  * Revision 1.5  1997/03/31 20:50:59  akool
  * fixed the postgres95 part of isdnlog
  *
@@ -3516,12 +3523,10 @@ static void processctrl(int card, char *s)
     } /* if */
 #endif
 
-#ifdef SL
-    if (version == VERSION_1TR6) {
+    if (bilingual && version == VERSION_1TR6) {
       print_msg(PRT_DEBUG_BUGS, " DEBUG> %s: OOPS! 1TR6 Frame? Ignored!\n", st + 4);
       goto endhex;
     } /* if */
-#endif
 
     creflen = strtol(ps += 3, NIL, 16);
 

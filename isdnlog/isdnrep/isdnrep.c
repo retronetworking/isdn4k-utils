@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.27  1997/05/25 19:41:06  luethje
+ * isdnlog:  close all files and open again after kill -HUP
+ * isdnrep:  support vbox version 2.0
+ * isdnconf: changes by Roderich Schupp <roderich@syntec.m.EUnet.de>
+ * conffile: ignore spaces at the end of a line
+ *
  * Revision 1.26  1997/05/19 22:58:18  luethje
  * - bugfix: it is possible to install isdnlog now
  * - improved performance for read files for vbox files and mgetty files.
@@ -279,6 +285,13 @@
 
 #define H_EMPTY        "&nbsp;"
 
+#define H_APP_ZYXEL2 "application/x-zyxel2"
+#define H_APP_ZYXEL3 "application/x-zyxel3"
+#define H_APP_ZYXEL4 "application/x-zyxel4"
+#define H_APP_ULAW   "application/x-ulaw"
+#define H_APP_TEXT   "text/plain"
+#define H_APP_FAX3   "application/x-faxg3"
+
 /*****************************************************************************/
 
 typedef struct {
@@ -416,7 +429,7 @@ int send_html_request(char *myname, char *option)
 			if (vboxcommand1)
 				command = vboxcommand1;
 			else
-				filetype = "application/x-zyxel4";
+				filetype = H_APP_ZYXEL4;
 		}
 		else
 		if (option[1] == '2')
@@ -429,15 +442,15 @@ int send_html_request(char *myname, char *option)
 
 				switch(compression)
 				{
-					case 2 : filetype = "application/x-zyxel2";
+					case 2 : filetype = H_APP_ZYXEL2;
 					         break;
-					case 3 : filetype = "application/x-zyxel3";
+					case 3 : filetype = H_APP_ZYXEL3;
 					         break;
-					case 4 : filetype = "application/x-zyxel4";
+					case 4 : filetype = H_APP_ZYXEL4;
 					         break;
-					case 6 : filetype = "application/x-ulaw";
+					case 6 : filetype = H_APP_ULAW;
 					         break;
-					default: print_msg(PRT_NORMAL, "Content-Type: text/plain\n\n");
+					default: print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 				           print_msg(PRT_NORMAL, "%s: unsupported compression type of vbox file :`%d'\n",myname,compression);
 				           return -1;
 					         break;
@@ -446,7 +459,7 @@ int send_html_request(char *myname, char *option)
 		}
 		else
 		{
-			print_msg(PRT_NORMAL, "Content-Type: text/plain\n\n");
+			print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 			print_msg(PRT_NORMAL, "%s: unsupported version of vbox `%c'\n",myname,option[0]);
 			return -1;
 		}
@@ -461,18 +474,18 @@ int send_html_request(char *myname, char *option)
 			if (mgettycommand)
 				command = mgettycommand;
 			else
-				filetype = "application/x-faxg3";
+				filetype = H_APP_FAX3;
 		}
 		else
 		{
-			print_msg(PRT_NORMAL, "Content-Type: text/plain\n\n");
+			print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 			print_msg(PRT_NORMAL, "%s:unsupported version of fax `%c%c'\n",myname,option[0]);
 			return -1;
 		}
 	}
 	else
 	{
-		print_msg(PRT_NORMAL, "Content-Type: text/plain\n\n");
+		print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 		print_msg(PRT_NORMAL, "%s:invalid option string `%c%c'\n",myname,option[0],option[1]);
 		return -1;
 	}
