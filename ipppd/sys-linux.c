@@ -246,6 +246,9 @@ void establish_ppp (int linkunit)
 		struct pppcallinfo *pci = &lns[linkunit].pci;
 		syslog(LOG_NOTICE, "Local number: %s, Remote number: %s, Type: %s",
 			pci->local_num,pci->remote_num,pci->calltype & CALLTYPE_INCOMING ? "incoming" : "outgoing" );
+#ifdef RADIUS
+               strncpy ( lns[linkunit].remote_number, pci->remote_num, sizeof( lns[linkunit].remote_number ) ) ;
+#endif
 	}
 
 	if(useifmtu) {   
