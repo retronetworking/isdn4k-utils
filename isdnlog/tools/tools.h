@@ -20,6 +20,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.49  1999/10/29 19:46:01  akool
+ * isdnlog-3.60
+ *  - sucessfully ported/tested to/with:
+ *      - Linux-2.3.24 SMP
+ *      - egcs-2.91.66
+ *    using -DBIG_PHONE_NUMBERS
+ *
+ *  - finally added working support for HFC-card in "echo mode"
+ *    try this:
+ *      hisaxctrl bri 10 1
+ *      hisaxctrl bri 12 1
+ *      isdnlog -21 -1
+ * -----------------^^ new option
+ *
  * Revision 1.48  1999/10/25 18:30:04  akool
  * isdnlog-3.57
  *   WARNING: Experimental version!
@@ -1023,6 +1037,8 @@ _EXTERN char    	idate[256];
 _EXTERN CALL    	call[MAXCHAN];
 #ifdef Q931
 _EXTERN int     	q931dmp;
+#else
+#define q931dmp 0
 #endif
 #if 0 /* Fixme: remove */
 _EXTERN int     	CityWeekend;

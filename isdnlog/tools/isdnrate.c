@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  1999/10/26 18:17:14  akool
+ * isdnlog-3.58
+ *   - big cleanup ( > 1.3 Mb removed!)
+ *   - v0.02 of destination support - better, but not perfect
+ *     (does't work with gcc-2.7.2.3 yet - use egcs!)
+ *
  * Revision 1.21  1999/10/25 18:30:03  akool
  * isdnlog-3.57
  *   WARNING: Experimental version!
@@ -844,7 +850,7 @@ static int compute(char *num)
 static void print_header(void)
 {
   print_msg(PRT_NORMAL, "Eine %d Sekunden lange Verbindung von %s nach %s kostet am %s\n",
-  duration, formatNumber("%f", &srcnum), formatNumber("%f", &destnum),
+  duration, formatNumber("%F", &srcnum), formatNumber("%F", &destnum),
 	    ctime(&start));
 }
 

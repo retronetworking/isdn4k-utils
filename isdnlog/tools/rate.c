@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.54  1999/10/31 11:19:11  akool
+ * finally fixed a bug with "Sonderrufnummern"
+ *
  * Revision 1.53  1999/10/30 18:03:31  akool
  *  - fixed "-q" option
  *  - workaround for "Sonderrufnummern"
@@ -1396,11 +1399,8 @@ int getArea (int prefix, char *number)
   if (prefix<0 || prefix>=nProvider || !Provider[prefix].used)
     return 0;
 
-/*  l=strlen(number); +4371891234 !!!
-  das hatten wir doch schon einmal oder
-*/
+  l=strlen(number);
   for (i=0; i<Provider[prefix].nArea; i++) {
-    l=strlen(Provider[prefix].Area[i].Code);
     if (strmatch(Provider[prefix].Area[i].Code, number)>=l)
       return 1;
   }
@@ -1469,6 +1469,7 @@ int getRate(RATE *Rate, char **msg)
         for (a=0; a<Provider[prefix].nArea; a++) {
           if (strcmp(Provider[prefix].Area[a].Code, p)==0) {
 	    Rate->_area=a;
+	    x=strlen(Provider[prefix].Area[a].Code);
 	    Rate->domestic=atoi(mycountry+1)==num.ncountry;
 	    break;
 	  }
@@ -1478,14 +1479,13 @@ int getRate(RATE *Rate, char **msg)
         p=strtok(0, "/");
       }
     }
-    if (Rate->_area==UNKNOWN) {
-      for (a=0; a<Provider[prefix].nArea; a++) {
-        int m=strmatch(Provider[prefix].Area[a].Code, number);
-        if (m>x) {
-	  x=m;
-	  Rate->_area = a;
-	  Rate->domestic = strcmp(Provider[prefix].Area[a].Code, mycountry)==0 || *(Rate->dst[0])=='\0';
-        }
+    /* try find a longer match in codes e.g. for mobil phone nums */
+    for (a=0; a<Provider[prefix].nArea; a++) {
+      int m=strmatch(Provider[prefix].Area[a].Code, number);
+      if (m>x) {
+  	x=m;
+	Rate->_area = a;
+	Rate->domestic = strcmp(Provider[prefix].Area[a].Code, mycountry)==0 || *(Rate->dst[0])=='\0';
       }
     }
     if (Rate->_area==UNKNOWN) {
