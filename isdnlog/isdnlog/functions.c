@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.31  2000/12/15 14:36:05  leo
+ * modilp, ilp - B-chan usage in /proc/isdnlog
+ * s. isdnlog/ilp/README for more information
+ *
  * Revision 1.30  2000/06/20 17:09:59  akool
  * isdnlog-4.29
  *  - better ASN.1 display
@@ -548,7 +552,8 @@ int print_msg(int Level, const char *fmt, ...)
   if (Level & message)
   {
     /* no console, no outfile -> log to stderr */
-    if ((fout==NULL) && (fcons == NULL)) {
+    /* if a daemon, don't use stderr either! */
+    if (!fout && !fcons && !isdaemon) {
       fputs(width ? s : String, stderr);
       fflush(stderr);
     }
@@ -717,3 +722,4 @@ int ringer(int chan, int event)
 
   return ProcessStarted;
 } /* ringer */
+/* vim:set ts=2: */
