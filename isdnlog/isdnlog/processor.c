@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1998/03/08 11:42:55  luethje
+ * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
+ *
  * Revision 1.13  1998/02/05 08:23:24  calle
  * decode also seconds in date_time if available, for the dutch.
  *
@@ -373,7 +376,7 @@ static void info(int chan, int reason, int state, char *msg)
   if (allflags & PRT_DEBUG_GENERAL)
     if (allflags & PRT_DEBUG_INFO)
       print_msg(PRT_DEBUG_INFO, "%d INFO> ", chan);
-  
+
   (void)iprintf(s, chan, call[chan].dialin ? ilabel : olabel, left, msg, right);
 
   print_msg(PRT_DEBUG_INFO, "%s", s);
@@ -1526,7 +1529,7 @@ static void decode(int chan, register char *p, int type, int version)
 
       pd = qmsg(TYPE_ELEMENT, version, element);
 
-      if (*pd == 'U') {
+      if (strncmp(pd, "UNKNOWN", 7) == 0) {
         register char *p1 = p, *p2;
         register int   i, c;
         auto     char  s[LONG_STRING_SIZE];
@@ -1716,7 +1719,7 @@ static void decode(int chan, register char *p, int type, int version)
                         print_msg(PRT_DEBUG_DECODE, " DEBUG> %s: 1TR6 AOCD %i\n", st + 4, n);
                       } /* if */
                     }
-                    else
+                    else {
 #if defined(ISDN_NL) || defined(ISDN_CH)
                       n = AOC_1TR6(l, p);
 #else
@@ -1946,23 +1949,47 @@ static void decode(int chan, register char *p, int type, int version)
                           } /* if */
                         } /* else */
                       } /* if */
+                    } /* if */
 
                     p += (l * 3);
                     break;
 
-        case 0x29 : /* Date/Time */
-                    tm.tm_year  = strtol(p += 3, NIL, 16);
-                    tm.tm_mon   = strtol(p += 3, NIL, 16) - 1;
-                    tm.tm_mday  = strtol(p += 3, NIL, 16);
-                    tm.tm_hour  = strtol(p += 3, NIL, 16);
-                    tm.tm_min   = strtol(p += 3, NIL, 16);
-
-		    if (l > 5) {
-		       tm.tm_sec = strtol(p += 3, NIL, 16);
-		       if (l > 6)
-			  p += (l - 6) * 3;
-		    } else {
-                       tm.tm_sec   = 0;
+	case 0x03 : /* Date/Time 1TR6   */
+        case 0x29 : /* Date/Time E-DSS1 */
+                    if ((element == 0x03) && (version == VERSION_1TR6)) {
+			tm.tm_mday  = (strtol(p+=3,NIL,16)-'0') * 10;
+			tm.tm_mday +=  strtol(p+=3,NIL,16)-'0';
+			p += 3;	/* skip '.' */
+			tm.tm_mon   = (strtol(p+=3,NIL,16)-'0') * 10;
+			tm.tm_mon  +=  strtol(p+=3,NIL,16)-'0' - 1;
+			p += 3;	/* skip '.' */
+			tm.tm_year  = (strtol(p+=3,NIL,16)-'0') * 10;
+			tm.tm_year +=  strtol(p+=3,NIL,16)-'0';
+			if (tm.tm_year < 70)
+			    tm.tm_year += 100;
+			p += 3; /* skip '-' */
+			tm.tm_hour  = (strtol(p+=3,NIL,16)-'0') * 10;
+			tm.tm_hour +=  strtol(p+=3,NIL,16)-'0';
+			p += 3; /* skip ':' */
+			tm.tm_min   = (strtol(p+=3,NIL,16)-'0') * 10;
+			tm.tm_min  +=  strtol(p+=3,NIL,16)-'0';
+			p += 3; /* skip ':' */
+			tm.tm_sec   = (strtol(p+=3,NIL,16)-'0') * 10;
+			tm.tm_sec  +=  strtol(p+=3,NIL,16)-'0';
+		    }
+		    else if ((element == 0x29) && (version != VERSION_1TR6)) {
+			tm.tm_year  = strtol(p += 3, NIL, 16);
+			tm.tm_mon   = strtol(p += 3, NIL, 16) - 1;
+			tm.tm_mday  = strtol(p += 3, NIL, 16);
+			tm.tm_hour  = strtol(p += 3, NIL, 16);
+			tm.tm_min   = strtol(p += 3, NIL, 16);
+			if (l > 5)
+			  tm.tm_sec = strtol(p += 3, NIL, 16);
+			else
+			  tm.tm_sec = 0;
+		    }
+		    else {
+		    	goto UNKNOWN_ELEMENT; /* no choice... */
 		    }
                     tm.tm_wday  = tm.tm_yday = 0;
                     tm.tm_isdst = -1;
@@ -2808,9 +2835,9 @@ escape:             for (c = 0; c <= sxp; c++)
 
 
         default   : {
-                      register char *p1 = p, *p2 = s;
+                      register char *p1, *p2;
                       register int  i;
-
+UNKNOWN_ELEMENT:      p1 = p; p2 = s;
 
                       for (i = 0; i < l; i++)
                         p2 += sprintf(p2, "%02x ", (int)strtol(p1 += 3, NIL, 16));
@@ -2923,7 +2950,7 @@ void dotrace(void)
 
 
   print_msg(PRT_NORMAL, ">>>>>>> TRACE (CR=next, q=quit, d=dump, g=go):");
-  gets(s);
+  fgets(s, BUFSIZ, stdin);
 
   if (*s == 'q')
     exit(0);
