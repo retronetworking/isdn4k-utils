@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  1998/05/20 12:22:15  paul
+ * More paranoid about freeing pointers.
+ *
  * Revision 1.18  1998/05/20 09:56:14  paul
  * Oops, the temp string _was_ necessary. Made it static so that returning a
  * pointer to it is not a problem.
@@ -798,11 +801,12 @@ static int Compare_Sections(section* sec1, section *sec2, char **variables)
 						found2++;
 
 				if ((++Cnt)%width == 0)
+                {
 					if(found1 == 0)
 						found2 = 0;
 					else
 						exist = 0;
-
+                }
 				if (array != NULL)
 				{
 					del_Array(array);
