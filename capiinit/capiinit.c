@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2004/01/16 15:27:12  calle
+ * remove several warnings.
+ *
  * Revision 1.14  2004/01/16 12:33:16  calle
  * Modifications to let ist run with patched 2.6 kernel.
  * Pure 2.6.0/2.6.1 is not working.
@@ -1185,8 +1188,10 @@ static int check_for_capifs(void)
 	load_filesystem("capifs");
 	if (filesystem_available("capifs")) 
 		return 0;
+#ifdef WITH_DEVFS
 	if (filesystem_available("devfs"))
 		return 0;
+#endif
 	load_filesystem("capifs");
 	if (filesystem_available("capifs")) 
 		return 0;
@@ -1207,10 +1212,12 @@ static int checkdir(char *dir)
 static int check_for_capifs_mounted(void)
 {
 	char *mp;
+#ifdef WITH_DEVFS
 	if (filesystem_available("devfs")) {
 		if ((mp = mounted("devfs")) != 0 && strcmp(mp, "/dev") == 0)
 			return 0;
 	}
+#endif
 	if (filesystem_available("capifs")) {
 		if ((mp = mounted("capifs")) != 0 && strcmp(mp, "/dev/capi") == 0)
 			return 0;
