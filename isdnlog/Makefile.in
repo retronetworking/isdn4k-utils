@@ -19,6 +19,10 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.183  2000/09/08 10:41:54  paul
+## Replaced {,} expansions, those only work with SHELL = /bin/bash,
+## not with a POSIX-compliant shell.
+##
 ## Revision 1.182  2000/09/05 17:27:36  paul
 ## runtime selection of country behaviour; version 4.42
 ##
@@ -1394,7 +1398,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.42
+VERSION     = 4.43
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -1443,8 +1447,7 @@ DEFS       += \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
 	       -D@NATION_MACRO@=1		\
  	       -DNATION=\"$(NATION)\"		\
-	       -DBIG_PHONE_NUMBERS=1		\
-                $(INCLUDE)
+	       -DBIG_PHONE_NUMBERS=1
 
 PC = proc
 PCFLAGS = mode=oracle ireclen=160 lines=yes
