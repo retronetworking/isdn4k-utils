@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/03/29 09:24:33  akool
+ * CLIP presentation enhanced, new ILABEL/OLABEL operators
+ *
  * Revision 1.1  1997/03/16 20:59:24  luethje
  * Added the source code isdnlog. isdnlog is not working yet.
  * A workaround for that problem:
@@ -88,7 +91,6 @@ char Months[][4] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun",
 
 /****************************************************************************/
 
-static char proto[] = "                   0,000000000";
 static int  cnf;
 
 /****************************************************************************/
@@ -189,7 +191,7 @@ char *num2nam(char *num, int si)
 
 /****************************************************************************/
 
-#ifdef GLIBC /* _GNU_SOURCE */
+#if defined __GLIBC__ && __GLIBC__ > 2
 char *double2str(double n, int l, int d, int flags)
 {
   if (++retnum == MAXRET)
@@ -204,6 +206,7 @@ char *double2str(double n, int l, int d, int flags)
   register char *p, *ps, *pd, *px;
   auto     int   decpt, sign, dec, dp;
   auto     char  buf[BUFSIZ];
+  static   char  proto[] = "                   0,000000000";
 
 
   if (++retnum == MAXRET)
