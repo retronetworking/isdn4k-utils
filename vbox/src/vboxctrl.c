@@ -119,6 +119,59 @@ int main(int argc, char **argv)
 				break;
 		}
 	}
+
+	if (!*todo)
+	{
+		fprintf(stderr, "%s: you must specify a control name to create/remove.\n", basename);
+		
+		exit(5);
+	}
+
+	if (mode == CTRL_MODE_CREATE)
+	{
+		if (ctrl_ishere(usespool, todo))
+		{
+			fprintf(stderr, "%s: control file '%s' allready exists.\n", basename, todo);
+			
+			exit(5);
+		}
+
+		if (!ctrl_create(usespool, todo))
+		{
+			fprintf(stderr, "%s: can't create control file '%s'.\n", basename, todo);
+			
+			exit(5);
+		}
+
+		fprintf(stderr, "%s: control file '%s' created.\n", basename, todo);
+		
+		exit(0);
+	}
+
+	if (mode == CTRL_MODE_REMOVE)
+	{
+		if (!ctrl_ishere(usespool, todo))
+		{
+			fprintf(stderr, "%s: control file '%s' doesn't exist.\n", basename, todo);
+			
+			exit(5);
+		}
+
+		if (!ctrl_remove(usespool, todo))
+		{
+			fprintf(stderr, "%s: can't remove control file '%s'.\n", basename, todo);
+			
+			exit(5);
+		}
+
+		fprintf(stderr, "%s: control file '%s' removed.\n", basename, todo);
+		
+		exit(0);
+	}
+
+	fprintf(stderr, "%s: oops - don't know what I should do!\n", basename);
+
+	exit(5);
 }
 
 /*************************************************************************
@@ -162,7 +215,3 @@ static void usage(void)
 
 	exit(1);
 }
-
-
-
-
