@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.41  1999/03/14 14:26:38  akool
+ * - isdnlog Version 3.05
+ * - new Option "-u1" (or "ignoreRR=1")
+ * - added version information to "sonderrufnummern.dat"
+ * - added debug messages if sonderrufnummern.dat or tarif.dat could not be opened
+ * - sonderrufnummern.dat V 1.01 - new 01805 rates
+ *
  * Revision 1.40  1999/03/14 12:16:08  akool
  * - isdnlog Version 3.04
  * - general cleanup
@@ -733,7 +740,6 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
 
   if (!dir && (who == CALLED))
     *sondernummer = is_sondernummer(num, DTAG); /* try with DTAG, these provider must support them all (i think) */
-  else if ((dir && (who == CALLED)) || (!dir && (who == CALLING)))
     *intern = strlen(num) < interns0;
 
 #ifdef Q931
