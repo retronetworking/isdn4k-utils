@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.38  1999/04/30 19:08:27  akool
+ * isdnlog Version 3.23
+ *
+ *  - changed LCR probing duration from 181 seconds to 153 seconds
+ *  - "rate-de.dat" filled with May, 1. rates
+ *
  * Revision 1.37  1999/04/16 14:40:07  akool
  * isdnlog Version 3.16
  *
@@ -406,7 +412,6 @@
 
 #include "policy.h"
 #include "libisdn.h"
-#include "sondernummern.h"
 #include "holiday.h"
 #include "rate.h"
 
@@ -948,6 +953,7 @@ _EXTERN int	dual;
 _EXTERN char    	mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;
+_EXTERN int 	interns0;
 #undef _EXTERN
 
 /****************************************************************************/
@@ -966,7 +972,6 @@ _EXTERN char* rebootcmd = REBOOTCMD;
 _EXTERN char* logfile   = LOGFILE;
 _EXTERN char* callfile  = NULL;
 _EXTERN char* callfmt   = NULL;
-_EXTERN char* snfile    = NULL;
 _EXTERN char* holifile  = NULL;
 _EXTERN char* rateconf  = NULL;
 _EXTERN char* ratefile  = NULL;
@@ -989,7 +994,6 @@ _EXTERN char* rebootcmd;
 _EXTERN char* logfile;
 _EXTERN char* callfile;
 _EXTERN char* callfmt;
-_EXTERN char* snfile;
 _EXTERN char* holifile;
 _EXTERN char* rateconf;
 _EXTERN char* ratefile;
@@ -1013,6 +1017,7 @@ _EXTERN char  *double2str(double n, int l, int d, int flags);
 _EXTERN char  *double2byte(double bytes);
 _EXTERN char  *time2str(time_t sec);
 _EXTERN char  *double2clock(double n);
+_EXTERN void   abroad(char *num, char *area);
 _EXTERN char  *vnum(int chan, int who);
 _EXTERN char  *i2a(int n, int l, int base);
 _EXTERN int    iprintf(char *obuf, int chan, register char *fmt, ...);

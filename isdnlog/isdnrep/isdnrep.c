@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.63  1999/04/16 14:39:31  akool
+ * isdnlog Version 3.16
+ *
+ * - more syntax checks for "rate-xx.dat"
+ * - isdnrep fixed
+ *
  * Revision 1.62  1999/04/14 13:16:42  akool
  * isdnlog Version 3.14
  *
@@ -873,7 +879,6 @@ int read_logfile(char *myname)
   one_call            cur_call;
 
 
-  /* initSondernummern(snfile, NULL); FIXME */
   /* initHoliday(holifile, NULL); FIXME */
   /* initRate(rateconf, ratefile, NULL); FIXME */
   interns0 = 3; /* FIXME */
@@ -1311,9 +1316,11 @@ static int print_bottom(double unit, char *start, char *stop)
 
                        print_msg(PRT_NORMAL,"%s ", unknown[i].called ? "Called by" : "  Calling");
 
+#if 0 /* FIXME */
                        if (is_sondernummer(unknown[i].num, DTAG) > 0) /* Fixme: DTAG is specific to Germany */
                          ;
 		       else
+#endif
                        if ((p = get_areacode(unknown[i].num, &l, flag)) != 0) {
                          if (l > 1) {
                            /* Sehr gefaehrlich, was ist mit Laendern, die einen dreistelligen Code haben??? */

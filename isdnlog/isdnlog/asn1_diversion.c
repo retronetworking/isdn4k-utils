@@ -21,6 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/04/26 22:11:56  akool
+ * isdnlog Version 3.21
+ *
+ *  - CVS headers added to the asn* files
+ *  - repaired the "4.CI" message directly on CONNECT
+ *  - HANGUP message extended (CI's and EH's shown)
+ *  - reactivated the OVERLOAD message
+ *  - rate-at.dat extended
+ *  - fixes from Michael Reinelt
+ *
  *
  * Revision 0.1  1999/04/25 20:00.00  akool
  * Initial revision
@@ -231,6 +241,26 @@ ELEMENT_1(ParseRESInterrogationDiversion, char, res)
   return 1;
 }
 
+ELEMENT_1(ParseServedUserNumberList, char, res)
+{
+  int i;
+  char num[BUF_SIZE];
+
+  CHECK_TAG(ASN1_TAG_SET);
+  MY_DEBUG("ParseServedUserNumberList");
+
+  for (i = 0; i < el.length; i++) {
+    if (!ParsePartyNumber(el.content.elements[i], -1, num)) return 0;
+    if (i == 0) {
+      sprintf(res, "%s", num);
+    } else {
+      sprintf(res, "%s %s", res, num);
+    }
+  }
+
+  return 1;
+}
+
 ELEMENT_1(ParseRESInterrogateServedUserNumbers, char, res)
 {
   char s[BUF_SIZE];
@@ -319,26 +349,6 @@ ELEMENT_1(ParseIntResultList, char, s)
       sprintf(s, "%s", res);
     } else {
       sprintf(s, "%s; %s", s, res);
-    }
-  }
-
-  return 1;
-}
-
-ELEMENT_1(ParseServedUserNumberList, char, res)
-{
-  int i;
-  char num[BUF_SIZE];
-
-  CHECK_TAG(ASN1_TAG_SET);
-  MY_DEBUG("ParseServedUserNumberList");
-
-  for (i = 0; i < el.length; i++) {
-    if (!ParsePartyNumber(el.content.elements[i], -1, num)) return 0;
-    if (i == 0) {
-      sprintf(res, "%s", num);
-    } else {
-      sprintf(res, "%s %s", res, num);
     }
   }
 

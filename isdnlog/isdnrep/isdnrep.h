@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1999/03/24 19:38:41  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.12  1999/01/24 19:02:25  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -70,7 +77,6 @@
 
 #define PUBLIC extern
 #include <tools.h>
-#include <sondernummern.h>
 #include <holiday.h>
 #include <rate.h>
 

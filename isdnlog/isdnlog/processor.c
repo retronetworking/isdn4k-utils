@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.59  1999/04/30 19:07:56  akool
+ * isdnlog Version 3.23
+ *
+ *  - changed LCR probing duration from 181 seconds to 153 seconds
+ *  - "rate-de.dat" filled with May, 1. rates
+ *
  * Revision 1.58  1999/04/29 19:03:24  akool
  * isdnlog Version 3.22
  *
@@ -886,11 +892,14 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     *provider = preselect;
 
   if (!dir && (who == CALLED) && !*intern) {
-    *sondernummer = is_sondernummer(num, *provider);
+    register int i;
 
-    if (*sondernummer == UNKNOWN)
       /* Fixme: DTAG is specific to Germany */
-      *sondernummer = is_sondernummer(num, DTAG); /* try with DTAG, these provider must support them all (i think) */
+    i = getZone(DTAG, num);
+
+    if (((i >  4) && (i < 11)) ||
+        ((i > 19) && (i < 100)))
+      *sondernummer = 1;
   } /* if */
 
   if (Q931dmp) {
@@ -898,7 +907,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
 
 
     if (*sondernummer != UNKNOWN) {
-      sprintf(s, "(Sonderrufnummer %s : %s)", num, sondernummername(*sondernummer));
+      sprintf(s, "(Sonderrufnummer %s)", num);
       Q931dump(TYPE_STRING, -1, s, version);
     } /* if */
 

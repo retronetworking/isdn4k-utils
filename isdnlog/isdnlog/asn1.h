@@ -21,6 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/04/26 22:11:50  akool
+ * isdnlog Version 3.21
+ *
+ *  - CVS headers added to the asn* files
+ *  - repaired the "4.CI" message directly on CONNECT
+ *  - HANGUP message extended (CI's and EH's shown)
+ *  - reactivated the OVERLOAD message
+ *  - rate-at.dat extended
+ *  - fixes from Michael Reinelt
+ *
  *
  * Revision 0.1  1999/04/25 20:00.00  akool
  * Initial revision
@@ -130,6 +140,7 @@ ELEMENT_1(ParsePresentedAddressScreened, char, );
 ELEMENT_1(ParsePresentedAddressUnscreened, char, );
 ELEMENT_1(ParsePresentedNumberScreened, char, );
 ELEMENT_1(ParsePresentedNumberUnscreened, char, );
+ELEMENT_1(ParseAddress, char, );
 ELEMENT_1(ParsePartyNumber, char, );
 ELEMENT_1(ParsePartySubaddress, char, );
 

@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1999/04/30 19:08:08  akool
+ * isdnlog Version 3.23
+ *
+ *  - changed LCR probing duration from 181 seconds to 153 seconds
+ *  - "rate-de.dat" filled with May, 1. rates
+ *
  * Revision 1.11  1999/04/29 19:03:56  akool
  * isdnlog Version 3.22
  *
@@ -189,8 +195,8 @@ typedef struct _STACK {
 } STACK;
 
 typedef struct {
-  int Duration;
-  int Delay;
+  double Duration;
+  int 	 Delay;
   double Price;
 } UNIT;
 

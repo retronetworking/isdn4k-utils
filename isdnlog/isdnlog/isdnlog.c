@@ -19,6 +19,30 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.40  1999/04/10 16:35:27  akool
+ * isdnlog Version 3.13
+ *
+ * WARNING: This is pre-ALPHA-dont-ever-use-Code!
+ * 	 "tarif.dat" (aka "rate-xx.dat"): the next generation!
+ *
+ * You have to do the following to test this version:
+ *   cp /usr/src/isdn4k-utils/isdnlog/holiday-de.dat /etc/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/rate-de.dat /usr/lib/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/samples/rate.conf.de /etc/isdn/rate.conf
+ *
+ * After that, add the following entries to your "/etc/isdn/isdn.conf" or
+ * "/etc/isdn/callerid.conf" file:
+ *
+ * [ISDNLOG]
+ * SPECIALNUMBERS = /usr/lib/isdn/sonderrufnummern.dat
+ * HOLIDAYS       = /usr/lib/isdn/holiday-de.dat
+ * RATEFILE       = /usr/lib/isdn/rate-de.dat
+ * RATECONF       = /etc/isdn/rate.conf
+ *
+ * Please replace any "de" with your country code ("at", "ch", "nl")
+ *
+ * Good luck (Andreas Kool and Michael Reinelt)
+ *
  * Revision 1.39  1999/03/25 19:39:51  akool
  * - isdnlog Version 3.11
  * - make isdnlog compile with egcs 1.1.7 (Bug report from Christophe Zwecker <doc@zwecker.com>)
@@ -1249,10 +1273,6 @@ int main(int argc, char *argv[], char *envp[])
 	    mysql_dbOpen();
 #endif
 
-	    initSondernummern(snfile, &version);
-	    if (!Q931dmp && *version)
-	      print_msg(PRT_NORMAL, "%s\n", version);
-
 	    initHoliday(holifile, &version);
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
@@ -1260,11 +1280,6 @@ int main(int argc, char *argv[], char *envp[])
 	    initRate(rateconf, ratefile, &version);
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
-
-#if 0
-            initTarife(msg);
-      	    if (!Q931dmp && *msg) print_msg(PRT_NORMAL, "%s\n", msg);
-#endif
 
             loop();
 
