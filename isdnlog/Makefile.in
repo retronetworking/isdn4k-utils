@@ -19,6 +19,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.21  1997/05/09 23:30:37  luethje
+## isdnlog: new switch -O
+## isdnrep: new format %S
+## bugfix in handle_runfiles()
+##
 ## Revision 1.20  1997/05/06 22:13:21  luethje
 ## bugfixes in HTML-Code of the isdnrep
 ##
@@ -327,7 +332,7 @@ distrib: distclean
 		  isdnlog-$(I4LVERSION)/isdnrep        \
 		  isdnlog-$(I4LVERSION)/connect        \
 		  isdnlog-$(I4LVERSION)/lib            \
-		  isdnlog-$(I4LVERSION)/contrib	    \
+		  isdnlog-$(I4LVERSION)/contrib	       \
 		  isdnlog-$(I4LVERSION)/bin
 		gzip -f9 /tmp/isdnlog-$(I4LVERSION).tar
 #		uuencode /tmp/isdnlog-$(I4LVERSION).tar.gz isdnlog-$(I4LVERSION).tar.gz > /tmp/isdnlog-$(I4LVERSION).uue
