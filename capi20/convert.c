@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1998/08/30 09:57:21  calle
+ * I hope it is know readable for everybody.
+ *
  * Revision 1.1  1998/08/25 16:33:23  calle
  * Added CAPI2.0 library. First Version.
  *
@@ -414,4 +417,25 @@ unsigned capi_cmsg_header (_cmsg *cmsg, _cword _ApplId,
     cmsg->Messagenumber = _Messagenumber;
     cmsg->adr.adrController = _Controller ;
     return 0;
+}
+
+/*-------------------------------------------------------*/
+unsigned capi_put_cmsg (_cmsg *cmsg)
+{
+    static unsigned char msg[2048];
+
+    capi_cmsg2message(cmsg, (CAPI_MESSAGE)msg);
+    return capi20_put_message((CAPI_MESSAGE)msg, cmsg->ApplId);
+}
+
+/*-------------------------------------------------------*/
+unsigned capi_get_cmsg (_cmsg *cmsg, unsigned applid)
+{
+    MESSAGE_EXCHANGE_ERROR rtn;
+    CAPI_MESSAGE msg;
+
+    rtn = capi20_get_message(applid, &msg);
+    if (rtn == 0x0000)
+        capi_message2cmsg(cmsg, msg);
+    return rtn;
 }
