@@ -15,3 +15,7 @@ LDADD = -lcapi20
 bin_PROGRAMS = capiinfo
 
 capiinfo_SOURCES = capiinfo.c
+
+man_MANS = capiinfo.8
+EXTRA_DIST = $(man_MANS)
+
