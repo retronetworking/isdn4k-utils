@@ -22,6 +22,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1998/04/24 09:19:23  paul
+ * Ignore empty file when starting up instead of generating error message
+ * about wrong signature, there is _no_ signature! iprofd writes new data
+ * anyway in that case.
+ *
  * Revision 1.2  1997/02/21 13:18:27  fritz
  * Reformatted, changed some error-messages.
  *
@@ -120,7 +125,7 @@ usage(void)
 	exit(-1);
 }
 
-void
+int
 main(int argc, char **argv)
 {
 
@@ -174,4 +179,5 @@ main(int argc, char **argv)
 		default:
 			break;
 	}
+	return 0;
 }

@@ -65,7 +65,7 @@ static time_t vboxrc_return_time(time_t timenow, char *timestr, int mode)
 	else *minsstr++ = '\0';
 
 	if (mode == 0) secsint =  0;
-	if (mode != 0) secsint = 59;
+	else           secsint = 59;
 
 	hourint = atoi(hourstr);
 	minsint = atoi(minsstr);

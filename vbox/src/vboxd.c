@@ -120,7 +120,7 @@ static struct option arguments[] =
 /** The magic main...                                                    **/
 /**************************************************************************/
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int opts;
 
@@ -202,6 +202,7 @@ void main(int argc, char **argv)
 	handle_client_input();
 
 	leave_program(0);
+	return 0;
 }
 
 /**************************************************************************/

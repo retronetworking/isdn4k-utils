@@ -2157,7 +2157,7 @@ static int setipxname (int slot,char **argv)
 	    fprintf (stderr,
 		     "%s: IPX router name is limited to %d characters\n",
 		     progname,
-		     sizeof (ipxcp_wantoptions[slot].name) - 1);
+		     (int) sizeof (ipxcp_wantoptions[slot].name) - 1);
 	    return 0;
 	}
 

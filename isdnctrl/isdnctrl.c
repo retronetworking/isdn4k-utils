@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  1998/04/18 17:36:13  detabc
+ * modify display of callbackdelay (cbdelay) value to %.1f sec.
+ * if abc-extension is enabled
+ *
  * Revision 1.18  1998/03/21 17:10:36  detabc
  * change to use the abc-ext-options -TU on all encapsulations
  * the option -A (abc-router) will only works with rawip
@@ -1432,9 +1436,10 @@ void check_version() {
 	}
 }
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	int fd;
+	int rc;
 
 	if ((cmd = strrchr(argv[0], '/')) != NULL)
 		*cmd++ = '\0';
@@ -1454,6 +1459,7 @@ void main(int argc, char **argv)
 	}
 
 
-	exec_args(fd,argc-1,argv+1);
+	rc = exec_args(fd,argc-1,argv+1);
 	close(fd);
+	return rc;
 }

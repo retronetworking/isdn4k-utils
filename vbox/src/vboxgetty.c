@@ -53,7 +53,7 @@ static struct option arguments[] =
 /** The magic main...																	**/
 /*************************************************************************/
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
 	char *usevrc   = NULL;
 	char *device   = NULL;
@@ -127,6 +127,7 @@ void main(int argc, char **argv)
 
 	main_program();
 	exit_program(SIGTERM);
+	return 0; /*NOTREACHED*/
 }
 
 /*************************************************************************/

@@ -88,7 +88,7 @@ void intpr(void);
 void get_ppp_stats(struct ppp_stats *curp);
 void get_ppp_cstats(struct ppp_comp_stats *csp);
 
-void main(int argc,char **argv)
+int main(int argc,char **argv)
 {
     --argc; ++argv;
     while (argc > 0) {
@@ -137,7 +137,7 @@ void main(int argc,char **argv)
     }
 
     intpr();
-    exit(0);
+    return(0);
 }
 
 void usage(void)

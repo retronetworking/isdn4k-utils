@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1998/03/08 12:13:49  luethje
+ * Patches by Paul Slootman
+ *
  * Revision 1.16  1997/06/22 22:57:08  luethje
  * bugfixes
  *
@@ -126,6 +129,7 @@
 
 #define  PUBLIC /**/
 #define  _ISDNTOOLS_C_
+#define  _GNU_SOURCE
 
 /****************************************************************************/
 
