@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  2001/05/23 14:59:23  kai
+ * removed traces of TIMRU. I hope it's been dead for a long enough time now.
+ *
  * Revision 1.18  2001/05/23 14:48:23  kai
  * make isdnctrl independent of the version of installed kernel headers,
  * we have our own copy now.
@@ -224,9 +227,11 @@ char *pencapstr[] = {
 	"rawip",
 	"ip",
 	"cisco-h",
+	"cisco_h",
 	"syncppp",
 	"uihdlc",
 	"cisco-hk",
+	"cisco_hk",
 	"x25iface",
 	"\0"
 };
@@ -236,8 +241,10 @@ int pencapval[] = {
 	ISDN_NET_ENCAP_RAWIP,
 	ISDN_NET_ENCAP_IPTYP,
 	ISDN_NET_ENCAP_CISCOHDLC,
+	ISDN_NET_ENCAP_CISCOHDLC,
 	ISDN_NET_ENCAP_SYNCPPP,
 	ISDN_NET_ENCAP_UIHDLC,
+	ISDN_NET_ENCAP_CISCOHDLCK,
 	ISDN_NET_ENCAP_CISCOHDLCK,
 	ISDN_NET_ENCAP_X25IFACE,
 	-1
