@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.77  2000/05/16 16:24:02  akool
+ * isdnlog-4.24
+ * - isdnlog/tools/rate.c ... bugfix for eXceptions w/o z-entry
+ *
  * Revision 1.76  2000/05/07 11:29:32  akool
  * isdnlog-4.21
  *  - isdnlog/tools/rate.{c,h} ...     new X:tag for exclusions
@@ -997,6 +1001,8 @@ int pnum2prefix(int pnum, time_t when) {
 }
 
 inline int prefix2pnum(int prefix) {
+  if(prefix == UNKNOWN)
+    return prefix;
   return Provider[prefix]._provider._prefix;
 }
 
