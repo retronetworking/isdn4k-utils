@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.108  2000/06/29 17:38:27  akool
+ *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
+ *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
+ *
  * Revision 1.107  2000/06/20 17:09:59  akool
  * isdnlog-4.29
  *  - better ASN.1 display
@@ -3640,6 +3644,7 @@ void clearchan(int chan, int total)
 
   call[chan].provider = -1;
   call[chan].zone = -1;
+  call[chan].pay = -1; /* lt for aocpay to work */
 
   for (i = 0; i < MAXMSNS; i++) {
     strcpy(call[chan].vnum[i], "?");
