@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.27  1999/11/16 18:09:39  akool
+ * isdnlog-3.67
+ *   isdnlog-3.66 writes wrong provider number into it's logfile isdn.log
+ *   there is a patch and a repair program available at
+ *   http://www.toetsch.at/linux/i4l/i4l-3_66.htm
+ *
  * Revision 1.26  1999/11/12 20:50:49  akool
  * isdnlog-3.66
  *   - Patch from Jochen Erwied <mack@joker.e.ruhr.de>
@@ -487,17 +493,20 @@ int print_msg(int Level, const char *fmt, ...)
 
   if (Level & message)
   {
-    if (!fout && (fcons == NULL)) {
+    /* no console, no outfile -> log to stderr */
+    if ((fout==NULL) && (fcons == NULL)) {
       fputs(width ? s : String, stderr);
       fflush(stderr);
     }
-    else
-    if (fcons){
+
+    /* log to console */
+    if (fcons != NULL) {
       fputs(width ? s : String, fcons);
       fflush(fcons);
     } /* else */
 
-    if (fout)
+    /* log to file */
+    if (fout != NULL)
     {
       fputs(width ? s : String, fout);
       fflush(fout);

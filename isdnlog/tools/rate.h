@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/11/08 21:09:41  akool
+ * isdnlog-3.65
+ *   - added "B:" Tag to "rate-xx.dat"
+ *
  * Revision 1.14  1999/11/07 13:29:29  akool
  * isdnlog-3.64
  *  - new "Sonderrufnummern" handling
@@ -166,6 +170,7 @@ typedef struct {
   double     Rhythm[2]; /* Taktung */
   time_t     Time;      /* gesamte Verbindungszeit */
   time_t     Rest;      /* bezahlte, aber noch nicht verbrauchte Zeit */
+  int        z;		/* Zone lt. Verzonungstabelle (nur 1:Ortszone; 2:City/Regio 20; 3=Regio 50; 4=Fern sinnvoll!) */
 } RATE;
 
 #define UNZONE -2

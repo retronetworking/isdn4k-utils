@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.61  1999/11/16 18:09:39  akool
+ * isdnlog-3.67
+ *   isdnlog-3.66 writes wrong provider number into it's logfile isdn.log
+ *   there is a patch and a repair program available at
+ *   http://www.toetsch.at/linux/i4l/i4l-3_66.htm
+ *
  * Revision 1.60  1999/11/12 20:50:50  akool
  * isdnlog-3.66
  *   - Patch from Jochen Erwied <mack@joker.e.ruhr.de>
@@ -1665,6 +1671,7 @@ int getRate(RATE *Rate, char **msg)
     Rate->_zone=Provider[prefix].Area[Rate->_area].Zone;
     if (Rate->domestic && *(Rate->dst[0])) {
       int z=getZone(prefix, Rate->src[1], Rate->dst[1]);
+      Rate->z = z;
       if (z!=UNKNOWN) {
 	for (i=0; i<Provider[prefix].nZone; i++) {
 	  for (j=0; j<Provider[prefix].Zone[i].nNumber; j++) {
