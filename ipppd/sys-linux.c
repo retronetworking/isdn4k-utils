@@ -656,7 +656,7 @@ int sifaddr (int unit, int our_adr, int his_adr, int net_mask)
 				severity = LOG_NOTICE;
 			}
 			else {
-				severity = LOG_ERR:
+				severity = LOG_ERR;
 			}
 			syslog (severity, "ioctl(SIOCADDRT) device route (%s/%s/%08x): %m",
 				rt.rt_dev,
@@ -912,7 +912,7 @@ int sifdefaultroute (int unit, int gateway)
 				severity = LOG_NOTICE;
 			}
 			else {
-				severity = LOG_ERR:
+				severity = LOG_ERR;
 			}
 			syslog (severity, "default route ioctl(SIOCADDRT): %m");
 			if (severity == LOG_ERR)
