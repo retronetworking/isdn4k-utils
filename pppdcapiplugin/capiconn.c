@@ -10,6 +10,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.9  2004/06/14 11:33:07  calle
+ * New version of capiconn.
+ *
  * Revision 1.8  2004/01/16 15:27:13  calle
  * remove several warnings.
  *
@@ -995,8 +998,6 @@ static void handle_controller(capiconn_context *ctx, _cmsg * cmsg)
 	       cmsg->adr.adrController);
 }
 
-static unsigned char SendingComplete[5] = { 4, 1, 0, 0, 0 };
-
 static void check_incoming_complete(capi_connection *plcip)
 {
 	capi_contr *card = plcip->contr;
@@ -1036,8 +1037,7 @@ static void check_incoming_complete(capi_connection *plcip)
 			    	0,	/* BChannelinformation */
 			    	0,	/* Keypadfacility */
 			    	0,	/* Useruserdata */
-			    	0,	/* Facilitydataarray */
-				SendingComplete
+			    	0	/* Facilitydataarray */
 				);
 		plcip->msgid = cmsg.Messagenumber;
 		send_message(card, &cmsg);
