@@ -10,6 +10,11 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.4  2001/01/25 14:45:41  calle
+ * - listen always (for info messages)
+ * - show versions on startup
+ * - wait for capifs if needed
+ *
  * Revision 1.3  2000/10/25 10:01:47  calle
  * (c) in all files
  *
@@ -1044,34 +1049,45 @@ static int handle_charge_info(capi_connection *plcip, _cmsg *cmsg)
 
 	if ((cmsg->InfoNumber & 0x4000) && p[0] == 4) {
 		unsigned char *p = &cmsg->InfoElement[1];
-		charge |= ((unsigned)p[1]);
-		charge |= ((unsigned)p[2]) << 8;
-		charge |= ((unsigned)p[3]) << 16;
-		charge |= ((unsigned)p[4]) << 24;
+		charge |= ((unsigned)p[0]);
+		charge |= ((unsigned)p[1]) << 8;
+		charge |= ((unsigned)p[2]) << 16;
+		charge |= ((unsigned)p[3]) << 24;
 		if (cb->chargeinfo) {
 	        	if (cmsg->InfoNumber & 0x1)
 				(*cb->chargeinfo)(plcip, charge, 0);
 			else (*cb->chargeinfo)(plcip, charge, 1);
 		}
 		return 1;
-	} else if (p[0] > 10 && memcmp("*AOC2*12*", p+1, 9) == 0) {
-		int i, len = p[0]-10;
-		if (len > 8) len = 8;
-		for (i=0; i < len; i++)
-			charge = charge * 10 + (p[10+i] - '0');
-		if (cb->chargeinfo)
-			(*cb->chargeinfo)(plcip, charge, 0);
-		return 1;
-	} else if (p[0] > 7 && memcmp("FR.", p+1, 3) == 0) {
-		int i, len = p[0]-3;
-		for (i=0; p[3+i] != '.' && i < len; i++)
-			charge = charge * 10 + (p[3+i] - '0');
-		charge = charge * 10;
-		if (p[3+i] == '.' && i+1 < len)
-			charge += (p[3+i+1] - '0');
-		if (cb->chargeinfo)
-			(*cb->chargeinfo)(plcip, charge, 0);
-		return 1;
+	} else if (cmsg->InfoNumber == 0x28) {
+		if (p[0] > 10 && memcmp("*AOC2*12*", p+1, 9) == 0) {
+			int i, len = p[0]-10;
+			if (len > 8) len = 8;
+			for (i=0; i < len; i++)
+				charge = charge * 10 + (p[10+i] - '0');
+			if (cb->chargeinfo)
+				(*cb->chargeinfo)(plcip, charge, 0);
+			return 1;
+		} else if (p[0] > 7 && memcmp("FR.", p+1, 3) == 0) {
+			int i, len = p[0]-3;
+			for (i=0; p[3+i] != '.' && i < len; i++)
+				charge = charge * 10 + (p[3+i] - '0');
+			charge = charge * 10;
+			if (p[3+i] == '.' && i+1 < len)
+				charge += (p[3+i+1] - '0');
+			if (cb->chargeinfo)
+				(*cb->chargeinfo)(plcip, charge, 0);
+			return 1;
+		}
+	} else if (cmsg->InfoNumber == 0x602) {
+		if (p[0] > 1 && p[1] == 0x01) {
+			int i, len = p[0]-1;
+			for (i=0; i < len; i++)
+				charge = charge * 10 + (p[1+i] - '0');
+			if (cb->chargeinfo)
+				(*cb->chargeinfo)(plcip, charge, 0);
+			return 1;
+		}
 	}
 	return 0;
 }
