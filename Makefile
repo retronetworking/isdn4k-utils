@@ -59,6 +59,9 @@ endif
 ifeq ($(CONFIG_XISDNLOAD),y)
 	SUBDIRS := $(SUBDIRS) xisdnload
 endif
+ifeq ($(CONFIG_IPPPD),y)
+	SUBDIRS := $(SUBDIRS) ipppd
+endif
 ifeq ($(CONFIG_VBOX),y)
 	SUBDIRS := $(SUBDIRS) vbox
 endif
