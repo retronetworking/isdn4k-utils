@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.37  1998/04/29 19:58:55  luethje
+ * bugfix at HTML code
+ *
  * Revision 1.36  1998/04/27 22:35:31  luethje
  * bugfix on HTML code
  *
@@ -236,6 +239,7 @@
 
 #define _REP_FUNC_C_
 
+#include <sys/param.h>
 #include <dirent.h>
 #include <search.h>
 #include <linux/limits.h>
@@ -2171,9 +2175,9 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
                                     strcpy(cur_call->version, LOG_VERSION);
 
 			          break;
-			case  3 : cur_call->duration = (double)atoi(array[i]);
+			case  3 : cur_call->duration = strtod(array[i],NULL);
 			          break;
-			case  4 : cur_call->duration = atoi(array[i]) / 100.0;
+			case  4 : cur_call->duration = strtod(array[i],NULL)/HZ;
 			          break;
 			case  5 : /*cur_call->t = atol(array[i]);*/
 			          break;
@@ -2313,10 +2317,14 @@ static time_t get_month(char *String, int TimeStatus)
       TimeStruct->tm_mday = Args[0];
       Cnt++;
     case 2:
-      if (Args[Cnt+1] > 99)
+      /* if (Args[Cnt+1] > 99) */
+      if (Args[Cnt+1] >= 1900)
         TimeStruct->tm_year = ((Args[Cnt+1] / 100) - 19) * 100 + (Args[Cnt+1]%100);
       else
-        TimeStruct->tm_year = Args[Cnt+1];
+        if (Args[Cnt+1] < 70)
+          TimeStruct->tm_year = Args[Cnt+1] + 100;
+        else
+          TimeStruct->tm_year = Args[Cnt+1];
     case 1:
       TimeStruct->tm_mon = Args[Cnt];
       break;
@@ -2382,10 +2390,14 @@ static time_t get_time(char *String, int TimeStatus)
           &(TimeStruct->tm_hour),
           &(TimeStruct->tm_min),
           &Year		) 		> 4)
-        if (Year > 99)
+        /* if (Year > 99) */
+	if (Year >= 1900)
           TimeStruct->tm_year = ((Year / 100) - 19) * 100 + (Year%100);
         else
-          TimeStruct->tm_year = Year;
+	  if (Year < 70)
+	    TimeStruct->tm_year = Year + 100;
+	  else
+	    TimeStruct->tm_year = Year;
 
       TimeStruct->tm_mon--;
       break;
