@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1999/07/03 10:24:14  akool
+ * fixed Makefile
+ *
  * Revision 1.7  1999/07/02 19:18:00  akool
  * rate-de.dat V:1.02-Germany [02-Jul-1999 21:27:20]
  *
@@ -57,11 +60,12 @@ static char  options[] = "Vvd:hb:s:txu";
 static char  usage[]   = "%s: usage: %s [ -%s ] Destination ...\n";
 
 static int    verbose = 0, header = 0, best = MAXPROVIDER, table = 0, explain = 0;
-static int    usestat = 0;
+static int    usestat = 0, provider = UNKNOWN;
 static int    duration = LCR_DURATION;
 static time_t start;
 static int    day, month, year, hour, min;
 static char   country[BUFSIZ], area[BUFSIZ], msn[BUFSIZ];
+static char   ignore[MAXPROVIDER];
 
 
 typedef struct {
@@ -69,6 +73,11 @@ typedef struct {
   double rate;
   char  *explain;
 } SORT;
+
+typedef struct {
+  int   weight;
+  int	index;
+} SORT2;
 
 static SORT sort[MAXPROVIDER];
 
@@ -208,6 +217,12 @@ static int compare(const void *s1, const void *s2)
 } /* compare */
 
 
+static int compare2(const void *s1, const void *s2)
+{
+  return(((SORT2 *)s1)->weight < ((SORT2 *)s2)->weight);
+} /* compare2 */
+
+
 static char *printrate(RATE Rate)
 {
   static char message[BUFSIZ];
@@ -264,7 +279,30 @@ static void splittime()
 } /* splittime */
 
 
-static void numsplit(char *num, char *country, char *area, char *msn)
+static char *Provider(int prefix)
+{
+  register char *p;
+  register int   l;
+  static   char  s[BUFSIZ];
+
+
+  if (prefix == UNKNOWN)
+    return("?");
+
+  p = getProvider(prefix);
+
+  l = max(WIDTH, strlen(p)) - strlen(p);
+
+  if (prefix < 100)
+    sprintf(s, "%s%02d:%s%*s", vbn, prefix, p, l, "");
+  else
+    sprintf(s, "%s%03d:%s%*s", vbn, prefix - 100, p, l - 1, "");
+
+  return(s);
+} /* Provider */
+
+
+static void numsplit(char *num)
 {
   register int   l1, l3;
   auto	   int	 l2;
@@ -273,6 +311,9 @@ static void numsplit(char *num, char *country, char *area, char *msn)
 
 
   *country = *area = *msn = 0;
+
+  if (verbose && (provider != UNKNOWN))
+    print_msg(PRT_NORMAL, " Provider %s\n", Provider(provider));
 
   if ((l1 = getCountrycode(num, &s)) != UNKNOWN) {
     Strncpy(country, num, l1 + 1);
@@ -310,8 +351,10 @@ static void numsplit(char *num, char *country, char *area, char *msn)
 
 static int normalizeNumber(char *target)
 {
-  auto COUNTRY *Country;
-  auto char     num[BUFSIZ];
+  register int      l1, l2;
+  register char	    c;
+  auto 	   COUNTRY *Country;
+  auto 	   char     num[BUFSIZ];
 
 
   if (isalpha(*target)) {
@@ -323,17 +366,44 @@ static int normalizeNumber(char *target)
     } /* else */
   }
   else {
+    l1 = strlen(vbn);
+
+    if (!memcmp(target, vbn, l1)) {
+      if (target[l1] == '0') /* dreistellige Verbindungsnetzbetreiberkennzahl? */
+        l2 = l1 + 3;
+      else
+        l2 = l1 + 2;
+
+      c = target[l2];
+      target[l2] = 0;
+      provider = atoi(target + l1);
+
+      if (l2 == 6)
+        provider += 100;
+
+      target[l2] = c;
+      memmove(target, target + l2, strlen(target) - l2);
+    } /* if */
+
     if (*target == '+')
       strcpy(num, target);
     else if (!memcmp(target, "00", 2))
       sprintf(num, "+%s", target + 2);
-    else if (*target == '0')
-      sprintf(num, "%s%s", mycountry, target + 1);
+    else if (*target == '0') {
+#if 0
+      if (!strchr("18", target[1])) /* FIXME: "18" ist Deutsche-Sonderrufnummernerkennung! */
+#endif
+        sprintf(num, "%s%s", mycountry, target + 1);
+#if 0
+      else
+        sprintf(num, "%s%s", mycountry, target);
+#endif
+    }
     else
       sprintf(num, "%s%s%s", mycountry, myarea, target);
   } /* else */
 
-  numsplit(num, country, area, msn);
+  numsplit(num);
   return(1);
 } /* normalizeNumber */
 
@@ -341,11 +411,20 @@ static int normalizeNumber(char *target)
 static int compute()
 {
   register int  i, n = 0;
+  register int	low = 0, high = MAXPROVIDER - 1;
   auto 	   RATE Rate;
   auto	   char s[BUFSIZ];
 
 
-  for (i = 0; i < MAXPROVIDER; i++) {
+  if (provider != UNKNOWN) {
+    low = high = provider;
+  } /* if */
+
+  for (i = low; i <= high; i++) {
+
+    if (ignore[i])
+      continue;
+
     clearRate(&Rate);
     Rate.src[0] = mycountry;
     Rate.src[1] = myarea;
@@ -355,12 +434,16 @@ static int compute()
     Rate.dst[1] = area;
     Rate.dst[2] = msn;
 
+    /* Rate.Service = "Internet by call"; */
+
     Rate.prefix = i;
 
     buildtime();
 
     Rate.start = start;
     Rate.now   = start + duration - ZAUNPFAHL;
+
+    /* kludge to suppress "impossible" Rates */
 
     if (!getRate(&Rate, NULL) && (Rate.Price != 99.99)) {
       sort[n].prefix = Rate.prefix;
@@ -381,29 +464,6 @@ static int compute()
 
   return(n);
 } /* compute */
-
-
-static char *Provider(int prefix)
-{
-  register char *p;
-  register int   l;
-  static   char  s[BUFSIZ];
-
-
-  if (prefix == UNKNOWN)
-    return("?");
-
-  p = getProvider(prefix);
-
-  l = max(WIDTH, strlen(p)) - strlen(p);
-
-  if (prefix < 100)
-    sprintf(s, "%s%02d:%s%*s", vbn, prefix, p, l, "");
-  else
-    sprintf(s, "%s%03d:%s%*s", vbn, prefix - 100, p, l - 1, "");
-
-  return(s);
-} /* Provider */
 
 
 static void result(char *target, int n)
@@ -452,15 +512,20 @@ static void purge(int n)
 
 static void printTable()
 {
-  register int        n, d, i, lasthour;
+  register int        n, d, i, h, lasthour;
   auto 	   struct tm *tm;
   auto	   SORT	      last[MAXLAST];
   auto 	   int        used[MAXPROVIDER];
   auto 	   int        hours[MAXPROVIDER];
+  auto 	   int        weight[MAXPROVIDER];
   auto 	   int        useds = 0, maxhour;
+  auto	   SORT2      wsort[MAXPROVIDER];
+  static   int	      firsttime = 1;
 
 
   memset(used, 0, sizeof(used));
+  memset(hours, 0, sizeof(hours));
+  memset(weight, 0, sizeof(weight));
 
   if (header)
     print_msg(PRT_NORMAL, "Eine %d Sekunden lange Verbindung von %s %s nach %s %s %s kostet\n",
@@ -525,12 +590,19 @@ static void printTable()
               last[i].explain);
         } /* for */
 
-        used[last[0].prefix] = 1;
+        used[last[0].prefix]++;
 
         if (lasthour >= hour)
-          hours[last[0].prefix] += ((24 - lasthour) + hour);
+          h = ((24 - lasthour) + hour);
         else
-          hours[last[0].prefix] += hour - lasthour;
+          h = hour - lasthour;
+
+        hours[last[0].prefix] += h;
+
+        if ((lasthour > 8) && (lasthour < 21))
+          h *= 2;
+
+	weight[last[0].prefix] += h * (d ? 5 : 2);
 
         for (i = 0; i < MAXLAST; i++) {
           last[i].prefix = sort[i].prefix;
@@ -575,12 +647,20 @@ static void printTable()
           last[i].explain);
     } /* for */
 
-    used[last[0].prefix] = 1;
+    used[last[0].prefix]++;
 
     if (lasthour >= hour)
-      hours[last[0].prefix] += ((24 - lasthour) + hour);
+      h = ((24 - lasthour) + hour);
     else
-      hours[last[0].prefix] += hour - lasthour;
+      h = hour - lasthour;
+
+    hours[last[0].prefix] += h;
+
+    if ((lasthour > 8) && (lasthour < 21))
+      h *= 2;
+
+    weight[last[0].prefix] += h * (d ? 5 : 2);
+
   } /* for */
 
   if (usestat) {
@@ -591,12 +671,40 @@ static void printTable()
 
     for (i = 0; i < MAXPROVIDER; i++)
       if (used[i]) {
-        print_msg(PRT_NORMAL, "%s (%d hours)\n", Provider(i), hours[i]);
+        print_msg(PRT_NORMAL, "%s %d times, %d hours, weight = %d\n",
+          Provider(i), used[i], hours[i], weight[i]);
+
+        wsort[useds].weight = weight[i];
+        wsort[useds].index = i;
+
       	useds++;
 
       	if (hours[i] < maxhour)
           maxhour = hours[i];
       } /* if */
+
+    if ((best < MAXPROVIDER) && (best < useds)) {
+      print_msg(PRT_NORMAL, "Retrying with only %d provider(s), eliminating %d provider(s)\n", best, useds - best);
+
+      qsort((void *)wsort, useds, sizeof(SORT2), compare2);
+
+      for (i = 0; i < useds; i++) {
+        print_msg(PRT_NORMAL, "%s %d times, %d hours, weight = %d\n",
+          Provider(wsort[i].index), used[wsort[i].index], hours[wsort[i].index], weight[wsort[i].index]);
+
+        if (i == best - 1)
+          print_msg(PRT_NORMAL, "\n");
+
+        if (i >= best - 1)
+          ignore[wsort[i].index]++;
+      } /* for */
+
+      if (firsttime)
+        printTable();
+
+      firsttime = 0;
+
+    } /* if */
   } /* if */
 } /* printTable */
 
@@ -617,6 +725,7 @@ int main(int argc, char *argv[], char *envp[])
     init();
     post_init();
 
+    memset(ignore, 0, sizeof(ignore));
 
     while (i < argc) {
       if (normalizeNumber(argv[i])) {
