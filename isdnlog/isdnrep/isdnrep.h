@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1998/03/08 11:43:08  luethje
+ * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
+ *
  * Revision 1.8  1997/05/15 23:24:56  luethje
  * added new links on HTML
  *
@@ -102,6 +105,7 @@ _EXTERN void set_print_fct_for_isdnrep(int (*new_print_msg)(int Level, const cha
 _EXTERN int get_term (char *String, time_t *Begin, time_t *End,int delentries);
 _EXTERN int set_msnlist(char *String);
 _EXTERN int send_html_request(char *myname, char *option);
+_EXTERN int new_args(int *nargc, char ***nargv);
 
 _EXTERN int     (*print_msg)(int Level, const char *, ...) _SET_NULL;
 _EXTERN int     incomingonly    _SET_0;

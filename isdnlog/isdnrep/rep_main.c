@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/05/15 22:21:41  luethje
+ * New feature: isdnrep can transmit via HTTP fax files and vbox files.
+ *
  * Revision 1.3  1997/05/04 20:19:58  luethje
  * README completed
  * isdnrep finished
@@ -160,6 +163,10 @@ int main(int argc, char *argv[], char *envp[])
 
 	set_print_fct_for_tools(printf);
 	set_print_fct_for_isdnrep(print_in_modules);
+
+	/* we don't need this at the moment:
+	new_args(&argc,&argv);
+	*/
 
   while ((c = getopt(argc, argv, options)) != EOF)
     switch (c) {
