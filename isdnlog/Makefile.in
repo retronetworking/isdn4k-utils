@@ -19,6 +19,15 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.218  2005/02/23 14:33:38  tobiasb
+## New feature: provider skipping.
+## Certain providers can be completely ignored (skipped) when loading the
+## rate-file.  The selection is done by Q: tags in rate.conf or by skipProv=
+## in the parameter file.  The syntax is explained in the new manual page
+## rate.conf(5).  Absurd settings for provider skipping may cause trouble.
+## The version number will change to 4.70 in a few days after an update
+## of the rate-de.dat.
+##
 ## Revision 1.217  2004/12/10 18:26:10  tobiasb
 ## Let "make all" in the isdnlog directory create the necessary zone files.
 ##
@@ -1696,7 +1705,7 @@ SERVICEFILE = /etc/services
 
 # next line must match basic regexp "^VERSION \+= \+" and contain only
 # the isdnlog version number after it. 
-VERSION     = 4.69
+VERSION     = 4.70
 
 # fallback to I4L-Version as set at configure time
 ifndef (I4LVERSION)
