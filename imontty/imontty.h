@@ -5,6 +5,5 @@
  * $Id$
  */
 
-#define		PATH_ISDNINFO	"/dev/isdninfo"
 #define		IM_BUFSIZE	10 + (22 * ISDN_MAX_CHANNELS)
 #define		IM_VERSION	"0.5"

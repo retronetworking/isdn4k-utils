@@ -92,7 +92,9 @@ main(int argc, char *argv[])
 		ioctl_s.arg = 0;
 		cmd = 0;
 	}
-	fd = open("/dev/isdnctrl", O_RDWR);
+	fd = open("/dev/isdn/isdnctrl", O_RDWR);
+	if (fd < 0)
+        	fd = open("/dev/isdnctrl", O_RDWR);
 	if (fd < 0) {
 		perror("/dev/isdnctrl");
 		exit(-1);

@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.107  2000/06/20 17:09:59  akool
+ * isdnlog-4.29
+ *  - better ASN.1 display
+ *  - many new rates
+ *  - new Option "isdnlog -Q" dump's "/etc/isdn/isdn.conf" into a SQL database
+ *
  * Revision 1.106  2000/06/02 12:14:27  akool
  * isdnlog-4.28
  *  - isdnlog/tools/rate.c ... patch by Hans Klein, unknown provider
@@ -1502,7 +1508,7 @@ static int detach()
         return(1);
       }
       else {
-        print_msg(PRT_DEBUG_CS, "cannot close \"%s\": %s\n", INFO, strerror(errno));
+        print_msg(PRT_DEBUG_CS, "cannot close /dev/isdninfo: %s\n",strerror(errno));
         Exit(33);
       } /* else */
     }
@@ -1536,8 +1542,11 @@ static int attach()
       Exit(38); /* cannot (re)open "/dev/isdnctrl2" */
     } /* if */
 
-  if ((sockets[ISDNINFO].descriptor = open(INFO, O_RDONLY | O_NONBLOCK)) < 0) {
-    print_msg(PRT_DEBUG_CS, "cannot open \"%s\": %s\n", INFO, strerror(errno));
+  sockets[ISDNINFO].descriptor = open("/dev/isdn/isdninfo", O_RDONLY | O_NONBLOCK);
+  if (sockets[ISDNINFO].descriptor < 0)
+    sockets[ISDNINFO].descriptor = open("/dev/isdninfo", O_RDONLY | O_NONBLOCK);
+  if (sockets[ISDNINFO].descriptor < 0) {
+    print_msg(PRT_DEBUG_CS, "cannot open /dev/isdninfo: %s\n", strerror(errno));
     Exit(32);
   } /* if */
 

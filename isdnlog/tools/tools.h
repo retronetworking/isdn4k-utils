@@ -20,6 +20,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.54  2000/03/09 18:50:03  akool
+ * isdnlog-4.16
+ *  - isdnlog/samples/isdn.conf.no ... changed VBN
+ *  - isdnlog/isdnlog/isdnlog.c .. ciInterval
+ *  - isdnlog/isdnlog/processor.c .. ciInterval
+ *  - isdnlog/tools/tools.h .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnconf.c .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnrate.c .. removed a warning
+ *  - isdnlog/NEWS ... updated
+ *  - isdnlog/README ... updated
+ *  - isdnlog/isdnlog/isdnlog.8.in ... updated
+ *  - isdnlog/isdnlog/isdnlog.5.in ... updated
+ *  - isdnlog/samples/provider ... NEW
+ *
+ *    ==> Please run a make clean, and be sure to read isdnlog/NEWS for changes
+ *    ==> and new features.
+ *
  * Revision 1.53  2000/03/06 07:03:21  akool
  * isdnlog-4.15
  *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
@@ -705,7 +722,6 @@
 #if 0 /* Fixme: remove */
 #define	AVON	             "avon"
 #endif
-#define INFO	    "/dev/isdninfo"
 
 #define	BIGBUFSIZ              2048
 

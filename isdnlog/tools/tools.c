@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.48  2000/04/02 17:35:07  akool
+ * isdnlog-4.18
+ *  - isdnlog/isdnlog/isdnlog.8.in  ... documented hup3
+ *  - isdnlog/tools/dest.c ... _DEMD1 not recogniced as key
+ *  - mySQL Server version 3.22.27 support
+ *  - new rates
+ *
  * Revision 1.47  2000/03/19 20:26:57  akool
  * isdnlog-4.17
  *  - new rates
@@ -1036,10 +1043,22 @@ int iprintf(char *obuf, int chan, register char *fmt, ...)
     } /* if */
 
     if (c != '%') {
-      *op++ = c;
+      if (c == '\\') {
+	c = *fmt++;
+	switch (c) {
+	case 't':
+	  *op++ = '\t';
+	  break;
+	default:
+	  *op++ = '\\';
+	  *op++ = c;
+	}
+      } else {
+	*op++ = c;
+      }
       continue;
     } /* if */
-
+    
     p = s = buf;
 
     ljust = 0;

@@ -180,10 +180,11 @@ int main(int argc, char **argv) {
 
     int i, lines;
 
-    if (!(isdninfo = fopen(PATH_ISDNINFO, "r"))) {
-	char tmp[200];
-        sprintf(tmp, "imontty: can't open `%.170s'", PATH_ISDNINFO);
-	perror(tmp);
+    isdninfo = fopen("/dev/isdn/isdninfo", "r");
+    if (!isdninfo)
+        isdninfo = fopen("/dev/isdninfo", "r");
+    if (!isdninfo) {
+	perror("imontty: can't open /dev/isdninfo");
         exit(1);
     }
 
