@@ -27,7 +27,7 @@ tdu_log.o tdu_stream.o fileheader.o eft.o eft_client.o eft_server.o eft_dir.o: f
 
 eft_i4l.o: ../config.h
 
-tdu.c eft.c: extra_version_.h
+tdu.o eft.o: extra_version_.h
 
 extra_version_.h: make_extra_version.sh $(E4L_EXTRA_VERSION_DEP)
 	./make_extra_version.sh $(E4L_EXTRA_VERSION_DEP) > extra_version_.h
