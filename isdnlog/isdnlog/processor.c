@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.88  1999/11/05 20:22:01  akool
+ * isdnlog-3.63
+ *  - many new rates
+ *  - cosmetics
+ *
  * Revision 1.87  1999/10/30 14:38:47  akool
  * isdnlog-3.61
  *
@@ -1014,7 +1019,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     } /* while */
   } /* if */
 
-#if  0  
+#if  0  /* Fixme: delete */
   if (!dir && (who == CALLED) && !memcmp(num, vbn, strlen(vbn))) { /* Provider */
     register int l, c;
 
@@ -1070,7 +1075,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     if (*provider == UNKNOWN)
       *provider = preselect;
 
-    if (*num && !dir && (who == CALLED) && getArea(*provider, num) && (*sondernummer == UNKNOWN))
+    if (*num && !dir && (who == CALLED) && getSpecial(num) && (*sondernummer == UNKNOWN))
       *sondernummer = strlen(num);
   } /* if */
 

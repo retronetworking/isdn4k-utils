@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.53  1999/10/30 18:03:31  akool
+ *  - fixed "-q" option
+ *  - workaround for "Sonderrufnummern"
+ *
  * Revision 1.52  1999/10/29 19:46:00  akool
  * isdnlog-3.60
  *  - sucessfully ported/tested to/with:
@@ -373,11 +377,7 @@
 #include <termios.h>
 
 #include "isdnlog.h"
-#ifdef USE_DESTINATION
 #include "dest.h"
-#else
-#include "telnum.h"
-#endif
 #ifdef POSTGRES
 #include "postgres.h"
 #endif
@@ -1423,11 +1423,7 @@ int main(int argc, char *argv[], char *envp[])
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
-#ifdef USE_DESTINATION
 	    initDest(destfile, &version);
-#else
-	    initCountry(countryfile, &version);
-#endif
 
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);

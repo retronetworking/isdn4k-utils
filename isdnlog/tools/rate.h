@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1999/09/26 10:55:20  akool
+ * isdnlog-3.55
+ *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *     added hup3 to option file
+ *   - changed country-de.dat to ISO 3166 Countrycode / Airportcode
+ *
  * Revision 1.12  1999/09/09 11:21:06  akool
  * isdnlog-3.49
  *
@@ -163,13 +169,13 @@ typedef struct {
 void  exitRate(void);
 int   initRate(char *conf, char *dat, char *dom, char **msg);
 char *getProvider(int prefix);
-int   getArea(int prefix, char *number);
+int   getSpecial(char *number);
+char* getSpecialName(char *number);
 char *getComment(int prefix, char *key);
 void  clearRate (RATE *Rate);
 int   getRate(RATE *Rate, char **msg);
 int   getLeastCost(RATE *Current, RATE *Cheapest, int booked, int skip);
 int   getZoneRate(RATE* Rate, int domestic, int first);
-int   guessZone (RATE *Rate, int aoc_units);
 char *explainRate (RATE *Rate);
 char *printRate (double value);
 

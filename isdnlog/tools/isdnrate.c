@@ -20,6 +20,10 @@
  *
  * $Log$
  * Revision 1.22  1999/10/26 18:17:14  akool
+ * isdnlog-3.62
+ *  - many new rates
+ *  - next try to fix "Sonderrufnummern"
+ *
  * isdnlog-3.58
  *   - big cleanup ( > 1.3 Mb removed!)
  *   - v0.02 of destination support - better, but not perfect
@@ -106,11 +110,7 @@
 #include "isdnlog.h"
 #include "tools/zone.h"
 #include <unistd.h>
-#ifdef USE_DESTINATION
 #include "dest.h"
-#else
-#include "telnum.h"
-#endif
 
 #define WIDTH   19
 #define _MAXLAST 20		/* the real max */
@@ -205,11 +205,7 @@ static void init()
 
   if (verbose && *version)
     print_msg(PRT_V, "%s\n", version);
-#ifdef USE_DESTINATION
   initDest(destfile, message);
-#else  
-  initCountry(countryfile, message);
-#endif
   if (verbose && *version)
     print_msg(PRT_V, "%s\n", version);
 
@@ -224,11 +220,7 @@ static void init()
 static void deinit(void)
 {
   exitRate();
-#ifdef USE_DESTINATION
   exitDest();
-#else  
-  exitCountry();
-#endif  
   exitHoliday();
 }
 /* calc a day/time W | E | H */
@@ -711,11 +703,7 @@ static int compute(char *num)
 	continue;
     }
     clearRate(&Rate);
-#ifdef USE_DESTINATION    
     Rate.src[0] = srcnum.country;
-#else    
-    Rate.src[0] = srcnum.country ? srcnum.country->Code[0] : "";
-#endif    
     Rate.src[1] = srcnum.area;
     Rate.src[2] = "";
 
@@ -725,11 +713,7 @@ static int compute(char *num)
       continue;
     }
 
-#ifdef USE_DESTINATION    
     Rate.dst[0] = destnum.country;
-#else    
-    Rate.dst[0] = destnum.country ? destnum.country->Code[0] : "";
-#endif    
     Rate.dst[1] = destnum.area;
     Rate.dst[2] = destnum.msn;
     print_msg(PRT_V, "Rate dst0='%s' dst1='%s' dst2='%s'\n", Rate.dst[0], Rate.dst[1], Rate.dst[2]);
@@ -1506,6 +1490,6 @@ int     main(int argc, char *argv[], char *envp[])
     print_msg(PRT_A, "\t-X comment\tprint <comment> from C:tag\n");
     print_msg(PRT_A, "\n\te.g.\t%s -b5 -f30 -TH -t1 Zaire\n", myshortname);
   }				/* else */
-
+/*  deinit(); Fixme: this SIGSEGs in exitHoliday */
   return (0);
 }				/* isdnrate */

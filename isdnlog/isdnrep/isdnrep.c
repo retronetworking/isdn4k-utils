@@ -24,6 +24,11 @@
  *
  *
  * $Log$
+ * Revision 1.80  1999/10/25 18:33:16  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.79  1999/09/13 09:09:43  akool
  * isdnlog-3.51
  *   - changed getProvider() to not return NULL on unknown providers
@@ -596,13 +601,7 @@
 #include "isdnrep.h"
 #include "../../vbox/src/libvbox.h"
 #include "libisdn.h"
-#ifdef USE_DESTINATION
 #include "dest.h"
-#else
-#include "telnum.h"
-#endif
-
-
 
 #define END_TIME    1
 
@@ -970,11 +969,7 @@ int read_logfile(char *myname)
 
 
   initHoliday(holifile, NULL);
-#ifdef USE_DESTINATION  
   initDest(destfile, NULL);
-#else  
-  initCountry(countryfile, NULL);
-#endif  
   initRate(rateconf, ratefile, zonefile, NULL);
   initTelNum();
   
@@ -2581,18 +2576,10 @@ static void repair(one_call *cur_call)
   call[0].sondernummer[CALLED] = destnum.ncountry==0;
 
   clearRate(&Rate);
-#ifdef USE_DESTINATION    
   Rate.src[0] = srcnum.country;
-#else    
-  Rate.src[0] = srcnum.country ? srcnum.country->Code[0] : "";
-#endif    
   Rate.src[1] = srcnum.area;
   Rate.src[2] = "";
-#ifdef USE_DESTINATION    
   Rate.dst[0] = destnum.country;
-#else    
-  Rate.dst[0] = destnum.country ? destnum.country->Code[0] : "";
-#endif    
   Rate.dst[1] = destnum.area;
   Rate.dst[2] = destnum.msn;
   Rate.start = cur_call->t;
