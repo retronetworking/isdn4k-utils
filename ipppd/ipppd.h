@@ -48,6 +48,7 @@
 # include <utmp.h>
 #endif
 
+#if 0
 #include <linux/version.h>
 #if (LINUX_VERSION_CODE < ((0x020100)+88))
 #define ISDN_PPP_COMP_MAX_OPTIONS 16
@@ -57,6 +58,7 @@ struct isdn_ppp_comp_data {
         int optlen;
         int flags;
 };
+#endif
 #endif
 
 #ifndef PPP_LINK_CCP

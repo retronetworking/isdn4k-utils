@@ -2,7 +2,11 @@
  * Linux configuration file
  * $Id$
  */
+#if 0
 #include <linux/version.h>
+#else
+#define LINUX_VERSION_CODE 0x020404
+#endif
 #if defined(LINUX_VERSION_CODE)
 #if LINUX_VERSION_CODE >= 66061
 /* 1.2.13 or later */

@@ -40,6 +40,7 @@ char main_rcsid[] = "$Id$";
 #include <pwd.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <time.h>
 #include <sys/param.h>
 #include <sys/types.h>
 #include <sys/wait.h>
