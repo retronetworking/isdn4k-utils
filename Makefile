@@ -49,12 +49,8 @@ endif
 ifeq ($(CONFIG_PCBITCTL),y)
 	SUBDIRS := $(SUBDIRS) pcbit
 endif
-ifeq ($(CONFIG_TELESCTRL),y)
-	SUBDIRS := $(SUBDIRS) teles
-else
-	ifeq ($(CONFIG_HISAXCTRL),y)
-		SUBDIRS := $(SUBDIRS) teles
-	endif
+ifeq ($(CONFIG_HISAXCTRL),y)
+	SUBDIRS := $(SUBDIRS) hisax
 endif
 
 ifeq ($(CONFIG_RCAPID),y)

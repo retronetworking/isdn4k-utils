@@ -63,7 +63,6 @@ bool 'divertctrl' CONFIG_DIVERTCTRL
 endmenu
 mainmenu_option nextcomment
 comment 'Card configuration tools'
-bool 'telesctrl' CONFIG_TELESCTRL
 bool 'hisaxctrl' CONFIG_HISAXCTRL
 bool 'icnctrl' CONFIG_ICNCTRL
 if [ "$CONFIG_ICNCTRL" = "y" ]; then
