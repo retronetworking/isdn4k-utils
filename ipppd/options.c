@@ -293,6 +293,7 @@ static struct cmd {
     {"-detach", 0, setnodetach}, /* don't fork */
 	{"noip", 0, noip},         /* Disable IP and IPCP */
 	{"-ip", 0, noip},          /* Disable IP and IPCP */
+	{"-ip-protocol", 0, noip},          /* Disable IP and IPCP */
 	{"nomagic", 0, nomagicnumber}, /* Disable magic number negotiation */
     {"-mn", 0, nomagicnumber},	/* Disable magic number negotiation */
 	{"default-mru", 0, nomru}, /* Disable MRU negotiation */
