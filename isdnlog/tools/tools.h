@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.43  1999/06/03 18:51:25  akool
+ * isdnlog Version 3.30
+ *  - rate-de.dat V:1.02-Germany [03-Jun-1999 19:49:22]
+ *  - small fixes
+ *
  * Revision 1.42  1999/05/22 10:19:36  akool
  * isdnlog Version 3.29
  *
@@ -701,6 +706,7 @@
 #define	CONF_ENT_TRIM	   "TRIM"
 #define	CONF_ENT_OTHER	   "OTHER"
 #define CONF_ENT_IGNORERR  "IGNORERR"
+#define CONF_ENT_IGNORECOLP "IGNORECOLP"
 #define	CONF_ENT_VBN	   "VBN"
 
 /****************************************************************************/
@@ -990,6 +996,7 @@ _EXTERN int	dual;
 _EXTERN char    	mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;
+_EXTERN int	ignoreCOLP;
 _EXTERN int 	interns0;
 _EXTERN	char    *vbn;
 #undef _EXTERN

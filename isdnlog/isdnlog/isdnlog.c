@@ -19,6 +19,20 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.43  1999/05/22 10:18:28  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.42  1999/05/13 11:39:18  akool
  * isdnlog Version 3.28
  *
@@ -337,9 +351,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:ou:B:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:ou:B:U:";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -579,6 +593,9 @@ static void init_variables(int argc, char* argv[])
   width = 0;
   watchdog = 0;
   use_new_config = 1;
+
+  ignoreRR = ignoreCOLP = 0;
+
 #ifdef Q931
   q931dmp = 0;
 #endif
@@ -588,8 +605,8 @@ static void init_variables(int argc, char* argv[])
   amtsholung = NULL;
   dual = 0;
 
-  preselect = 33;      /* Telekomik */
-  vbn = strdup("010"); /* Germany */
+  preselect = DTAG;      /* Telekomik */
+  vbn = strdup("010"); 	 /* Germany */
 
   myname = argv[0];
   myshortname = basename(myname);
@@ -768,6 +785,9 @@ int set_options(int argc, char* argv[])
       	       	 break;
 
       case 'u' : ignoreRR = atoi(optarg);
+      	       	 break;
+
+      case 'U' : ignoreCOLP = atoi(optarg);
       	       	 break;
 
       case 'B' : free(vbn);
@@ -966,6 +986,9 @@ static int read_param_file(char *FileName)
                                 else
                                 if (!strcmp(Ptr->name,CONF_ENT_IGNORERR))
 				        ignoreRR = (int)strtol(Ptr->value, NIL, 0);
+                                else
+                                if (!strcmp(Ptr->name,CONF_ENT_IGNORECOLP))
+				        ignoreCOLP = (int)strtol(Ptr->value, NIL, 0);
                                 else
                                 if (!strcmp(Ptr->name,CONF_ENT_VBN)) {
                                         free(vbn);

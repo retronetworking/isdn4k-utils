@@ -1,4 +1,4 @@
-V:1.02-Germany [11-Jun-1999 17:52:39]
+V:1.02-Germany [12-Jun-1999 17:09:04]
 
 # Währungsformat
 U:%.3f DM
@@ -13524,7 +13524,8 @@ C:Vielmehr handelt es sich hier nur um die Tarife fuer den
 C:UUnet Ortstarif-Zugang!
 C:Dies ist *kein* All-in-One Zugang, es werden zusätzliche Gebühren erhoben!
 Z:100 Internet
-A:0191999
+A:0191999 # UUnet
+A:0192333 # NDH
 T:W/05-09=0.048(60)/1 UUnet
 T:W/09-18=0.08(60)/1 UUnet
 T:W/18-21=0.048(60)/1 UUnet

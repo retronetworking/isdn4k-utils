@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1999/06/09 19:58:12  akool
+ * isdnlog Version 3.31
+ *  - Release 0.91 of zone-Database (aka "Verzonungstabelle")
+ *  - "rate-de.dat" V:1.02-Germany [09-Jun-1999 21:45:26]
+ *
  * Revision 1.29  1999/06/03 18:50:10  akool
  * isdnlog Version 3.30
  *  - rate-de.dat V:1.02-Germany [03-Jun-1999 19:49:22]
@@ -982,7 +987,9 @@ static void showWorld(int duration)
 {
   auto     FILE *f = fopen("/usr/lib/isdn/countries.dat", "r");
   auto     char  s[BUFSIZ], areacode[BUFSIZ];
+#if 0
   auto	   int	 provider;
+#endif
   register int   n;
   register char *p;
   auto	   RATE  Rate;
@@ -992,7 +999,7 @@ static void showWorld(int duration)
   if (f != (FILE *)NULL) {
     while (fgets(s, BUFSIZ, f)) {
 
-      if (p = strchr(s, '\n'))
+      if ((p = strchr(s, '\n')))
         *p = 0;
 
       if (abroad(s, areacode)) {

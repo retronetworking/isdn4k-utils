@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1999/01/24 19:02:33  akool
+ *  - second version of the new chargeint database
+ *  - isdnrep reanimated
+ *
  * Revision 1.6  1998/11/24 20:52:55  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -310,7 +314,7 @@ static int print_in_modules(int Level, const char *fmt, ...)
 
 
 	va_start(ap, fmt);
-		(void)vsnprintf(String, BUFSIZ*3, fmt, ap);
+	(void)vsnprintf(String, BUFSIZ*3, fmt, ap);
 	va_end(ap);
 
 	return fprintf(Level == PRT_ERR?stderr:stdout, "%s", String);
