@@ -21,6 +21,44 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.81  2000/08/01 20:31:31  akool
+ * isdnlog-4.37
+ * - removed "09978 Schoenthal Oberpfalz" from "zone-de.dtag.cdb". Entry was
+ *   totally buggy.
+ *
+ * - isdnlog/isdnlog/processor.c ... added err msg for failing IIOCGETCPS
+ *
+ * - isdnlog/tools/cdb       ... (NEW DIR) cdb Constant Data Base
+ * - isdnlog/Makefile.in     ... cdb Constant Data Base
+ * - isdnlog/configure{,.in}
+ * - isdnlog/policy.h.in
+ * - isdnlog/FAQ                 sic!
+ * - isdnlog/NEWS
+ * - isdnlog/README
+ * - isdnlog/tools/NEWS
+ * - isdnlog/tools/dest.c
+ * - isdnlog/tools/isdnrate.man
+ * - isdnlog/tools/zone/Makefile.in
+ * - isdnlog/tools/zone/configure{,.in}
+ * - isdnlog/tools/zone/config.h.in
+ * - isdnlog/tools/zone/common.h
+ * - isdnlog/tools/dest/Makefile.in
+ * - isdnlog/tools/dest/configure{,.in}
+ * - isdnlog/tools/dest/makedest
+ * - isdnlog/tools/dest/CDB_File_Dump.{pm,3pm} ... (NEW) writes cdb dump files
+ * - isdnlog/tools/dest/mcdb ... (NEW) convert testdest dumps to cdb dumps
+ *
+ * - isdnlog/tools/Makefile ... clean:-target fixed
+ * - isdnlog/tools/telnum{.c,.h} ... TELNUM.vbn was not always initialized
+ * - isdnlog/tools/rate.c ... fixed bug with R:tag and isdnlog not always
+ *                            calculating correct rates (isdnrate worked)
+ *
+ *  s. isdnlog/tools/NEWS on details for using cdb. and
+ *     isdnlog/README 20.a Datenbanken for a note about databases (in German).
+ *
+ *  As this is the first version with cdb and a major patch there could be
+ *  still some problems. If you find something let me know. <lt@toetsch.at>
+ *
  * Revision 1.80  2000/07/18 22:26:05  akool
  * isdnlog-4.33
  *   - isdnlog/tools/rate.c ... Bug fixed
@@ -2358,6 +2396,7 @@ int getRate(RATE *Rate, char **msg)
   time_t time;
   struct tm tm;
   char *number=0;
+  static int oprefix = -1;
 
   if (msg)
     *(*msg=message)='\0';
@@ -2397,10 +2436,22 @@ int getRate(RATE *Rate, char **msg)
     if (msg) snprintf(message, LENGTH, "Unknown provider %s",epnum(prefix));
     return UNKNOWN;
   }
+  /* isdnlog doesn't remember R:-edirected providers, but calls us
+     with "known" _area and _zone, from other prefix, which gives nice
+     SIGSEGVs
+  */
+        
+  if (prefix != oprefix) {
+    oprefix = prefix;
+    Rate->_area = Rate->_zone = UNKNOWN;
+  }
+  
   if (Rate->_area==UNKNOWN || Rate->_zone == UNKNOWN)
-  if(get_area(&prefix, Rate, number, msg, message) == UNKNOWN)
-    return UNKNOWN;
+    if(get_area(&prefix, Rate, number, msg, message) == UNKNOWN)
+      return UNKNOWN;
 
+  oprefix = prefix;
+  
   Rate->Country  = Provider[prefix].Area[Rate->_area].Name;
   if (Rate->dst[0] && *Rate->dst[0])
     Rate->Zone     = Provider[prefix].Zone[Rate->_zone].Name;
