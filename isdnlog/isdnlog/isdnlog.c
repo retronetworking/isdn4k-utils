@@ -19,6 +19,29 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.22  1998/09/26 18:29:07  akool
+ *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
+ *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
+ *  - Support for tesion)) Baden-Wuerttemberg Tarif
+ *  - more Providers
+ *  - Patches from Wilfried Teiken <wteiken@terminus.cl-ki.uni-osnabrueck.de>
+ *    - better zone-info support in "tools/isdnconf.c"
+ *    - buffer-overrun in "isdntools.c" fixed
+ *  - big Austrian Patch from Michael Reinelt <reinelt@eunet.at>
+ *    - added $(DESTDIR) in any "Makefile.in"
+ *    - new Configure-Switches "ISDN_AT" and "ISDN_DE"
+ *      - splitted "takt.c" and "tools.c" into
+ *          "takt_at.c" / "takt_de.c" ...
+ *          "tools_at.c" / "takt_de.c" ...
+ *    - new feature
+ *        CALLFILE = /var/log/caller.log
+ *        CALLFMT  = %b %e %T %N7 %N3 %N4 %N5 %N6
+ *      in "isdn.conf"
+ *  - ATTENTION:
+ *      1. "isdnrep" dies with an seg-fault, if not HTML-Mode (Stefan?)
+ *      2. "isdnlog/Makefile.in" now has hardcoded "ISDN_DE" in "DEFS"
+ *      	should be fixed soon
+ *
  * Revision 1.21  1998/06/21 11:52:46  akool
  * First step to let isdnlog generate his own AOCD messages
  *
@@ -825,10 +848,11 @@ void raw_mode(int state)
 int main(int argc, char *argv[], char *envp[])
 {
   register char  *p;
-  register int 	  i, res = 0;
-  auto 	   int    lastarg;
-	auto     char   rlogfile[PATH_MAX];
-	auto     char **devices = NULL;
+  register int    i, res = 0;
+  auto     int    lastarg;
+  auto     char   rlogfile[PATH_MAX];
+  auto     char **devices = NULL;
+  sigset_t        unblock_set;
 #ifdef TESTCENTER
   extern   void   test_center(char*);
 #endif
@@ -935,6 +959,15 @@ int main(int argc, char *argv[], char *envp[])
 
     if (!(allflags & PRT_DEBUG_GENERAL))
       signal(SIGSEGV, exit_on_signal);
+
+    /*
+     * If hup_handler() already did an execve(), then SIGHUP is still
+     * blocked, and so you can only send a SIGHUP once. Here we unblock
+     * SIGHUP so that this feature can be used more than once.
+     */
+    sigemptyset(&unblock_set);
+    sigaddset(&unblock_set, SIGHUP);
+    sigprocmask(SIG_UNBLOCK, &unblock_set, NULL);
 
     sockets[ISDNCTRL].descriptor = !strcmp(isdnctrl, "-") ? fileno(stdin) : open(isdnctrl, O_RDONLY | O_NONBLOCK);
     if (*isdnctrl2)
