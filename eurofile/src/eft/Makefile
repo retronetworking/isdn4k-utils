@@ -33,7 +33,7 @@ extra_version_.h: make_extra_version.sh $(E4L_EXTRA_VERSION_DEP)
 	./make_extra_version.sh $(E4L_EXTRA_VERSION_DEP) > extra_version_.h
 
 clean:
-	rm -f *.o *~ libeft.a #*# extra_version_.h
+	rm -f *.o *~ libeft.a extra_version_.h
 
 new_version:
 	sed 's/^#define[ 	]*E4L_VERSION.*/#define E4L_VERSION "$(NEW_VERSION)"/' < include/tdu_user.h > tmp.h
