@@ -29,10 +29,6 @@ ifeq (@CONFIG_RADIUS_WTMP_LOGGING@,y)
 RADIUS_WTMP_LOGGING := 1
 endif
 
-ifeq (@CONFIG_OPTIONS_TTY_FIRST@,y)
-OPTIONS_TTY_FIRST := 1
-endif
-
 PPPDSRCS = main.c magic.c fsm.c lcp.c ipcp.c upap.c chap.c md5.c ccp.c \
 	   ipxcp.c auth.c options.c sys-linux.c cbcp.c
 HEADERS =  callout.h pathnames.h patchlevel.h chap.h md5.h \
@@ -107,10 +103,6 @@ ifdef RADIUS
 	ifdef RADIUS_WTMP_LOGGING
         	COPTS    += -DRADIUS_WTMP_LOGGING
 	endif
-endif
-
-ifdef OPTIONS_TTY_FIRST
-       CFLAGS   += -DOPTIONS_TTY_FIRST
 endif
 
 ifeq ($(HAVE_SHADOW_H),1)
