@@ -15,6 +15,7 @@ This package contains the following stuff:
   avmcapictrl setup utility for the avmb1 driver.
   actctrl     setup utility for the act2000 driver.
   eiconctrl   setup utility for the eicon driver.
+  divertctrl  setup utility for dss1 diversion services
 
 2. Tools for monitoring activity:
   imon,       a ncurses based utility for monitoring ISDN-activities.
