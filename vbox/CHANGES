@@ -20,6 +20,8 @@ Changes since 2.0.0 Beta 5
       - added:   doc/Makefile.in doc/de/Makefile.in utils/Makefile.in
       - added:   doc/*.man
       Manpages and automake stuff comes from Debian (Andreas Jellinghaus).
+[Fix] Now doesn't insist on installing in /usr/local, but listens to what
+      is configured in the toplevel config.
 
 
 **************************
