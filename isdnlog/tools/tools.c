@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.50  2001/01/14 12:13:50  akool
+ * isdnlog-4.49
+ *  - added more Euracom decodings
+ *
+ *  - added new prefixes
+ *      0151 - Germany cellphone D1
+ *      0152 - Germany cellphone D2
+ *      0163 - Germany cellphone Eplus
+ *    to "country-de.dat"
+ *
+ *  - removed Freecall "0130" and "Germany cellphone C"
+ *
  * Revision 1.49  2000/06/29 17:38:28  akool
  *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
  *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
@@ -1290,7 +1302,7 @@ go:   	         if (!ndigit)
 int print_version(char *myname)
 {
 	_print_msg("%s Version %s\n", myname, VERSION);
-	_print_msg("Copyright (C) 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)\n\n");
+	_print_msg("Copyright (C) 1995 .. 2002 by Andreas Kool (akool@isdn4linux.de)\n\n");
 	_print_msg("The isdnlog project is the work of many people;\n");
 	_print_msg("for at least a partial list see CREDITS.\n");
 	_print_msg("%s comes with ABSOLUTELY NO WARRANTY; for details see COPYING.\n", myname);
