@@ -26,6 +26,7 @@
 #define _PATH_CONNERRS		"/etc/ppp/connect-errors"
 #define _PATH_USERIPTAB		"/etc/ppp/useriptab"
 #define _PATH_PEERFILES		"/etc/ppp/peers/"
+#define _PATH_RESOLV		"/etc/ppp/resolv.conf"
 
 /* Programs for processing authenticated logins */
 #define _PATH_AUTHUP   "/etc/ppp/auth-up"
