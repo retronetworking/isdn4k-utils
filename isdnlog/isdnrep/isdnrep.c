@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.71  1999/07/18 08:40:17  akool
+ * fix from Michael
+ *
  * Revision 1.70  1999/07/12 11:37:34  calle
  * Bugfix: isdnrep defined print_msg as function pointer, the object files
  *         in tools directory, declare it as external function.
@@ -1301,7 +1304,8 @@ static int print_bottom(double unit, char *start, char *stop)
                     else
                       *sx = 0;
 
-		    print_line3(NULL, "Provider", string, getProvider(i),
+		    print_line3(NULL, "Provider", string,
+		      getProvider(i) ? getProvider(i) : "",
 		      usage_provider[i],
 		      double2clock(duration_provider[i]),
                       print_currency(pay_provider[i], 0), sx);
@@ -1930,7 +1934,7 @@ static void bprint(one_call *call)
   if (call->duration) {
     print_msg(PRT_NORMAL, "%s %-15s",
       print_currency(call->pay, 0),
-      getProvider(call->provider));
+      getProvider(call->provider) ? getProvider(call->provider) : "");
     numsplit(call->num[CALLED]);
     print_msg(PRT_NORMAL, "\n");
   }
