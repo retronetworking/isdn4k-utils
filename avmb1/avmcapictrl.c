@@ -6,6 +6,9 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.3  1997/12/07 20:02:22  calle
+ * prepared support for cardtype and different protocols
+ *
  * Revision 1.2  1997/03/20 00:18:57  luethje
  * inserted the line #include <errno.h> in avmb1/avmcapictrl.c and imon/imon.c,
  * some bugfixes, new structure in isdnlog/isdnrep/isdnrep.c.
@@ -48,6 +51,7 @@ void usage(void)
 	exit(1);
 }
 
+#define DP_ERROR	-1
 #define DP_NONE		0
 #define DP_DSS1		1
 #define DP_D64S		2
@@ -73,19 +77,43 @@ static struct pmap {
   { "D64S", DP_D64S },
   { "D64S2", DP_D64S2 },
   { "D64SD", DP_D64SD },
-  { "DS01", DP_DS01 },
+  { "DS01", DP_DS01  },
   { "DS02", DP_DS02 },
   { "CT1", DP_CT1 },
   { "VN3", DP_VN3 },
   { "AUSTEL", DP_AUSTEL },
+#if 0
   { "5ESS", DP_5ESS },
   { "NI1", DP_NI1 },
   { "DSS1MOBIL", DP_DSS1MOBIL },
   { "1TR6MOBIL", DP_1TR6MOBIL },
   { "GSM", DP_GSM },
   { "1TR6", DP_1TR6 },
+#endif
   { 0 },
 };
+
+static void show_protocols()
+{
+   struct pmap *p;
+   int pos = 0;
+   for (p=pmap; p->name; p++) {
+      int len = strlen(p->name);
+      if (pos + len + 2 > 80) {
+	 fprintf(stderr,",\n");
+	 pos = 0;
+      }
+      if (pos == 0) {
+         fprintf(stderr, "        %s", p->name);
+         pos += 8 + len;
+      } else {
+         fprintf(stderr, ",%s", p->name);
+	 pos += 1 + len;
+      }
+   }
+   if (pos)
+	fprintf(stderr, "\n");
+}
 
 static int dchan_protocol(char *pname)
 {
@@ -94,7 +122,7 @@ static int dchan_protocol(char *pname)
       if (strcasecmp(pname, p->name) == 0)
 	 return p->protocol;
    }
-   return DP_NONE;
+   return DP_ERROR;
 }
 
 static char patcharea[2048];
@@ -107,10 +135,12 @@ static void addpatchvalue(char *name, char *value, int len)
       fprintf(stderr, "%s: can't add patchvalue %s\n" , cmd, name);
       exit(3);
    }
+   patcharea[patchlen++] = ':';
    memcpy(&patcharea[patchlen], name, nlen);
    patchlen += nlen;
    patcharea[patchlen++] = 0;
    memcpy(&patcharea[patchlen], value, len);
+   patchlen += len;
    patcharea[patchlen++] = 0;
    patcharea[patchlen+1] = 0;
 }
@@ -119,27 +149,23 @@ int set_configuration(avmb1_t4file *t4config, int protocol, int p2p)
 {
    addpatchvalue("AutoFrame", "\001", 1);
    addpatchvalue("WATCHDOG", "1", 1);
-   addpatchvalue("CWEnable", "1", 1);
    switch (protocol) {
       case DP_NONE: 
 	 break;
       case DP_DSS1: 
 	 break;
       case DP_D64S: 
-         addpatchvalue("MpriOneChannel", "1", 1);
       case DP_D64S2: 
       case DP_D64SD: 
 	 p2p = 0;
-         addpatchvalue("TEI", "\000", 1);
          addpatchvalue("FV2", "2", 1);
-         addpatchvalue("MpriD64S", "1", 1);
+         addpatchvalue("TEI", "\000", 1);
 	 break;
       case DP_DS01: 
-         addpatchvalue("MpriOneChannel", "1", 1);
       case DP_DS02: 
 	 p2p = 0;
-         addpatchvalue("TEI", "\000", 1);
          addpatchvalue("FV2", "1", 1);
+         addpatchvalue("TEI", "\000", 1);
 	 break;
       case DP_CT1: 
          addpatchvalue("PROTOCOL", "\001", 1);
@@ -163,11 +189,8 @@ int set_configuration(avmb1_t4file *t4config, int protocol, int p2p)
          addpatchvalue("PatchMobileMode", "0", 1);
 	 break;
       case DP_GSM: 
-         addpatchvalue("MpriOneChannel", "1", 1);
-         addpatchvalue("MpriNoV42bis", "1", 1);
 	 break;
       case DP_1TR6: 
-         addpatchvalue("MpriSemi", "1", 1);
 	 break;
       default: 
 	 return -1;
@@ -175,10 +198,16 @@ int set_configuration(avmb1_t4file *t4config, int protocol, int p2p)
    if (p2p) {
       addpatchvalue("P2P", "\001", 1);
       addpatchvalue("TEI", "\000", 1);
-      addpatchvalue("MpriDDI", "1", 1);
    }
    t4config->len = patchlen+1;
    t4config->data = patcharea;
+#if 1
+   {
+      FILE *fp = fopen("patchvalue", "w");
+      fwrite( t4config->data, t4config->len, 1, fp);
+      fclose(fp);
+   }
+#endif
    return 0;
 }
 
@@ -311,7 +340,7 @@ int main(int argc, char **argv)
 			if (protocol < 0) {
 				fprintf(stderr,"invalid protocol \"%s\"\n",
 						argv[arg_ofs + 3]);
-				/* show_protocols(); */
+				show_protocols();
 				exit(1);
 			}
 		}
