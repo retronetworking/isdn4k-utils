@@ -7,7 +7,7 @@
 The main purpose of isdnlog is to create a log file with information
 about all incoming and outgoing calls, namely: this file.
 
-The file has 17 fields, separated by pipe characters "|" with fixed
+The file has 19 fields, separated by pipe characters "|" with fixed
 length. The fields are:
 
 .PD 0
