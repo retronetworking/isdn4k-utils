@@ -21,6 +21,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1998/03/19 15:39:02  detabc
+ * change define CONFIG_ISDN_WITH_ABC to HAVE_ABCEXT.
+ * HAVE_ABCEXT will be set with the configure utility.
+ * to enable isdnctrl with ABC-Extension-support please make
+ * first a kernelconfig with ABC-Extension enabled.
+ * Thanks
+ *
  * Revision 1.16  1998/03/12 15:10:11  hipp
  * Cosmetic. Changed 'addlink' error message.
  *
@@ -1135,8 +1142,11 @@ int exec_args(int fd, int argc, char **argv)
 								(*xx == 'A' || *xx == 'T' || *xx == 'U');xx++) {
 
 								switch(*xx) {
+								case 'a':
 								case 'A':   abc_encap |= 1;     break;
+								case 'u':
 								case 'U':   abc_encap |= 2;     break;
+								case 't':
 								case 'T':   abc_encap |= 4;     break;
 								}
 							}
@@ -1156,8 +1166,13 @@ int exec_args(int fd, int argc, char **argv)
 			        		return -1;
 			        	}
 #ifdef HAVE_ABCEXT
-						if(i != ISDN_NET_ENCAP_RAWIP)
-							abc_encap &= ~(15);
+						if(i != ISDN_NET_ENCAP_RAWIP && !!(abc_encap)) {
+
+							fprintf(stderr,
+ "ABC-Router (-A Option) works only with rawip Encaksulation (sorry) !\n");
+
+							return(-1);
+						}
 
 						i += abc_encap * 1000;
 #endif
