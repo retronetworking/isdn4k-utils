@@ -22,6 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/02/21 13:18:27  fritz
+ * Reformatted, changed some error-messages.
+ *
  * Revision 1.1  1997/02/17 00:09:12  fritz
  * New CVS tree
  *
@@ -87,6 +90,10 @@ readModem(void)
 		perror(modemsettings);
 		exit(-1);
 	}
+    if (len == 0) {     /* empty file, ignore it */
+        close(fd);
+        return;
+    }
 	if (strcmp(buffer, signature)) {
 		fprintf(stderr, "Version of iprofd (%d) does NOT match\n", TTY_DV);
 		fprintf(stderr, "signature of saved data!\n");
