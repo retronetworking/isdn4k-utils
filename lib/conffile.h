@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/04/15 00:20:16  luethje
+ * replace variables: some bugfixes, README comleted
+ *
  * Revision 1.6  1997/04/10 23:32:34  luethje
  * Added the feature, that environment variables are allowed in the config files.
  *
@@ -41,11 +44,12 @@
 
 /****************************************************************************/
 
-#define C_OVERWRITE       1
-#define C_WARN            2
-#define C_NOT_UNIQUE      4
-#define C_APPEND          8
-#define C_NO_WARN_FILE   16
+#define C_OVERWRITE          1
+#define C_WARN               2
+#define C_NOT_UNIQUE         4
+#define C_APPEND             8
+#define C_NO_WARN_FILE      16
+#define C_ALLOW_LAST_BLANKS 32
 
 /****************************************************************************/
 

@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1997/04/15 22:37:20  luethje
+ * allows the character `"' in the program argument like the shell.
+ * some bugfixes.
+ *
  * Revision 1.14  1997/04/15 00:20:13  luethje
  * replace variables: some bugfixes, README comleted
  *
@@ -583,6 +587,14 @@ static entry* Append_Entry(entry** Entry, char *Variable, char* Value, section *
 
 	if (Value != NULL)
 	{
+		if (!(Flag & C_ALLOW_LAST_BLANKS))
+		{
+			int len = strlen(Value)-1;
+
+			while (len >= 0 && isspace(Value[len]))
+				Value[len--] = '\0';
+		}
+
 		if (((*Entry)->value = strdup(Value)) == NULL)
 		{
 			free_entry(*Entry);

@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.27  1997/05/20 19:00:51  luethje
+## some primitve changes
+##
 ## Revision 1.26  1997/05/19 22:58:02  luethje
 ## - bugfix: it is possible to install isdnlog now
 ## - improved performance for read files for vbox files and mgetty files.
@@ -223,7 +226,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 2.99.20
+VERSION     = 2.99.21
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES

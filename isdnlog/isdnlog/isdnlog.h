@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/05/09 23:30:50  luethje
+ * isdnlog: new switch -O
+ * isdnrep: new format %S
+ * bugfix in handle_runfiles()
+ *
  * Revision 1.5  1997/04/08 00:02:17  luethje
  * Bugfix: isdnlog is running again ;-)
  * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
@@ -232,6 +237,7 @@ _EXTERN	int	watchdog;
 _EXTERN char   *isdnctrl;
 _EXTERN	char    isdnctrl2[FNSIZE];
 _EXTERN	char   *outfile;
+_EXTERN	char    tmpout[PATH_MAX];
 
 _EXTERN IFO     ifo[ISDN_MAX_CHANNELS];
 _EXTERN IO      io[ISDN_MAX_CHANNELS];
