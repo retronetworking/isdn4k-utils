@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1998/10/13 21:53:37  luethje
+ * isdnrep and lib: bugfixes
+ *
  * Revision 1.6  1997/05/09 23:31:10  luethje
  * isdnlog: new switch -O
  * isdnrep: new format %S
@@ -51,6 +54,10 @@ extern char *basename __P((__const char *__name));
 
 #ifndef TMPDIR
 # define TMPDIR P_tmpdir
+#endif
+
+#ifndef PATH_ENV
+# define PATH_ENV "PATH"
 #endif
 
 /****************************************************************************/
@@ -107,6 +114,7 @@ _EXTERN char *Replace_Variable(char *String);
 _EXTERN char *int2str(int value, int prec);
 _EXTERN char *Strncpy(char *dest, const char *src, int len);
 _EXTERN char *Strncat(char *dest, const char *src, int len);
+_EXTERN const char *Pathfind(const char *path, const char *name, char *mode);
 
 #undef _EXTERN
 
