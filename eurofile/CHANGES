@@ -18,6 +18,15 @@
 #
 
 $Log$
+
+- [imp] eftp.c, eft_i4l.c: suid support with isdn connect permission
+	check added.
+- [chg] eftd.sh, eft.conf and several other doc files modified to
+	reflect above changes
+
+Revision 1.4  1999/07/25 21:55:25  he
+Changes for eftp supervisor based call control
+
 - [chg] eft_i4l.c: Replaced calls to external programmes (isdnctrl,x25_route,
 	ifconfig, scripts) by directly calling ioctl()'s.
 - [new] eft_i4l.c: Support for supervisor based isdn call control.
