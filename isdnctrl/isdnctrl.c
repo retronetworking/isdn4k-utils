@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.36  1999/11/02 20:41:21  keil
+ * make phonenumber ioctl compatible for ctrlconf too
+ *
  * Revision 1.35  1999/10/27 14:36:19  keil
  * make the phone number struct compatible between NET_DV 5 and 6
  *
@@ -225,6 +228,9 @@
 #include <errno.h>
 
 #include <linux/isdn.h>
+#ifdef I4L_DWABC_UDPINFO
+#include <isdn_dwabclib.h>
+#endif
  /* fix version skew between 2.0 and 2.1 kernels (structs are identical) */
 #if (NET_DV == 0x04)
 # undef NET_DV
@@ -381,6 +387,12 @@ void usage(void)
 		fprintf(stderr,"Note: TIMRU Kernel Support enabled\n");
 #else
 		fprintf(stderr,"Note: TIMRU Kernel Support disabled\n");
+#endif
+#ifdef I4L_DWABC_UDPINFO
+		fprintf(stderr,"    -udpisisdn   destination-host or ip-number\n");
+		fprintf(stderr,"    -udponline   destination-host or ip-number\n");
+		fprintf(stderr,"    -udphangup   destination-host or ip-number\n");
+		fprintf(stderr,"    -udpdial     destination-host or ip-number\n");
 #endif
         exit(-2);
 }
@@ -1744,6 +1756,86 @@ int main(int argc, char **argv)
 		check_version(1);
 		exit(0);
 	}
+#ifdef I4L_DWABC_UDPINFO
+	{
+		int art = 0;
+		char *p = argv[1];
+
+		if(!strcmp(p,"-udpisisdn")) {
+			art = 1;
+		} else if(!strcmp(p,"-udponline")) {
+			art = 2;
+		} else if(!strcmp(p,"-udphangup")) {
+			art = 3;
+		} else if(!strcmp(p,"-udpdial")) {
+			art = 4;
+		}
+
+		if(art) {
+
+			char *err = NULL;
+			int retw = 0;
+			p = argv[2];
+
+			if(argc != 3) {
+
+				usage();
+				exit(1);
+			}
+
+			switch(art) {
+			case 1:	retw = isdn_udp_isisdn(p,&err);		break;
+			case 2:	retw = isdn_udp_online(p,&err);		break;
+			case 3:	retw = isdn_udp_hangup(p,&err);		break;
+			case 4:	retw = isdn_udp_dial(p,&err);		break;
+			}
+
+			if(err != NULL) {
+
+				fprintf(stderr,"%s\n",err);
+				free(err);
+				err = NULL;
+			}
+
+			if(!retw) {
+
+				switch(art) {
+				case 1:
+					printf("destination %s is NOT over i4l routed\n",p);
+					break;
+				case 2:
+					printf("destination %s is NOT online\n",p);
+					break;
+				case 3:
+					printf("destination %s CANNOT hangup the line\n",p);
+					break;
+				case 4:
+					printf("destination %s CANNOT dialing\n",p);
+					break;
+				}
+
+			} else {
+
+				switch(art) {
+				case 1:
+					printf("destination %s is over i4l routed\n",p);
+					break;
+				case 2:
+					printf("destination %s is online\n",p);
+					break;
+				case 3:
+					printf("destination %s trigger hangup \n",p);
+					break;
+				case 4:
+					printf("destination %s trigger dialing\n",p);
+					break;
+				}
+			}
+
+			exit(!retw);
+		}
+	}
+#endif
 	check_version(0);
 
 	fd = open("/dev/isdnctrl", O_RDWR);
