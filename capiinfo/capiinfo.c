@@ -17,6 +17,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  2004/01/16 15:27:12  calle
+ * remove several warnings.
+ *
  * Revision 1.10  2003/08/16 16:56:02  keil
  * fix some typos
  *
@@ -138,7 +141,7 @@ int main(int argc, char **argv)
 {
    struct capi_profile cprofile;
    unsigned char buf[64];
-   unsigned long *vbuf;
+   unsigned int  *vbuf;
    unsigned char *s;
    int ncontr, i;
    unsigned j;
@@ -155,7 +158,8 @@ int main(int argc, char **argv)
    ncontr = cprofile.ncontroller;
    printf("Number of Controllers : %d\n", ncontr);
 
-   err = CAPI20_REGISTER(1, 1, 2048, &ApplId);
+   //err = CAPI20_REGISTER(1, 1, 2048, &ApplId);
+   err = CAPI20_REGISTER(0, 0, 2048, &ApplId);
    if (err != CapiNoError) {
        fprintf(stderr, "could not register - %s (%#x)\n", capi_info2str(err), err);
        return 1;
@@ -168,17 +172,17 @@ int main(int argc, char **argv)
        printf("Manufacturer: %s\n", buf);
        if (strstr((char *)buf, "AVM") != 0) isAVM = 1;
        CAPI20_GET_VERSION (i, buf);
-       vbuf = (unsigned long *)buf;
-       printf("CAPI Version: %lu.%lu\n",vbuf[0], vbuf[1]);
+       vbuf = (unsigned int *)buf;
+       printf("CAPI Version: %u.%u\n",vbuf[0], vbuf[1]);
        if (isAVM) {
-          printf("Manufacturer Version: %lu.%01lx%01lx-%02lu  (%lu.%lu)\n",
+          printf("Manufacturer Version: %u.%01x-%02u  (%u.%u)\n",
                   (vbuf[2]>>4) & 0x0f,
-                  ((vbuf[2]<<4) & 0xf0),
+                  ((vbuf[2]<<4) & 0xf0) +
 		  ((vbuf[3]>>4) & 0x0f),
                   (vbuf[3] & 0x0f),
                   vbuf[2], vbuf[3] );
        } else {
-          printf("Manufacturer Version: %lu.%lu\n",vbuf[2], vbuf[3]);
+          printf("Manufacturer Version: %u.%u\n",vbuf[2], vbuf[3]);
        }
        CAPI20_GET_SERIAL_NUMBER (i, buf);
        printf("Serial Number: %s\n", (char *)buf);
@@ -209,6 +213,13 @@ int main(int argc, char **argv)
        }
 
        printf("\n");
+
+       if ( (cprofile.support1 & 0x10000000) &&
+	    (cprofile.support2 & 0x40000000) &&
+	    (cprofile.support3 & 0x40000000) ) {
+	   printf("\n");
+	   continue;
+       }
 
        FACILITY_REQ_HEADER(&cmsg, ApplId, MsgId++, i);
        cmsg.FacilitySelector = 0x0003;
