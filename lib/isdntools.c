@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1997/05/19 22:58:28  luethje
+ * - bugfix: it is possible to install isdnlog now
+ * - improved performance for read files for vbox files and mgetty files.
+ * - it is possible to decide via config if you want to use avon or
+ *   areacode.
+ *
  * Revision 1.12  1997/05/09 23:31:06  luethje
  * isdnlog: new switch -O
  * isdnrep: new format %S
@@ -265,6 +271,9 @@ char *expand_number(char *s)
 
 		Ptr++;
 	}
+
+	if (Help[0] == '\0')
+		return s;
 
 	if (Help[0] == '*' || !strncmp(Help,countryprefix,strlen(countryprefix)))
 	{
