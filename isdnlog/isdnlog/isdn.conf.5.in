@@ -277,7 +277,8 @@ Number of isdn card.
 
 .TP
 %( %/ %)
-if the number of the remote side is known: this char; a blank otherwise.
+If the number of the remote side is known: this char, i.e. the (, /, or ) that comes after the %.
+If the number if not known, a blank is substituted.
 
 .SH EXAMPLE
 .nf
