@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1997/04/08 21:57:04  luethje
+ * Create the file isdn.conf
+ * some bug fixes for pid and lock file
+ * make the prefix of the code in `isdn.conf' variable
+ *
  * Revision 1.9  1997/04/08 00:02:24  luethje
  * Bugfix: isdnlog is running again ;-)
  * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
@@ -550,7 +555,9 @@ int Set_Codes(section* Section)
 			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_COUNTRY);
 	}
 
-	if ((SPtr = Get_Section(Section,CONF_SEC_VAR)) != NULL)
+	SPtr = Section;
+
+	while ((SPtr = Get_Section(SPtr,CONF_SEC_VAR)) != NULL)
 	{
 		Entry = SPtr->entries;
 
@@ -561,6 +568,8 @@ int Set_Codes(section* Section)
 
 			Entry = Entry->next;
 		}
+
+		SPtr = SPtr->next;
 	}
 
 	return (RetCode==2?0:-1);

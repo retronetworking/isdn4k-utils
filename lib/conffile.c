@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1997/04/10 23:41:26  luethje
+ * some bug fixes
+ *
  * Revision 1.11  1997/04/03 22:39:11  luethje
  * bug fixes: environ variables are working again, no seg. 11 :-)
  * improved performance for reading the config files.
@@ -577,7 +580,7 @@ static entry* Append_Entry(entry** Entry, char *Variable, char* Value, section *
 
 	if (Value != NULL)
 	{
-    if (((*Entry)->value = strdup(Value)) == NULL)
+		if (((*Entry)->value = strdup(Value)) == NULL)
 		{
 			free_entry(*Entry);
 			*Entry = NULL;
@@ -1543,13 +1546,14 @@ int Replace_Variables(section *Section)
 		{
 			if (Entry->value != NULL && (Ptr = Replace_Variable(Entry->value)) != NULL)
 			{
-				free(Entry->value);
-
-				if ((Entry->value = strdup(Ptr)) == NULL)
+				if ((Ptr = strdup(Ptr)) == NULL)
 				{
 					print_msg("%s","Can not allocate memory!\n");
 					return -1;
 				}
+
+				free(Entry->value);
+				Entry->value = Ptr;
 			}
 
 			Entry = Entry->next;

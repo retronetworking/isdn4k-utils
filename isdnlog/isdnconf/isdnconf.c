@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/04/10 23:32:15  luethje
+ * Added the feature, that environment variables are allowed in the config files.
+ *
  * Revision 1.4  1997/04/06 21:06:08  luethje
  * problem with empty/not existing file resolved.
  *
@@ -303,14 +306,23 @@ int look_data(section **conf_dat)
 			_si[0] = '\0';
 
 			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_NUM)) != NULL)
-				_number = strdup(Replace_Variable(CEPtr->value));
+				if (del)
+					_number = strdup(Replace_Variable(CEPtr->value));
+				else
+					_number = strdup(CEPtr->value);
 
 			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_ALIAS)) != NULL)
-				_alias = strdup(Replace_Variable(CEPtr->value));
+				if (del)
+					_alias = strdup(Replace_Variable(CEPtr->value));
+				else
+					_alias = strdup(CEPtr->value);
 
 			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_SI)) != NULL &&
 			    CEPtr->value != NULL)
-				sprintf(_si,"%ld",strtol(Replace_Variable(CEPtr->value), NIL, 0));
+				if (del)
+					sprintf(_si,"%ld",strtol(Replace_Variable(CEPtr->value), NIL, 0));
+				else
+					sprintf(_si,"%ld",strtol(CEPtr->value, NIL, 0));
 
 			if (and)
 				Ret = 1;

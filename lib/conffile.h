@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/04/10 23:32:34  luethje
+ * Added the feature, that environment variables are allowed in the config files.
+ *
  * Revision 1.5  1997/04/03 22:39:12  luethje
  * bug fixes: environ variables are working again, no seg. 11 :-)
  * improved performance for reading the config files.
@@ -38,11 +41,11 @@
 
 /****************************************************************************/
 
-#define C_OVERWRITE    1
-#define C_WARN         2
-#define C_NOT_UNIQUE   4
-#define C_APPEND       8
-#define C_NO_WARN_FILE 16
+#define C_OVERWRITE       1
+#define C_WARN            2
+#define C_NOT_UNIQUE      4
+#define C_APPEND          8
+#define C_NO_WARN_FILE   16
 
 /****************************************************************************/
 
