@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/03/23 21:04:10  luethje
+ * some bugfixes
+ *
  * Revision 1.4  1997/03/20 22:42:41  akool
  * Some minor enhancements.
  *
@@ -147,6 +150,10 @@
 #ifndef REBOOTCMD
 #	define REBOOTCMD "/sbin/reboot"
 #endif
+
+/****************************************************************************/
+
+#define LOG_VERSION "3.0"
 
 /****************************************************************************/
 
@@ -507,7 +514,7 @@ typedef struct {
   char   num[2][NUMSIZE];
   long	 ibytes;
   long	 obytes;
-  double version;
+  char   version[10];
   int	 si;
   int	 si1;
   double currency_factor;

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/03/23 20:55:41  luethje
+ * some bugfixes
+ *
  * Revision 1.1  1997/03/16 20:58:43  luethje
  * Added the source code isdnlog. isdnlog is not working yet.
  * A workaround for that problem:
@@ -70,11 +73,6 @@
 
 #include <tools.h>
 #include "socket.h"
-
-/****************************************************************************/
-
-#define LOG_MAJOR_VERSION   3
-#define LOG_MINOR_VERSION   0
 
 /****************************************************************************/
 

@@ -18,6 +18,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1997/03/20 00:22:51  luethje
+ * Only a test
+ *
  */
 
 #define _CONFFILE_C_
@@ -679,7 +682,7 @@ static section *Insert_Section(section **main_sec, section **ins_sec, char **var
 
 static int Compare_Sections(section* sec1, section *sec2, char **variables)
 {
-	int i;
+	int i Cnt1, Cnt2;
 	int found1, found2, Cnt, depth, width, exist = 1;
 	char   **array;
 	char   **array2;
@@ -718,17 +721,25 @@ static int Compare_Sections(section* sec1, section *sec2, char **variables)
 
 			while ((array2 = Compare_Section_Get_Path(array,&width,&depth)) != NULL)
 			{
+				Cnt1 = Cnt2 = 0;
+
 				while (_Get_Section_From_Path(array2,sec1,&RetSection,&RetEntry1,0) == sec1)
+				{
+					Cnt1++;
+
 					while (_Get_Section_From_Path(array2,sec2,&RetSection,&RetEntry2,0) == sec2)
+					{
+						Cnt2++;
+
 						if (RetEntry1 != NULL && RetEntry2 != NULL                      &&
 						    !strcmp(RetEntry1->name, RetEntry2->name)                   &&
 						    ((RetEntry1->value == NULL && RetEntry2->value == NULL) ||
 						      !strcmp(RetEntry1->value,RetEntry2->value)              )   )
 						 	found1++;
+					}
+				}
 
-				if (exist && array2[depth-1][0] == C_EXIST                               &&
-					  _Get_Section_From_Path(array2,sec1,&RetSection,&RetEntry1,0) == NULL &&
-					  _Get_Section_From_Path(array2,sec2,&RetSection,&RetEntry2,0) == NULL   )
+				if (exist && array2[depth-1][0] == C_EXIST && Cnt1 == 0 && Cnt2 == 0)                              &&
 						found2++;
 
 				if ((++Cnt)%width == 0)
