@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.75  1999/07/01 20:39:52  akool
+ * isdnrate optimized
+ *
  * Revision 1.74  1999/06/30 17:17:19  akool
  * isdnlog Version 3.39
  *
@@ -3512,14 +3515,14 @@ static void processLCR(int chan, char *hint)
 
   *hint='\0';
   *(p=buffer)='\0';
-  
+
   clearRate (&pselRate);
   pselRate.prefix=preselect;
   memcpy (pselRate.src, call[chan].Rate.src, sizeof (pselRate.src));
   memcpy (pselRate.dst, call[chan].Rate.dst, sizeof (pselRate.dst));
   pselRate.start = call[chan].Rate.start;
   pselRate.now   = call[chan].Rate.now;
-  
+
   hintRate = pselRate;
   hintRate.prefix=call[chan].hint;
 
@@ -3560,7 +3563,7 @@ static void processLCR(int chan, char *hint)
     p+=sprintf(p, "\nHINT: LCR:%s", (bestRate.prefix == call[chan].provider) ? "OK" : "FAILED");
     sprintf (hint, "%s", buffer+1);
   }
-  
+
 } /* processLCR */
 
 
@@ -4471,9 +4474,11 @@ doppelt:break;
 	  processRate(chan);
 
       	  if (call[chan].tarifknown) {
-	    char *h=hints;
+	    char *h = hints;
+
 	    processLCR(chan, h);
-            while (*h)
+
+            while (h)
               info(chan, PRT_SHOWHANGUP, STATE_HANGUP, strsep(&h, "\n"));
       	  } /* if */
         } /* if */
