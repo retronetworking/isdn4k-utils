@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/03/18 23:01:50  luethje
+ * Function Compare_Sections() completed.
+ *
  * Revision 1.4  1997/03/07 23:34:49  luethje
  * README.conffile completed, paranoid_check() used by read_conffiles(),
  * policy.h will be removed by "make distclean".
@@ -189,6 +192,7 @@ int num_match(char* Pattern, char *number)
 
 char *expand_number(char *s)
 {
+	int all_allowed = 0;
 	char *Ptr;
 	int   Index;
 	char Help[SHORT_STRING_SIZE];
@@ -212,8 +216,15 @@ char *expand_number(char *s)
 
 	while(*Ptr != '\0')
 	{
-		if (isdigit(*Ptr) || *Ptr == '?' || *Ptr == '*')
+		if (isdigit(*Ptr) || *Ptr == '?' || *Ptr == '*'|| 
+		    *Ptr == '[' ||  *Ptr == ']' || all_allowed   )
 		{
+			if (*Ptr == '[')
+				all_allowed  = 1;
+
+			if (*Ptr == ']')
+				all_allowed  = 0;
+
 			Index = strlen(Help);
 			Help[Index] = *Ptr;
 			Help[Index+1] = '\0';
