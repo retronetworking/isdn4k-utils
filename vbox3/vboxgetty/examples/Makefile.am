@@ -8,7 +8,7 @@ SUBDIRS = scripts
 
 ## Configuration to install ##############################################
 
-sysconf_DATA	= vboxgetty.conf vboxgetty.user
+sysconf_DATA	= vboxgetty.conf
 
 EXTRA_DIST	= $(sysconf_DATA)
 
