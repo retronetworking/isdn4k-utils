@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1998/10/21 16:18:48  paul
+ * Implementation of "dialmode" (successor of "status")
+ *
  * Revision 1.11  1998/06/09 18:11:33  cal
  * added the command "isdnctrl name ifdefaults": the named device is reset
  * to some reasonable defaults.
@@ -185,6 +188,12 @@ char *l2protostr[] = {
 #ifdef ISDN_PROTO_L2_X25DTE
 	"x25dte", "x25dce",
 #endif
+#ifdef ISDN_PROTO_L2_V11096
+	"v110_9600", "v110_19200", "v110_38400",
+#endif
+#ifdef ISDN_PROTO_L2_MODEM
+	"modem",
+#endif
 	"\0"
 };
 
@@ -193,6 +202,12 @@ int l2protoval[] = {
         ISDN_PROTO_L2_X75BUI, ISDN_PROTO_L2_HDLC,
 #ifdef ISDN_PROTO_L2_X25DTE
 	ISDN_PROTO_L2_X25DTE, ISDN_PROTO_L2_X25DCE,
+#endif
+#ifdef ISDN_PROTO_L2_V11096
+	ISDN_PROTO_L2_V11096, ISDN_PROTO_L2_V11019, ISDN_PROTO_L2_V11038,
+#endif
+#ifdef ISDN_PROTO_L2_MODEM
+	ISDN_PROTO_L2_MODEM,
 #endif
 	-1
 };
