@@ -53,6 +53,9 @@ endif
 ifeq ($(CONFIG_ISDNLOG),y)
 	SUBDIRS := $(SUBDIRS) isdnlog
 endif
+ifeq ($(CONFIG_IPPPSTATS),y)
+	SUBDIRS := $(SUBDIRS) ipppstats
+endif
 ifeq ($(CONFIG_XMONISDN),y)
 	SUBDIRS := $(SUBDIRS) xmonisdn
 endif
