@@ -19,6 +19,13 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.63  1999/03/24 19:37:29  akool
+## - isdnlog Version 3.10
+## - moved "sondernnummern.c" from isdnlog/ to tools/
+## - "holiday.c" and "rate.c" integrated
+## - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+## - corrected UUnet and T-Online rates
+##
 ## Revision 1.62  1999/03/20 16:54:37  akool
 ## isdnlog 3.09 : support for all Internet-by-call numbers
 ##
@@ -487,7 +494,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.10
+VERSION     = 3.11
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
 

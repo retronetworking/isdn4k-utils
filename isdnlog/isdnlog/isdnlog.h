@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  1999/03/24 19:37:49  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.17  1999/03/07 18:18:51  akool
  * - new 01805 tarif of DTAG
  * - new March 1999 tarife
@@ -410,9 +417,9 @@ _EXTERN void clearchan(int chan, int total);
 #define _EXTERN extern
 #endif
 
-#define Exit(a) _Exit(__FILE__,__LINE__,a)
+#define Exit(a) _Exit_isdnlog(__FILE__,__LINE__,a)
 
-_EXTERN void _Exit(char *File, int Line, int RetCode);
+_EXTERN void _Exit_isdnlog(char *File, int Line, int RetCode);
 #ifndef  _REP_FUNC_C_
 _EXTERN int  print_msg(int Level, const char *fmt, ...);
 #endif

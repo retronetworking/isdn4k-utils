@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.47  1999/03/24 19:37:55  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.46  1999/03/20 16:54:45  akool
  * isdnlog 3.09 : support for all Internet-by-call numbers
  *
@@ -543,7 +550,6 @@ static char  *asnp, *asnm;
 #ifdef Q931
 static int    lfd = 0;
 #endif
-
 
 #ifdef Q931
 static void Q931dump(int mode, int val, char *msg, int version)
@@ -2515,8 +2521,8 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                     warn = 0;
 
-                    if (*call[chan].onum[CALLING]) /* another Calling-party? */
-                      if (strcmp(call[chan].onum[CALLING], s)) /* different! */
+                    if (*call[chan].onum[CALLING]) { /* another Calling-party? */
+                      if (strcmp(call[chan].onum[CALLING], s)) { /* different! */
                         if ((call[chan].screening == 3) && ((oc3a & 3) < 3)) { /* we believe the first one! */
                           strcpy(call[chan].onum[CLIP], s);
                           buildnumber(s, oc3, oc3a, call[chan].num[CLIP], version, &call[chan].provider, &call[chan].sondernummer[CLIP], &call[chan].intern[CLIP], &call[chan].internetnumber[CLIP], 0, 0);
@@ -2555,6 +2561,8 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                           /* fall thru, and overwrite ... */
                         } /* else */
+                      } /* else */
+		    } /* else */
 
                     call[chan].screening = (oc3a & 3);
 

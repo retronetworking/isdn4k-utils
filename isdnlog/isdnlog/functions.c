@@ -19,6 +19,20 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.19  1999/03/07 18:18:48  akool
+ * - new 01805 tarif of DTAG
+ * - new March 1999 tarife
+ * - added new provider "01051 Telecom"
+ * - fixed a buffer overrun from Michael Weber <Michael.Weber@Post.RWTH-Aachen.DE>
+ * - fixed a bug using "sondernnummern.c"
+ * - fixed chargeint change over the time
+ * - "make install" now install's "sonderrufnummern.dat", "tarif.dat",
+ *   "vorwahl.dat" and "tarif.conf"! Many thanks to
+ *   Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * - Euracom Frames would now be ignored
+ * - fixed warnings in "sondernnummern.c"
+ * - "10plus" messages no longer send to syslog
+ *
  * Revision 1.18  1999/01/24 19:01:27  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -166,7 +180,7 @@ static void saveCharge()
 
 /*****************************************************************************/
 
-void _Exit(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 does _not_ call exit()! */
+void _Exit_isdnlog(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 does _not_ call exit()! */
 {
 #ifdef Q931
   if (!q931dmp)
@@ -407,7 +421,7 @@ int print_msg(int Level, const char *fmt, ...)
       fputs(width ? s : String, stderr);
       fflush(stderr);
     }
-    else 
+    else
     if (!fout){
       fputs(width ? s : String, fcons);
       fflush(fcons);
