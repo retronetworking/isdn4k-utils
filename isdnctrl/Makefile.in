@@ -47,6 +47,7 @@ $(PROGRAM):	$(MODULES)
 	$(CC) $(CFLAGS) $(MODULES) $(LDFLAGS) -o $@
 
 install-man: isdnctrl.man
+	isdnctrl.man.in
 	$(INSTALL) -d $(MAN8DIR)
 	$(INSTALL_MAN) $< $(MAN8DIR)/$(MANPAGE)
 
@@ -62,7 +63,7 @@ uninstall:
 	rm -f $(SBINDIR)/$(PROGRAM) $(MAN8DIR)/$(MANPAGE)
 
 clean:
-	rm -f *.o *~ $(PROGRAM)
+	rm -f *.o *~ $(PROGRAM) isdnctrl.man
 
 distclean: clean
 	rm -f config.status config.cache config.log Makefile
