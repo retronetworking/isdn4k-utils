@@ -54,6 +54,15 @@ else
 		SUBDIRS := $(SUBDIRS) teles
 	endif
 endif
+
+ifeq ($(CONFIG_RCAPID),y)
+	SUBDIRS := $(SUBDIRS) capi20
+else
+	ifeq ($(CONFIG_AVMCAPICTRL),y)
+		SUBDIRS := $(SUBDIRS) capi20
+	endif
+endif
+
 ifeq ($(CONFIG_AVMCAPICTRL),y)
 	SUBDIRS := $(SUBDIRS) avmb1
 endif
