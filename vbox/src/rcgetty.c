@@ -175,6 +175,10 @@ int getty_get_settings(char *rcname)
 		returnerror();
 	}
 
+        if (setup.modem.timeout_ring < MODEM_RINGTIMEOUT) {
+            log(L_WARN, "ringtimeout is set to %d; at least %d is recommended.\n", setup.modem.timeout_ring, MODEM_RINGTIMEOUT);
+        }
+
 	returnok();
 }
 
