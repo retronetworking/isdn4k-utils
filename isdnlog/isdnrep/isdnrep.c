@@ -24,6 +24,10 @@
  *
  *
  * $Log$
+ * Revision 1.81  1999/11/07 13:29:28  akool
+ * isdnlog-3.64
+ *  - new "Sonderrufnummern" handling
+ *
  * Revision 1.80  1999/10/25 18:33:16  akool
  * isdnlog-3.57
  *   WARNING: Experimental version!
@@ -836,6 +840,9 @@ static double duration_provider[MAXPROVIDER];
 static double pay_provider[MAXPROVIDER];
 static char   unknownzones[4096];
 
+#undef MAXPROVIDER
+#define MAXPROVIDER getNProvider()
+
 
 /*****************************************************************************/
 
@@ -971,7 +978,6 @@ int read_logfile(char *myname)
   initHoliday(holifile, NULL);
   initDest(destfile, NULL);
   initRate(rateconf, ratefile, zonefile, NULL);
-  initTelNum();
   
   interns0 = 3; /* Fixme: */
 
@@ -1311,12 +1317,12 @@ static int print_bottom(double unit, char *start, char *stop)
 
 		h_percent = 60.0;
 		h_table_color = H_TABLE_COLOR4;
-                get_format("%-8.8s %05s %-15.15s %4d call(s) %10.10s  %12s %s");
+                get_format("%-8.8s %05s %-25.25s %4d call(s) %10.10s  %12s %s");
 		print_line2(F_BODY_HEADER,"");
 		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Provider");
 		strich(1);
 
-		for (i = 1; i < MAXPROVIDER; i++) {
+		for (i = 0; i < MAXPROVIDER; i++) {
                   prefix2provider(i, string);
 		  if (usage_provider[i]) {
                     if (duration_provider[i])
@@ -1739,7 +1745,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          	{
                                                         register char *p;
 
-                                                        p = (cur_call->provider > 0) ? getProvider(cur_call->provider) : "";
+                                                        p = (cur_call->provider >= 0) ? getProvider(cur_call->provider) : "";
 
                                                         if (cur_call->dir == DIALIN)
                                                           p = "";
@@ -2563,7 +2569,7 @@ static void repair(one_call *cur_call)
   call[0].connect = cur_call->t;
   call[0].disconnect = cur_call->t + cur_call->duration;
   call[0].intern[CALLED] = strlen(cur_call->num[CALLED]) < interns0;
-  call[0].provider = cur_call->provider;
+  call[0].provider = cur_call->provider = pnum2prefix(cur_call->provider,cur_call->t);
   call[0].aoce = cur_call->eh;
   call[0].dialin = 0;
   strcpy(call[0].num[CALLED], cur_call->num[CALLED]);

@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.89  1999/11/07 13:29:27  akool
+ * isdnlog-3.64
+ *  - new "Sonderrufnummern" handling
+ *
  * Revision 1.88  1999/11/05 20:22:01  akool
  * isdnlog-3.63
  *  - many new rates
@@ -821,6 +825,7 @@
 #include "asn1.h"
 #include "zone.h"
 #include "telnum.h"
+#define preselect pnum2prefix(preselect, cur_time)
 
 static int    HiSax = 0, hexSeen = 0, uid = UNKNOWN, lfd = 0;
 static char  *asnp, *asnm;
@@ -1816,14 +1821,8 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                             } /* else */
                           }
                           else if (-n > 1) { /* try to guess Gebuehrenzone */
-			    RATE Guess = call[chan].Rate;
                             err = 0;
                             px = "";
-			    if (guessZone(&Guess, -n) != UNKNOWN) {
-			      px = Guess.Zone;
-			      call[chan].tick += Guess.Duration;
-                              err = call[chan].tick - tx;
-			    }
 
                             if (message & PRT_SHOWTICKS)
                               sprintf(s, "%d.EH %s %s (%s %d %s?) C=%s",

@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1999/11/07 13:29:29  akool
+ * isdnlog-3.64
+ *  - new "Sonderrufnummern" handling
+ *
  * Revision 1.13  1999/09/26 10:55:20  akool
  * isdnlog-3.55
  *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -179,4 +183,11 @@ int   getZoneRate(RATE* Rate, int domestic, int first);
 char *explainRate (RATE *Rate);
 char *printRate (double value);
 
+int pnum2prefix(int pnum, time_t when);
+int pnum2prefix_variant(char * pnum, time_t when);
+int vbn2prefix(char *vbn, int *len);
+inline int getNProvider( void );
+/* char   *prefix2provider(int prefix, char *s) is defined in telnum.h */
+char   *prefix2provider_variant(int prefix, char *s);
+int isProviderValid(int prefix, time_t when);
 #endif
