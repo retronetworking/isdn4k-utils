@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.13  1998/06/21 11:52:43  akool
+ * First step to let isdnlog generate his own AOCD messages
+ *
  * Revision 1.12  1998/06/14 15:33:48  akool
  * AVM B1 support (Layer 3)
  * Telekom's new currency DEM 0,121 supported
@@ -307,7 +310,7 @@ void logger(int chan)
   mysql_db_set.currency_factor = currency_factor;
   strcpy(mysql_db_set.currency, currency);
   mysql_db_set.pay = call[chan].pay;
-  strcpy(mysql_db_set.provider, call[chan].provider);
+  strcpy(mysql_db_set.provider, Providername(call[chan].provider));
   mysql_dbAdd(&mysql_db_set);
 #endif
 } /* logger */
