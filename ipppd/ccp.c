@@ -448,7 +448,7 @@ static void ccp_resetci(fsm *f)
 	opt_buf[4] = LZS_CMODE_SEQNO;
 	if(ccp_test(unit, opt_buf, CILEN_LZS_COMPRESS, 0) <= 0) {
 	    go->lzs = 0;
-	    fprintf(stderr, "kernel check for LZS failed\n");
+	    syslog(LOG_NOTICE,"Kernel check for LZS failed\n");
 	}
     }
 }
