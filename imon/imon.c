@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  2000/06/13 10:51:06  armin
+ * fixed status output if channels are in
+ * a different order.
+ *
  * Revision 1.3  1997/05/17 12:23:35  fritz
  * Corrected some Copyright notes to refer to GPL.
  *
@@ -506,12 +510,14 @@ int main(int argc, char **argv) {
         usage();
   }
 
+  if (!(isdninfo = fopen("/dev/isdninfo", "r"))) {
+   if (!(isdninfo = fopen("/dev/isdn/isdninfo", "r"))) {
+    perror("Can't open /dev/isdn/isdninfo nor /dev/isdninfo");
+    return 1;
+   }
+  }
   if (phonebook)
     readphonebook();
-  if (!(isdninfo = fopen("/dev/isdninfo", "r"))) {
-    fprintf(stderr, "Can't open /dev/isdninfo\n");
-    return(-1);
-  }
   
   /*
    * initialize ncurses and draw the main screen
@@ -593,8 +599,7 @@ int main(int argc, char **argv) {
       if (errno != EINTR) {
 	perror("select");
 	sleep(5);
-	exit(-1);
-	break;
+	return 2;
       }
     }
     imon_draw_status(color, &current_time);
