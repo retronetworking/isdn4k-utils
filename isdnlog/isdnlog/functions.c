@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.30  2000/06/20 17:09:59  akool
+ * isdnlog-4.29
+ *  - better ASN.1 display
+ *  - many new rates
+ *  - new Option "isdnlog -Q" dump's "/etc/isdn/isdn.conf" into a SQL database
+ *
  * Revision 1.29  1999/12/31 13:30:01  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -264,6 +270,7 @@ static void saveCharge()
 } /* saveCharge */
 
 /*****************************************************************************/
+extern void procinfo(int channel, CALL * cp, int state);
 
 void _Exit_isdnlog(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 does _not_ call exit()! */
 {
@@ -284,7 +291,8 @@ void _Exit_isdnlog(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 do
     if (xinfo && sockets[IN_PORT].descriptor != -2)
       close(sockets[IN_PORT].descriptor);
   } /* if */
-
+  
+  procinfo(1, NULL, -1);	/* close proc */
   closelog();
 
 	if (fout)
