@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.56  1999/11/03 16:02:33  paul
+ * snprintf call had too many arguments for the format string.
+ *
  * Revision 1.55  1999/11/02 21:01:58  akool
  * isdnlog-3.62
  *  - many new rates
@@ -739,7 +742,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	    warning (conf, "Invalid variant %s", s);
 	    continue;
 	  }
-	  if ((v=strtol(s, &s, 10))<1) {
+	  if ((v=strtol(s, &s, 10))<0) {
 	    warning (conf, "Invalid variant %s", s);
 	    continue;
 	  }
