@@ -21,6 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.14  2000/03/25 12:56:40  armin
+ * First checkin of new version 2.0
+ * - support for 4BRI, includes orig Eicon
+ *   divautil files and firmware updated (only etsi).
+ *
  * Revision 1.13  2000/02/12 14:01:32  armin
  * Version 1.2
  * Added write function to management interface.
@@ -205,12 +210,12 @@ void eiconctrl_usage() {
   fprintf(stderr," basics  : -d <DriverID> ID defined when eicon module was loaded/card added\n");
   fprintf(stderr,"         : -v            verbose\n");
   fprintf(stderr," options : -l[channel#]  channel allocation policy\n");
-  fprintf(stderr,"         : -c[1|2]       CRC4 Multiframe usage [off|on]\n");
+  fprintf(stderr,"         : -e            CRC4 Multiframe usage\n");
   fprintf(stderr,"         : -tTEI         use the fixed TEI\n");
   fprintf(stderr,"         : -h            no HSCX 30 mode (PRI only)\n");
   fprintf(stderr,"         : -n            NT2 mode\n");
   fprintf(stderr,"         : -p            leased line D channel\n");
-  fprintf(stderr,"         : -s[1|2]       LAPD layer 2 session strategy\n");
+  fprintf(stderr,"         : -s[0|1|2]     LAPD layer 2 session strategy\n");
   fprintf(stderr,"         : -o            allow disordered info elements\n");
   fprintf(stderr,"         : -z            switch to loopback mode\n");
 #ifndef HAVE_NPCI
@@ -1334,6 +1339,11 @@ int main(int argc, char **argv) {
 
 	cmd = argv[0];
 	if (argc > 1) {
+		if (!strcmp(argv[arg_ofs], "-h"))
+			eiconctrl_usage();
+		if (!strcmp(argv[arg_ofs], "--help"))
+			eiconctrl_usage();
+		
 		if (!strcmp(argv[arg_ofs], "-d")) {
 			arg_ofs++;
 			if (arg_ofs >= argc)
@@ -1464,8 +1474,31 @@ int main(int argc, char **argv) {
 		}
 
 		while(argv[i]) {
-			newargv[newarg] = malloc(sizeof(argv[i]) + 1);
-			strcpy(newargv[newarg], argv[i]);
+			if ((!(strncmp(argv[i], "-t", 2))) && (strlen(argv[i]) > 2)){
+				newargv[newarg] = malloc(4);
+				strcpy(newargv[newarg], "-t");
+				newarg++;
+				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				strcpy(newargv[newarg], argv[i] + 2);
+			} else
+			if ((!(strncmp(argv[i], "-l", 2))) && (strlen(argv[i]) > 2)){
+				newargv[newarg] = malloc(4);
+				strcpy(newargv[newarg], "-l");
+				newarg++;
+				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				strcpy(newargv[newarg], argv[i] + 2);
+			} else
+			if ((!(strncmp(argv[i], "-s", 2))) && (strlen(argv[i]) > 2)){
+				newargv[newarg] = malloc(4);
+				strcpy(newargv[newarg], "-s");
+				newarg++;
+				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				strcpy(newargv[newarg], argv[i] + 2);
+			} else
+			{
+				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				strcpy(newargv[newarg], argv[i]);
+			}
 			if ((!(strcmp(argv[i],"-c"))) || (!(strcmp(argv[i],"-all")))) {
 				have = 1;
 			}
@@ -1493,7 +1526,6 @@ int main(int argc, char **argv) {
 			newarg++;
 		}
 		newargv[newarg] = NULL;
-
 		printf("Using Eicon's divaload...\n");
 		ret = Divaload_main(newarg, newargv);
 		return ret;
@@ -1703,7 +1735,7 @@ int main(int argc, char **argv) {
 #endif
                                 continue;
                         }
-                        if (!strcmp(argv[arg_ofs], "-c")) {
+                        if (!strcmp(argv[arg_ofs], "-e")) {
 				if (isabus) 
                 	                cb->isa.Crc4 = 1;
 #ifdef HAVE_NPCI
@@ -1712,7 +1744,7 @@ int main(int argc, char **argv) {
 #endif
                                 continue;
                         }
-                        if (!strcmp(argv[arg_ofs], "-c1")) {
+                        if (!strcmp(argv[arg_ofs], "-e1")) {
 				if (isabus) 
         	                        cb->isa.Crc4 = 1;
 #ifdef HAVE_NPCI
@@ -1721,7 +1753,7 @@ int main(int argc, char **argv) {
 #endif
                                 continue;
                         }
-                        if (!strcmp(argv[arg_ofs], "-c2")) {
+                        if (!strcmp(argv[arg_ofs], "-e2")) {
 				if (isabus) 
 	                                cb->isa.Crc4 = 2;
 #ifdef HAVE_NPCI
@@ -1787,6 +1819,15 @@ int main(int argc, char **argv) {
 #ifdef HAVE_NPCI
 				else
                                 	cb->pci.StableL2 = 2;
+#endif
+                                continue;
+                        }
+                        if (!strcmp(argv[arg_ofs], "-s0")) {
+				if (isabus) 
+                                	cb->isa.StableL2 = 0;
+#ifdef HAVE_NPCI
+				else
+                                	cb->pci.StableL2 = 0;
 #endif
                                 continue;
                         }
