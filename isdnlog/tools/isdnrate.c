@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.38  2001/03/01 14:59:16  paul
+ * Various patches to fix errors when using the newest glibc,
+ * replaced use of insecure tempnam() function
+ * and to remove warnings etc.
+ *
  * Revision 1.37  2000/07/17 16:34:23  akool
  * isdnlog-4.32
  *  - added new Prefixes 0160 (D1) and 0162 (D2) to "country-de.dat"
@@ -1134,9 +1139,9 @@ static void result(int n)
   if (n > best)
     n = best;
   for (i = 0; i < n; i++)
-    printf("%s  %s %8.3f  %s\n",
-    Provider(sort[i].prefix), currency, sort[i].rate, sort[i].explain);
-}				/* result */
+    printf("%s  %s  %s\n",
+    Provider(sort[i].prefix), printRate(sort[i].rate), sort[i].explain);
+} /* result */
 
 
 static void purge(int n)
