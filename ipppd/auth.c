@@ -221,7 +221,7 @@ void link_down(int unit)
 	else {
 		struct link_struct *q;
 		int i; /* bugcheck, stop after 1024 links */
-		for(i=1024,q=lns[unit].bundle_next;!i && q!=&lns[unit];q=q->bundle_next,i--) {
+		for(i=1024,q=lns[unit].bundle_next;i && q!=&lns[unit];q=q->bundle_next,i--) {
 			if(q->bundle_next == &lns[unit])
 			break;
 		}
