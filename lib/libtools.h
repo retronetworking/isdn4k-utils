@@ -1,4 +1,3 @@
-
 /* $Id$
  *
  * ISDN accounting for isdn4linux.
@@ -19,6 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+ * $Log$
  */
 
 #ifndef _LIB_TOOLS_H_
