@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1999/06/09 19:59:23  akool
+ * isdnlog Version 3.31
+ *  - Release 0.91 of zone-Database (aka "Verzonungstabelle")
+ *  - "rate-de.dat" V:1.02-Germany [09-Jun-1999 21:45:26]
+ *
  *
  */
 
@@ -28,5 +33,6 @@
 int  initZone (int provider, char *path, char **msg);
 void exitZone (int provider);
 int  getZone  (int provider, char *from, char *to);
+int getAreacode(int country, char *from, char **text);
 
 #endif

@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1999/06/26 10:12:14  akool
+ * isdnlog Version 3.36
+ *  - EGCS 1.1.2 bug correction from Nima <nima_ghasseminejad@public.uni-hamburg.de>
+ *  - zone-1.11
+ *
  * Revision 1.7  1999/06/22 19:41:28  akool
  * zone-1.1 fixes
  *
@@ -93,7 +98,10 @@ struct sth {
 	int numlen;
 	int cc;
 } ;
+
+#ifdef STANDALONE
 #define min(a,b) (a) < (b) ? (a) : (b)
+#endif
 
 static struct sth *sthp;
 static int count;
@@ -133,7 +141,7 @@ void exitZone(int provider) {
 		if(sthp[i].provider>=10000)
 			_exitZone(sthp[i].provider);
 }
-	
+
 static void _exitZone(int provider)
 {
 	int i;
@@ -184,14 +192,14 @@ int initZone(int provider, char *path, char **msg)
 	DIR *dp;
 	struct dirent *ep;
 	int len, i;
-	
+
 	if (msg)
     	*(*msg=message)='\0';
 	res = _initZone(provider, path, msg, ZONES);
 	if (area_read || res)
 		return res;
 
-	area_read = true;	
+	area_read = true;
 	if ((p = strrchr(path, '/')) == 0) {
 		dir = "./";
 		file = path;
@@ -211,7 +219,7 @@ int initZone(int provider, char *path, char **msg)
 			return res;
 		}
 		p[1] = '\0';
-	}	
+	}
 	if ((dp = opendir(dir)) == 0) {
 		if (msg)
 			snprintf (message, LENGTH,
@@ -225,25 +233,25 @@ int initZone(int provider, char *path, char **msg)
 			int l=strlen(dir)+strlen(ep->d_name)+1;
 			char *npath=malloc(l);
 			strcpy(npath, dir);
-			strcat(npath, ep->d_name);		
+			strcat(npath, ep->d_name);
 			_initZone(10000+i, npath, 0, AREACODES);
 			i++;
 			free(npath);
-		}	
+		}
 	}
 	closedir(dp);
 	if ((p = strrchr(path, '/')) != 0) {
 		free(dir);
 		free(file);
-	}	
+	}
 	if (msg && strlen(message) < LENGTH-5) {
 		strcat(message, " - ");
 		for (i=0; i<count; i++)
 			if(sthp[i].provider>=10000 && sthp[i].cc && strlen(message) < LENGTH-5)
 				sprintf(message+strlen(message),"%d ",sthp[i].cc);
-	}						
+	}
 	return res;
-}	
+}
 
 static int _initZone(int provider, char *path, char **msg, bool area_only)
 {
@@ -269,7 +277,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 			if (msg)
 				snprintf (message, LENGTH,
 					"Zone V%s: Error: Out of mem 0", version);
-			count--;		
+			count--;
 			return -1;
 		}
 	}
@@ -287,7 +295,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 				if (msg)
 					snprintf (message, LENGTH,
 						"Zone V%s: Error: Out of mem 1", version);
-				count--;		
+				count--;
 				return -1;
 			}
 			sthp = newsthp;
@@ -336,7 +344,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 				snprintf (message, LENGTH,
 					"Zone V%s: Error: gdbm_open '%s': '%s'",
 					version, path, GET_ERR);
-			count--;		
+			count--;
 			return -1;
 		}
 		/* read info */
@@ -358,7 +366,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 					*q++ = *p++;
 				*q = '\0';
 				if (memcmp(dversion, version, 3)) {
-					if (msg) 
+					if (msg)
 						snprintf (message, LENGTH,
 							"Zone V%s: Error: Provider %d File '%s': incompatible Dataversion %s",
 							version, provider, path, dversion);
@@ -380,11 +388,11 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 				p++;
 				tsize = strtol(p, &p, 10);
 				break;
-			case 'O' :	
+			case 'O' :
 				p++;
 				sthp[ocount].oz = strtol(p, &p, 10);
 				break;
-			case 'L' :	
+			case 'L' :
 				p++;
 				sthp[ocount].numlen = strtol(p, &p, 10);
 				break;
@@ -416,10 +424,10 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 		sthp[ocount].pack_key = sthp[ocount].pack_key == 'S' ? 2 : 4;
 
 		if (area_only) {
-			if (sthp[ocount].cc == 0)		
+			if (sthp[ocount].cc == 0)
 				_exitZone(provider); /* discard this one */
-			return 0;	
-		}		
+			return 0;
+		}
 		/* alloc & read table */
 		if ( (sthp[ocount].table = calloc(csize > 256 ? 256 : csize,
 				sizeof(int)) ) == 0) {
@@ -472,7 +480,7 @@ static int _getZ(struct sth *sthp, char *from, char *sto) {
 	char *temp;
 	int res;
 
-	if ((res=strcmp(from, sto)) == 0) 
+	if ((res=strcmp(from, sto)) == 0)
 		return sthp->oz;
 	else if (res > 0) {
 		temp=from;
@@ -482,7 +490,7 @@ static int _getZ(struct sth *sthp, char *from, char *sto) {
 	strncpy(newfrom, from, LENGTH-1);
 	while (strlen(newfrom)) {
 		UL lifrom = (UL) atol(newfrom); /* keys could be long */
-		US ifrom = (US) lifrom;	
+		US ifrom = (US) lifrom;
 		if (sthp->pack_key == 2) {
 			key.dptr = (char *) &ifrom;
 			key.dsize = sizeof(US);
@@ -558,12 +566,12 @@ static int _getAreacode(struct sth *sthp, char *from, char **text) {
 	newfrom[sthp->numlen] = '\0';
 	while ((len=strlen(newfrom))) {
 		UL lifrom = (UL) atol(newfrom); /* keys could be long */
-		US ifrom = (US) lifrom;	
+		US ifrom = (US) lifrom;
 		if (sthp->pack_key == 2) {
 			if (lifrom >= 0x10000) {  /* can't be, so cut a dig */
 				newfrom[strlen(newfrom)-1] = '\0';
 				continue;
-			}	
+			}
 			key.dptr = (char *) &ifrom;
 			key.dsize = sizeof(US);
 		}
@@ -571,7 +579,7 @@ static int _getAreacode(struct sth *sthp, char *from, char **text) {
 			if (lifrom >= 0x10000000L) { /* can't be, so cut a dig */
 				newfrom[strlen(newfrom)-1] = '\0';
 				continue;
-			}	
+			}
 			key.dptr = (char *) &lifrom;
 			key.dsize = sizeof(UL);
 		}
@@ -581,17 +589,17 @@ static int _getAreacode(struct sth *sthp, char *from, char **text) {
 				if (*dbv == 'G') 	/* GDBM has a malloced string in dptr */
 					free(value.dptr);
 				return UNKNOWN;
-			}		
+			}
 			if (*dbv == 'G') 	/* GDBM has a malloced string in dptr */
 				*text = value.dptr;
-			else 
+			else
 				*text = strdup(value.dptr);
 			return len;
 		} /* if dptr */
 		newfrom[strlen(newfrom)-1] = '\0';
 	}
 	return UNKNOWN;
-}	
+}
 
 int getAreacode(int country, char *from, char **text)
 {
@@ -600,9 +608,9 @@ int getAreacode(int country, char *from, char **text)
 		if (sthp[i].cc == country) {
 			if (sthp[i].fh == 0)
 				return UNKNOWN;
-			return _getAreacode(&sthp[i], from, text);	
-		}		
-	return UNKNOWN;	
+			return _getAreacode(&sthp[i], from, text);
+		}
+	return UNKNOWN;
 }
 
 #ifdef ZONETEST
@@ -634,10 +642,10 @@ static int checkZone(char *zf, char* df,int num1,int num2, bool verbose)
 				free(ort2);
 			}
 			else
-				goto no_ort;	
+				goto no_ort;
 		}
-		else	
-no_ort:		
+		else
+no_ort:
 			printf("%s %s = %d\n", from, to, ret);
 	}
 	else {
@@ -703,11 +711,11 @@ static int checkArea(char *df, int cc, char *from, int verbose) {
 		printf("%s\n", msg);
 	ret = getAreacode(cc, from, &text);
 	if(ret != UNKNOWN) {
-		printf("%s:%d '%s'\n", from, ret, text);	
+		printf("%s:%d '%s'\n", from, ret, text);
 		free(text);
 	}
 	else
-		printf("%s - UNKNOWN\n", from);	
+		printf("%s - UNKNOWN\n", from);
 	exitZone(1);
 	return ret;
 }
@@ -763,12 +771,12 @@ static int checkAllArea(char *df, char *cf, int cc, int verbose) {
 				free(ort);
 				ret = 1;
 				break;
-			}	
+			}
 			free(ort);
-		}	
+		}
 	}
 	fclose(fp);
-	exitZone(1);			
+	exitZone(1);
 	if (verbose)
 		printf("'%s' verified %s.\n", df, ret==0? "Ok": "NoNo");
 	free(cf);
@@ -813,9 +821,9 @@ int main (int argc, char *argv[])
 	if (df && (zf || (num1 && num2)))
 		return checkZone(zf, df, num1, num2, verbose);
 	if (df && num1 && cc)
-		return checkArea(df, cc, snum1, verbose);	
+		return checkArea(df, cc, snum1, verbose);
 	if (df && cf && cc)
-		return checkAllArea(df, cf, cc, verbose);	
+		return checkAllArea(df, cf, cc, verbose);
 	fprintf(stderr, "Usage:\n%s -d DBfile -v -V { -z Zonefile | num1 num2 | -a cc num}\n", basename(argv[0]));
 	fprintf(stderr, "\t-d DBfile -v -V -a CC num1 \n");
 	fprintf(stderr, "\t-d DBfile -c Codefile -a CC -v -V\n");
