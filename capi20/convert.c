@@ -2,6 +2,12 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  1999/10/20 16:43:17  calle
+ * - The CAPI20 library is now a shared library.
+ * - Arguments of function capi20_put_message swapped, to match capi spec.
+ * - All capi20 related subdirs converted to use automake.
+ * - Removed dependency to CONFIG_KERNELDIR where not needed.
+ *
  * Revision 1.7  1999/09/15 08:10:44  calle
  * Bugfix: error in 64Bit extention.
  *
@@ -96,7 +102,7 @@ static _cdef cdef[] = {
     /*2e*/{_CWORD,      offsetof(_cmsg,Reason_B3)	},
     /*2f*/{_CWORD,      offsetof(_cmsg,Reject)	},
     /*30*/{_CSTRUCT,    offsetof(_cmsg,Useruserdata)	},
-    /*31*/{_CDWORD,     offsetof(_cmsg,Data64)	},
+    /*31*/{_CQWORD,     offsetof(_cmsg,Data64)	},
 };
 
 static unsigned char *cpars[] = {
@@ -292,7 +298,7 @@ static void PARS_2_MESSAGE (_cmsg *cmsg) {
 		break;
 	    case _CQWORD:
 		qwordTLcpy (cmsg->m+cmsg->l, OFF);
-		cmsg->l+=4;
+		cmsg->l+=8;
 		break;
 	    case _CSTRUCT:
 		if (*(CAPI_MESSAGE *) OFF == 0) {
