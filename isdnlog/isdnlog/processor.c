@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1998/11/05 19:09:49  akool
+ *  - Support for all the new L2 frames from HiSax 3.0d (RR, UA, SABME and
+ *    tei management)
+ *  - CityWeekend reimplemented
+ *    Many thanks to Rainer Gallersdoerfer <gallersd@informatik.rwth-aachen.de>
+ *    for the tip
+ *  - more providers
+ *  - general clean-up
+ *
  * Revision 1.29  1998/11/01 08:49:52  akool
  *  - fixed "configure.in" problem with NATION_*
  *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
@@ -4138,6 +4147,13 @@ static void processctrl(int card, char *s)
   if (verbose & VERBOSE_CTRL)
     print_msg(PRT_LOG, "%s\n", s);
 
+  if (!memcmp(ps, "D2", 2)) { /* AVMB1 */
+    if (firsttime) {
+      firsttime = 0;
+      print_msg (PRT_NORMAL, "(AVM B1 driver detected (D2))\n");
+    }
+    memcpy(ps, "HEX: ", 5);
+  }
   if (!memcmp(ps, "HEX: ", 5)) { /* new HiSax Driver */
 
     if (((verbose & VERBOSE_HEX) && !(verbose & VERBOSE_CTRL)) || stdoutput)
@@ -4265,11 +4281,11 @@ static void processctrl(int card, char *s)
     ps += (tei == BROADCAST) ? 1 : 4;
   }
 
-  else  if (!memcmp(ps, "D2", 2) || !memcmp(ps, "D3", 2)) { /* AVMB1 */
+  else  if (!memcmp(ps, "D3", 2)) { /* AVMB1 */
 
     if (firsttime) {
       firsttime = 0;
-      print_msg (PRT_NORMAL, "(AVM B1 driver detected)\n");
+      print_msg (PRT_NORMAL, "(AVM B1 driver detected (D3))\n");
     }
 
     if (*(ps + 2) == '<')  /* this is our "direction flag" */
