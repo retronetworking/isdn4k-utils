@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.55  2000/06/29 17:38:28  akool
+ *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
+ *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
+ *
  * Revision 1.54  2000/03/09 18:50:03  akool
  * isdnlog-4.16
  *  - isdnlog/samples/isdn.conf.no ... changed VBN
@@ -955,6 +959,8 @@ typedef struct {
   int	  tz;
   int	  tarifknown;
   RATE    Rate;
+  char	  interface[10];
+  char    fnum[NUMSIZE];
 } CALL;
 
 /****************************************************************************/
