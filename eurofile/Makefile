@@ -53,7 +53,7 @@ configureclean: distclean
 install:
 	@echo "NOTE: eurofile install not yet implemented. Install by hand for now!"
 
-commit: distclean
+commit: distclean configure
 	$(CVS) commit .
 
 update:
