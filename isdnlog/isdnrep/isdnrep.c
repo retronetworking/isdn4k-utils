@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1997/05/10 12:57:00  luethje
+ * some changes
+ *
  * Revision 1.19  1997/05/10 01:21:06  luethje
  * some primitive changes
  *
@@ -1164,6 +1167,8 @@ static char *set_byte_string(int flag, double Bytes)
 {
 	static char string[4][20];
 	static int num = 0;
+	int  factor = 1;
+	char prefix = ' ';
 
 
 	num = (num+1)%4;
@@ -1176,17 +1181,27 @@ static char *set_byte_string(int flag, double Bytes)
 			strcpy(string[num],"            ");
 	}
 	else
-	if (Bytes >= 9999999999.0)
- 		sprintf(string[num],"%c=%s GB%s",flag&GET_IN?'I':'O',double2str(Bytes/1073741824,7,2,0),flag&GET_BPS?"/s":"");
-	else
-	if (Bytes >= 9999999)
-		sprintf(string[num],"%c=%s MB%s",flag&GET_IN?'I':'O',double2str(Bytes/1048576,7,2,0),flag&GET_BPS?"/s":"");
-	else
-	if (Bytes >= 9999)
-		sprintf(string[num],"%c=%s kB%s",flag&GET_IN?'I':'O',double2str(Bytes/1024,7,2,0),flag&GET_BPS?"/s":"");
-	else
-	if (Bytes < 9999)
-		sprintf(string[num],"%c=%4ld,00  B%s",flag&GET_IN?'I':'O',(long int) Bytes,flag&GET_BPS?"/s":"");
+	{
+		if (Bytes >= 9999999999.0)
+		{
+			factor = 1073741824;
+			prefix = 'G';
+		}
+		else
+		if (Bytes >= 9999999)
+		{
+			factor = 1048576;
+			prefix = 'M';
+		}
+		else
+		if (Bytes >= 9999)
+		{
+			factor = 1024;
+			prefix = 'k';
+		}
+
+		sprintf(string[num],"%c=%s %cB%s",flag&GET_IN?'I':'O',double2str(Bytes/factor,7,2,0),prefix,flag&GET_BPS?"/s":"");
+	}
 
 	return string[num];
 }

@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.22  1997/05/10 01:20:52  luethje
+## some primitive changes
+##
 ## Revision 1.21  1997/05/09 23:30:37  luethje
 ## isdnlog: new switch -O
 ## isdnrep: new format %S
@@ -205,7 +208,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 2.99.16
+VERSION     = 2.99.17
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
