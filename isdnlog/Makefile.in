@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.182  2000/09/05 17:27:36  paul
+## runtime selection of country behaviour; version 4.42
+##
 ## Revision 1.181  2000/09/01 06:30:20  paul
 ## Now install country-de.dat as country.dat; renaming the source can be done by
 ## someone who is more experienced with CVS.
@@ -1555,7 +1558,7 @@ clean:
 distclean:      clean
 		-rm -f $(MANPAGES)
 		-rm -f $(PROGS) .depend config.h config.status config.cache \
-		config.log Makefile confdefs.h policy.h *~ *.gdbm
+		config.log Makefile confdefs.h policy.h *~ *.gdbm *.cdb *.db
 		set -e; for i in `echo $(SUBDIRS)`; do $(MAKE) -C $$i distclean; done
 
 ifeq (.depend,$(wildcard .depend))
@@ -1586,7 +1589,9 @@ uninstall: rootperm
 			$(DESTDIR)$(MAN5DIR)/isdnformat$(MAN5EXT)	\
 			$(DESTDIR)$(DATADIR)/country-$(NATION).dat	\
 			$(DESTDIR)$(DATADIR)/rate-$(NATION).dat         \
-			$(DESTDIR)$(DATADIR)/dest.{gdbm,db,cdb}
+			$(DESTDIR)$(DATADIR)/dest.gdbm			\
+			$(DESTDIR)$(DATADIR)/dest.db			\
+			$(DESTDIR)$(DATADIR)/dest.cdb
 
 
 installdirs: rootperm
@@ -1670,7 +1675,7 @@ install-data:
 		$(INSTALL_DATA) country-de.dat	$(DESTDIR)$(DATADIR)/country.dat
 		$(INSTALL_DATA) rate-$(NATION).dat      $(DESTDIR)$(DATADIR)
 		$(INSTALL_DATA) holiday-$(NATION).dat   $(DESTDIR)$(DATADIR)
-		@for f in `ls zone-$(NATION)-*.{gdbm,db,cdb} tools/dest/dest.{gdbm,db,cdb} 2>/dev/null` ; do \
+		@for f in `ls zone-$(NATION)-*.gdbm zone-$(NATION)-*.db zone-$(NATION)-*.cdb tools/dest/dest.gdbm tools/dest/dest.db tools/dest/dest.cdb 2>/dev/null` ; do \
 		  $(INSTALL_DATA) $$f $(DESTDIR)$(DATADIR); \
 		  echo Installing $(DESTDIR)$(DATADIR)/$$f; \
 		done
