@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1999/06/01 12:42:45  paul
+ * glibc 2.1 compatibility
+ *
  * Revision 1.3  1997/05/19 22:58:36  luethje
  * - bugfix: it is possible to install isdnlog now
  * - improved performance for read files for vbox files and mgetty files.
@@ -33,6 +36,7 @@
 #ifndef _CREATEDB_H_
 #define _CREATEDB_H_
 
+#ifndef LIBAREA
 #ifdef linux
 # if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)
 #	include <db1/ndbm.h>
@@ -42,6 +46,7 @@
 #else
 #	include "/usr/ucbinclude/ndbm.h"
 /*#	include <libgen.h>*/
+#endif
 #endif
 
 #ifdef DBMALLOC
@@ -56,8 +61,10 @@
 #define SET_NULL
 #endif
 
+#ifndef LIBAREA
 _EXTERN datum    key, data;
 _EXTERN DBM     *dbm SET_NULL;
+#endif
 
 _EXTERN void set_print_fct_for_avon(int (*new_print_msg)(const char *, ...));
 _EXTERN int createDB(char *fn, int force);
