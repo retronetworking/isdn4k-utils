@@ -19,6 +19,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.29  1998/11/01 08:49:52  akool
+ *  - fixed "configure.in" problem with NATION_*
+ *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
+ *  - isdnrep: Outgoing calls ordered by Zone/Provider/MSN corrected
+ *  - new Switch "-i" -> running on internal S0-Bus
+ *  - more providers
+ *  - "sonderrufnummern.dat" extended (Frag Fred, Telegate ...)
+ *  - added AVM-B1 to the documentation
+ *  - removed the word "Teles" from the whole documentation ;-)
+ *
  * Revision 1.28  1998/10/04 12:04:05  akool
  *  - README
  *      New entries "CALLFILE" and "CALLFMT" documented
@@ -3282,16 +3292,21 @@ static int b2c(register int b)
 /* NET_DV since 'chargeint' field exists */
 #define	NETDV_CHARGEINT		0x02
 
-static void huptime(int chan, int bchan)
+static void huptime(int chan, int bchan, int setup)
 {
   register int                c = call[chan].confentry[OTHER];
   auto     isdn_net_ioctl_cfg cfg;
   auto     int                oldchargeint = 0, newchargeint = 0;
   auto     int                oldhuptimeout, newhuptimeout;
-  auto     char               sx[BUFSIZ], why[BUFSIZ];
+  auto     char               sx[BUFSIZ], why[BUFSIZ], n[1024], n1[1024];
+  auto	   union 	      p {
+                	        isdn_net_ioctl_phone phone;
+                		char n[1024];
+  			      } ph;
 
 
   if (hupctrl && (c > -1) && (*known[c]->interface > '@') && expensive(bchan)) {
+    memset(&cfg, 0, sizeof(cfg)); /* clear in case of older kernel */
 
     strcpy(cfg.name, known[c]->interface);
 
@@ -3301,6 +3316,54 @@ static void huptime(int chan, int bchan)
         call[chan].chargeint = oldchargeint = cfg.chargeint;
 #endif
       call[chan].huptimeout = oldhuptimeout = cfg.onhtime;
+
+#if 0 /* and now for the magic least-cost-routing part ... */
+      if (setup) {
+        strcpy(ph.phone.name, known[c]->interface);
+        ph.phone.outgoing = 1;
+
+        if (ioctl(sockets[ISDNCTRL].descriptor, IIOCNETGNM, &ph.phone) >= 0) {
+          strcpy(n, ph.n);
+          sprintf(sx, "@LCR: SETUP to %s detected", n);
+          info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+
+          if (memcmp(n, "010", 3) {
+            sprintf(sx, "@LCR: HANGUP %s", known[c]->interface);
+            info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+
+            if (ioctl(sockets[ISDNCTRL].descriptor, IIOCNETHUP, known[c]->interface) >= 0) { /* HANGUP */
+	      ph.phone.outgoing = 1;
+	      strcpy(ph.phone.name, known[c]->interface);
+	      strcpy(ph.phone.phone, n);
+
+              sprintf(sx, "@LCR: DELPHONE %s", n);
+              info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+
+	      if (ioctl(sockets[ISDNCTRL].descriptor, IIOCNETDNM, &ph.phone) >= 0) { /* DELPHONE */
+                sprintf(n1, "01019%s", n);
+	        ph.phone.outgoing = 1;
+	        strcpy(ph.phone.name, known[c]->interface);
+	        strcpy(ph.phone.phone, n1);
+
+                sprintf(sx, "@LCR: ADDPHONE %s", n1);
+                info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+
+	        if (ioctl(sockets[ISDNCTRL].descriptor, IIOCNETANM, &ph.phone) >= 0) { /* ADDPHONE */
+
+                  sprintf(sx, "@LCR: DIAL");
+            	  info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+
+		  if (ioctl(sockets[ISDNCTRL].descriptor, IIOCNETDIL, known[c]->interface) >= 0) { /* DIAL */
+                    sprintf(sx, "@LCR: DONE!");
+            	    info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
+                  } /* if */
+	        } /* if */
+	      } /* if */
+	    } /* if */
+          } /* if */
+        } /* if */
+      } /* if */
+#endif
 
       if (!oldhuptimeout) {
         sprintf(sx, "HUPTIMEOUT %s is *disabled* - unchanged", known[c]->interface);
@@ -3464,7 +3527,7 @@ static void processbytes()
         } /* if */
 
         if (fullhour) /* zu jeder vollen Stunde HANGUP-Timer neu setzen (aendern sich um: 9:00, 12:00, 18:00, 21:00, 2:00, 5:00 Uhr) */
-          huptime(chan, bchan);
+          huptime(chan, bchan, 0);
 
         DiffTime = cur_time - call[chan].connect;
 
@@ -3684,7 +3747,7 @@ static void processinfo(char *s)
               } /* switch */
             } /* else */
 
-            huptime(chan, j); /* bei Verbindungsbeginn HANGUP-Timer neu setzen */
+            huptime(chan, j, 1); /* bei Verbindungsbeginn HANGUP-Timer neu setzen */
           } /* if */
       } /* if */
 
@@ -4190,6 +4253,9 @@ static void processctrl(int card, char *s)
       } /* else */
     } /* if */
 #endif
+
+    if (!*(ps + 13) || !*(ps + 16))
+      return;
 
     i = strtol(ps += 5, NIL, 16) >> 1;
     net = i & 1;

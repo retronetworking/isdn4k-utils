@@ -21,6 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/11/01 08:50:41  akool
+ *  - fixed "configure.in" problem with NATION_*
+ *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
+ *  - isdnrep: Outgoing calls ordered by Zone/Provider/MSN corrected
+ *  - new Switch "-i" -> running on internal S0-Bus
+ *  - more providers
+ *  - "sonderrufnummern.dat" extended (Frag Fred, Telegate ...)
+ *  - added AVM-B1 to the documentation
+ *  - removed the word "Teles" from the whole documentation ;-)
+ *
  * Revision 1.1  1998/09/26 18:30:24  akool
  *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
  *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
@@ -87,7 +97,7 @@ char *Providername(int number)
     case 87 : return("HamCom");
     case 88 : return("WorldCom");
     case 90 : return("VIAG Interkom");
-    case 98 : return("STAR Telecom");
+    case 98 : return("STAR Telecom/C@llas");
     case 99 : return("ECONOphone/Telco");
     default : return("UNKNOWN Provider");
   } /* switch */
