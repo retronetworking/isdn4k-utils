@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  1999/03/20 16:55:22  akool
+ * isdnlog 3.09 : support for all Internet-by-call numbers
+ *
  * Revision 1.20  1999/03/20 14:34:10  akool
  * - isdnlog Version 3.08
  * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
@@ -853,7 +856,7 @@ int iprintf(char *obuf, int chan, register char *fmt, ...)
       case 'C' : p = itoa(call[chan].cref, p, 10, 0);
       	       	 break;
 
-      case 'B' : p = itoa(chan, p, 10, 0);
+      case 'B' : p = itoa(call[chan].channel, p, 10, 0);
       	       	 break;
 
       case 'A' : s = sx;

@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.33  1999/03/24 19:39:06  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.32  1999/03/20 16:55:27  akool
  * isdnlog 3.09 : support for all Internet-by-call numbers
  *
@@ -956,7 +963,7 @@ _EXTERN char  *qmsg(int type, int version, int val);
 _EXTERN char  *Myname;
 _EXTERN void   initTarife(char *msg);
 _EXTERN void   exitTarife(void);
-_EXTERN void   showcheapest(int zone, int duration, int ignoreprovider, char *info);
+_EXTERN int    showcheapest(int zone, int duration, char *ignoreprovider, char *info, int tz, int hour, int verbose);
 _EXTERN void   price(int chan, char *hint, int viarep);
 _EXTERN char  *realProvidername(int prefix);
 _EXTERN void   preparecint(int chan, char *msg, char *hint, int viarep);
