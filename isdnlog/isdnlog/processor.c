@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.95  2000/01/12 23:22:52  akool
+ * - isdnlog/tools/holiday.c ... returns ERVERYDAY for '*'
+ * - FAQ/configure{,.in} ...  test '==' => '='
+ * - isdnlog/tools/dest/configure{,.in} ...  test '==' => '='
+ * - isdnlog/tools/dest/Makefile.in ...  test '==' => '='
+ * - isdnlog/tools/zone/configure{,.in} ...  test '==' => '='
+ *
+ * - isdnlog/tools/rate-at.c ... P:1069
+ * - isdnlog/rate-at.dat ... P:1069
+ * - isdnlog/country-de.dat ... _DEMF
+ *
+ * - many new rates
+ * - more EURACOM sequences decoded
+ *
  * Revision 1.94  2000/01/01 15:05:23  akool
  * isdnlog-4.01
  *  - first Y2K-Bug fixed
@@ -850,6 +864,7 @@
 #include "isdnlog.h"
 #include "sys/times.h"
 #include "asn1.h"
+#include "asn1_comp.h"
 #include "zone.h"
 #include "telnum.h"
 #if HAVE_ABCEXT
@@ -1205,25 +1220,29 @@ void aoc_debug(int val, char *s)
 */
 
 
-static int parseRemoteOperationProtocol(char **asnp, Aoc *aoc)
+static int parseRemoteOperationProtocol(char **asnp, struct Aoc *aoc)
 {
-  auto Element el;
+  char msg[255];
+  char *p = msg;
+  char *asne = *asnp + strlen(*asnp);
 
+  *asnp += 3;
+  while (*asnp < asne) {
+    *p++ = strtol(*asnp, NIL, 16);
+    *asnp += 3;
+  } 
+  ParseASN1(msg, p, 0);
+  if (ParseComponent(aoc, msg, p) < 0)
+    return 0;
 
-  splitASN1(asnp, 0, &el);
-  printASN1(el, 0);
-
-  if (!ParseComponent(el, ASN1_NOT_TAGGED, aoc))
-    return(0);
-
-  return(1);
+  return 1;
 } /* parseRemoteOperationProtocol */
 
 
 static int facility(int l, char* p)
 {
   auto   int  c;
-  static Aoc  aoc;
+  static struct Aoc  aoc;
 
 
   asnp = p;
@@ -1257,7 +1276,7 @@ static int facility(int l, char* p)
 		    	        currency_factor = aoc.multiplier;
 
                               if (*aoc.currency)
-			      	currency = aoc.currency;
+			        currency = aoc.currency;
 
 			      return(aoc.amount);
 
