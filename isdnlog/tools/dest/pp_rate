@@ -157,6 +157,7 @@ ragain:
 		$acmt = '' unless ( $acmt =~/#\s*\S/ ); 	# only non-empty
 	    }
 	    $a =~ s/[,\s]+$//;
+	    $a =~ s/^\s+//;
 	    @a=split(/\s*,\s*/, $a);
 	    foreach $c (@a) {
 		next if ($c eq '');
@@ -189,6 +190,9 @@ again:
 				print "\r'$c' searching (d<$m) ..";
 			    	last if($m==0);
 			    }
+			}
+			if (length($tf) < 16) { 	# erase "searching ..."
+			     print "\r'$c'                    ";
 			}
 			print "\r'$c'";
 		    }
