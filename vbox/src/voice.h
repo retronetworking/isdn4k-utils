@@ -1,3 +1,8 @@
+/*
+** $Id$
+**
+** Copyright (C) 1996, 1997 Michael 'Ghandi' Herold
+*/
 
 #ifndef _VBOX_VOICE_H
 #define _VBOX_VOICE_H 1

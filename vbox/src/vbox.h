@@ -51,6 +51,7 @@ struct statusled
 {
 	int   x;
    char *name;
+	int   status;
 	char *desc;
 };
 

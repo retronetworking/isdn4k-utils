@@ -1,3 +1,8 @@
+/*
+** $Id$
+**
+** Copyright (C) 1996, 1997 Michael 'Ghandi' Herold
+*/
 
 #ifndef _VBOXD_H
 #define _VBOXD_H 1
