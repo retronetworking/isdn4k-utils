@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.70  2004/01/04 02:22:53  tobiasb
+ * Show supported database(s) at startup.
+ *
  * Revision 1.69  2003/07/25 22:18:03  tobiasb
  * isdnlog-4.65:
  *  - New values for isdnlog option -2x / dual=x with enable certain
@@ -565,6 +568,7 @@ static void hup_handler(int isig)
 {
   print_msg(PRT_INFO, "restarting %s\n", myname);
   Exit(-9);
+  Close_Fds(3); /* avoid duplicate fds after restart */
   execv(myname, hup_argv);
   print_msg(PRT_ERR,"Cannot restart %s: %s!\n", myname, strerror(errno));
 } /* hup_handler */

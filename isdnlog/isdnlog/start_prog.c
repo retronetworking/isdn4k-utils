@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  2000/04/13 15:44:20  paul
+ * Fix for $5, $7, $8, $9, $10, always having same value as $11
+ *
  * Revision 1.15  1999/11/03 17:54:13  paul
  * Fixed empty lines in syslog if program could not be started.
  *
@@ -86,6 +89,7 @@
 
 
 #define _START_PROG_C_
+#include <linux/limits.h> 	/* for NR_OPEN, must precede isdnlog.h */
 #include "isdnlog.h"
 #include <pwd.h>
 #include <grp.h>
@@ -252,6 +256,8 @@ int Ring(info_args *Cmd, char *Opts[], int Die, int Async)
 
 			         dup2(filedes[1],STDOUT_FILENO);
 			         dup2(filedes[1],STDERR_FILENO);
+
+			         Close_Fds(3); /* do not leave isdnlog's fds to script */
 
 /*			         execvp(Pathfind(Args[0],NULL,NULL), Args);*/
 			         execvp(Args[0], Args);
@@ -1157,6 +1163,21 @@ int Change_Channel_Ring( int old_channel, int new_channel)
 
 	return 0;
 }
+
+/****************************************************************************/
+
+#if FD_AT_EXEC_CLOSE
+void Close_Fds( const int first )
+{
+	int i,r;
+	for (i = first; i < NR_OPEN; i++) {
+        r = close(i);
+		if (r == -1 && errno != EBADF)
+			print_msg(PRT_WARN, "close of fd %i prior to exec failed: %s",
+			          i, strerror(errno));
+	}
+}
+#endif
 
 /****************************************************************************/
 

@@ -20,6 +20,31 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.26  2003/08/26 19:46:12  tobiasb
+ * isdnlog-4.66:
+ *  - Added support for AVM B1 (with layer 2 d-channel trace) in point-to-
+ *    point mode, where only TEI 0 is used ("Anlagenanschluss" in German).
+ *    Many thanks to Klaus Heske for his testing efforts.
+ *  - The source number "0" in outgoing calls is now expanded to
+ *    +<country><area>0.  This may be useful for point-to-point setups,
+ *    when <area> contains area code and local number without extension.
+ *  - Basic support for different codesets in (E)DSS1 messages.  Except
+ *    for codeset 0, unknown information elements are now silently
+ *    ignored (controlled by ignore_unknown_IE in isdnlog/isdnlog.h).
+ *  - Added some information elements to isdnlog/messages.c.
+ *  - Increased the length of msn (local number) in struct telnum.
+ *  - Fixed seperation of country and area code for long numbers
+ *    in getDest, tools/dest.c.
+ *  - Changed broken (with gcc 2.95.2) generation of .depend.  The old
+ *    output did not consider the location of objectfiles in subdirs.
+ *    Remove this file before compiling this upgraded isdnlog.
+ *  - Moved DUALFIX... defines from tools/tools.h to isdnlog/isdnlog.h.
+ *  - Added missing R:-Links for cellphone entries in country-de.dat.
+ *  - Different entry for each city "Neustadt" in tools/zone/de/code.
+ *  - Earlier changes since isdnlog-4.65:
+ *     - Allow dualmode workaround 0x100 (DUALFIX_DESTNUM) to work also with
+ *       CALL_PROCEEDING messages for cleaning up unanswered incoming calls.
+ *
  * Revision 1.25  2001/06/08 11:55:24  kai
  * fix to compile with newer kernel headers. Maybe someone wants to fix isdnlog to recognize the number of channels at run time?
  *
@@ -375,6 +400,14 @@
 
 /****************************************************************************/
 
+#ifndef FD_AT_EXEC_MODE
+#define FD_AT_EXEC_MODE    0
+#endif
+#define FD_AT_EXEC_CLOSE   (FD_AT_EXEC_MODE & 1)
+#define FD_AT_EXEC_FLAG    (FD_AT_EXEC_MODE & 2)  /* not implemented yet */
+
+/****************************************************************************/
+
 typedef struct {
 	int     current;
 	int     shift;
@@ -549,6 +582,12 @@ _EXTERN int Del_Interval(int chan, info_args *infoarg);
 _EXTERN struct timeval *Get_Interval(int Sec);
 _EXTERN int Change_Channel_Ring( int old_channel, int new_channel);
 _EXTERN int Start_Interval(void);
+
+#if FD_AT_EXEC_CLOSE
+_EXTERN void Close_Fds( const int first );
+#else
+#define Close_Fds(a) ; 
+#endif
 
 #undef _EXTERN
 
