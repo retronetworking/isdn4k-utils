@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1999/09/10 17:20:33  calle
+ * Last changes for proposed standards (CAPI 2.0):
+ * - AK1-148 "Linux Extention"
+ * - AK1-155 "Support of 64-bit Applications"
+ *
  * Revision 1.3  1998/08/30 09:57:17  calle
  * I hope it is know readable for everybody.
  *
@@ -17,12 +22,14 @@ unsigned ALERT_REQ (_cmsg *cmsg, _cword ApplId, _cword Messagenumber,
                     _cstruct BChannelinformation,
                     _cstruct Keypadfacility,
                     _cstruct Useruserdata,
-                    _cstruct Facilitydataarray) {
+                    _cstruct Facilitydataarray,
+		    _cstruct SendingComplete) {
     capi_cmsg_header (cmsg,ApplId,0x01,0x80,Messagenumber,adr);
     cmsg->BChannelinformation = BChannelinformation;
     cmsg->Keypadfacility = Keypadfacility;
     cmsg->Useruserdata = Useruserdata;
     cmsg->Facilitydataarray = Facilitydataarray;
+    cmsg->SendingComplete = SendingComplete;
     return capi_put_cmsg (cmsg);
 }
 

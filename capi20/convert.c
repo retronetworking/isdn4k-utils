@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.11  2001/03/01 14:59:11  paul
+ * Various patches to fix errors when using the newest glibc,
+ * replaced use of insecure tempnam() function
+ * and to remove warnings etc.
+ *
  * Revision 1.10  2000/05/18 15:02:26  calle
  * Updated _cmsg handling added new functions need by "capiconn".
  *
@@ -328,11 +333,12 @@ static _cdef cdef[] = {
     /*2f*/{_CWORD,      offsetof(_cmsg, Reject)},
     /*30*/{_CSTRUCT,    offsetof(_cmsg, Useruserdata)},
     /*31*/{_CQWORD,     offsetof(_cmsg, Data64)},
+    /*32*/{_CSTRUCT,    offsetof(_cmsg, SendingComplete)},
 };
 
 static unsigned char *cpars[] = {
     /*00*/ 0,
-    /*01 ALERT_REQ*/            (unsigned char*)"\x03\x04\x0c\x28\x30\x1c\x01\x01",
+    /*01 ALERT_REQ*/            (unsigned char*)"\x03\x04\x0c\x28\x30\x1c\x32\x01\x01",
     /*02 CONNECT_REQ*/          (unsigned char*)"\x03\x14\x0e\x10\x0f\x11\x0d\x06\x08\x0a\x05\x07\x09\x01\x0b\x29\x23\x04\x0c\x28\x30\x1c\x01\x01",
     /*03*/ 0,
     /*04 DISCONNECT_REQ*/       (unsigned char*)"\x03\x04\x0c\x28\x30\x1c\x01\x01",

@@ -2,6 +2,11 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.21  2004/03/31 18:12:40  calle
+ * - add receive buffer managment according to CAPI2.0 spec.
+ * - send buffer is now on stack.
+ * - new library version 2.0.7
+ *
  * Revision 1.20  2004/01/16 15:27:11  calle
  * remove several warnings.
  *
@@ -200,6 +205,8 @@ static struct applinfo *alloc_buffers(unsigned MaxB3Connection,
    size_t recvbuffersize = 128 + MaxSizeB3;
    unsigned i;
    size_t size;
+
+   if (recvbuffersize < 2048) recvbuffersize = 2048;
 
    size = sizeof(struct applinfo);
    size += sizeof(struct recvbuffer) * nbufs;
