@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1997/05/04 22:23:15  luethje
+ * README completed
+ * new features of the format string
+ *
  * Revision 1.14  1997/05/04 20:19:54  luethje
  * README completed
  * isdnrep finished
@@ -560,7 +564,7 @@ static int print_bottom(double unit, char *start, char *stop)
 	{
 		if ((j == DIALOUT && !incomingonly) || (!outgoingonly && j == DIALIN))
 		{
-			sprintf(string,"\n%s Summary for %s%s%s\n",j==DIALOUT?"DIALOUT":"DIALIN",
+			sprintf(string,"\n%s Summary for %s%s%s",j==DIALOUT?"DIALOUT":"DIALIN",
 			              start,timearea?" .. ":"",timearea?stop:"");
 
 			h_percent = 80.0;
