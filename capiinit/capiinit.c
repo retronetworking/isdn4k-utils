@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.13  2003/03/31 09:50:52  calle
+ * Bugfix: fixed problems with activate and deactivate subcommands, when
+ *         AVM B1 PCI V4 is used.
+ *
  * Revision 1.12  2003/03/11 13:39:07  paul
  * Also search for firmware in /usr/share/isdn, which is more in line with LSB
  *
@@ -63,7 +67,6 @@
 #include <sys/stat.h>
 #include <sys/ioctl.h>
 #include <signal.h>
-#include <linux/isdn.h>
 #include <linux/b1lli.h>
 #include <linux/capi.h>
 #include <linux/kernelcapi.h>
@@ -118,6 +121,29 @@ static char *skip_nonwhitespace(char *s)
 
 /* ---------------- load module -------------------------------------- */
 
+static int is_module_loaded(char *module)
+{
+	static char *fn = "/proc/modules";
+	char buf[4096];
+	FILE *fp;
+	char *s;
+
+	if ((fp = fopen_with_errmsg(fn, "r")) == NULL)
+		return 0;
+	while (fgets(buf,sizeof(buf),fp)) {
+		s = skip_nonwhitespace(buf);
+		if (s) {
+		   *s = 0;
+		   if (strcmp(module,buf) == 0) {
+		      fclose(fp);
+		      return 1;
+		   }
+		}
+	}
+	fclose(fp);
+	return 0;
+}
+
 static int load_module(char *module)
 {
 	char buf[1024];
@@ -128,8 +154,11 @@ static int load_module(char *module)
 static int unload_module(char *module)
 {
 	char buf[1024];
-	snprintf(buf, sizeof(buf), "%s -r %s", MODPROBE, module);
-	return system(buf);
+        if (is_module_loaded(module)) {
+		snprintf(buf, sizeof(buf), "%s -r %s", MODPROBE, module);
+		return system(buf);
+	}
+	return 0;
 }
 
 /* ---------------- /proc/capi/controller ---------------------------- */
@@ -1106,10 +1135,10 @@ static int check_procfs(void)
 
 static int check_for_kernelcapi(void)
 {
-	if (access("/proc/capi/users", 0) == 0)
+	if (access("/proc/capi/applications", 0) == 0)
 		return 0;
 	load_module("kernelcapi");
-	if (access("/proc/capi/users", 0) == 0)
+	if (access("/proc/capi/applications", 0) == 0)
 		return 0;
 	fprintf(stderr, "ERROR: cannot load module kernelcapi\n");
 	return -1;
@@ -1418,12 +1447,6 @@ int main_stop(int unload, char *cardname, int number)
 			free_contrprocinfo(&cpinfo);
 		}
 	}
-	if (!silent) {
-		cpinfo = load_contrprocinfo(0);
-		show_contrprocinfo(cpinfo, cardname ? cname: 0);
-		free_contrprocinfo(&cpinfo);
-	}
-	close(capifd);
 
 	if (unload && !cardname) {
 		cards = load_config(configfilename);
@@ -1435,7 +1458,16 @@ int main_stop(int unload, char *cardname, int number)
 			if (driver_loaded(card->driver))
 				unload_driver(card->driver);
 		}
+	}
 
+	if (!silent) {
+		cpinfo = load_contrprocinfo(0);
+		show_contrprocinfo(cpinfo, cardname ? cname: 0);
+		free_contrprocinfo(&cpinfo);
+	}
+	close(capifd);
+
+	if (unload && !cardname) {
 		unload_module("capi");
 		unload_module("capidrv");
 		unload_module("kernelcapi");
