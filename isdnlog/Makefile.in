@@ -19,6 +19,10 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.194  2001/04/03 19:15:28  akool
+## isdnlog-4.52
+##  - small bugfix within "isdnbill" (segfault ...)
+##
 ## Revision 1.193  2001/03/13 14:39:30  leo
 ## added IIOCNETGPN support for 2.0 kernels
 ## s. isdnlog/kernel_2_0/README for more information (isdnlog 4.51)
@@ -1526,7 +1530,7 @@ ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
                 connect/connect.o connect/socket.o tools/tools.o      	  \
                 connect/conv_address.o isdnlog/user_access.o 		  \
                 tools/isdnconf.o tools/telnum.o tools/dest.o		  \
-		tools/rate.o tools/zone.o tools/holiday.o \
+		tools/rate.o tools/zone.o tools/holiday.o tools/zone/upack.o \
 		isdnlog/asn1.o isdnlog/asn1_generic.o isdnlog/asn1_aoc.o  \
 		isdnlog/asn1_address.o isdnlog/asn1_diversion.o           \
 		isdnlog/asn1_basic_service.o isdnlog/asn1_comp.o          \
@@ -1557,24 +1561,24 @@ endif
 ISDNREP_OBJS =  isdnrep/rep_main.o tools/tools.o tools/isdnconf.o         \
                 isdnlog/messages.o isdnrep/isdnrep.o     		  \
 		tools/rate.o tools/zone.o tools/holiday.o tools/dest.o \
-		tools/telnum.o						  \
+		tools/telnum.o tools/zone/upack.o		  \
                 $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 ISDNBILL_OBJS = isdnrep/isdnbill.o tools/tools.o tools/isdnconf.o         \
                 isdnlog/messages.o					  \
 		tools/rate.o tools/zone.o tools/holiday.o tools/dest.o	  \
-		tools/telnum.o						  \
+		tools/telnum.o tools/zone/upack.o			  \
                 $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 ISDNCONF_OBJS=  isdnconf/isdnconf.o tools/tools.o tools/isdnconf.o        \
 		tools/rate.o tools/zone.o tools/holiday.o \
-		tools/telnum.o	tools/dest.o				  \
+		tools/telnum.o	tools/dest.o tools/zone/upack.o		  \
                 $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 ISDNRATE_OBJS=  tools/isdnrate.o tools/isdnconf.o tools/tools.o           \
 		tools/rate.o tools/zone.o tools/dest.o \
 		tools/holiday.o \
-		tools/telnum.o						  \
+		tools/telnum.o tools/zone/upack.o			  \
                 $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 
