@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.36  1998/04/27 22:35:31  luethje
+ * bugfix on HTML code
+ *
  * Revision 1.35  1998/03/29 19:54:11  luethje
  * idnrep: added html feature (incoming/outgoing calls)
  *
@@ -887,7 +890,7 @@ static int print_bottom(double unit, char *start, char *stop)
 
 	h_percent = 60.0;
 	h_table_color = H_TABLE_COLOR3;
-	get_format("Zone %c : %-10.10s %4d call(s) %10.10s  %s");
+	get_format("Zone %c : %-15.15s %4d call(s) %10.10s  %s");
 	print_line2(F_BODY_HEADER,"");
 
 	for (i = 1; i < MAXZONES; i++)
