@@ -54,4 +54,4 @@ clean:
 	rm -f *.o *~ $(PROGRAM)
 
 distclean: clean
-	rm -f config.status config.cache config.log Makefile
+	rm -f config.status config.cache config.log Makefile icnctrl.man
