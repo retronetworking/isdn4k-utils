@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1999/04/19 19:25:07  akool
+ * isdnlog Version 3.18
+ *
+ * - countries-at.dat added
+ * - spelling corrections in "countries-de.dat" and "countries-us.dat"
+ * - LCR-function of isdnconf now accepts a duration (isdnconf -c .,duration)
+ * - "rate-at.dat" and "rate-de.dat" extended/fixed
+ * - holiday.c and rate.c fixed (many thanks to reinelt@eunet.at)
+ *
  * Revision 1.6  1999/04/16 14:39:58  akool
  * isdnlog Version 3.16
  *
@@ -403,9 +412,9 @@ int isDay(struct tm *tm, bitfield mask, char **name)
 
   if (mask & (1<<day)) {
     sprintf (buffer, "%s", Weekday[day]);
-  return day;
-}
-
+    return day;
+  }
+  
   return 0;
 }
 

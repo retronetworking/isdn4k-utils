@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1999/04/19 19:25:36  akool
+ * isdnlog Version 3.18
+ *
+ * - countries-at.dat added
+ * - spelling corrections in "countries-de.dat" and "countries-us.dat"
+ * - LCR-function of isdnconf now accepts a duration (isdnconf -c .,duration)
+ * - "rate-at.dat" and "rate-de.dat" extended/fixed
+ * - holiday.c and rate.c fixed (many thanks to reinelt@eunet.at)
+ *
  * Revision 1.7  1999/04/16 14:40:03  akool
  * isdnlog Version 3.16
  *
@@ -341,7 +350,7 @@ int initRate(char *conf, char *dat, char **msg)
     booked[i]=0;
     variant[i]=UNKNOWN;
   }
-
+  
   if (conf && *conf) {
     if ((stream=fopen(conf,"r"))==NULL) {
       if (msg) snprintf (message, LENGTH, "Error: could not load rate configuration from %s: %s",
@@ -359,57 +368,57 @@ int initRate(char *conf, char *dat, char **msg)
       }
       switch (*s) {
       case 'P':
-	  s+=2;
-	  while (isblank(*s)) s++;
-	  if (!isdigit(*s)) {
-	    warning (conf, "Invalid provider-number %s", s);
-	    continue;
-	  }
-	  prefix = strtol(s, &s ,10);
-	  if (prefix >= MAXPROVIDER) {
-	    warning (conf, "Invalid provider-number %d", prefix);
-	    continue;
-	  }
-	  booked[prefix]=1;
-	  while (isblank(*s)) s++;
-	  if (*s == '=') {
+	s+=2;
+	while (isblank(*s)) s++;
+	if (!isdigit(*s)) {
+	  warning (conf, "Invalid provider-number %s", s);
+	  continue;
+	}
+	prefix = strtol(s, &s ,10);
+	if (prefix >= MAXPROVIDER) {
+	  warning (conf, "Invalid provider-number %d", prefix);
+	  continue;
+	}
+	booked[prefix]=1;
+	while (isblank(*s)) s++;
+	if (*s == '=') {
 	  s++;
 	  while (isblank(*s)) s++;
 	  if (!isdigit(*s)) {
 	    warning (conf, "Invalid variant %s", s);
-	  continue;
-	}
-	    if ((v=strtol(s, &s, 10))<1) {
-	      warning (conf, "Invalid variant %s", s);
-	      continue;
-	    }
-	    variant[prefix]=v;
+	    continue;
+	  }
+	  if ((v=strtol(s, &s, 10))<1) {
+	    warning (conf, "Invalid variant %s", s);
+	    continue;
+	  }
+	  variant[prefix]=v;
 	  while (isblank(*s)) s++;
-	  }
-	  if (*s) {
-	    warning (conf, "trailing junk '%s' ignored.", s);
-	  }
+	}
+	if (*s) {
+	  warning (conf, "trailing junk '%s' ignored.", s);
+	}
 	break;
-
+	
       default:
 	warning(conf, "Unknown tag '%c'", *s);
       }
     }
     fclose (stream);
   }
-
+  
   if (!dat || !*dat) {
     if (msg) snprintf (message, LENGTH, "Warning: no rate database specified!",
 		       conf, strerror(errno));
     return 0;
   }
-
+  
   if ((stream=fopen(dat,"r"))==NULL) {
     if (msg) snprintf (message, LENGTH, "Error: could not load rate database from %s: %s",
 		       dat, strerror(errno));
     return -1;
   }
-
+  
   line=0;
   prefix=UNKNOWN;
   while ((s=fgets(buffer,LENGTH,stream))!=NULL) {
@@ -493,8 +502,8 @@ int initRate(char *conf, char *dat, char **msg)
       empty(&zones);
       while (1) {
 	while (isblank(*s)) s++;
-      if (!isdigit(*s)) {
-	warning (dat, "Invalid zone '%c'", *s);
+	if (!isdigit(*s)) {
+	  warning (dat, "Invalid zone '%c'", *s);
 	  empty(&zones);
 	  break;
 	}
@@ -502,8 +511,8 @@ int initRate(char *conf, char *dat, char **msg)
 	while (isblank(*s)) s++;
 	if (*s=='-') {
 	  s++; while (isblank(*s)) s++;
-      if (!isdigit(*s)) {
-	warning (dat, "Invalid zone '%c'", *s);
+	  if (!isdigit(*s)) {
+	    warning (dat, "Invalid zone '%c'", *s);
 	    empty(&zones);
 	    break;
 	  }
@@ -519,8 +528,8 @@ int initRate(char *conf, char *dat, char **msg)
 	while (isblank(*s)) s++;
 	if (*s==',') {
 	  s++;
-	continue;
-      }
+	  continue;
+	}
 	break;
       }
 
@@ -533,9 +542,9 @@ int initRate(char *conf, char *dat, char **msg)
 	if (z>=Provider[prefix].nZone) {
 	  Provider[prefix].Zone=realloc(Provider[prefix].Zone, (z+1)*sizeof(ZONE));
 	  for (i=Provider[prefix].nZone; i<z; i++)
-	  Provider[prefix].Zone[i].used=0;
+	    Provider[prefix].Zone[i].used=0;
 	  Provider[prefix].nZone = z+1;
-      }
+	}
 	Provider[prefix].Zone[z].used=1;
 	Provider[prefix].Zone[z].Name=*s?strdup(s):NULL;
 	Provider[prefix].Zone[z].nHour=0;
@@ -551,9 +560,9 @@ int initRate(char *conf, char *dat, char **msg)
 	break;
       }
       s+=2;
-	a=s;
-	while(1) {
-	  if (*(c=strip(str2set(&a)))) {
+      a=s;
+      while(1) {
+	if (*(c=strip(str2set(&a)))) {
 	  for (i=0; i<Provider[prefix].nArea; i++) {
 	    if (strcmp (Provider[prefix].Area[i].Code,c)==0) {
 	      warning (dat, "Duplicate Area %s", c);
@@ -568,15 +577,15 @@ int initRate(char *conf, char *dat, char **msg)
 	    Provider[prefix].nArea++;
 	    Areas++;
 	  }
-	  } else {
+	} else {
 	  warning (dat, "Ignoring empty areacode");
-	  }
-	  if (*a==',') {
-	    a++;
-	    continue;
-	  }
-	  break;
 	}
+	if (*a==',') {
+	  a++;
+	  continue;
+	}
+	break;
+      }
       s=a;
       break;
 
@@ -623,7 +632,7 @@ int initRate(char *conf, char *dat, char **msg)
 	  if (day2<1 || day2>7) {
 	    warning (dat, "invalid day %d", day2);
 	    day=0;
-	  break;
+	    break;
 	  }
 	  if (day2<day1) {
 	    i=day2; day2=day1; day1=i;
@@ -686,8 +695,8 @@ int initRate(char *conf, char *dat, char **msg)
 	while (isblank(*s)) s++;
 	if (*s==',') {
 	  s++;
-	continue;
-      }
+	  continue;
+	}
 	break;
       }
 
@@ -720,9 +729,8 @@ int initRate(char *conf, char *dat, char **msg)
 	}
 	price=strtod(s,&s);
 	while (isblank(*s)) s++;
-	divider=1;
+	divider=0;
 	duration=1;
-	delay=UNKNOWN;
 	if (*s=='(') {
 	  s++; while (isblank(*s)) s++;
 	  if (!isdigit(*s)) {
@@ -737,46 +745,56 @@ int initRate(char *conf, char *dat, char **msg)
 	  }
 	  s++; while (isblank(*s)) s++;
 	}
-	if (*s=='/') {
-	  s++; while (isblank(*s)) s++;
-	  if (!isdigit(*s)) {
-	    warning (dat, "invalid duration '%c'", *s);
-	    break;
+	while (1) {
+	  if (*s=='/') {
+	    s++; while (isblank(*s)) s++;
+	    if (!isdigit(*s)) {
+	      warning (dat, "invalid duration '%c'", *s);
+	      break;
+	    }
+	    duration=strtod(s,&s);
+	    while (isblank(*s)) s++;
 	  }
-	  duration=strtod(s,&s);
-	  while (isblank(*s)) s++;
-	}
-	if (*s==':') {
-	  s++; while (isblank(*s)) s++;
-	  if (!isdigit(*s)) {
-	    warning (dat, "invalid delay '%c'", *s);
-	    break;
+	  if (*s==':') {
+	    s++; while (isblank(*s)) s++;
+	    if (!isdigit(*s)) {
+	      warning (dat, "invalid delay '%c'", *s);
+	      break;
+	    }
+	    delay=strtol(s,&s,10);
+	    while (isblank(*s)) s++;
+	  } else {
+	    delay=UNKNOWN;
 	  }
-	  delay=strtol(s,&s,10);
-	  while (isblank(*s)) s++;
+	  if ((*s==',' || *s=='/') && delay==UNKNOWN)
+	    delay=duration;
+	  if (*s!=',' && *s!='/' && delay!=UNKNOWN) {
+	    warning(dat, "last rate must not have a delay, will be ignored!");
+	    delay=UNKNOWN;
+	  }
+	  if (divider==0.0)
+	    divider=duration;
+	  zp=zones;
+	  while (zp) {
+	    z=pop(&zp);
+	    t=Provider[prefix].Zone[z].nHour-1;
+	    u=Provider[prefix].Zone[z].Hour[t].nUnit++;
+	    Provider[prefix].Zone[z].Hour[t].Unit=realloc(Provider[prefix].Zone[z].Hour[t].Unit, (u+1)*sizeof(UNIT));
+	    Provider[prefix].Zone[z].Hour[t].Unit[u].Duration=duration;
+	    Provider[prefix].Zone[z].Hour[t].Unit[u].Delay=delay;
+	    Provider[prefix].Zone[z].Hour[t].Unit[u].Price=price*duration/divider;
+	  }
+	  Hours++;
+	  if (*s=='/') {
+	    continue;
+	  }
+	  break;
 	}
-	if (*s==',' && delay==UNKNOWN)
-	  delay=duration;
-	if (*s!=',' && delay!=UNKNOWN) {
-	  warning(dat, "last rate must not have a delay, will be ignored!");
-	  delay=UNKNOWN;
-	}
-	zp=zones;
-	while (zp) {
-	  z=pop(&zp);
-	  t=Provider[prefix].Zone[z].nHour-1;
-	  u=Provider[prefix].Zone[z].Hour[t].nUnit++;
-	  Provider[prefix].Zone[z].Hour[t].Unit=realloc(Provider[prefix].Zone[z].Hour[t].Unit, (u+1)*sizeof(UNIT));
-	  Provider[prefix].Zone[z].Hour[t].Unit[u].Duration=duration;
-	  Provider[prefix].Zone[z].Hour[t].Unit[u].Delay=delay;
-	  Provider[prefix].Zone[z].Hour[t].Unit[u].Price=price/divider;
-	}
-	Hours++;
-	if (*s==',') {
-	s++;
-	  continue;
-	}
-	break;
+	  if (*s==',') {
+	    s++;
+	    continue;
+	  }
+	  break;
       }
       while (isblank(*s)) s++;
       zp=zones;
@@ -826,7 +844,7 @@ int getZone (int prefix, char *number)
   if (prefix<0 || prefix>=nProvider || !Provider[prefix].used) {
     return UNKNOWN;
   }
-
+  
   l=0;
   max=0;
   z=UNKNOWN;
@@ -836,10 +854,10 @@ int getZone (int prefix, char *number)
       z=Provider[prefix].Area[a].Zone;
       max=m;
     } else if (m<l)
-	return z;
+      return z;
     l=m;
-    }
-
+  }
+	
   return UNKNOWN;
 }
 
@@ -1016,7 +1034,7 @@ void main (int argc, char *argv[])
   initRate ("/etc/isdn/rate.conf", "../rate-at.dat", &msg);
   printf ("%s\n", msg);
 
-  Rate.prefix = 1;
+  Rate.prefix = 66;
   Rate.zone = 1;
 
   if (argc>1) {
