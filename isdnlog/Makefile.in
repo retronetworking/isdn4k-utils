@@ -19,6 +19,13 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.131  1999/12/12 17:21:09  akool
+## isdnlog-3.76
+## - isdnlog/Makefile.in ... added dep for Makefile.in
+## - isdnlog/tools/zone/configure{,.in} ... better error msg if bzip2 not found
+## - isdnlog/tools/dest/configure{,.in} ... better error msg if bzip2 not found
+## - tools for generating a fully expanded zonefile added
+##
 ## Revision 1.130  1999/12/12 14:35:51  akool
 ## isdnlog-3.75
 ##  - ABC_LCR support (untested)
@@ -910,7 +917,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.76
+VERSION     = 3.77
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
