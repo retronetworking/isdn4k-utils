@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.35  1999/09/13 09:09:44  akool
+ * isdnlog-3.51
+ *   - changed getProvider() to not return NULL on unknown providers
+ *     many thanks to Matthias Eder <mateder@netway.at>
+ *   - corrected zone-processing when doing a internal -> world call
+ *
  * Revision 1.34  1999/08/29 10:29:15  akool
  * isdnlog-3.48
  *   cosmetics
@@ -934,7 +940,19 @@ int iprintf(char *obuf, int chan, register char *fmt, ...)
     } /* if */
 
     if (c != '%') {
-      *op++ = c;
+      if (c == '\\') {
+	c = *fmt++;
+	switch (c) {
+	case 't':
+	  *op++ = '\t';
+	  break;
+	default:
+	  *op++ = '\\';
+	  *op++ = c;
+	}
+      } else {
+	*op++ = c;
+      }
       continue;
     } /* if */
 
