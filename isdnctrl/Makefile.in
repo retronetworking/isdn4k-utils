@@ -55,7 +55,7 @@ config.status: configure
 
 %.8: %.man
 ifdef CONFIG_ISDNCTRL_CONF
-	cat $< | sed -e 's%@MANINC@%.so%' -e "s%@MAN8DIR@%$(MAN8DIR)%" > $@
+	cat $< | sed -e 's%@MANINC@%.so%' -e "s%@MAN8DIR@%$(MAN8DIR)%" -e "/^\.so/s/'//g" > $@
 else
 	cat $< | sed -e 's%@MANINC@%.\\\"%' -e "s%@MAN8DIR@%$(MAN8DIR)%" > $@
 endif
