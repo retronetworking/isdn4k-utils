@@ -20,6 +20,7 @@ mainmenu_option next_comment
 comment 'General configuration'
 comment 'Build options'
 dep_bool 'Build programs which need X11 installed' CONFIG_BUILDX11 $CONFIG_HASX11
+string 'Kernel source directory' CONFIG_KERNELDIR
 comment 'Destination directories'
 string 'Directory to install binaries' CONFIG_BINDIR
 string 'Directory to install admin binaries' CONFIG_SBINDIR

@@ -6,7 +6,7 @@
 #
 SHELL			= /bin/sh
 CFLAGS			= -Wall -O2
-INCLUDES		= -I. @DEBUGVAR@ -I@KERNELDIR@drivers/isdn/icn
+INCLUDES		= -I. @DEBUGVAR@ -I@KERNELDIR@/drivers/isdn/icn
 DEFS			=
 LDFLAGS			= -L../lib @LIBS@
 PROGRAM			= icnctrl
