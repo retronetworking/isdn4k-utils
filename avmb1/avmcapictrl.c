@@ -6,6 +6,11 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.6  1998/02/07 20:09:00  calle
+ * - added support for DN1/SPID1 DN2/SPID2 for 5ESS und NI1 protocols.
+ * - allow debuging of patchvalues.
+ * - optimize configure.in/configure
+ *
  * Revision 1.5  1998/01/16 14:02:08  calle
  * patchvalues working now, leased lines and dchannel protocols like
  * CT1,VN3 und AUSTEL support okay, point to point also patchable.
@@ -51,7 +56,7 @@ int debugpatch = 0;
 
 void usage(void)
 {
-	fprintf(stderr, "usage: %s add <portbase> <irq> [B1|M1|T1] (Add a new card)\n", cmd);
+	fprintf(stderr, "usage: %s add <portbase> <irq> [B1|T1] (Add a new card)\n", cmd);
 	fprintf(stderr, "   or: %s load <bootcode> [contrnr [protocol [P2P | DN1:SPID1 [DN2:SPID2]]]] (load firmware)\n", cmd);
 	fprintf(stderr, "   or: %s reset [contrnr] (reset controller)\n", cmd);
 	exit(1);
@@ -301,13 +306,11 @@ int main(int argc, char **argv)
 			if (argv[arg_ofs + 3]) {
 			   if (strcasecmp(argv[arg_ofs + 3],"B1") == 0) {
 	                      cardtype = AVM_CARDTYPE_B1;
-			   } else if (strcasecmp(argv[arg_ofs + 3],"M1") == 0) {
-	                      cardtype = AVM_CARDTYPE_M1;
 			   } else if (strcasecmp(argv[arg_ofs + 3],"T1") == 0) {
 	                      cardtype = AVM_CARDTYPE_T1;
 			   } else {
 				fprintf(stderr, "%s: illegal cardtype \"%s\"\n", cmd, argv[arg_ofs + 3]);
-				fprintf(stderr, "%s: try one of B1,M1,T1", cmd);
+				fprintf(stderr, "%s: try one of B1,T1", cmd);
 				exit(-1);
 			   }
 			} else {
