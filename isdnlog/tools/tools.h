@@ -20,6 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.31  1999/03/20 14:34:17  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.30  1999/03/15 21:28:54  akool
  * - isdnlog Version 3.06
  * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
@@ -679,6 +691,7 @@ typedef struct {
   char    vnum[MAXMSNS][256];
   int	  provider;
   int	  sondernummer[MAXMSNS];
+  int	  internetnumber[MAXMSNS];
   int	  intern[MAXMSNS];
   char    id[32];
   char	  usage[16];
@@ -958,6 +971,7 @@ _EXTERN void   showcheapest(int zone, int duration, int ignoreprovider, char *in
 _EXTERN void   price(int chan, char *hint, int viarep);
 _EXTERN char  *realProvidername(int prefix);
 _EXTERN void   preparecint(int chan, char *msg, char *hint, int viarep);
+_EXTERN	int    isInternetAccess(int provider, char *number);
 _EXTERN int    taktlaenge(int chan, char *why);
 _EXTERN void   initSondernummern(char *msg);
 _EXTERN int    is_sondernummer(char *number, int provider);

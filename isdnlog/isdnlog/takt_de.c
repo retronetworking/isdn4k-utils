@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/03/20 14:33:40  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.14  1999/03/16 17:37:27  akool
  * - isdnlog Version 3.07
  * - Michael Reinelt's patch as of 16Mar99 06:58:58
@@ -590,11 +602,21 @@ char *realProvidername(int prefix)
 } /* realProvidername */
 
 
+int isInternetAccess(int provider, char *number)
+{
+  if (t[provider].used && (t[provider].InternetZugang != NULL) &&
+       !strcmp(number, t[provider].InternetZugang))
+    return(1);
+  else
+    return(0);
+} /* isInternetAccess */
+
+
 void preparecint(int chan, char *msg, char *hint, int viarep)
 {
   register int    zone = UNKNOWN, provider = UNKNOWN, tz, i, cheapest = UNKNOWN;
   auto 	   struct tm *tm;
-  auto	   char	  why[BUFSIZ], s[BUFSIZ];
+  auto	   char	  why[BUFSIZ], s[BUFSIZ], s1[BUFSIZ];
   auto	   double tarif = 0.0, tarif1, providertarif = 0.0, cheaptarif;
 
 
@@ -615,9 +637,11 @@ void preparecint(int chan, char *msg, char *hint, int viarep)
     sprintf(s, "Unknown Sonderrufnummer for provider %s. Using chargeinfos from provider DTAG.",
             Providername(provider));
     info(chan, PRT_SHOWCONNECT, STATE_CONNECT, s);
-  }
+  } /* if */
 
-  if ((call[chan].sondernummer[CALLED] != UNKNOWN) &&      /* Sonderrufnummer, Abrechnung zum CityCall-Tarif */
+  if (call[chan].internetnumber[CALLED])
+    zone = INTERNET;
+  else if ((call[chan].sondernummer[CALLED] != UNKNOWN) &&      /* Sonderrufnummer, Abrechnung zum CityCall-Tarif */
       (sondertarif(call[chan].sondernummer[CALLED]) == SO_CITYCALL))
     zone = CITYCALL;
   else if ((call[chan].sondernummer[CALLED] != UNKNOWN) && /* Sonderrufnummer, kostenlos */
@@ -723,8 +747,13 @@ void preparecint(int chan, char *msg, char *hint, int viarep)
         sprintf(s, "%s %s/Min, Takt %d/%d", WAEHRUNG, double2str(tarif, 5, 3, DEB),
         	       	       	    	    t[cheapest].takt1[zone], t[cheapest].takt2[zone]);
 
-      sprintf(hint, "HINT: Better use 010%02d:%s, %s, saving %s %s/%ds",
-        cheapest, t[cheapest].Provider, s, WAEHRUNG,
+      if (zone == INTERNET)
+        sprintf(s1, "-%s", t[cheapest].InternetZugang);
+      else
+        *s1 = 0;
+
+      sprintf(hint, "HINT: Better use 010%02d%s:%s, %s, saving %s %s/%ds",
+        cheapest, s1, t[cheapest].Provider, s, WAEHRUNG,
         double2str(providertarif - cheaptarif, 5, 3, DEB), TEST);
 
       call[chan].hint = cheapest;
@@ -949,9 +978,16 @@ void initTarife(char *msg)
 
       if ((p = strchr(s, '#')))
         *p = 0;
-
-      if ((p = strchr(s, '\n')))
+      else if ((p = strchr(s, '\n')))
         *p = 0;
+      else
+        p = s + strlen(s) - 1;
+
+      p--;
+
+      while (*p == ' ')
+        *p-- = 0;
+
 
       if (*s) {
 
@@ -1025,7 +1061,7 @@ void initTarife(char *msg)
 
           case '+' : if (!ignore) { /* +:nnn Verbindungsentgelt pro Gespraech */
                	       if (prefix == UNKNOWN) {
-                         warning("Unexpected tag 'I'");
+                         warning("Unexpected tag '+'");
                          break;
                        } /* if */
 
@@ -1035,7 +1071,7 @@ void initTarife(char *msg)
 
           case '-' : if (!ignore) { /* -:nnn kostenlose Sekunden */
                        if (prefix == UNKNOWN) {
-                         warning("Unexpected tag 'I'");
+                         warning("Unexpected tag '-'");
                          break;
                        } /* if */
 

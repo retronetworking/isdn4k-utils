@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1999/03/20 14:34:10  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.19  1999/03/14 12:16:44  akool
  * - isdnlog Version 3.04
  * - general cleanup
@@ -557,17 +569,19 @@ char *vnum(int chan, int who)
     flag |= C_NO_ERROR;
 #endif
 
-  if ((call[chan].sondernummer[who] != -1) || call[chan].intern[who]) {
+  if ((call[chan].sondernummer[who] != UNKNOWN) || call[chan].intern[who] || call[chan].internetnumber[who]) {
     strcpy(call[chan].rufnummer[who], call[chan].num[who]);
 
     if (cnf > -1)
       strcpy(retstr[retnum], call[chan].alias[who]);
-    else if (call[chan].sondernummer[who] != -1) {
+    else if (call[chan].sondernummer[who] != UNKNOWN) {
       if ((l1 = strlen(sondernum(call[chan].sondernummer[who]))) < l)
         sprintf(retstr[retnum], "%s - %s", sondernummername(call[chan].sondernummer[who]), call[chan].num[who] + l1);
       else
-      strcpy(retstr[retnum], sondernummername(call[chan].sondernummer[who]));
+        strcpy(retstr[retnum], sondernummername(call[chan].sondernummer[who]));
     }
+    else if (call[chan].internetnumber[who])
+      sprintf(retstr[retnum], "INTERNET %s", call[chan].num[who]);
     else
       sprintf(retstr[retnum], "TN %s", call[chan].num[who]);
 
@@ -720,7 +734,7 @@ static char *ltoa(register unsigned long num, register char *p, register int rad
   while (--i);
 
   return(p);
-} 
+}
 */
 
 /****************************************************************************/

@@ -19,6 +19,18 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.61  1999/03/20 14:32:29  akool
+## - isdnlog Version 3.08
+## - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+## - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+## - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+## - "make install" now makes the required entry
+##     [GLOBAL]
+##     AREADIFF = /usr/lib/isdn/vorwahl.dat
+## - README: Syntax description of the new "rate-at.dat"
+## - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+## - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+##
 ## Revision 1.60  1999/03/16 17:37:08  akool
 ## - isdnlog Version 3.07
 ## - Michael Reinelt's patch as of 16Mar99 06:58:58
@@ -472,7 +484,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.08
+VERSION     = 3.09
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
 
