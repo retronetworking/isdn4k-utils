@@ -24,6 +24,14 @@
  *
  *
  * $Log$
+ * Revision 1.64  1999/05/04 19:33:01  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.63  1999/04/16 14:39:31  akool
  * isdnlog Version 3.16
  *
@@ -1245,9 +1253,9 @@ static int print_bottom(double unit, char *start, char *stop)
 
 		for (i = 1; i < MAXPROVIDER; i++) {
                   if (i < 100)
-		    sprintf(string, "010%02d ", i);
+		    sprintf(string, "%s%02d ", vbn, i);
                   else
-		    sprintf(string, "010%03d", i - 100);
+		    sprintf(string, "%s%03d", vbn, i - 100);
 
 		  if (usage_provider[i]) {
                     if (duration_provider[i])

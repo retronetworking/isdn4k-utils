@@ -20,6 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.26  1999/05/13 11:39:09  akool
+ * isdnlog Version 3.28
+ *
+ *  - "-u" Option corrected
+ *  - "ausland.dat" removed
+ *  - "countries-de.dat" fully integrated
+ *      you should add the entry
+ *      "COUNTRYFILE = /usr/lib/isdn/countries-de.dat"
+ *      into section "[ISDNLOG]" of your config file!
+ *  - rate-de.dat V:1.02-Germany [13-May-1999 12:26:24]
+ *  - countries-de.dat V:1.02-Germany [13-May-1999 12:26:26]
+ *
  * Revision 1.25  1999/05/09 18:24:10  akool
  * isdnlog Version 3.25
  *
@@ -665,9 +677,9 @@ typedef struct {
 static SORT sort[MAXPROVIDER];
 
 
-static int compare(SORT *s1, SORT *s2)
+static int compare(const void *s1, const void *s2)
 {
-  return(s1->rate > s2->rate);
+  return(((SORT *)s1)->rate > ((SORT *)s2)->rate);
 } /* compare */
 
 
@@ -696,7 +708,11 @@ static void showLCR(int duration)
   auto int   useds = 0, maxhour, leastprovider = UNKNOWN;
   auto int   ignoreprovider = UNKNOWN;
   auto RATE  Rate;
+#if 0
   auto int   probe[] = { REGIOCALL, GERMANCALL, C_NETZ, D1_NETZ, D2_NETZ, E_PLUS_NETZ, E2_NETZ, INTERNET, AUKUNFT_IN, AUSKUNFT_AUS, 0 };
+#else
+  auto int   probe[] = { REGIOCALL, GERMANCALL, D2_NETZ, INTERNET, AUKUNFT_IN, AUSKUNFT_AUS, 0 };
+#endif
   auto int   used[MAXPROVIDER];
   auto int   hours[MAXPROVIDER];
   auto char  lastmessage[BUFSIZ], message[BUFSIZ], *px;
@@ -704,9 +720,10 @@ static void showLCR(int duration)
   auto time_t werktag, wochenende;
 
 
-  print_msg(PRT_NORMAL, "Least-Cost-Routing-Table [Verbindungsdauer:%d Sekunden]:\n\n", duration);
-
   time(&werktag);
+
+  print_msg(PRT_NORMAL, "Least-Cost-Routing-Table [Verbindungsdauer:%d Sekunden], Stand: %s\n", duration, ctime(&werktag) + 4);
+
   tm = localtime(&werktag);
 
   if ((tm->tm_wday == 6) || (tm->tm_wday == 0)) {
@@ -738,16 +755,19 @@ retry:
     while (*p) {
 
       switch (*p) {
-        case REGIOCALL    : print_msg(PRT_NORMAL, "\tRegioCall:\n");        break;
-        case GERMANCALL   : print_msg(PRT_NORMAL, "\tGermanCall:\n");       break;
-	case C_NETZ       : print_msg(PRT_NORMAL, "\tC Mobilfunk:\n");      break;
-	case D1_NETZ      : print_msg(PRT_NORMAL, "\tD1 Mobilfunk:\n");     break;
-	case D2_NETZ      : print_msg(PRT_NORMAL, "\tD2 Mobilfunk:\n");     break;
-	case E_PLUS_NETZ  : print_msg(PRT_NORMAL, "\tEplus Mobilfunk:\n");  break;
-	case E2_NETZ      : print_msg(PRT_NORMAL, "\tE2 Mobilfunk:\n");     break;
-	case INTERNET     : print_msg(PRT_NORMAL, "\tInternet:\n");         break;
-	case AUKUNFT_IN   : print_msg(PRT_NORMAL, "\tAuskunft Inland:\n");  break;
-	case AUSKUNFT_AUS : print_msg(PRT_NORMAL, "\tAuskunft Ausland:\n"); break;
+        case REGIOCALL    : print_msg(PRT_NORMAL, "  RegioCall (im Umkreis von 50 km):\n");        break;
+        case GERMANCALL   : print_msg(PRT_NORMAL, "  GermanCall (Deutschlandweit):\n");       break;
+        case D2_NETZ	  : print_msg(PRT_NORMAL, "  Mobilfunk (alle Handy's 01610,01617,01619,01618,0170,0171,0172,0173,0177,0178,0176,0179):\n"); break;
+#if 0
+	case C_NETZ       : print_msg(PRT_NORMAL, "  C Mobilfunk:\n");      break;
+	case D1_NETZ      : print_msg(PRT_NORMAL, "  D1 Mobilfunk:\n");     break;
+	case D2_NETZ      : print_msg(PRT_NORMAL, "  D2 Mobilfunk:\n");     break;
+	case E_PLUS_NETZ  : print_msg(PRT_NORMAL, "  Eplus Mobilfunk:\n");  break;
+	case E2_NETZ      : print_msg(PRT_NORMAL, "  E2 Mobilfunk:\n");     break;
+#endif
+	case INTERNET     : print_msg(PRT_NORMAL, "  Internet:\n");         break;
+	case AUKUNFT_IN   : print_msg(PRT_NORMAL, "  Auskunft Inland:\n");  break;
+	case AUSKUNFT_AUS : print_msg(PRT_NORMAL, "  Auskunft Ausland:\n"); break;
       } /* switch */
 
       lastprovider = UNKNOWN;
@@ -782,8 +802,8 @@ retry:
         if (provider != lastprovider) {
           px = getProvidername(lastprovider);
 
-          print_msg(PRT_NORMAL, "\t\t%02d:00 .. %02d:59 010%02d:%s%*s(%s)\n",
-            lasthour, hour - 1, lastprovider, px, 14 - strlen(px), "", lastmessage);
+          print_msg(PRT_NORMAL, "    %02d:00 .. %02d:59 %s%02d:%s%*s(%s)\n",
+            lasthour, hour - 1, vbn, lastprovider, px, 14 - strlen(px), "", lastmessage);
 
           used[lastprovider] = 1;
 
@@ -807,11 +827,11 @@ retry:
       px = getProvidername(lastprovider);
 
       if ((lasthour == 7) && (hour == 7))
-        print_msg(PRT_NORMAL, "\t\timmer          010%02d:%s%*s(%s)\n",
-          lastprovider, px, 14 - strlen(px), "", lastmessage);
+        print_msg(PRT_NORMAL, "    immer          %s%02d:%s%*s(%s)\n",
+          vbn, lastprovider, px, 14 - strlen(px), "", lastmessage);
       else
-        print_msg(PRT_NORMAL, "\t\t%02d:00 .. %02d:59 010%02d:%s%*s(%s)\n",
-          lasthour, hour - 1, lastprovider, px, 14 - strlen(px), "", lastmessage);
+        print_msg(PRT_NORMAL, "    %02d:00 .. %02d:59 %s%02d:%s%*s(%s)\n",
+          lasthour, hour - 1, vbn, lastprovider, px, 14 - strlen(px), "", lastmessage);
 
       used[lastprovider] = 1;
 
@@ -831,7 +851,7 @@ retry:
 
   for (provider = 0; provider < MAXPROVIDER; provider++)
     if (used[provider]) {
-      print_msg(PRT_NORMAL, "010%02d:%s\t(%d hours)\n", provider, getProvidername(provider), hours[provider]);
+      print_msg(PRT_NORMAL, "%s%02d:%s%*s(%d hours)\n", vbn, provider, getProvidername(provider), 14 - strlen(getProvidername(provider)), "", hours[provider]);
       useds++;
 
       if (hours[provider] < maxhour) {
@@ -844,8 +864,8 @@ retry:
   if (useds == 6) {
     if (ignoreprovider != leastprovider) {
 
-      print_msg(PRT_NORMAL, "OOOPS: More than 5 providers used. Retry with 010%02d:%s ignored\n",
-        leastprovider, getProvidername(leastprovider));
+      print_msg(PRT_NORMAL, "OOOPS: More than 5 providers used. Retry with %s%02d:%s ignored\n",
+        vbn, leastprovider, getProvidername(leastprovider));
 
       ignoreprovider = leastprovider;
       goto retry;
@@ -1024,9 +1044,10 @@ int main(int argc, char *argv[], char *envp[])
 
 
  		initHoliday(holifile, NULL);
- 		initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL);
- 		/* initRate(NULL, "/usr/lib/isdn/rate-de.dat", NULL); */
-		currency = strdup("DEM");
+ 		/* initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL); */
+ 		initRate(NULL, "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL);
+		currency = strdup("DM");
+		vbn = strdup("010");
 
 		if (1 /* FIXME: (*areacode == '.') || (ptr = get_areacode(areacode,&len,quiet?C_NO_ERROR|C_NO_WARN:0)) != NULL */ )
 		{
@@ -1124,7 +1145,7 @@ int main(int argc, char *argv[], char *envp[])
                                 qsort((void *)sort, n, sizeof(SORT), compare);
 
                                 for (i = 0; i < n; i++)
-                                  print_msg(PRT_NORMAL, "010%02d %s %8.3f (%s)\n", sort[i].prefix, currency, sort[i].rate, sort[i].explain);
+                                  print_msg(PRT_NORMAL, "%s%02d %s %8.3f (%s)\n", vbn, sort[i].prefix, currency, sort[i].rate, sort[i].explain);
 #if 0
                                 print_msg(PRT_NORMAL, "getLeastCost=%d\n", getLeastCost(&Rate, UNKNOWN));
 #endif

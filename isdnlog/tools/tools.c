@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.26  1999/05/09 18:24:28  akool
+ * isdnlog Version 3.25
+ *
+ *  - README: isdnconf: new features explained
+ *  - rate-de.dat: many new rates from the I4L-Tarifdatenbank-Crew
+ *  - added the ability to directly enter a country-name into "rate-xx.dat"
+ *
  * Revision 1.25  1999/05/04 19:33:47  akool
  * isdnlog Version 3.24
  *
@@ -593,7 +600,7 @@ char *vnum(int chan, int who)
   register int    l = strlen(call[chan].num[who]), got = 0;
   register int    flag = C_NO_WARN | C_NO_EXPAND;
   auto     char  *ptr;
-  auto	   int    ll, lx;
+  auto	   int    ll, lx, l1;
   auto	   int 	  prefix = strlen(countryprefix);
   auto	   int 	  cc_len = 2;   /* country code length defaults to 2 */
 
@@ -630,14 +637,18 @@ char *vnum(int chan, int who)
     if (cnf > -1)
       strcpy(retstr[retnum], call[chan].alias[who]);
     else if (call[chan].sondernummer[who] != UNKNOWN) {
-#if 0 /* FIXME */
-      if ((l1 = strlen(sondernum(call[chan].sondernummer[who]))) < l)
-        sprintf(retstr[retnum], "%s - %s", sondernummername(call[chan].sondernummer[who]), call[chan].num[who] + l1);
+      if ((l1 = call[chan].sondernummer[who]) < l) {
+        register char *p = call[chan].num[who] + l1;
+        register char  c = *p;
+
+        *p = 0;
+
+        sprintf(retstr[retnum], "%s - %c%s", call[chan].num[who], c, p + 1);
+
+        *p = c;
+      }
       else
-        strcpy(retstr[retnum], sondernummername(call[chan].sondernummer[who]));
-#else
-      sprintf(retstr[retnum], "%s", call[chan].num[who]);
-#endif
+        sprintf(retstr[retnum], "%s", call[chan].num[who]);
     }
     else
       sprintf(retstr[retnum], "TN %s", call[chan].num[who]);
@@ -1008,9 +1019,9 @@ go:   	         if (!ndigit)
       	         if (call[chan].provider != -1) {
 
       		   if (call[chan].provider < 100)
-      	       	   sprintf(sx, "010%02d", call[chan].provider);
+      	       	     sprintf(sx, "%s%02d", vbn, call[chan].provider);
       		   else
-		     sprintf(sx, "010%03d", call[chan].provider - 100);
+		     sprintf(sx, "%s%03d", vbn, call[chan].provider - 100);
       	         }
       		 else
                    *sx = 0;

@@ -19,6 +19,18 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.42  1999/05/13 11:39:18  akool
+ * isdnlog Version 3.28
+ *
+ *  - "-u" Option corrected
+ *  - "ausland.dat" removed
+ *  - "countries-de.dat" fully integrated
+ *      you should add the entry
+ *      "COUNTRYFILE = /usr/lib/isdn/countries-de.dat"
+ *      into section "[ISDNLOG]" of your config file!
+ *  - rate-de.dat V:1.02-Germany [13-May-1999 12:26:24]
+ *  - countries-de.dat V:1.02-Germany [13-May-1999 12:26:26]
+ *
  * Revision 1.41  1999/05/04 19:32:37  akool
  * isdnlog Version 3.24
  *
@@ -325,9 +337,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:ou:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:ou:B:";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -575,7 +587,9 @@ static void init_variables(int argc, char* argv[])
   sprintf(mlabel, "%%s%s  %%s%%s", "%e.%b %T %I");
   amtsholung = NULL;
   dual = 0;
-  preselect = 33; /* Telekomik */
+
+  preselect = 33;      /* Telekomik */
+  vbn = strdup("010"); /* Germany */
 
   myname = argv[0];
   myshortname = basename(myname);
@@ -754,6 +768,10 @@ int set_options(int argc, char* argv[])
       	       	 break;
 
       case 'u' : ignoreRR = atoi(optarg);
+      	       	 break;
+
+      case 'B' : free(vbn);
+      	         vbn = strdup(optarg);
       	       	 break;
 
       case '?' : printf(usage, myshortname, myshortname, options);
@@ -948,6 +966,11 @@ static int read_param_file(char *FileName)
                                 else
                                 if (!strcmp(Ptr->name,CONF_ENT_IGNORERR))
 				        ignoreRR = (int)strtol(Ptr->value, NIL, 0);
+                                else
+                                if (!strcmp(Ptr->name,CONF_ENT_VBN)) {
+                                        free(vbn);
+				        vbn = strdup(Ptr->value);
+                                }
                                 else
 					print_msg(PRT_ERR,"Error: Invalid entry `%s'!\n",Ptr->name);
 

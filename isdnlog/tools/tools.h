@@ -20,6 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.41  1999/05/13 11:40:11  akool
+ * isdnlog Version 3.28
+ *
+ *  - "-u" Option corrected
+ *  - "ausland.dat" removed
+ *  - "countries-de.dat" fully integrated
+ *      you should add the entry
+ *      "COUNTRYFILE = /usr/lib/isdn/countries-de.dat"
+ *      into section "[ISDNLOG]" of your config file!
+ *  - rate-de.dat V:1.02-Germany [13-May-1999 12:26:24]
+ *  - countries-de.dat V:1.02-Germany [13-May-1999 12:26:26]
+ *
  * Revision 1.40  1999/05/09 18:24:31  akool
  * isdnlog Version 3.25
  *
@@ -682,6 +694,7 @@
 #define	CONF_ENT_TRIM	   "TRIM"
 #define	CONF_ENT_OTHER	   "OTHER"
 #define CONF_ENT_IGNORERR  "IGNORERR"
+#define	CONF_ENT_VBN	   "VBN"
 
 /****************************************************************************/
 
@@ -971,6 +984,7 @@ _EXTERN char    	mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;
 _EXTERN int 	interns0;
+_EXTERN	char    *vbn;
 #undef _EXTERN
 
 /****************************************************************************/

@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1999/05/09 18:24:18  akool
+ * isdnlog Version 3.25
+ *
+ *  - README: isdnconf: new features explained
+ *  - rate-de.dat: many new rates from the I4L-Tarifdatenbank-Crew
+ *  - added the ability to directly enter a country-name into "rate-xx.dat"
+ *
  * Revision 1.10  1999/04/29 19:03:37  akool
  * isdnlog Version 3.22
  *
@@ -161,7 +168,7 @@ typedef struct {
 
 static char *defaultWeekday[] = { "", 
 				  "Monday",
-				  "Thuesday",
+				  "Tuesday",
 				  "Wednesday",
 				  "Thursday",
 				  "Friday",
@@ -402,31 +409,46 @@ int isDay(struct tm *tm, bitfield mask, char **name)
   julian day;
   char *s;
   static char buffer[BUFSIZ];
+  int holiday;
+  
+  holiday = isHoliday(tm, &s);
 
-  if ((mask & (1<<HOLIDAY)) && isHoliday(tm, &s)) {
+  if ((mask & (1<<HOLIDAY)) && holiday) {
     if (name) sprintf (*name=buffer, "%s (%s)", Weekday[HOLIDAY], s); 
     return HOLIDAY;
   }
 
   day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+1;
 
-  if ((mask & (1<<WEEKEND)) && day>5) {
+  if ((mask & (1<<WEEKEND)) && day>5 && !holiday) {
     if (name) sprintf (*name=buffer, "%s (%s)", Weekday[WEEKEND], Weekday[day]);
     return WEEKEND;
   }
   
-  if ((mask & (1<<WORKDAY)) && day<6) {
+  if ((mask & (1<<WORKDAY)) && day<6 && !holiday) {
     if (name) sprintf (*name=buffer, "%s (%s)", Weekday[WORKDAY], Weekday[day]);
     return WORKDAY;
   }
   
   if (mask & (1<<EVERYDAY)) {
-    if (name) *(*name=buffer)='\0';
+    if(name)
+    {
+      if(holiday) 
+        sprintf(*name=buffer, "%s (%s)", Weekday[day], s);
+      else
+        sprintf(*name=buffer, "%s", Weekday[day]);
+    }
     return day;
   }
 
   if (mask & (1<<day)) {
-    if (name) sprintf (*name=buffer, "%s", Weekday[day]);
+    if(name)
+    {
+      if(holiday) 
+        sprintf(*name=buffer, "%s (%s)", Weekday[day], s);
+      else
+        sprintf(*name=buffer, "%s", Weekday[day]);
+    }
     return day;
   }
   
@@ -441,7 +463,7 @@ void main (int argc, char *argv[])
   struct tm tm;
 
 
-  initHoliday("../holiday-at.dat", &msg);
+  initHoliday("../holiday-de.dat", &msg);
   printf ("%s\n", msg);
 
   for (i=1; i < argc; i++) {
