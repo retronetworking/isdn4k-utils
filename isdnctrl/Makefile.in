@@ -28,6 +28,12 @@ MODULES		+= ctrlconf.o
 MANPAGES    += .isdnctrl_conf.8
 endif
 
+ifeq (@CONFIG_ISDNCTRL_TIMRU@,y)
+COPTS		+= -DI4L_CTRL_TIMRU
+MODULES		+= ctrltimru.o
+# MANPAGES    += .isdnctrl_timru.8
+endif
+
 .SUFFIXES:
 .SUFFIXES: .c .o
 

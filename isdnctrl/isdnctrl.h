@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1998/02/12 23:14:44  he
+ * added encap x25iface and l2_prot x25dte, x25dce
+ *
  * Revision 1.7  1997/10/03 21:48:09  fritz
  * Added cisco-hk encapsulation.
  *
@@ -62,6 +65,13 @@ enum {
         CBHUP, IHUP, SECURE, CALLBACK,
         L2_PROT, L3_PROT, ADDLINK, REMOVELINK,
         ENCAP, TRIGGER, RESET,
+        DIALTIMEOUT, DIALWAIT, STATUS,
+#ifdef I4L_CTRL_TIMRU
+        ADDRULE, INSRULE, DELRULE, SHOWRULES,
+        FLUSHRULES, FLUSHALLRULES, DEFAULT,
+		BUDGET, SHOWBUDGETS,
+		SAVEBUDGETS, RESTOREBUDGETS,
+#endif
 #ifdef I4L_CTRL_CONF
         WRITECONF, READCONF
 #endif /* I4L_CTRL_CONF */
@@ -113,6 +123,22 @@ cmd_struct cmds[] =
         {"encap", "12"},
         {"trigger", "12"},
         {"reset", "01"},
+        {"dialtimeout", "12"},
+        {"dialwait", "12"},
+        {"status", "12"},
+#ifdef I4L_CTRL_TIMRU
+        {"addrule", "0"},
+        {"insrule", "0"},
+        {"delrule", "0"},
+        {"showrules", "0"},
+        {"flushrules", "0"},
+        {"flushallrules", "0"},
+        {"default", "0"},
+        {"budget", "0"},
+        {"showbudgets", "0"},
+        {"savebudgets", "0"},
+        {"restorebudgets", "0"},
+#endif
 #ifdef I4L_CTRL_CONF
         {"writeconf", "01"},
         {"readconf", "01"},

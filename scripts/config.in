@@ -53,6 +53,7 @@ bool 'isdnctrl' CONFIG_ISDNCTRL
 if [ "$CONFIG_ISDNCTRL" = "y" ]; then
 #	bool 'Enable isdnctrl debug-option' CONFIG_ISDNCTRL_DEBUG
 	bool 'Enable configfile-option (uses dbm lib)' CONFIG_ISDNCTRL_CONF
+	bool 'Enable timru-controls' CONFIG_ISDNCTRL_TIMRU
 fi
 bool 'iprofd' CONFIG_IPROFD
 endmenu
