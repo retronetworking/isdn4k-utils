@@ -175,7 +175,7 @@ int main(int argc, char **argv)
 		}
 		else
 		{
-			if (getuid() == 0)
+			if (geteuid() == 0)
 			{
 				fprintf(stderr, "%s: sending terminate signal to process %d...\n", vbasename, i);
 
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 		exit(5);
 	}
 
-	if (getuid() != 0)
+	if (geteuid() != 0)
 	{
 		fprintf(stderr, "%s: you must be *root* to start %s.\n", vbasename, vbasename);
 
