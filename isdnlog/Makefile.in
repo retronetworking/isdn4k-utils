@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.157  2000/04/13 11:02:17  paul
+## Prevent "ls: zone-nl-*.db: No such file or directory" error during make install
+##
 ## Revision 1.156  2000/04/02 17:35:06  akool
 ## isdnlog-4.18
 ##  - isdnlog/isdnlog/isdnlog.8.in  ... documented hup3
@@ -1173,7 +1176,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.18
+VERSION     = 4.19
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \

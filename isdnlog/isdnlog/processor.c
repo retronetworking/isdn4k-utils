@@ -19,6 +19,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.104  2000/03/09 18:50:02  akool
+ * isdnlog-4.16
+ *  - isdnlog/samples/isdn.conf.no ... changed VBN
+ *  - isdnlog/isdnlog/isdnlog.c .. ciInterval
+ *  - isdnlog/isdnlog/processor.c .. ciInterval
+ *  - isdnlog/tools/tools.h .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnconf.c .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnrate.c .. removed a warning
+ *  - isdnlog/NEWS ... updated
+ *  - isdnlog/README ... updated
+ *  - isdnlog/isdnlog/isdnlog.8.in ... updated
+ *  - isdnlog/isdnlog/isdnlog.5.in ... updated
+ *  - isdnlog/samples/provider ... NEW
+ *
+ *    ==> Please run a make clean, and be sure to read isdnlog/NEWS for changes
+ *    ==> and new features.
+ *
  * Revision 1.103  2000/02/22 20:04:10  akool
  * isdnlog-4.13
  *  - isdnlog/tools/rate-at.c ... chg. 1003
@@ -4941,6 +4958,8 @@ static void processlcr(char *p)
   auto char    	 		   lcr_amtsholung[BUFSIZ];
   auto int			   abort = 0;
 
+  if(!abclcr)
+    return;
 
 #ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
   sscanf(p, "%s %s %s %s %s", ji, kenn, cid, eaz, dst);
