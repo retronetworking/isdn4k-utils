@@ -60,6 +60,7 @@ if [ "$CONFIG_ICNCTRL" = "y" ]; then
 	bool 'Enable icnctl debug-option' CONFIG_ICNCTRL_DEBUG
 fi
 bool 'pcbitctl' CONFIG_PCBITCTL
+bool 'avmcapictrl' CONFIG_AVMCAPICTRL
 endmenu
 mainmenu_option nextcomment
 comment 'Tools for monitoring activity'
