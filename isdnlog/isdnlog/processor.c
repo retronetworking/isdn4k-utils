@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.93  1999/12/31 13:30:02  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *
  * Revision 1.92  1999/12/12 14:35:53  akool
  * isdnlog-3.75
  *  - ABC_LCR support (untested)
@@ -1933,6 +1937,8 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 		    }
 		    else if ((element == 0x29) && (version != VERSION_1TR6)) {
 			tm.tm_year  = strtol(p += 3, NIL, 16);
+			if (tm.tm_year < 70)
+			  tm.tm_year += 100;
 			tm.tm_mon   = strtol(p += 3, NIL, 16) - 1;
 			tm.tm_mday  = strtol(p += 3, NIL, 16);
 			tm.tm_hour  = strtol(p += 3, NIL, 16);

@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.43  1999/12/31 13:57:20  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *  - resolved *any* warnings against rate-de.dat
+ *  - Many new rates
+ *  - CREDITS file added
+ *
  * Revision 1.42  1999/12/24 14:17:06  akool
  * isdnlog-3.81
  *  - isdnlog/tools/NEWS
@@ -473,7 +480,7 @@ time_t atom(register char *p)
   p += 4;
   *p = 0;
 
-  tm.tm_year = atoi(p1 + 2);
+  tm.tm_year = atoi(p1) - 1900;
 
 #ifdef DEBUG_1
   if (tm.tm_year < 1995) {
