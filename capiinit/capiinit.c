@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2004/01/19 09:15:57  calle
+ * Always use capifs, don't trust devfs.
+ *
  * Revision 1.15  2004/01/16 15:27:12  calle
  * remove several warnings.
  *
@@ -87,6 +90,7 @@ static char capidevnamenew[] = "/dev/isdn/capi20";
 static char *capidevname = capidevnameold;
 
 static char *firmwarepath[] = {
+	"/lib/firmware/isdn",
 	"/usr/share/isdn",
 	"/usr/lib/isdn",
 	"/lib/isdn",
