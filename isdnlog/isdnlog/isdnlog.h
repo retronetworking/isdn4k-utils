@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.23  1999/11/16 18:09:39  akool
+ * isdnlog-3.67
+ *   isdnlog-3.66 writes wrong provider number into it's logfile isdn.log
+ *   there is a patch and a repair program available at
+ *   http://www.toetsch.at/linux/i4l/i4l-3_66.htm
+ *
  * Revision 1.22  1999/09/11 22:28:24  akool
  * isdnlog-3.50
  *   added 3. parameter to "-h" Option: Controls CHARGEHUP for providers like

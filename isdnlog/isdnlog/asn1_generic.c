@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (ASN.1 parser)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *
  * ASN.1 parser written by Kai Germaschewski <kai@thphy.uni-duesseldorf.de>
  *
@@ -21,6 +21,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/04/26 22:11:57  akool
+ * isdnlog Version 3.21
+ *
+ *  - CVS headers added to the asn* files
+ *  - repaired the "4.CI" message directly on CONNECT
+ *  - HANGUP message extended (CI's and EH's shown)
+ *  - reactivated the OVERLOAD message
+ *  - rate-at.dat extended
+ *  - fixes from Michael Reinelt
+ *
  *
  * Revision 0.1  1999/04/25 20:00.00  akool
  * Initial revision

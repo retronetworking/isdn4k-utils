@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (log-module)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.92  1999/12/12 14:35:53  akool
+ * isdnlog-3.75
+ *  - ABC_LCR support (untested)
+ *
  * Revision 1.91  1999/11/12 20:50:49  akool
  * isdnlog-3.66
  *   - Patch from Jochen Erwied <mack@joker.e.ruhr.de>

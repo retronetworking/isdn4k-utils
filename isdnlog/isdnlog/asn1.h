@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (ASN.1 parser)
  *
- * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995 .. 2000 by Andreas Kool (akool@isdn4linux.de)
  *
  * ASN.1 parser written by Kai Germaschewski <kai@thphy.uni-duesseldorf.de>
  *
@@ -21,6 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/10/30 13:42:36  akool
+ * isdnlog-3.60
+ *   - many new rates
+ *   - compiler warnings resolved
+ *   - fixed "Sonderrufnummer" Handling
+ *
  * Revision 1.4  1999/06/26 10:12:02  akool
  * isdnlog Version 3.36
  *  - EGCS 1.1.2 bug correction from Nima <nima_ghasseminejad@public.uni-hamburg.de>
