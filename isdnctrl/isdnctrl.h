@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/07/23 20:39:16  luethje
+ * added the option "force" for the commands delif and reset
+ *
  * Revision 1.3  1997/07/22 22:36:11  luethje
  * isdnrep:  Use "&nbsp;" for blanks
  * isdnctrl: Add the option "reset"
@@ -45,7 +48,7 @@ enum {
         BIND, UNBIND, PPPBIND, PPPUNBIND,
         BUSREJECT, MAPPING, SYSTEM, HANGUP,
         ADDPHONE, DELPHONE, LIST, EAZ,
-        VERBOSE, GETCONF, HUPTIMEOUT, CBDELAY,
+        VERBOSE, HUPTIMEOUT, CBDELAY,
         CHARGEINT, DIALMAX, SDELAY, CHARGEHUP,
         CBHUP, IHUP, SECURE, CALLBACK,
         L2_PROT, L3_PROT, ADDLINK, REMOVELINK,
@@ -84,7 +87,6 @@ cmd_struct cmds[] =
         {"list", "1"},
         {"eaz", "12"},
         {"verbose", "1"},
-        {"getconf", "01"},
         {"huptimeout", "12"},
         {"cbdelay", "12"},
         {"chargeint", "12"},

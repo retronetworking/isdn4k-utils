@@ -6,6 +6,9 @@
 #
 #
 # $Log$
+# Revision 1.5  1997/07/23 20:39:17  luethje
+# added the option "force" for the commands delif and reset
+#
 # Revision 1.4  1997/07/22 22:36:12  luethje
 # isdnrep:  Use "&nbsp;" for blanks
 # isdnctrl: Add the option "reset"
@@ -254,7 +257,11 @@ Unbinds a the previously bound interface "name".
 Binds the current interface to a ippp device (/dev/ipppX).
 This works only for syncronous ppp.
 The value must be a number.
-If no number is omitted, it shows the current binding.
+If no number is omitted and the interface name is called "ipppX", then
+it binds it to the same ippp interface.
+.TP 5
+.B pppunbind name
+Unbinds a the previously bound interface "name" to a ippp device.
 .TP 5
 .B busreject driverId [on|off]
 If switched on, isdn4linux replies a REJECT to incoming calls, it
