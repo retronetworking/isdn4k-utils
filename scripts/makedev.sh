@@ -35,7 +35,7 @@ then	# Debian/SuSE standard
 fi
 rm -f $DEV/isdninfo
 mknod -m 444 $DEV/isdninfo c $MAJ 255
-ln -sf $DEV/isdnctrl0 $DEV/isdnctrl
+ln -sf isdnctrl0 $DEV/isdnctrl
 
 MAJ=43
 MIN=0
