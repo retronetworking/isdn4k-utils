@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.55  1999/11/02 21:01:58  akool
+ * isdnlog-3.62
+ *  - many new rates
+ *  - next try to fix "Sonderrufnummern"
+ *
  * Revision 1.54  1999/10/31 11:19:11  akool
  * finally fixed a bug with "Sonderrufnummern"
  *
@@ -754,8 +759,8 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   }
 
   if (!dat || !*dat) {
-    if (msg) snprintf (message, LENGTH, "Warning: no rate database specified!",
-		       conf, strerror(errno));
+    if (msg) snprintf (message, LENGTH, "Warning: no rate database specified in %s!",
+		       conf);
     return 0;
   }
 
