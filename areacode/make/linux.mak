@@ -14,6 +14,9 @@
 # $Id$
 #
 # $Log$
+# Revision 1.1  1997/03/03 04:21:46  fritz
+# Added files in areacode/make
+#
 #
 #
 
@@ -68,7 +71,7 @@ acvers:		acvers.o
 
 areacode.o:	areacode.h areacode.c
 		gcc $(CFLAGS) -DDATA_FILENAME="\"$(DATATARGET)\"" \
-		-DCHARSET_ISO -c -o areacode.o areacode.c
+		-c -o areacode.o areacode.c
 
 install:	areacode.o acvers
 		@if [ `id -u` != 0 ]; then				      \
