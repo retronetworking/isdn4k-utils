@@ -1,5 +1,7 @@
 #! /bin/sh
 #
+# $Id$
+#
 # This script is borrowed from the linux Menuconfig script.
 #
 # This script attempts to parse the configuration files, which are
