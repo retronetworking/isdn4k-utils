@@ -105,6 +105,7 @@ int breaklist_search(char *line)
 			if (breaklist[i])
 			{
 				if (strcasecmp(breaklist[i], line) == 0) returnok();
+				if ((strcmp(breaklist[i], "ALL") == 0) && (strlen(line) > 3)) returnok();
 			}
 		}
 	}

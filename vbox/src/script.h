@@ -22,6 +22,7 @@ struct vbox_tcl_function
 /** Prototypes ***********************************************************/
 
 extern int script_run(char *);
+extern int script_run_call(char *, char *, int);
 extern int script_check_interpreter(void);
 
 #endif /* _VBOX_SCRIPT_H */

@@ -172,6 +172,9 @@ programs-d:	  ignore
 programs-i:	  ignore
 		  @echo "Installing '$(DESTDIR)$(sbindir)/vboxgetty'..."
 		  @$(INSTALL_SBIN) $(TOPDIR)/src/vboxgetty $(DESTDIR)$(sbindir)/vboxgetty
+		  @echo "Installing '$(DESTDIR)$(sbindir)/vboxputty'..."
+		  @cd $(DESTDIR)$(sbindir); \
+		  $(LN) -f vboxgetty vboxputty
 		  @echo "Installing '$(DESTDIR)$(sbindir)/vboxd'..."
 		  @$(INSTALL_SBIN) $(TOPDIR)/src/vboxd $(DESTDIR)$(sbindir)/vboxd
 		  @echo "Installing '$(DESTDIR)$(bindir)/vboxcnvt'..."

@@ -235,3 +235,21 @@ void exit_program(int s)
 
 	exit(0);
 }
+
+void exit_program_code(int s)
+{
+	block_all_signals();
+
+	log(L_INFO, "Exit program with value %d...\n", s);
+
+	modem_close_port();
+	streamio_close(setup.vboxrc);
+	lock_type_unlock(LCK_PID);
+	lock_type_unlock(LCK_MODEM);
+
+	log(L_INFO, "------------------------[End session]-----------------------\n");
+
+	log_exit();
+
+	exit(s);
+}

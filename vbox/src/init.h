@@ -58,5 +58,5 @@ extern setup_t setup;											  /* Global setup	*/
 
 extern int	init_program(char *, char *);
 extern void	exit_program(int);
-
+extern void     exit_program_code(int);
 #endif /* _VBOX_INIT_H */
