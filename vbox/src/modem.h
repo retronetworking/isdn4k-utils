@@ -39,6 +39,7 @@
 
 #define MODEM_COMMAND_SUFFIX  	'\r'
 #define MODEM_BUFFER_LEN      	256
+#define MODEM_INPUT_LEN				MODEM_BUFFER_LEN
 
 typedef struct termios TIO;
 
@@ -81,5 +82,6 @@ extern int		modem_get_nocarrier_state(void);
 extern int		modem_check_input(void);
 extern int		modem_hangup(void);
 extern char	  *modem_get_s_register(int);
+extern int		modem_get_sequence(char *);
 
 #endif /* _VBOX_MODEM_H */

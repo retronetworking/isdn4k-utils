@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #include "log.h"
 #include "perms.h"

@@ -56,9 +56,9 @@ int log_init(void)
 
 			returnok();
 		}
-		else log(L_STDERR, "%s: Can't open log '%s'.\n", basename, setup.logname);
+		else log(L_STDERR, "%s: Can't open log '%s'.\n", vbasename, setup.logname);
 	}
-	else log(L_STDERR, "%s: Logname too long. Please set 'SETUP_MAX_LOGNAME' in 'setup.h' to a higher value!\n", basename);
+	else log(L_STDERR, "%s: Logname too long. Please set 'SETUP_MAX_LOGNAME' in 'setup.h' to a higher value!\n", vbasename);
 
 	returnerror();
 }

@@ -198,7 +198,7 @@ void exit_program(int s)
 {
 	block_all_signals();
 
-	log(L_INFO, "Exit program on \"%s\" (signal %d)...\n", strsignal(s), s);
+	log(L_INFO, "Exit program on signal %d...\n", s);
 
 	modem_close_port();
 	streamio_close(setup.vboxrc);
