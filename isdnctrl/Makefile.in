@@ -46,8 +46,8 @@ config:
 $(PROGRAM):	$(MODULES)
 	$(CC) $(CFLAGS) $(MODULES) $(LDFLAGS) -o $@
 
-install-man: isdnctrl.man
-	isdnctrl.man.in
+install-man: isdnctrl.man.in
+	./isdnctrl.man.in
 	$(INSTALL) -d $(MAN8DIR)
 	$(INSTALL_MAN) $< $(MAN8DIR)/$(MANPAGE)
 
