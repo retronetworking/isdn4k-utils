@@ -12,9 +12,17 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.1  2000/05/18 14:58:35  calle
+ * Plugin for pppd to support PPP over CAPI2.0.
+ *
  *
  */
 #include "pppd.h"
+
+#include "patchlevel.h"
+#ifdef VERSION
+char pppd_version[] = VERSION;
+#endif
 
 static char username[MAXNAMELEN+1];
 static char password[MAXSECRETLEN+1];
