@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  1997/05/15 22:21:35  luethje
+ * New feature: isdnrep can transmit via HTTP fax files and vbox files.
+ *
  * Revision 1.21  1997/05/11 22:59:19  luethje
  * new version
  *
@@ -248,6 +251,7 @@
 #define H_CENTER       "<TD align=center><TT>%s</TT></TD>"
 #define H_RIGHT        "<TD align=right><TT>%s</TT></TD>"
 #define H_LINK         "<A HREF=\"%s?-M+%c%d%s\">%s</A>"
+#define H_LINK_DAY     "<A HREF=\"%s?%s\">%s</A>      "
 
 #define H_EMPTY        "&nbsp;"
 
@@ -313,6 +317,7 @@ static char *get_links(time_t filetime, char type);
 static char *append_fax(char **string, char *file, char type, int version);
 static int time_in_interval(time_t t1, time_t t2, char type);
 static char *nam2html(char *file);
+static char *get_a_day(time_t t, int d_diff, int m_diff);
 
 /*****************************************************************************/
 
@@ -2424,7 +2429,19 @@ static int html_bottom(char *_progname, char *start, char *stop)
 	if (ptr)
 		*ptr = '\0';
 
-	print_msg(PRT_NORMAL,"</BODY>\n");
+	if ((ptr = get_a_day(begintime,0,-1)) != NULL)
+		print_msg(PRT_NORMAL,H_LINK_DAY,_myname,ptr,"previous month");
+
+	if ((ptr = get_a_day(begintime,-1,0)) != NULL)
+		print_msg(PRT_NORMAL,H_LINK_DAY,_myname,ptr,"previous day");
+
+	if ((ptr = get_a_day(begintime,1,0)) != NULL)
+		print_msg(PRT_NORMAL,H_LINK_DAY,_myname,ptr,"next day");
+
+	if ((ptr = get_a_day(begintime,0,1)) != NULL)
+		print_msg(PRT_NORMAL,H_LINK_DAY,_myname,ptr,"next month");
+
+	print_msg(PRT_NORMAL,"\n</BODY>\n");
 	print_msg(PRT_NORMAL,"<HEAD><TITLE>%s %s\n",progname,print_diff_date(start,stop));
 	print_msg(PRT_NORMAL,"</TITLE>\n");
 	print_msg(PRT_NORMAL,"</HTML>\n");
@@ -2781,6 +2798,41 @@ static char *nam2html(char *file)
 
 	return RetCode;
 }
+
+/*****************************************************************************/
+
+static char *get_a_day(time_t t, int d_diff, int m_diff)
+{
+	static char string[16];
+	struct tm *tm;
+	time_t cur_time;
+	time_t t2;
+
+	if (t == 0)
+		time(&t);
+
+	tm = localtime(&t);
+
+	tm->tm_mday += d_diff;
+	tm->tm_mon  += m_diff;
+	tm->tm_isdst = -1;
+	tm->tm_hour  = 0;
+	tm->tm_min   = 0;
+	tm->tm_sec   = 0;
+
+	t2 = mktime(tm);
+	time(&cur_time);
+
+	if (cur_time < t2)
+		return NULL;
+
+	tm = localtime(&t2);
+	sprintf(string,"-w%d+-t%d/%d/%d",html-1,tm->tm_mday,tm->tm_mon+1,tm->tm_year+1900);
+	/*                                   ^^---sehr gefaehrlich, da eine UND-Verknuepfung!!! */
+
+	return string;
+}
+
 
 /*****************************************************************************/
 

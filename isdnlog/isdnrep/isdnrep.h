@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/05/15 22:21:40  luethje
+ * New feature: isdnrep can transmit via HTTP fax files and vbox files.
+ *
  * Revision 1.6  1997/04/20 22:52:28  luethje
  * isdnrep has new features:
  *   -variable format string
@@ -111,8 +114,8 @@ _EXTERN int     seeunknowns  		_SET_0;
 _EXTERN int     header          _SET_1;
 _EXTERN char	  timestring[256] _SET_EMPTY;
 _EXTERN char	  *lineformat     _SET_NULL;
-_EXTERN time_t  begintime;
-_EXTERN time_t  endtime;
+_EXTERN time_t  begintime       _SET_0;
+_EXTERN time_t  endtime         _SET_0;
 
 #undef _SET_NULL
 #undef _SET_0
