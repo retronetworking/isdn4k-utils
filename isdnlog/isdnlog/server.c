@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1999/10/25 18:33:15  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.5  1999/03/20 14:33:15  akool
  * - isdnlog Version 3.08
  * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
@@ -460,7 +465,7 @@ char *Build_Call_Info(CALL *call, int chan)
         (int)(call->connect?cur_time - call->connect:0), /* aktuelle Dauer - in Sekunden seit CONNECT */
         call->aoce,		     	                         /* Einheiten (negativ: laufende Impulse, positiv: AOCE) */
         double2str(abs(call->aoce) * currency_factor, 6, 2, DEB), /* kostet gerade */
-        currency_factor ? currency : "DM", 	       		       	 	      	       /* Waehrung */
+        currency_factor ? currency : "EUR", 	       		       	 	      	       /* Waehrung */
         call->ibytes,	     	 						       /* Frank's ibytes */
         call->obytes,	     	 						       /* Frank's obytes */
         call->ibps,									       /* Aktueller Durchsatz INPUT: Bytes/Sekunde */

@@ -11,6 +11,10 @@
  * oracle.h 1999/01/07 Jan Bolt
  *
  * $Log$
+ * Revision 1.1  1999/12/31 13:30:02  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *
  */
 
 #ifndef __ORACLE_H
@@ -34,7 +38,7 @@ typedef struct
   int     si1;                /* Dienstkennung (1=Speech, 7=Data usw.) */
   int     si11;               /* analog oder digital ? */
   double  currency_factor;    /* Currency Factor (0,121) */
-  char    currency[4];        /* Waehrung (in Deutschland "DM") */
+  char    currency[4];        /* Waehrung (in Europa "EUR") */
   double  pay;                /* Endbetrag in Landeswaehrung */
   int     provider;           /* Providercode */
   char    provider_name[31];  /* Provider */

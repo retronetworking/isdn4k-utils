@@ -11,6 +11,10 @@
  * ora_load.c 1999/01/07 Jan Bolt
  *
  * $Log$
+ * Revision 1.1  1999/12/31 13:30:02  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *
  */
 
 #include <stdio.h>
@@ -124,7 +128,7 @@ int isdngeb(FILE *fp)
 				case 15: /* Currency Factor (0.121) */
 					call.currency_factor = atof(p);
 					break;
-				case 16: /* Waehrung (DM) */
+				case 16: /* Waehrung (EUR) */
 					strncpy(call.currency, trim(p), sizeof(call.currency));
 					call.currency[sizeof(call.currency)-1] = '\0';
 					break;
