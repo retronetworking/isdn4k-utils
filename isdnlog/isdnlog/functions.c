@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.18  1999/01/24 19:01:27  akool
+ *  - second version of the new chargeint database
+ *  - isdnrep reanimated
+ *
  * Revision 1.17  1999/01/10 15:23:07  akool
  *  - "message = 0" bug fixed (many thanks to
  *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
@@ -428,6 +432,64 @@ int print_msg(int Level, const char *fmt, ...)
 
   return(0);
 } /* print_msg */
+
+/*****************************************************************************/
+
+void info(int chan, int reason, int state, char *msg)
+{
+  register int  i;
+  auto   char   s[BUFSIZ], *left = "", *right = "\n";
+  static int    lstate = 0, lchan = -1;
+
+
+  if (!newline) {
+
+    if (state == STATE_BYTE) {
+      right = "";
+
+      if (lstate == STATE_BYTE)
+        left = "\r";
+      else
+        left = "";
+    }
+    else {
+      right = "\n";
+
+      if (lstate == STATE_BYTE)
+        left = "\n";
+      else
+        left = "";
+    } /* else */
+
+    if ((lchan != chan) && (lstate == STATE_BYTE))
+      left = "\r\n";
+
+    lstate = state;
+    lchan = chan;
+  } /* if */
+
+  if (allflags & PRT_DEBUG_GENERAL)
+    if (allflags & PRT_DEBUG_INFO)
+      print_msg(PRT_DEBUG_INFO, "%d INFO> ", chan);
+
+  (void)iprintf(s, chan, call[chan].dialin ? ilabel : olabel, left, msg, right);
+
+  print_msg(PRT_DEBUG_INFO, "%s", s);
+
+  print_msg(reason, "%s", s);
+
+  if (xinfo) {
+    if ((i = (sizeof(call[chan].msg) -1)) < strlen(msg)) /* clipping ... */
+      msg[i] = 0;
+
+    strcpy(call[chan].msg, msg);
+    call[chan].stat = state;
+
+    message_from_server(&(call[chan]), chan);
+
+    print_msg(PRT_DEBUG_CS, "SOCKET> %s: MSG_CALL_INFO chan=%d\n", st + 4, chan);
+  } /* if */
+} /* info */
 
 /*****************************************************************************/
 

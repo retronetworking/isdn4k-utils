@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.27  1999/02/28 19:33:52  akool
+ * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+ * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ * isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ * "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+ * sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+ * Fixed a typo in callerid.conf.5
+ *
  * Revision 1.26  1999/01/24 19:02:51  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -381,6 +390,12 @@
 #define INTERNET     17
 #define	GLOBALCALL   18
 
+#define SO_FAIL      -3
+#define SO_UNKNOWN   -2
+#define SO_CITYCALL  -1
+#define SO_FREE       0
+#define SO_CALCULATE  1
+
 #define	DTAG	     33
 
 /****************************************************************************/
@@ -656,7 +671,7 @@ typedef struct {
   char	  area[MAXMSNS][128];
   char	  money[64];
   char	  currency[32];
-  char    msg[128];
+  char    msg[BUFSIZ];
   int     stat;
   int	  version;
   int	  bchan;

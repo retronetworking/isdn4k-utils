@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1999/01/24 19:01:35  akool
+ *  - second version of the new chargeint database
+ *  - isdnrep reanimated
+ *
  * Revision 1.15  1999/01/10 15:23:16  akool
  *  - "message = 0" bug fixed (many thanks to
  *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
@@ -395,6 +399,7 @@ _EXTERN void _Exit(char *File, int Line, int RetCode);
 #ifndef  _REP_FUNC_C_
 _EXTERN int  print_msg(int Level, const char *fmt, ...);
 #endif
+_EXTERN void info(int chan, int reason, int state, char *msg);
 _EXTERN int  Change_Channel(int old_channel, int new_channel);
 _EXTERN void set_time_str(void);
 _EXTERN void now(void);

@@ -24,6 +24,15 @@
  *
  *
  * $Log$
+ * Revision 1.55  1999/02/28 19:33:30  akool
+ * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+ * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ * isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ * "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+ * sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+ * Fixed a typo in callerid.conf.5
+ *
  * Revision 1.54  1999/01/24 19:02:19  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -643,6 +652,14 @@ static int    provider_failed[MAXPROVIDER];
 static double duration_provider[MAXPROVIDER];
 static double pay_provider[MAXPROVIDER];
 static char   unknownzones[4096];
+
+
+/*****************************************************************************/
+
+void info(int chan, int reason, int state, char *msg)
+{
+  /* DUMMY - dont needed here! */
+} /* info */
 
 /*****************************************************************************/
 

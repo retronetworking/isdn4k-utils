@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.38  1999/02/28 19:32:42  akool
+ * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+ * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ * isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ * "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+ * sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+ * Fixed a typo in callerid.conf.5
+ *
  * Revision 1.37  1999/01/24 19:01:40  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -537,59 +546,6 @@ static char *location(int loc)
       default : return("");             	       	       break;
   } /* switch */
 } /* location */
-
-
-static void info(int chan, int reason, int state, char *msg)
-{
-  auto   char   s[BUFSIZ], *left = "", *right = "\n";
-  static int    lstate = 0, lchan = -1;
-
-
-  if (!newline) {
-
-    if (state == STATE_BYTE) {
-      right = "";
-
-      if (lstate == STATE_BYTE)
-        left = "\r";
-      else
-        left = "";
-    }
-    else {
-      right = "\n";
-
-      if (lstate == STATE_BYTE)
-        left = "\n";
-      else
-        left = "";
-    } /* else */
-
-    if ((lchan != chan) && (lstate == STATE_BYTE))
-      left = "\r\n";
-
-    lstate = state;
-    lchan = chan;
-  } /* if */
-
-  if (allflags & PRT_DEBUG_GENERAL)
-    if (allflags & PRT_DEBUG_INFO)
-      print_msg(PRT_DEBUG_INFO, "%d INFO> ", chan);
-
-  (void)iprintf(s, chan, call[chan].dialin ? ilabel : olabel, left, msg, right);
-
-  print_msg(PRT_DEBUG_INFO, "%s", s);
-
-  print_msg(reason, "%s", s);
-
-  if (xinfo) {
-    strcpy(call[chan].msg, msg);
-    call[chan].stat = state;
-
-    message_from_server(&(call[chan]), chan);
-
-    print_msg(PRT_DEBUG_CS, "SOCKET> %s: MSG_CALL_INFO chan=%d\n", st + 4, chan);
-  } /* if */
-} /* info */
 
 
 static void buildnumber(char *num, int oc3, int oc3a, char *result, int version, int *provider, int *sondernummer, int *intern, int dir, int who)
@@ -3497,8 +3453,8 @@ static void huptime(int chan, int bchan, int setup)
         call[chan].huptimeout = cfg.onhtime = newhuptimeout;
 
         if (ioctl(sockets[ISDNCTRL].descriptor, IIOCNETSCF, &cfg) >= 0) {
-          sprintf(sx, "CHARGEINT %s %d (was %d) - %s",
-            known[c]->interface, newchargeint, oldchargeint, why);
+          sprintf(sx, "CHARGEINT %s %d (was %d)%s%s",
+            known[c]->interface, newchargeint, oldchargeint, (*why ? " - " : ""), why);
 
           info(chan, PRT_INFO, STATE_HUPTIMEOUT, sx);
 
@@ -3509,8 +3465,8 @@ static void huptime(int chan, int bchan, int setup)
           } /* if */
       }
       else {
-        sprintf(sx, "CHARGEINT %s still %d - %s", known[c]->interface,
-          oldchargeint, why);
+        sprintf(sx, "CHARGEINT %s still %d%s%s", known[c]->interface,
+          oldchargeint, (*why ? " - " : ""), why);
         info(chan, PRT_SHOWNUMBERS, STATE_HUPTIMEOUT, sx);
 
         sprintf(sx, "HUPTIMEOUT %s still %d", known[c]->interface, oldhuptimeout);
@@ -4245,6 +4201,9 @@ static void processctrl(int card, char *s)
       case 0x08 : version = VERSION_EDSS1;
       	   	  break;
 
+      case 0xaa : version = VERSION_UNKNOWN; /* Euracom Frames */
+                  break;
+
       default   : version = VERSION_UNKNOWN;
       		  sprintf(sx, "Unexpected discriminator 0x%02x -- ignored!", i);
           	  info(chan, PRT_SHOWNUMBERS, STATE_RING, sx);
@@ -4519,7 +4478,8 @@ static void processctrl(int card, char *s)
             call[chan].nextcint = call[chan].connect + (int)call[chan].cint;
             call[chan].ctakt    = 1;
 
-            sprintf(sx, "NEXT CHARGEINT IN %s (%s)", double2clock(call[chan].cint), why);
+            sprintf(sx, "NEXT CI AFTER %s%s%s%s",
+              double2clock(call[chan].cint) + 3, (*why ? " (" : ""), why, (*why ? ")" : ""));
           info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
 
             call[chan].disconnect = cur_time + 1;
@@ -5026,7 +4986,8 @@ void processcint()
 
 	  if (newcint != call[chan].cint) {
           call[chan].cint = newcint;
-	    sprintf(sx, "NEXT CHARGEINT IN %s (%s)", double2clock((double)call[chan].cint), why);
+            sprintf(sx, "NEXT CI AFTER %s%s%s%s",
+              double2clock(call[chan].cint) + 3, (*why ? " (" : ""), why, (*why ? ")" : ""));
           info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
 	  } /* if */
         } /* if */

@@ -2,7 +2,8 @@
  *
  * ISDN accounting for isdn4linux. (Report-module)
  *
- * Copyright 1996, 1997 by Stefan Luethje (luethje@sl-gw.lake.de)
+ * Copyright 1996, 1999 by Stefan Luethje (luethje@sl-gw.lake.de)
+ *                     and Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1998/09/22 20:59:08  luethje
+ * isdnrep:  -fixed wrong provider report
+ *           -fixed wrong html output for provider report
+ *           -fixed strange html output
+ * kisdnlog: -fixed "1001 message window" bug ;-)
+ *
  * Revision 1.11  1998/05/11 19:43:43  luethje
  * Some changes for "vorwahlen.dat"
  *
@@ -85,6 +92,13 @@ static char number[BUFSIZ] = "";
 static char alias[BUFSIZ] = "";
 static char conffile[BUFSIZ];
 static char callerfile[BUFSIZ];
+
+/*****************************************************************************/
+
+void info(int chan, int reason, int state, char *msg)
+{
+  /* DUMMY - dont needed here! */
+} /* info */
 
 /*****************************************************************************/
 
