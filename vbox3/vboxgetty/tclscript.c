@@ -4,6 +4,10 @@
 ** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.2  1998/06/17 17:01:24  michael
+** - First part of the automake/autoconf implementation. Currently vbox will
+**   *not* compile!
+**
 */
 
 #include <tcl.h>
@@ -97,7 +101,7 @@ int scr_execute(char *name, char *user)
 
 	if (!canrun)
 	{
-		printstring(temppathname, "%s/vboxgetty/%s", VBOX_LIBDIR, name);
+		printstring(temppathname, "%s/%s/%s", DATADIR, PACKAGE, name);
 
 		if (access(temppathname, F_OK|R_OK) == 0) canrun = 1;
 	}
