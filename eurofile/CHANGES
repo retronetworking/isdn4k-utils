@@ -18,14 +18,14 @@
 #
 
 $Log$
-
---------------
-Version 0.0.11
---------------
 - [new] doc/design.txt added (needs completion)
-- [chg] src/* changed directory names and structure which also affects
+- [chg] src/*: changed directory names and structure which also affects
 	#include directives and Makefiles.
-- [chg] Support CVS in built procedure.
+- [chg] The config file (former /etc/isdn/eft.msn) has been renamed to
+	eft.conf. If you want want to re-use an already installed
+	config file, you also need to rename it. Otherwise, the new
+	script files won't find it.
+- [chg] Support for CVS in build procedure.
 
 --------------
 Version 0.0.10
