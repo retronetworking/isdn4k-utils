@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.37  1999/10/25 18:30:03  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.36  1999/09/19 14:16:27  akool
  * isdnlog-3.53
  *
@@ -658,10 +663,15 @@ char *double2clock(double n)
 char *vnum(int chan, int who)
 {
   register int    l = strlen(call[chan].num[who]);
+#if 0  
   register char  *p1, *p2;
-  auto	   int	  lx, l1;
+  auto	   int	  lx;
+#endif  
+  auto	   int	  l1;
+#if 0  
   auto	   int 	  prefix = strlen(countryprefix);
   auto	   int 	  cc_len = 2;   /* country code length defaults to 2 */
+#endif  
   auto	   TELNUM number;
   auto	   char	  s[BUFSIZ];
 
@@ -737,8 +747,13 @@ char *vnum(int chan, int who)
   	  return(retstr[retnum]);
       } /* if */
     } /* if */
+#else
+    normalizeNumber(call[chan].num[who], &number, TN_ALL);
+    strcpy(call[chan].areacode[who], number.country);
+    strcpy(call[chan].vorwahl[who],number.area);
+    strcpy(call[chan].rufnummer[who], number.msn);
 #endif      
-
+#if 0
     normalizeNumber(call[chan].num[who], &number, TN_ALL);
     /* Fixme: use number fields directly, no need to format a string -lt- */
     strcpy(s, formatNumber("%F", &number));
@@ -764,6 +779,7 @@ char *vnum(int chan, int who)
         } /* if */
       } /* if */
     } /* if */
+#endif
 
     if (cnf > -1)
       strcpy(retstr[retnum], call[chan].alias[who]);
@@ -772,7 +788,7 @@ char *vnum(int chan, int who)
 
     return(retstr[retnum]);
   } /* else */
-
+#if 0 /* -lt- dead code ??? */
   if (l > 1) {
     if (call[chan].num[who][prefix] == '1')
       cc_len = 1; /* USA is only country with country code length 1 */
@@ -805,6 +821,7 @@ char *vnum(int chan, int who)
     strcpy(retstr[retnum], call[chan].num[who]);
 
   return(retstr[retnum]);
+#endif  
 } /* vnum */
 
 /****************************************************************************/
