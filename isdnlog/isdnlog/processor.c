@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.78  1999/07/24 08:44:19  akool
+ * isdnlog-3.42
+ *   rate-de.dat 1.02-Germany [18-Jul-1999 10:44:21]
+ *   better Support for Ackermann Euracom
+ *   WEB-Interface for isdnrate
+ *   many small fixes
+ *
  * Revision 1.77  1999/07/15 16:41:32  akool
  * small enhancement's and fixes
  *
@@ -4766,8 +4773,14 @@ retry:
         if (((ignoreRR & 2) == 2) && !memcmp(p1 + 14, "AA", 2))
           go = 0;
 
-        if (go)
-          processctrl(card, p1);
+        if (go) {
+          if (!memcmp(p1, "ECHO:", 5)) { /* Echo-channel from HFC card */
+	    memcpy(p1 + 1, "HEX", 3);
+            processctrl(card + 1, p1 + 1);
+          }
+          else
+            processctrl(card, p1);
+        } /* if */
       } /* else */
 
       p1 = p2 + 1;
