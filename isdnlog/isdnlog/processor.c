@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.85  1999/10/29 19:46:00  akool
+ * isdnlog-3.60
+ *  - sucessfully ported/tested to/with:
+ *      - Linux-2.3.24 SMP
+ *      - egcs-2.91.66
+ *    using -DBIG_PHONE_NUMBERS
+ *
+ *  - finally added working support for HFC-card in "echo mode"
+ *    try this:
+ *      hisaxctrl bri 10 1
+ *      hisaxctrl bri 12 1
+ *      isdnlog -21 -1
+ * -----------------^^ new option
+ *
  * Revision 1.84  1999/10/26 18:17:13  akool
  * isdnlog-3.58
  *   - big cleanup ( > 1.3 Mb removed!)
@@ -3918,7 +3932,7 @@ static void processctrl(int card, char *s)
         fprintf(stdout, "%02x  TEI=%d     E/A=%d\n", j, tei, ea3);
 #endif
 
-      if (sapi != 63) /* keine TEI Vergabe */
+      if (sapi != 63) { /* keine TEI Vergabe */
         if (!(k & 1)) { /* I-Block */
           if (bcast)
             fprintf(stdout, "%02x  I-B  N=%d\n", k, k >> 1);
@@ -3959,6 +3973,7 @@ static void processctrl(int card, char *s)
 
           fprintf(stdout, "%02x  %s\n", k, s1);
         } /* else */
+      }	
     } /* if */
 #if 0 /* wird so ins syslog eingetragen :-( */
     if (!replay)

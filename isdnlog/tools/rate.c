@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.51  1999/10/28 18:36:48  akool
+ * isdnlog-3.59
+ *  - problems with gcc-2.7.2.3 fixed
+ *  - *any* startup-warning solved/removed (only 4u, Karsten!)
+ *  - many new rates
+ *
  * Revision 1.50  1999/10/25 18:30:03  akool
  * isdnlog-3.57
  *   WARNING: Experimental version!
@@ -1380,8 +1386,11 @@ int getArea (int prefix, char *number)
   if (prefix<0 || prefix>=nProvider || !Provider[prefix].used)
     return 0;
 
-  l=strlen(number);
+/*  l=strlen(number); +4371891234 !!! 
+  das hatten wir doch schon einmal oder
+*/
   for (i=0; i<Provider[prefix].nArea; i++) {
+    l=strlen(Provider[prefix].Area[i].Code);
     if (strmatch(Provider[prefix].Area[i].Code, number)>=l)
       return 1;
   }
