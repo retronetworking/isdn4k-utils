@@ -564,6 +564,9 @@ static int init_unit(int linkunit)
 	lns[linkunit].upap_unit = lns[linkunit].chap_unit = lns[linkunit].lcp_unit;
 	upap[lns[linkunit].upap_unit].us_unit = chap[lns[linkunit].chap_unit].unit = linkunit;
 	lcp_lowerup(lns[linkunit].lcp_unit);
+#ifdef IPPP_FILTER
+	set_filters(linkunit, &pass_filter, &active_filter);
+#endif /* IPPP_FILTER */
 
 	return 0;
 }

@@ -7,6 +7,7 @@ HAVE_LIBDES   := @HAVE_LIBDES@
 HAVE_LIBCRYPT := @HAVE_LIBCRYPT@
 HAVE_SHADOW_H := @HAVE_SHADOW_H@
 HAVE_LZSCOMP_H:= @HAVE_LZSCOMP_H@
+IPPP_FILTER   := @CONFIG_IPPP_FILTER@
 SBINDIR       := @CONFIG_SBINDIR@
 MANDIR        := @CONFIG_MANDIR@
 CC            := @CC@
@@ -77,6 +78,10 @@ ifeq ($(HAVE_LIBCRYPT),1)
 LIBS        = -lcrypt -lutil
 endif
 
+ifeq ($(IPPP_FILTER),y)
+CFLAGS     += -DIPPP_FILTER
+LIBS       += -lpcap
+endif
 
 SOURCE = RELNOTES configure *.in $(PPPDSRCS) $(HEADERS) $(MANPAGES)
 
