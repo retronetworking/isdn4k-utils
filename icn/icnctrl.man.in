@@ -190,7 +190,7 @@ has less than 65536 bytes length or could not be read.
 .SH BUGS
 No bugs so far.
 .SH AUTHOR
-\(co 1997 by Fritz Elfert <fritz@wuemaus.franken.de>
+\(co 1997 by Fritz Elfert <fritz@isdn4linux.de>
 .LP
 .SH SEE ALSO
 .BR isdnctrl "(8), " icn "(4), " isdnctrl "(4), " ttyI (4).

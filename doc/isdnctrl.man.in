@@ -466,6 +466,6 @@ The return code depends on the driver's ioctl function. Usually,
 .RE
 
 .SH AUTHOR
-Fritz Elfert <fritz@wuemaus.franken.de>
+Fritz Elfert <fritz@isdn4linux.de>
 .SH SEE ALSO
 .BR isdninfo "(4), " icnctrl (4).

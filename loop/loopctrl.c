@@ -2,7 +2,7 @@
 
  * loop-ISDN driver for Linux. (Control-Utility)
  *
- * Copyright 1994,95 by Fritz Elfert (fritz@wuemaus.franken.de)
+ * Copyright 1994,95 by Fritz Elfert (fritz@isdn4linux.de)
  *
  * This file is part of Isdn4Linux.
  *
@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/05/17 12:23:41  fritz
+ * Corrected some Copyright notes to refer to GPL.
+ *
  * Revision 1.1  1997/03/24 23:38:46  fritz
  * Added loopctrl utility.
  *

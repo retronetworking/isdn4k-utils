@@ -41,7 +41,7 @@ between display of strings and phone numbers. Pressing 'R' rereads the
 phonebook file in case of changes during program execution.
 .LP
 .SH AUTHOR
-Fritz Elfert <fritz@wuemaus.franken.de>
+Fritz Elfert <fritz@isdn4linux.de>
 .LP
 .SH SEE ALSO
 .I ttyI\c

@@ -1,7 +1,7 @@
 /* $Id$
  * ISDN driver for Linux. (Control-Utility)
  *
- * Copyright 1994,95 by Fritz Elfert (fritz@wuemaus.franken.de)
+ * Copyright 1994,95 by Fritz Elfert (fritz@isdn4linux.de)
  * Copyright 1995 Thinking Objects Software GmbH Wuerzburg
  *
  * This file is part of Isdn4Linux.
@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.33  1999/06/07 19:25:38  paul
+ * isdnctrl.man.in
+ *
  * Revision 1.32  1998/12/23 12:51:44  paul
  * didn't compile with old kernel source
  *

@@ -2,7 +2,7 @@
 
  * Daemon for saving ttyIx-profiles to a file.
  *
- * Copyright 1994,95 by Fritz Elfert (fritz@wuemaus.franken.de)
+ * Copyright 1994,95 by Fritz Elfert (fritz@isdn4linux.de)
  * Copyright 1995 Thinking Objects Software GmbH Wuerzburg
  *
  * This file is part of Isdn4Linux.
@@ -22,6 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1998/07/22 19:07:13  keil
+ * Make it compiling with older I4L versions
+ *
  * Revision 1.5  1998/06/26 15:20:13  fritz
  * Added capability to save listener string.
  *

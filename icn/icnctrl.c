@@ -2,7 +2,7 @@
 
  * ICN-ISDN driver for Linux. (Control-Utility)
  *
- * Copyright 1994,95 by Fritz Elfert (fritz@wuemaus.franken.de)
+ * Copyright 1994,95 by Fritz Elfert (fritz@isdn4linux.de)
  * Copyright 1995 Thinking Objects Software GmbH Wuerzburg
  *
  * This file is part of Isdn4Linux.
@@ -22,6 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/06/21 14:38:22  fritz
+ * Added option for enabling only one channel in leased mode.
+ *
  * Revision 1.2  1997/05/17 12:23:29  fritz
  * Corrected some Copyright notes to refer to GPL.
  *

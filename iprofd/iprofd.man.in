@@ -27,7 +27,7 @@ reads the current settings of the modem-registers and stores them into
 .IR registerfile .
 .LP
 .SH AUTHOR
-Fritz Elfert <fritz@wuemaus.franken.de>
+Fritz Elfert <fritz@isdn4linux.de>
 .LP
 .SH SEE ALSO
 .I ttyI\c

@@ -256,6 +256,6 @@ Touch-tone "C" received. Valid only in direction from emulator to application.
 .B D
 Touch-tone "D" received. Valid only in direction from emulator to application.
 .SH AUTHOR
-Fritz Elfert <fritz@wuemaus.franken.de>
+Fritz Elfert <fritz@isdn4linux.de>
 .SH SEE ALSO
 .BR ttyI (4).

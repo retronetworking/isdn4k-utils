@@ -2,7 +2,7 @@
 
  * IBM Active 2000 ISDN driver for Linux. (Control-Utility)
  *
- * Copyright 1994,95 by Fritz Elfert (fritz@wuemaus.franken.de)
+ * Copyright 1994,95 by Fritz Elfert (fritz@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/09/25 21:41:37  fritz
+ * Added actctrl.
+ *
  *
  */
 

@@ -175,6 +175,6 @@ Other constants, necessary for ioctl's on
 are listed in
 .BR isdnctrl (4).
 .SH AUTHOR
-Fritz Elfert <fritz@wuemaus.franken.de>
+Fritz Elfert <fritz@isdn4linux.de>
 .SH SEE ALSO
 .BR isdnctrl "(4), " icnctrl (4).

@@ -419,7 +419,7 @@ Bit	Description
 	1 = Enable CPN extended RING.
 .TP
 .SH AUTHOR
-Fritz Elfert <fritz@wuemaus.franken.de>
+Fritz Elfert <fritz@isdn4linux.de>
 .SH SEE ALSO
 .BR icnctrl "(8), " telesctrl "(8), " isdninfo "(4), " isdn_audio "(4), "
 .BR isdnctrl (8).

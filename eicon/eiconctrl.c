@@ -2,7 +2,7 @@
  *
  * Eicon-ISDN driver for Linux. (Control-Utility)
  *
- * Copyright 1998    by Fritz Elfert (fritz@wuemaus.franken.de)
+ * Copyright 1998    by Fritz Elfert (fritz@isdn4linux.de)
  * Copyright 1998,99 by Armin Schindler (mac@melware.de)
  * Copyright 1999    Cytronics & Melware (info@melware.de)
  *
@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.6  1999/08/18 20:20:45  armin
+ * Added XLOG functions for all cards.
+ *
  * Revision 1.5  1999/03/29 11:05:23  armin
  * Installing and Loading the old type Eicon ISA-cards.
  * New firmware in one tgz-file.
