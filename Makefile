@@ -72,8 +72,8 @@ endif
 ifeq ($(CONFIG_LOOPCTRL),y)
 	SUBDIRS := $(SUBDIRS) loop
 endif
-ifeq ($(CONFIG_DIEHLCTRL),y)
-	SUBDIRS := $(SUBDIRS) diehl
+ifeq ($(CONFIG_EICONCTRL),y)
+	SUBDIRS := $(SUBDIRS) eicon
 endif
 ifeq ($(CONFIG_IMON),y)
 	SUBDIRS := $(SUBDIRS) imon
