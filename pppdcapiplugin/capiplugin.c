@@ -1976,7 +1976,7 @@ void plugin_init(void)
 
 	add_options(my_options);
 
-	if ((err = capi20_register (30, 8, 2048, &applid)) != 0) {
+	if ((err = capi20_register (2, 8, 2048, &applid)) != 0) {
 		serrno = errno;
 		fatal("capiplugin: CAPI_REGISTER failed - %s (0x%04x) [%s (%d)]",
 				capi_info2str(err), err,
