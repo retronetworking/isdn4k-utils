@@ -2,19 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
-** Revision 1.2  1998/08/31 10:43:00  michael
-** - Changed "char" to "unsigned char".
-**
-** Revision 1.1  1998/08/30 17:32:05  michael
-** - Total new audio setup - now it works correct and don't crash the
-**   machine.
-** - Example answercall.tcl added.
-** - Reduced in-/outgoing data logging. Now only around all 8000 bytes a
-**   line ist logged.
-** - Added control file check to play and record function.
-**
 */
 
 #include <stdio.h>

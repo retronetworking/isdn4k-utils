@@ -8,7 +8,8 @@
 #define _VBOX_TCLSCRIPT_H 1
 
 #include <tcl.h>
-#include "userrc.h"
+
+#include "vboxgetty.h"
 
 /** Structures ***********************************************************/
 

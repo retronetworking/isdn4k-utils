@@ -2,32 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
-** Revision 1.2  1998/08/28 13:06:12  michael
-** - Removed audio full duplex mode. Sorry, my soundcard doesn't support
-**   this :-)
-** - Added Fritz's /dev/audio setup. Pipe to /dev/audio now works great
-**   (little echo but a clear sound :-)
-** - Added better control support. The control now has the ttyname appended
-**   (but there are some global controls without this) for controlling
-**   more than one vboxgetty for a user.
-** - Added support for "vboxcall" in the user spool directory. The file
-**   stores information about the current answered call (needed by vbox,
-**   vboxctrl or some other programs to create the right controls).
-** - Added support for Karsten's suspend mode (support for giving a line
-**   number is included also, but currently not used since hisax don't use
-**   it).
-**
-** Revision 1.1  1998/07/06 09:05:18  michael
-** - New control file code added. The controls are not longer only empty
-**   files - they can contain additional informations.
-** - Control "vboxctrl-answer" added.
-** - Control "vboxctrl-suspend" added.
-** - Locking mechanism added.
-** - Configuration parsing added.
-** - Some code cleanups.
-**
 */
 
 #ifdef HAVE_CONFIG_H

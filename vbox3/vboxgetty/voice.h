@@ -22,7 +22,7 @@
 #   endif
 #endif
 
-#include "userrc.h"
+#include "vboxgetty.h"
 #include "vboxrc.h"
 
 /** Defines **************************************************************/

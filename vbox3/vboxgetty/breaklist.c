@@ -2,8 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
 */
 
 #ifdef HAVE_CONFIG_H

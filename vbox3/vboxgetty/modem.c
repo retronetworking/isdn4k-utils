@@ -2,24 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
-** Revision 1.4  1998/08/31 10:43:07  michael
-** - Changed "char" to "unsigned char".
-**
-** Revision 1.3  1998/07/06 09:05:26  michael
-** - New control file code added. The controls are not longer only empty
-**   files - they can contain additional informations.
-** - Control "vboxctrl-answer" added.
-** - Control "vboxctrl-suspend" added.
-** - Locking mechanism added.
-** - Configuration parsing added.
-** - Some code cleanups.
-**
-** Revision 1.2  1998/06/17 17:01:21  michael
-** - First part of the automake/autoconf implementation. Currently vbox will
-**   *not* compile!
-**
 */
 
 #ifdef HAVE_CONFIG_H

@@ -2,17 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
-** Revision 1.1  1998/07/06 09:05:37  michael
-** - New control file code added. The controls are not longer only empty
-**   files - they can contain additional informations.
-** - Control "vboxctrl-answer" added.
-** - Control "vboxctrl-suspend" added.
-** - Locking mechanism added.
-** - Configuration parsing added.
-** - Some code cleanups.
-**
 */             
 
 #ifdef HAVE_CONFIG_H

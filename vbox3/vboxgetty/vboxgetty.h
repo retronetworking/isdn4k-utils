@@ -14,16 +14,32 @@
 
 /** Defines **************************************************************/
 
-#define VBOX_ROOT_UMASK "0022"
+#define VBOX_ROOT_UMASK		"0022"
+
+#define VBOXUSER_CALLID		64
+#define VBOXUSER_NUMBER		64
+#define VBOXUSER_USERNAME	64
+
+/** Structures ***********************************************************/
+
+struct vboxuser
+{
+	uid_t				uid;
+	gid_t				gid;
+	int				umask;
+	long				space;
+	unsigned char	incomingid[VBOXUSER_CALLID + 1];
+	unsigned char	localphone[VBOXUSER_NUMBER + 1];
+	unsigned char	name[VBOXUSER_USERNAME + 1];
+	unsigned char	home[PATH_MAX + 1];
+};
+
+extern struct vboxmodem vboxmodem;
 
 /** Variables ************************************************************/
 
 extern unsigned char temppathname[PATH_MAX + 1];
 extern unsigned char savettydname[NAME_MAX + 1];
-
-/** Structures ***********************************************************/
-
-extern struct vboxmodem vboxmodem;
 
 /** Prototypes ***********************************************************/
 

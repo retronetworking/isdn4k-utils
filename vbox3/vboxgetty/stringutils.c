@@ -2,21 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
-** Revision 1.3  1998/07/06 09:05:30  michael
-** - New control file code added. The controls are not longer only empty
-**   files - they can contain additional informations.
-** - Control "vboxctrl-answer" added.
-** - Control "vboxctrl-suspend" added.
-** - Locking mechanism added.
-** - Configuration parsing added.
-** - Some code cleanups.
-**
-** Revision 1.2  1998/06/17 17:01:23  michael
-** - First part of the automake/autoconf implementation. Currently vbox will
-**   *not* compile!
-**
 */
 
 #ifdef HAVE_CONFIG_H
@@ -24,8 +9,25 @@
 #endif
 
 #include <string.h>
+#include <ctype.h>
 
 #include "stringutils.h"
+
+/************************************************************************* 
+ **
+ *************************************************************************/
+
+unsigned char *xstrtoupper(unsigned char *text)
+{
+	int i;
+
+	if (text)
+	{
+		for (i = 0; i < strlen(text); i++) text[i] = toupper(text[i]);
+	}
+
+	return(text);
+}
 
 /*************************************************************************/
 /** xstrncpy():																			**/

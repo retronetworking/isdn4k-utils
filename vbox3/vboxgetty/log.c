@@ -2,29 +2,6 @@
 ** $Id$
 **
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
-**
-** $Log$
-** Revision 1.5  1998/07/29 11:02:37  michael
-** - Added missing ATA to answer call (oh god, im so stupid).
-** - Some junk removed.
-**
-** Revision 1.4  1998/07/07 17:14:52  michael
-** - Since the ttyI interface will not work for me I have many time to write
-**   the damn docu ;-)
-**
-** Revision 1.3  1998/07/06 09:05:25  michael
-** - New control file code added. The controls are not longer only empty
-**   files - they can contain additional informations.
-** - Control "vboxctrl-answer" added.
-** - Control "vboxctrl-suspend" added.
-** - Locking mechanism added.
-** - Configuration parsing added.
-** - Some code cleanups.
-**
-** Revision 1.2  1998/06/17 17:01:20  michael
-** - First part of the automake/autoconf implementation. Currently vbox will
-**   *not* compile!
-**
 */
 
 #ifdef HAVE_CONFIG_H

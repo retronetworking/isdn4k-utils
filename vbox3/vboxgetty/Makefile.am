@@ -32,7 +32,6 @@ vboxgetty_SOURCES	= log.c log.h \
 			  modem.c modem.h \
 			  rc.c rc.h \
 			  vboxrc.c vboxrc.h \
-			  userrc.c userrc.h \
 			  stringutils.c stringutils.h \
 			  tclscript.c tclscript.h \
 			  vboxgetty.c vboxgetty.h \
