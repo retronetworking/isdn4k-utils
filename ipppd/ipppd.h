@@ -72,6 +72,7 @@ struct link_struct {
   int hungup;
   struct pppcallinfo pci;
   int has_proxy_arp;
+  int attempts;
 };
 
 extern struct link_struct lns[NUM_PPP];
