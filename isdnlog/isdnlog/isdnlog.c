@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.18  1998/05/19 15:47:03  paul
+ * If logfile name is specified with leading '+', the logfile is not truncated
+ * when isdnlog starts; instead, new messages are appended.
+ *
  * Revision 1.17  1998/03/29 23:18:07  luethje
  * mySQL-Patch of Sascha Matzke
  *
@@ -639,9 +643,6 @@ static int read_param_file(char *FileName)
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_WIDTH))
 					width = (int)strtol(Ptr->value, NIL, 0);
-				else
-				if (!strcmp(Ptr->name,CONF_ENT_CW))
-					CityWeekend = toupper(*(Ptr->value)) == 'Y'?1:0;
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_DUAL))
 					dual = (int)strtol(Ptr->value, NIL, 0);
