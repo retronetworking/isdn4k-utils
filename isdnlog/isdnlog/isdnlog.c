@@ -19,6 +19,31 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.69  2003/07/25 22:18:03  tobiasb
+ * isdnlog-4.65:
+ *  - New values for isdnlog option -2x / dual=x with enable certain
+ *    workarounds for correct logging in dualmode in case of prior
+ *    errors.  See `man isdnlog' and isdnlog/processor.c for details.
+ *  - New isdnlog option -U2 / ignoreCOLP=2 for displaying ignored
+ *    COLP information.
+ *  - Improved handling of incomplete D-channel frames.
+ *  - Increased length of number aliases shown immediately by isdnlog.
+ *    Now 127 instead of 32 chars are possible. (Patch by Jochen Erwied.)
+ *  - The zone number for an outgoing call as defined in the rate-file
+ *    is written to the logfile again and used by isdnrep
+ *  - Improved zone summary of isdnrep.  Now the real zone numbers as
+ *    defined in the rate-file are shown.  The zone number is taken
+ *    from the logfile as mentioned before or computed from the current
+ *    rate-file.  Missmatches are indicated with the chars ~,+ and *,
+ *    isdnrep -v ... explains the meanings.
+ *  - Fixed provider summary of isdnrep. Calls should no longer be
+ *    treated wrongly as done via the default (preselected) provider.
+ *  - Fixed the -pmx command line option of isdnrep, where x is the xth
+ *    defined [MSN].
+ *  - `make install' restarts isdnlog after installing the data files.
+ *  - A new version number generates new binaries.
+ *  - `make clean' removes isdnlog/isdnlog/ilp.o when called with ILP=1.
+ *
  * Revision 1.68  2001/10/15 19:51:48  akool
  * isdnlog-4.53
  *  - verified Leo's correction of Paul's byte-order independent Patch to the CDB
@@ -1584,6 +1609,26 @@ int main(int argc, char *argv[], char *envp[])
 #endif
 #ifdef ORACLE
 	    oracle_dbOpen();
+#endif
+
+#if defined(POSTGRES)||defined(MYSQLDB)||defined(ORACLE)
+			print_msg(PRT_NORMAL, "Supported SQL-database(s):%s%s%s\n",
+#ifdef POSTGRES
+			          " Postgres95",
+#else
+			          "",
+#endif
+#ifdef MYSQLDB
+			          " MySQL",
+#else
+			          "",
+#endif
+#ifdef ORACLE
+			          " Oracle"
+#else
+			          ""
+#endif
+			         );
 #endif
 
 	    sprintf(s, "%s%s", mycountry, myarea);
