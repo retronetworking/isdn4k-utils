@@ -10,6 +10,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.12  2005/03/04 11:45:13  calle
+ * SendingComplete was missing for DISCONNECT_REQ ...
+ *
  * Revision 1.11  2005/02/21 17:37:09  keil
  * libcapi20 version 3.0.0
  *  - add SENDING COMPLETE in ALERT_REQ
@@ -829,8 +832,7 @@ static void n0(capi_contr * card, capi_ncci * ncci)
 				 0,	/* BChannelinformation */
 				 0,	/* Keypadfacility */
 				 0,	/* Useruserdata */   /* $$$$ */
-				 0,	/* Facilitydataarray */
-			    	 0	/* SendingComplete */
+				 0	/* Facilitydataarray */
 	);
 	send_message(card, &cmsg);
 	plci_change_state(card, ncci->plcip, EV_PLCI_DISCONNECT_REQ);
@@ -1686,7 +1688,8 @@ capi_connection *capiconn_connect(
 			      plcip->conninfo.bchaninfo, /* BChannelinformation */
 			      0,	/* Keypadfacility */
 			      0,	/* Useruserdata */
-			      0		/* Facilitydataarray */
+			      0,	/* Facilitydataarray */
+			      0		/* Sendingcomplete */
 			    );
 
 	plcip->msgid = cmdcmsg.Messagenumber;
@@ -1856,8 +1859,7 @@ int capiconn_disconnect(capi_connection *plcip, _cstruct ncpi)
 					 0,	/* BChannelinformation */
 					 0,	/* Keypadfacility */
 					 0,	/* Useruserdata */
-					 0,	/* Facilitydataarray */
-			    	         0	/* SendingComplete */
+					 0	/* Facilitydataarray */
 					);
 		plci_change_state(card, plcip, EV_PLCI_DISCONNECT_REQ);
 		send_message(card, &cmdcmsg);
