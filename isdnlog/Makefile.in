@@ -19,6 +19,12 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.181  2000/09/01 06:30:20  paul
+## Now install country-de.dat as country.dat; renaming the source can be done by
+## someone who is more experienced with CVS.
+## Default value for country.dat changed in isdnconf.c; also default zonefile
+## etc. changed from .gdbm to .cdb
+##
 ## Revision 1.180  2000/08/27 15:18:19  akool
 ## isdnlog-4.41
 ##  - fix a fix within Change_Channel()
@@ -1385,7 +1391,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.41
+VERSION     = 4.42
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
