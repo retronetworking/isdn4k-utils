@@ -19,6 +19,41 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  1998/06/07 21:08:43  akool
+ * - Accounting for the following new providers implemented:
+ *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
+ *     TelePassport, Citykom Muenster, TelDaFax, Telekom, Hutchison Telekom,
+ *     tesion)), HanseNet, KomTel, ACC, Talkline, Esprit, Interoute, Arcor,
+ *     WESTCom, WorldCom, Viag Interkom
+ *
+ *     Code shamelessly stolen from G.Glendown's (garry@insider.regio.net)
+ *     program http://www.insider.org/tarif/gebuehr.c
+ *
+ * - Telekom's 10plus implemented
+ *
+ * - Berechnung der Gebuehrenzone implementiert
+ *   (CityCall, RegioCall, GermanCall, GlobalCall)
+ *   The entry "ZONE" is not needed anymore in the config-files
+ *
+ *   you need the file
+ *     http://swt.wi-inf.uni-essen.de/~omatthes/tgeb/vorwahl2.exe
+ *   and the new entry
+ *     [GLOBAL]
+ *       AREADIFF = /usr/lib/isdn/vorwahl.dat
+ *   for that feature.
+ *
+ *   Many thanks to Olaf Matthes (olaf.matthes@uni-essen.de) for the
+ *   Data-File and Harald Milz for his first Perl-Implementation!
+ *
+ * - Accounting for all "Sonderrufnummern" (0010 .. 11834) implemented
+ *
+ *   You must install the file
+ *     "isdn4k-utils/isdnlog/sonderrufnummern.dat.bz2"
+ *   as "/usr/lib/isdn/sonderrufnummern.dat"
+ *   for that feature.
+ *
+ * ATTENTION: This is *NO* production-code! Please test it carefully!
+ *
  * Revision 1.18  1998/04/09 19:15:07  akool
  *  - CityPlus Implementation from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
  *  - dont change huptimeout, if disabled (via isdnctrl huptimeout isdnX 0)
@@ -3894,14 +3929,14 @@ static void processctrl(int card, char *s)
     ps += (tei == BROADCAST) ? 1 : 4;
   }
 
-  else  if (!memcmp(ps, "D3", 2)) { /* AVMB1 */
+  else  if (!memcmp(ps, "D2", 2) || !memcmp(ps, "D3", 2)) { /* AVMB1 */
 
     if (firsttime) {
       firsttime = 0;
       print_msg (PRT_NORMAL, "(AVM B1 driver detected)\n");
     }
 
-    if (*(ps+2) == '<')  /* this is our "direction flag" */
+    if (*(ps + 2) == '<')  /* this is our "direction flag" */
       net = 1;
     else
       net = 0;
@@ -3910,8 +3945,7 @@ static void processctrl(int card, char *s)
     isAVMB1 = 1;
 
     ps[0] = 'h'; ps[1] = 'e'; ps[2] = 'x';  /* rewrite for the others */
-  } /* AVMB1 */
-
+  } /* AVM B1 */
   else { /* Old Teles Driver */
 
     /* Tei wird gelesen und bleibt bis zum Ende des naechsten hex: stehen.
@@ -4549,7 +4583,11 @@ retry:
             !memcmp(p3, "obytes:", 7))
           processinfo(p3);
         else if (!memcmp(p3, "HEX: ", 5) ||
-                 !memcmp(p3, "hex: ", 5))
+                 !memcmp(p3, "hex: ", 5) ||
+/*               !memcmp(p3, "D2<: ", 5) ||   Layer 2 not yet evaluated */
+/*               !memcmp(p3, "D2>: ", 5) ||   Layer 2 not yet evaluated */
+                 !memcmp(p3, "D3<: ", 5) ||
+                 !memcmp(p3, "D3>: ", 5))
           processctrl(0, p3);
         else if (!memcmp(p3 + 3, "HEX: ", 5))
           processctrl(atoi(p3), p3 + 3);

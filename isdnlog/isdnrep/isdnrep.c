@@ -24,6 +24,41 @@
  *
  *
  * $Log$
+ * Revision 1.39  1998/06/07 21:09:43  akool
+ * - Accounting for the following new providers implemented:
+ *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
+ *     TelePassport, Citykom Muenster, TelDaFax, Telekom, Hutchison Telekom,
+ *     tesion)), HanseNet, KomTel, ACC, Talkline, Esprit, Interoute, Arcor,
+ *     WESTCom, WorldCom, Viag Interkom
+ *
+ *     Code shamelessly stolen from G.Glendown's (garry@insider.regio.net)
+ *     program http://www.insider.org/tarif/gebuehr.c
+ *
+ * - Telekom's 10plus implemented
+ *
+ * - Berechnung der Gebuehrenzone implementiert
+ *   (CityCall, RegioCall, GermanCall, GlobalCall)
+ *   The entry "ZONE" is not needed anymore in the config-files
+ *
+ *   you need the file
+ *     http://swt.wi-inf.uni-essen.de/~omatthes/tgeb/vorwahl2.exe
+ *   and the new entry
+ *     [GLOBAL]
+ *       AREADIFF = /usr/lib/isdn/vorwahl.dat
+ *   for that feature.
+ *
+ *   Many thanks to Olaf Matthes (olaf.matthes@uni-essen.de) for the
+ *   Data-File and Harald Milz for his first Perl-Implementation!
+ *
+ * - Accounting for all "Sonderrufnummern" (0010 .. 11834) implemented
+ *
+ *   You must install the file
+ *     "isdn4k-utils/isdnlog/sonderrufnummern.dat.bz2"
+ *   as "/usr/lib/isdn/sonderrufnummern.dat"
+ *   for that feature.
+ *
+ * ATTENTION: This is *NO* production-code! Please test it carefully!
+ *
  * Revision 1.38  1998/05/20 12:23:57  paul
  * Duration divide by 100 replaced by divide by HZ (HZ is 1024 on Alpha).
  * Y2K compliancy hopefully more robust.
@@ -467,9 +502,9 @@ static sum_calls all_com_sum;
   
 /*****************************************************************************/
 
-static double msn_sum[11];
-static int    usage_sum[11];
-static double dur_sum[11];
+static double *msn_sum;
+static int    *usage_sum;
+static double *dur_sum;
 
 static int    usage_provider[100];
 static double duration_provider[100];
@@ -605,6 +640,10 @@ int read_logfile(char *myname)
   auto     char       string[BUFSIZ], s[BUFSIZ];
   one_call            cur_call;
 
+
+  msn_sum = calloc(mymsns + 1, sizeof(double));
+  usage_sum = calloc(mymsns + 1, sizeof(int));
+  dur_sum = calloc(mymsns + 1, sizeof(double));
 
 	_myname = myname;
 	_begintime = begintime;
@@ -755,7 +794,7 @@ int read_logfile(char *myname)
 #elif defined(ISDN_CH)
 			einheit = 0.01;
 #else
-			einheit = Tarif96 ? 0.12 : 0.23;
+			einheit = Tarif96 ? 0.121 : 0.23;
 #endif
 			else
 				einheit = currency_factor;
@@ -1064,7 +1103,7 @@ static int print_bottom(double unit, char *start, char *stop)
         } /* for */
 
         if (s) {
-          print_msg(PRT_NORMAL, "--------------------\n");
+          print_msg(PRT_NORMAL, "-----------------------------------------------------\n");
           print_msg(PRT_NORMAL, "%s\t\t%s %6d call(s)  %s\n",
             "TOTAL", print_currency(s, 0), s1, double2clock(s2));
         } /* if */
@@ -2121,9 +2160,9 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
                                   } /* for */
 
                                   if (i == mymsns) {
-                                    msn_sum[10] += cur_call->dm;
-                                    usage_sum[10]++;
-                                    dur_sum[10] += cur_call->duration;
+                                    msn_sum[i] += cur_call->dm;
+                                    usage_sum[i]++;
+                                    dur_sum[i] += cur_call->duration;
                                   } /* if */
 
       	 	      		} /* if */

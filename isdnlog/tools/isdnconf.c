@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Utilities)
  *
- * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1998/05/20 12:34:38  paul
+ * More paranoid about freeing pointers.
+ *
  * Revision 1.16  1998/05/19 15:55:57  paul
  * Moved config stuff for City Weekend from isdnlog.c to tools/isdnconf.c, so
  * that isdnrep also understands a "cityweekend=y" line in isdn.conf.
@@ -647,7 +650,7 @@ static section* writeglobal(section *SPtr)
 	if (currency != NULL && currency_factor != 0)
 	{
 		strcpy(s, CONF_ENT_CURR);
-		sprintf(s1, "%.2f,%s",currency_factor,currency);
+		sprintf(s1, "%.3f,%s",currency_factor,currency);
 		if (Set_Entry(Ptr,NULL,s,s1,C_OVERWRITE | C_WARN) == NULL)
 		{
 			_print_msg("Can't set entry `%s'!\n",CONF_ENT_CURR);
@@ -830,7 +833,7 @@ void setDefaults()
 #elif defined(ISDN_CH)
     currency_factor = 0.01;
 #else
-    currency_factor = 0.12;
+    currency_factor = 0.121;
 #endif
 
   } /* if */
