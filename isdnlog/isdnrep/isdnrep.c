@@ -24,6 +24,11 @@
  *
  *
  * $Log$
+ * Revision 1.66  1999/06/03 18:50:46  akool
+ * isdnlog Version 3.30
+ *  - rate-de.dat V:1.02-Germany [03-Jun-1999 19:49:22]
+ *  - small fixes
+ *
  * Revision 1.65  1999/05/22 10:18:50  akool
  * isdnlog Version 3.29
  *
@@ -526,9 +531,6 @@
 #include "../../vbox/src/libvbox.h"
 #include "libisdn.h"
 
-/*****************************************************************************/
-#define getProvidername(x)  "" /* FIXME */
-/*****************************************************************************/
 
 #define END_TIME    1
 
@@ -901,10 +903,12 @@ int read_logfile(char *myname)
   one_call            cur_call;
 
 
-  /* initHoliday(holifile, NULL); FIXME */
-  /* initRate(rateconf, ratefile, NULL); FIXME */
-  interns0 = 3; /* FIXME */
+  /* FIXME: */
+  initHoliday(holifile, NULL);
+  initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL);
+  currency = strdup("DM");
   vbn = strdup("010");
+  interns0 = 3;
 
   msn_sum = calloc(mymsns + 1, sizeof(double));
   usage_sum = calloc(mymsns + 1, sizeof(int));
