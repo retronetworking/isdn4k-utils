@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.46  2000/01/16 12:36:59  akool
+ * isdnlog-4.03
+ *  - Patch from Gerrit Pape <pape@innominate.de>
+ *    fixes html-output if "-t" option of isdnrep is omitted
+ *  - Patch from Roland Rosenfeld <roland@spinnaker.de>
+ *    fixes "%p" in ILABEL and OLABEL
+ *
  * Revision 1.45  2000/01/12 23:22:54  akool
  * - isdnlog/tools/holiday.c ... returns ERVERYDAY for '*'
  * - FAQ/configure{,.in} ...  test '==' => '='
@@ -820,6 +827,7 @@ char *vnum(int chan, int who)
 
       strcpy(call[chan].areacode[who], number.country);
       strcpy(call[chan].vorwahl[who], number.area);
+      strcpy(call[chan].area[who], number.sarea);
       strcpy(call[chan].rufnummer[who], number.msn);
 
       strcpy(s, formatNumber("%F", &number));
