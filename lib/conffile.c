@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1998/05/20 09:25:01  paul
+ * function Find_Section returned pointer to local automatic variable. Local
+ * variable removed, as it was not necessary; now return parameter.
+ *
  * Revision 1.16  1997/05/25 19:41:23  luethje
  * isdnlog:  close all files and open again after kill -HUP
  * isdnrep:  support vbox version 2.0
@@ -304,8 +308,10 @@ static section *Read_Lines(section *Section, FILE *fp, const char *FileName, int
 static char *Find_Section(char* String)
 {
 	char *Ptr = NULL;
+	static char Help[SHORT_STRING_SIZE];
 
-	Kill_Blanks(String);
+	strcpy(Help,String);
+	String = Kill_Blanks(Help);
 
 	if (*String == '\0' || *String != C_BEGIN_SECTION)
 		return NULL;
