@@ -417,6 +417,10 @@ Bit	Description
 0	0 = Disable CPN extended RING.
 .br
 	1 = Enable CPN extended RING.
+.br
+1	0 = Disable CPN extended FCON.
+.br
+	1 = Enable CPN extended FCON.
 .TP
 .SH AUTHOR
 Fritz Elfert <fritz@isdn4linux.de>
