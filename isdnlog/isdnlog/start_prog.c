@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/11/03 17:54:13  paul
+ * Fixed empty lines in syslog if program could not be started.
+ *
  * Revision 1.14  1999/10/25 18:33:15  akool
  * isdnlog-3.57
  *   WARNING: Experimental version!
@@ -996,7 +999,7 @@ static char *ArgToChar(int type, void* Ptr)
 		                     break;
 	}
 
-	return RetCode[Cnt];
+	return RetCode[Cnt++];
 }
 
 /****************************************************************************/
