@@ -87,6 +87,9 @@ endif
 ifeq ($(CONFIG_VBOX),y)
 	SUBDIRS := $(SUBDIRS) vbox
 endif
+ifeq ($(CONFIG_RCAPID),y)
+	SUBDIRS := $(SUBDIRS) rcapid
+endif
 ifeq ($(CONFIG_GENMAN),y)
 	SUBDIRS := $(SUBDIRS) doc
 endif
