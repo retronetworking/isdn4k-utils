@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1998/05/11 19:43:49  luethje
+ * Some changes for "vorwahlen.dat"
+ *
  * Revision 1.19  1998/05/10 22:12:01  luethje
  * Added support for VORWAHLEN2.EXE
  *
@@ -1017,10 +1020,10 @@ const char* area_diff_string(char* number1, char* number2)
 {
 	switch(area_diff(number1,number2))
 	{
-		case AREA_LOCAL :	return "Nahbereich"; break;
-		case AREA_R50   :	return "Region 50"; break;
-		case AREA_FAR   :	return "Fernzone"; break;
-		case AREA_ABROAD:	return "Ausland"; break;
+		case AREA_LOCAL :	return "CityCall";   break;
+		case AREA_R50   :	return "RegioCall";  break;
+		case AREA_FAR   :	return "GermanCall"; break;
+		case AREA_ABROAD:	return "GlobalCall"; break;
 		default         :	break;
 	}
 
