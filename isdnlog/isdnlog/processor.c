@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.80  1999/08/20 19:28:18  akool
+ * isdnlog-3.45
+ *  - removed about 1 Mb of (now unused) data files
+ *  - replaced areacodes and "vorwahl.dat" support by zone databases
+ *  - fixed "Sonderrufnummern"
+ *  - rate-de.dat :: V:1.10-Germany [20-Aug-1999 21:23:27]
+ *
  * Revision 1.79  1999/07/25 15:57:21  akool
  * isdnlog-3.43
  *   added "telnum" module
@@ -3418,8 +3425,8 @@ void clearchan(int chan, int total)
   for (i = 0; i < MAXMSNS; i++) {
     strcpy(call[chan].vnum[i], "?");
 
-    call[chan].confentry[i] = -1;
-    call[chan].sondernummer[i] = -1;
+    call[chan].confentry[i] = UNKNOWN;
+    call[chan].sondernummer[i] = UNKNOWN;
     call[chan].intern[i] = 0;
   } /* for */
 } /* clearchan */
@@ -3615,7 +3622,7 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   if (tip)
     *(*tip = lcrhint) = '\0';
 
-  clearRate (&call[chan].Rate);
+  clearRate(&call[chan].Rate);
 
   if (call[chan].intern[CALLED]) {
     call[chan].Rate.zone = UNZONE;
@@ -3641,9 +3648,16 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
     call[chan].Rate.src[2] = call[chan].rufnummer[CALLING];
   } /* else */
 
-  call[chan].Rate.dst[0] = call[chan].areacode[CALLED];
-  call[chan].Rate.dst[1] = call[chan].vorwahl[CALLED];
-  call[chan].Rate.dst[2] = call[chan].rufnummer[CALLED];
+  if (call[chan].sondernummer[CALLED] != UNKNOWN) {
+    call[chan].Rate.dst[0] = "";
+    call[chan].Rate.dst[1] = call[chan].num[CALLED];
+    call[chan].Rate.dst[2] = "";
+  }
+  else {
+    call[chan].Rate.dst[0] = call[chan].areacode[CALLED];
+    call[chan].Rate.dst[1] = call[chan].vorwahl[CALLED];
+    call[chan].Rate.dst[2] = call[chan].rufnummer[CALLED];
+  } /* else */
 
   if (getRate(&call[chan].Rate, msg) == UNKNOWN)
     return;
