@@ -6,7 +6,7 @@
 #
 SHELL			= /bin/sh
 CFLAGS			= -Wall -Wstrict-prototypes -O2 -g
-INCLUDES		= -I. -DDEBUG -I@CONFIG_KERNELDIR@/drivers/isdn/pcbit
+INCLUDES		= -I. -DDEBUG 
 LDFLAGS			= -L../lib @LIBS@
 PROGRAM			= pcbitctl
 MODULES			= pcbitctl.o convhexbin.o

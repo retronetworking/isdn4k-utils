@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.202  2002/06/07 15:39:23  akool
+## isdnlog-4.59: New TK-Providers added
+##
 ## Revision 1.201  2002/04/22 19:07:49  akool
 ## isdnlog-4.58:
 ##   - Patches from Enrico Scholz <enrico.scholz@informatik.tu-chemnitz.de>
@@ -1520,7 +1523,7 @@ endif
 
 CC          = $(_CC)
 
-INCLUDE     = -I./isdnlog -I./connect -I./tools -I$(PREFIXDIR) -I$(LIBISDNDIR) -I@CONFIG_KERNELDIR@/include
+INCLUDE     = -I./isdnlog -I./connect -I./tools -I$(PREFIXDIR) -I$(LIBISDNDIR)
 
 LIB         = $(DBMLIB) -lm
 

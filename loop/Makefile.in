@@ -6,7 +6,7 @@
 #
 SHELL			= /bin/sh
 CFLAGS			= -Wall -O2
-INCLUDES		= -I. -I@CONFIG_KERNELDIR@/include -I@CONFIG_KERNELDIR@/drivers/isdn/isdnloop
+INCLUDES		= -I.
 DEFS			=
 LDFLAGS			= -L../lib @LIBS@
 PROGRAM			= loopctrl
