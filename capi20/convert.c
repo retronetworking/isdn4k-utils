@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.7  1999/09/15 08:10:44  calle
+ * Bugfix: error in 64Bit extention.
+ *
  * Revision 1.6  1999/09/10 17:20:33  calle
  * Last changes for proposed standards (CAPI 2.0):
  * - AK1-148 "Linux Extention"
@@ -469,7 +472,7 @@ unsigned capi20_put_cmsg (_cmsg *cmsg)
     static unsigned char msg[2048];
 
     capi_cmsg2message(cmsg, (CAPI_MESSAGE)msg);
-    return capi20_put_message((CAPI_MESSAGE)msg, cmsg->ApplId);
+    return capi20_put_message(cmsg->ApplId, (CAPI_MESSAGE)msg);
 }
 
 /*-------------------------------------------------------*/

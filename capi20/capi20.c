@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.8  1999/09/15 08:10:44  calle
+ * Bugfix: error in 64Bit extention.
+ *
  * Revision 1.7  1999/09/10 17:20:33  calle
  * Last changes for proposed standards (CAPI 2.0):
  * - AK1-148 "Linux Extention"
@@ -165,7 +168,7 @@ capi20_release (unsigned ApplID)
 }
 
 unsigned
-capi20_put_message (unsigned char *Msg, unsigned ApplID)
+capi20_put_message (unsigned ApplID, unsigned char *Msg)
 {
     unsigned ret;
     int len = (Msg[0] | (Msg[1] << 8));
