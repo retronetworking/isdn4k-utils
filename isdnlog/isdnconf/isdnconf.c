@@ -20,6 +20,30 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  1999/04/10 16:35:14  akool
+ * isdnlog Version 3.13
+ *
+ * WARNING: This is pre-ALPHA-dont-ever-use-Code!
+ * 	 "tarif.dat" (aka "rate-xx.dat"): the next generation!
+ *
+ * You have to do the following to test this version:
+ *   cp /usr/src/isdn4k-utils/isdnlog/holiday-de.dat /etc/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/rate-de.dat /usr/lib/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/samples/rate.conf.de /etc/isdn/rate.conf
+ *
+ * After that, add the following entries to your "/etc/isdn/isdn.conf" or
+ * "/etc/isdn/callerid.conf" file:
+ *
+ * [ISDNLOG]
+ * SPECIALNUMBERS = /usr/lib/isdn/sonderrufnummern.dat
+ * HOLIDAYS       = /usr/lib/isdn/holiday-de.dat
+ * RATEFILE       = /usr/lib/isdn/rate-de.dat
+ * RATECONF       = /etc/isdn/rate.conf
+ *
+ * Please replace any "de" with your country code ("at", "ch", "nl")
+ *
+ * Good luck (Andreas Kool and Michael Reinelt)
+ *
  * Revision 1.17  1999/04/03 12:46:54  akool
  * - isdnlog Version 3.12
  * - "%B" tag in ILABEL/OLABEL corrected
@@ -881,7 +905,7 @@ int main(int argc, char *argv[], char *envp[])
            			           !memcmp(areacode, "0179", 4))
   				    zone = E2_NETZ;
   				  else
-                                    zone = GLOBALCALL;
+                                    zone = WELT_4;
 				}
                                 else if (strlen(areacode) == 1) {
   				  switch (toupper(*areacode)) {
@@ -901,7 +925,6 @@ int main(int argc, char *argv[], char *envp[])
     				    case 'E' : zone = WELT_2;      break;
     				    case 'F' : zone = WELT_3;      break;
     				    case 'G' : zone = WELT_4;      break;
-    				    case 'H' : zone = INTERNET;    break;
                                     case '.' : showLCR();      	   exit(0);
      				     default : print_msg(PRT_NORMAL, "Unknown zone \"%c\", please use 1 .. H\n", *areacode);
                				       exit(0);

@@ -19,6 +19,30 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.23  1999/04/10 16:36:46  akool
+ * isdnlog Version 3.13
+ *
+ * WARNING: This is pre-ALPHA-dont-ever-use-Code!
+ * 	 "tarif.dat" (aka "rate-xx.dat"): the next generation!
+ *
+ * You have to do the following to test this version:
+ *   cp /usr/src/isdn4k-utils/isdnlog/holiday-de.dat /etc/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/rate-de.dat /usr/lib/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/samples/rate.conf.de /etc/isdn/rate.conf
+ *
+ * After that, add the following entries to your "/etc/isdn/isdn.conf" or
+ * "/etc/isdn/callerid.conf" file:
+ *
+ * [ISDNLOG]
+ * SPECIALNUMBERS = /usr/lib/isdn/sonderrufnummern.dat
+ * HOLIDAYS       = /usr/lib/isdn/holiday-de.dat
+ * RATEFILE       = /usr/lib/isdn/rate-de.dat
+ * RATECONF       = /etc/isdn/rate.conf
+ *
+ * Please replace any "de" with your country code ("at", "ch", "nl")
+ *
+ * Good luck (Andreas Kool and Michael Reinelt)
+ *
  * Revision 1.22  1999/04/03 12:47:45  akool
  * - isdnlog Version 3.12
  * - "%B" tag in ILABEL/OLABEL corrected
@@ -585,7 +609,7 @@ char *vnum(int chan, int who)
     flag |= C_NO_ERROR;
 #endif
 
-  if ((call[chan].sondernummer[who] != UNKNOWN) || call[chan].intern[who] || call[chan].internetnumber[who]) {
+  if ((call[chan].sondernummer[who] != UNKNOWN) || call[chan].intern[who]) {
     strcpy(call[chan].rufnummer[who], call[chan].num[who]);
 
     if (cnf > -1)
@@ -596,19 +620,52 @@ char *vnum(int chan, int who)
       else
         strcpy(retstr[retnum], sondernummername(call[chan].sondernummer[who]));
     }
-    else if (call[chan].internetnumber[who])
-      sprintf(retstr[retnum], "INTERNET %s", call[chan].num[who]);
     else
       sprintf(retstr[retnum], "TN %s", call[chan].num[who]);
 
     return(retstr[retnum]);
   }
   else {
-  if ((ptr = get_areacode(call[chan].num[who], &ll, flag)) != 0) {
-    strcpy(call[chan].area[who], ptr);
-    l = ll;
-    got++;
-  } /* if */
+    if (!memcmp(call[chan].num[who], countryprefix, strlen(countryprefix))) { /* Ausland */
+      auto     FILE *f = fopen("/usr/lib/isdn/ausland.dat", "r");
+      register char *p, *p1;
+      auto     char  s[BUFSIZ];
+
+
+      if (f != (FILE *)NULL) {
+        while (fgets(s, BUFSIZ, f)) {
+          if ((p = strchr(s, ':'))) {
+            *p = 0;
+
+            if (!memcmp(call[chan].num[who], s, strlen(s))) {
+              if ((p1 = strchr(p + 1, '\n')))
+                *p1 = 0;
+
+      	      strcpy(call[chan].areacode[who], s);
+	      strcpy(call[chan].rufnummer[who], call[chan].num[who] + strlen(s));
+	      *call[chan].vorwahl[who] = 0;
+              strcpy(call[chan].area[who], p + 1);
+
+              sprintf(retstr[retnum], "%s %s, %s",
+      	        call[chan].areacode[who],
+      		call[chan].rufnummer[who],
+      		call[chan].area[who]);
+
+              fclose(f);
+  	      return(retstr[retnum]);
+            } /* if */
+          } /* if */
+        } /* while */
+
+        fclose(f);
+      } /* if */
+    } /* if */
+
+    if ((ptr = get_areacode(call[chan].num[who], &ll, flag)) != 0) {
+      strcpy(call[chan].area[who], ptr);
+      l = ll;
+      got++;
+    } /* if */
   } /* else */
 
   if (l > 1) {

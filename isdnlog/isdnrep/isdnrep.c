@@ -24,6 +24,30 @@
  *
  *
  * $Log$
+ * Revision 1.61  1999/04/10 16:36:00  akool
+ * isdnlog Version 3.13
+ *
+ * WARNING: This is pre-ALPHA-dont-ever-use-Code!
+ * 	 "tarif.dat" (aka "rate-xx.dat"): the next generation!
+ *
+ * You have to do the following to test this version:
+ *   cp /usr/src/isdn4k-utils/isdnlog/holiday-de.dat /etc/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/rate-de.dat /usr/lib/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/samples/rate.conf.de /etc/isdn/rate.conf
+ *
+ * After that, add the following entries to your "/etc/isdn/isdn.conf" or
+ * "/etc/isdn/callerid.conf" file:
+ *
+ * [ISDNLOG]
+ * SPECIALNUMBERS = /usr/lib/isdn/sonderrufnummern.dat
+ * HOLIDAYS       = /usr/lib/isdn/holiday-de.dat
+ * RATEFILE       = /usr/lib/isdn/rate-de.dat
+ * RATECONF       = /etc/isdn/rate.conf
+ *
+ * Please replace any "de" with your country code ("at", "ch", "nl")
+ *
+ * Good luck (Andreas Kool and Michael Reinelt)
+ *
  * Revision 1.60  1999/03/24 19:38:33  akool
  * - isdnlog Version 3.10
  * - moved "sondernnummern.c" from isdnlog/ to tools/
@@ -2447,7 +2471,7 @@ static void repair(one_call *cur_call)
   preparecint(0, why, hint, 1);
 #endif
 
-  if (call[0].zone == GLOBALCALL) {
+  if (call[0].zone == UNKNOWN) {
 #if DEBUG
     print_msg(PRT_NORMAL, "Ooops: GlobalCall %s -- assuming \"Welt 4\"",
       cur_call->num[CALLED]);
