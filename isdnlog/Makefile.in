@@ -19,6 +19,10 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.214  2004/07/24 12:03:36  tobiasb
+## Increased version number from 4.68 to 4.69.  It is planned to collect
+## changes with this odd version number for a longer period of time.
+##
 ## Revision 1.213  2004/07/13 21:44:19  tobiasb
 ## Patch to isdnlog manpages by Matthias Klose <doko@cs.tu-berlin.de>,
 ## a maintainer of Debian's isdnutils source package:
@@ -1685,11 +1689,16 @@ ifndef (I4LVERSION)
 I4LVERSION := $(STORED_I4LVERSION)
 endif
 
+# Used for all and distclean, 
+# including sample config files after text substitution.
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
 	      isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1 \
 	      tools/isdnrate.1 tools/rate-files.5 \
 	      isdnrep/isdnbill.1
+MANPAGES   += samples/isdn.conf \
+	      samples/isdn.conf.at samples/isdn.conf.de samples/isdn.conf.lu \
+	      samples/isdn.conf.nl samples/isdn.conf.no samples/isdn.conf.pl
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
@@ -1764,6 +1773,12 @@ PCFLAGS = mode=oracle ireclen=160 lines=yes
 	./config.status $@
 
 %.8: %.8.in config.status
+	./config.status $@
+
+samples/isdn.conf.%: samples/isdn.conf.%.in config.status
+	./config.status $@
+
+samples/isdn.conf: samples/isdn.conf.in config.status
 	./config.status $@
 
 ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
