@@ -6,6 +6,23 @@
 
 
 **************************
+Changes since 2.0.0 Beta 5
+**************************
+
+17-Nov-98
+=========
+
+[New] Some automake additions for documentation, manpages, etc:
+      - renamed: aclocal.m4 to acinclude.m4
+      - changed: configure.in
+      - added:   aclocal.m4
+      - added:   doc/Makefile.am doc/de/Makefile.am utils/Makefile.am
+      - added:   doc/Makefile.in doc/de/Makefile.in utils/Makefile.in
+      - added:   doc/*.man
+      Manpages and automake stuff comes from Debian (Andreas Jellinghaus).
+
+
+**************************
 Changes since 2.0.0 Beta 4
 **************************
 
