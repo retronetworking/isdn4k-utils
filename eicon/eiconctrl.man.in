@@ -154,7 +154,7 @@ loads and starts S2M type PCI adapter with protocol E-DSS1.
 .SH BUGS
 No bugs so far.
 .SH AUTHOR
-\(co 1999 by Armin Schindler <mac@topmail.de>
+\(co 1999 by Armin Schindler <mac@melware.de>
 .LP
 .SH SEE ALSO
 .BR isdnctrl "(8), " isdnctrl "(4), " ttyI "(4), " isdn_cause "(7), " isdninfo (4).
