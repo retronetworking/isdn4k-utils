@@ -19,6 +19,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1999/04/26 22:12:14  akool
+ * isdnlog Version 3.21
+ *
+ *  - CVS headers added to the asn* files
+ *  - repaired the "4.CI" message directly on CONNECT
+ *  - HANGUP message extended (CI's and EH's shown)
+ *  - reactivated the OVERLOAD message
+ *  - rate-at.dat extended
+ *  - fixes from Michael Reinelt
+ *
  * Revision 1.8  1999/04/20 20:31:58  akool
  * isdnlog Version 3.19
  *   patches from Michael Reinelt
@@ -232,7 +242,7 @@ static char *strip (char *s)
       *p='\0';
       break;
     }
-  for (p--; p>s && isblank(*s); p--)
+  for (p--; p>s && isblank(*p); p--)
     *p='\0';
   return s;
 }
@@ -387,26 +397,20 @@ int isDay(struct tm *tm, bitfield mask, char **name)
   char *s;
   static char buffer[BUFSIZ];
 
-  if (name)
-    *(*name=buffer)='\0';
-  
-  if (mask & (1<<EVERYDAY))
-    return EVERYDAY;
-  
   if ((mask & (1<<HOLIDAY)) && isHoliday(tm, &s)) {
-    sprintf (buffer, "%s (%s)", Weekday[HOLIDAY], s); 
+    if (name) sprintf (*name=buffer, "%s (%s)", Weekday[HOLIDAY], s); 
     return HOLIDAY;
   }
 
   day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+1;
 
   if ((mask & (1<<WEEKEND)) && day>5) {
-    sprintf (buffer, "%s (%s)", Weekday[WEEKEND], Weekday[day]);
+    if (name) sprintf (*name=buffer, "%s (%s)", Weekday[WEEKEND], Weekday[day]);
     return WEEKEND;
   }
   
   if ((mask & (1<<WORKDAY)) && day<6) {
-    sprintf (buffer, "%s (%s)", Weekday[WORKDAY], Weekday[day]);
+    if (name) sprintf (*name=buffer, "%s (%s)", Weekday[WORKDAY], Weekday[day]);
     return WORKDAY;
   }
   
@@ -415,7 +419,7 @@ int isDay(struct tm *tm, bitfield mask, char **name)
   }
 
   if (mask & (1<<day)) {
-    sprintf (buffer, "%s", Weekday[day]);
+    if (name) sprintf (*name=buffer, "%s", Weekday[day]);
     return day;
   }
   
