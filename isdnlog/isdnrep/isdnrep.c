@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.44  1998/10/03 15:21:48  luethje
+ * isdnrep: some bugfixes in output functions
+ *
  * Revision 1.43  1998/09/26 18:29:55  akool
  *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
  *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
@@ -980,7 +983,7 @@ static int print_bottom(double unit, char *start, char *stop)
 	{
 		if ((j == DIALOUT && !incomingonly) || (!outgoingonly && j == DIALIN))
 		{
-			sprintf(string,"%s Summary for %s",j==DIALOUT?"DIALOUT":"DIALIN",
+			sprintf(string, "%s Summary for %s", (j == DIALOUT) ? "Outgoing calls (calling:)" : "Incoming calls (called by:)",
 			              print_diff_date(start,stop));
 
 			h_percent = 80.0;

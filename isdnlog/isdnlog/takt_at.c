@@ -19,6 +19,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1998/09/26 18:29:22  akool
+ *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
+ *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
+ *  - Support for tesion)) Baden-Wuerttemberg Tarif
+ *  - more Providers
+ *  - Patches from Wilfried Teiken <wteiken@terminus.cl-ki.uni-osnabrueck.de>
+ *    - better zone-info support in "tools/isdnconf.c"
+ *    - buffer-overrun in "isdntools.c" fixed
+ *  - big Austrian Patch from Michael Reinelt <reinelt@eunet.at>
+ *    - added $(DESTDIR) in any "Makefile.in"
+ *    - new Configure-Switches "ISDN_AT" and "ISDN_DE"
+ *      - splitted "takt.c" and "tools.c" into
+ *          "takt_at.c" / "takt_de.c" ...
+ *          "tools_at.c" / "takt_de.c" ...
+ *    - new feature
+ *        CALLFILE = /var/log/caller.log
+ *        CALLFMT  = %b %e %T %N7 %N3 %N4 %N5 %N6
+ *      in "isdn.conf"
+ *  - ATTENTION:
+ *      1. "isdnrep" dies with an seg-fault, if not HTML-Mode (Stefan?)
+ *      2. "isdnlog/Makefile.in" now has hardcoded "ISDN_DE" in "DEFS"
+ *      	should be fixed soon
+ *
  */
 
 #define _TAKT_C_
@@ -268,7 +291,6 @@ double taktlaenge(int chan, char *description)
   time_t      connect;
   double      takt;
   
-  zone = -1;
   if (description) description[0] = '\0';
   provider = call[chan].provider;
   connect = call[chan].connect;
@@ -280,16 +302,26 @@ double taktlaenge(int chan, char *description)
   if (*call[chan].num[1] == '\0')
     return -1;
  
-  if ((c = call[chan].confentry[OTHER]) > -1)
+  if ((zone = call[chan].zone) == 0) {
+    zone = -1;
+    if ((c = call[chan].confentry[OTHER]) > -1) {
     zone = known[c]->zone;
-  
   if (zone < 1 || zone > 30) 
-    return -1;
-  
+	zone=-1;
+    }
   call[chan].zone = zone;
+  }
+  
+  if (zone < 0)
+    return -1;
  
   fenster = zeitzone[tarifzeit(tm, why)][tm->tm_hour];
+  
+  if (faktor[zone-1][fenster] == 0.0)
+    return -1;
+  
   takt = 72.0/faktor[zone-1][fenster];
+  
   if (description) sprintf(description, "%s, %s, %s", z2s(zone), why, t2tz(fenster));
   
   return (takt);
