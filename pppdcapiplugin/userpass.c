@@ -12,6 +12,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.4  2003/05/19 06:57:22  calle
+ * Now with support for chap with pppd >= 2.4.2b3
+ *
  * Revision 1.3  2001/11/07 14:38:17  calle
  * show version info.
  *
@@ -52,7 +55,7 @@ static void copystr(char *to, char *from)
 	*to = 0;
 }
 
-static int getpass(char *user, char *passwd)
+static int get_password_hook(char *user, char *passwd)
 {
     if (passwd) copystr(passwd, password);
     return 1;
@@ -62,8 +65,8 @@ void plugin_init(void)
 {
     info("userpass: %s", revision);
     add_options(options);
-    pap_passwd_hook = getpass;
+    pap_passwd_hook = get_password_hook;
 #if PPPVER >= PPPVersion(2,4,2,3)
-    chap_passwd_hook = getpass;
+    chap_passwd_hook = get_password_hook;
 #endif
 }
