@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1997/04/06 21:03:37  luethje
+ * switch -f is working again
+ * currency_factor is float again ;-)
+ * renamed files isdnrep.c to rep_main.c and function.c isdnrep.c
+ *
  * Revision 1.3  1997/04/03 22:30:00  luethje
  * improved performance
  *
@@ -1347,9 +1352,9 @@ static int n_match(char *Pattern, char* Number, char* version)
 	if (!strcmp(version,LOG_VERSION_1))
 	{
 		if ((RetCode = match(Pattern, Number,0)) != 0            &&
-		    !strncmp(Pattern,S_AREA_PREFIX,strlen(S_AREA_PREFIX))  )
+		    !strncmp(Pattern,areaprefix,strlen(areaprefix))  )
 		{
-			sprintf(s,"*%s%s",myarea/*+strlen(S_AREA_PREFIX)*/,Pattern);
+			sprintf(s,"*%s%s",myarea/*+strlen(areaprefix)*/,Pattern);
 			RetCode = match(s,Number,0);
 		}
 	}

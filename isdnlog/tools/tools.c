@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/04/06 21:17:46  luethje
+ * Bugfix von Andreas Jaeger.
+ *
  * Revision 1.4  1997/04/03 22:40:21  luethje
  * some bugfixes.
  *
@@ -386,7 +389,7 @@ char *vnum(int chan, int who)
   register int    flag = C_NO_WARN | C_NO_EXPAND;
   auto     char  *ptr;
   auto	   int    ll;
-  auto	   int 	  prefix = strlen(S_COUNTRY_PREFIX);
+  auto	   int 	  prefix = strlen(countryprefix);
 
 
   if (++retnum == MAXRET)

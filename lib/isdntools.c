@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1997/04/08 00:02:24  luethje
+ * Bugfix: isdnlog is running again ;-)
+ * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
+ * README completed
+ * Added some values (countrycode, areacode, lock dir and lock file) to
+ * the global menu
+ *
  * Revision 1.8  1997/04/03 22:39:13  luethje
  * bug fixes: environ variables are working again, no seg. 11 :-)
  * improved performance for reading the config files.
@@ -223,7 +230,7 @@ char *expand_number(char *s)
 
 	if (*Ptr  == '+')
 	{
-		strcpy(Help,S_COUNTRY_PREFIX);
+		strcpy(Help,countryprefix);
 		Ptr++;
 	}
 
@@ -246,20 +253,20 @@ char *expand_number(char *s)
 		Ptr++;
 	}
 
-	if (Help[0] == '*' || !strncmp(Help,S_COUNTRY_PREFIX,strlen(S_COUNTRY_PREFIX)))
+	if (Help[0] == '*' || !strncmp(Help,countryprefix,strlen(countryprefix)))
 	{
 		strcpy(Num,Help);
 	}
 	else
-	if (!strncmp(Help,S_AREA_PREFIX,strlen(S_AREA_PREFIX)))
+	if (!strncmp(Help,areaprefix,strlen(areaprefix)))
 	{
 		strcpy(Num,mycountry);
-		strcat(Num,Help+strlen(S_AREA_PREFIX));
+		strcat(Num,Help+strlen(areaprefix));
 	}
 	else
 	{
 		strcpy(Num,mycountry);
-		strcat(Num,myarea/*+strlen(S_AREA_PREFIX)*/);
+		strcat(Num,myarea/*+strlen(areaprefix)*/);
 		strcat(Num,Help);
 	}
 
@@ -347,14 +354,15 @@ int handle_runfiles(const char *_progname, char **_devices, int flag)
 
 		while (*_devices != NULL)
 		{
-			append_element(&devices,*_devices);
+			Ptr = strrchr(*_devices,C_SLASH);
+			append_element(&devices,Ptr?Ptr+1:*_devices);
 			_devices++;
 		}
 	}
 
 	if (flag == START_PROG)
 	{
-		sprintf(string,"%s%c%s.pid",RUNDIR,C_SLASH,progname);
+		sprintf(string,"%s%c%s.%s.pid",RUNDIR,C_SLASH,progname,devices[0]);
 
 		if ((RetCode = create_runfile(string,"%d\n")) != 0)
 		{
@@ -463,11 +471,11 @@ static int create_runfile(const char *file, const char *format)
    muss von jedem Programm aufgerufen werden!!!
 */
 
-#define _MAX_VARS 3
+#define _MAX_VARS 5
 
 int Set_Codes(section* Section)
 {
-	static char *ptr[_MAX_VARS] = {NULL,NULL,NULL};
+	static char *ptr[_MAX_VARS] = {NULL,NULL,NULL,NULL,NULL};
 	int i;
 	int RetCode = 0;
 	entry *Entry;
@@ -477,7 +485,10 @@ int Set_Codes(section* Section)
 
 	for (i=0; i < _MAX_VARS; i++)
 		if (ptr[i] != NULL)
+		{
 			free(ptr[i]);
+			ptr[i] = NULL;
+		}
 
 	if ((SPtr = Get_Section(Section,CONF_SEC_GLOBAL)) == NULL)
 		return -1;
@@ -497,17 +508,25 @@ int Set_Codes(section* Section)
 	}
 #endif
 
+	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_COUNTRY_PREFIX)) != NULL &&
+	    Entry->value != NULL                                             )
+		ptr[1] = countryprefix = strdup(Entry->value);
+
+	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_AREA_PREFIX)) != NULL &&
+	    Entry->value != NULL                                             )
+		ptr[2] = areaprefix = strdup(Entry->value);
+
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_AREA)) != NULL &&
 	    Entry->value != NULL                                          )
 	{
 		ptr2 = Entry->value;
 
-		if (strncmp(Entry->value,S_AREA_PREFIX,strlen(S_AREA_PREFIX)))
-			ptr[1] = myarea = strdup(ptr2);
+		if (strncmp(Entry->value,areaprefix,strlen(areaprefix)))
+			ptr[3] = myarea = strdup(ptr2);
 		else
-			ptr[1] = myarea = strdup(ptr2+strlen(S_AREA_PREFIX));
+			ptr[3] = myarea = strdup(ptr2+strlen(areaprefix));
 
-		if (ptr[1] != NULL)
+		if (ptr[3] != NULL)
 			RetCode++;
 		else
 			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_AREA);
@@ -518,14 +537,14 @@ int Set_Codes(section* Section)
 	{
 		ptr2 = Entry->value;
 
-		if (strncmp(Entry->value,S_COUNTRY_PREFIX,strlen(S_COUNTRY_PREFIX)))
+		if (strncmp(Entry->value,countryprefix,strlen(countryprefix)))
 		{
-			sprintf(s,"%s%s",S_COUNTRY_PREFIX,
+			sprintf(s,"%s%s",countryprefix,
 			                 Entry->value[0]=='+'?(Entry->value)+1:Entry->value);
 			ptr2 = s;
 		}
 			
-		if ((ptr[2] = mycountry = strdup(ptr2)) != NULL)
+		if ((ptr[4] = mycountry = strdup(ptr2)) != NULL)
 			RetCode++;
 		else
 			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_COUNTRY);
@@ -553,7 +572,7 @@ char *get_areacode(char *code, int *Len, int flag)
 {
 	auto     char  *Ptr;
 	auto     int    i = 0;
-	register int    prefix = strlen(S_COUNTRY_PREFIX);
+	register int    prefix = strlen(countryprefix);
 
 
 	if (Len != NULL)
@@ -616,7 +635,7 @@ static char *_get_areacode(char *code, int *Len, int flag)
 {
 	static int opened = 0;
 	static char s[BUFSIZ];
-	int prefix = strlen(S_COUNTRY_PREFIX);
+	int prefix = strlen(countryprefix);
 	int ll=0;
 	int l;
 
@@ -684,7 +703,7 @@ static char *_get_areacode(char *code, int *Len, int flag)
 	auto     char  *err;
 	static   acInfo ac;
 	static   int    warned = 0;
-	int prefix = strlen(S_COUNTRY_PREFIX);
+	int prefix = strlen(countryprefix);
 
 	if (!warned && (cc = GetAreaCodeInfo(&ac, code + prefix)) == acOk)
 	{
