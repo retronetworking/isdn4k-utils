@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1998/03/08 12:37:58  luethje
+ * last changes in Wuerzburg
+ *
  * Revision 1.15  1998/03/08 12:13:40  luethje
  * Patches by Paul Slootman
  *
@@ -4123,7 +4126,7 @@ doppelt:break;
 
             if (connectmax != 0.0) {
               if (connectmaxmode == 1)
-                known[c]->online += ((int)(call[chan].disconnect - call[chan].connect + 59)) / 60.0 * 60.0;
+								known[c]->online += ((int)((call[chan].disconnect - call[chan].connect + 59) / 60.0)) * 60.0;
               else
                 known[c]->online += call[chan].disconnect - call[chan].connect;
 
