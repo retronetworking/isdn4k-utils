@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1998/03/16 09:40:56  cal
+ * fixed a problem parsing TimRu-Commands
+ * started with TimRu-man-page
+ *
  * Revision 1.9  1998/03/07 18:25:58  cal
  * added support for dynamic timeout-rules vs. 971110
  *
@@ -76,8 +80,9 @@ enum {
 		SAVEBUDGETS, RESTOREBUDGETS,
 #endif
 #ifdef I4L_CTRL_CONF
-        WRITECONF, READCONF
+        WRITECONF, READCONF,
 #endif /* I4L_CTRL_CONF */
+		IFDEFAULTS
 };
 
 typedef struct {
@@ -146,6 +151,7 @@ cmd_struct cmds[] =
         {"writeconf", "01"},
         {"readconf", "01"},
 #endif /* I4L_CTRL_CONF */
+        {"ifdefaults", "01"},
         {NULL,}
 };
 
@@ -231,6 +237,8 @@ _EXTERN char *cmd;
 _EXTERN int key2num(char *key, char **keytable, int *numtable);
 _EXTERN char * num2key(int num, char **keytable, int *numtable);
 _EXTERN int exec_args(int fd, int argc, char **argv);
+
+_EXTERN char * defs_basic(char *id);
 
 #undef _EXTERN
 

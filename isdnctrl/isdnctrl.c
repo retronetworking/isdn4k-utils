@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  1998/06/02 12:17:15  detabc
+ * wegen einer einstweiliger verfuegung gegen DW ist zur zeit
+ * die abc-extension bis zur klaerung der rechtslage nicht verfuegbar
+ *
  * Revision 1.20  1998/04/28 08:34:28  paul
  * Fixed compiler warnings from egcs.
  *
@@ -171,8 +175,28 @@
 #	include "ctrlconf.h"
 #endif /* I4L_CTRL_CONF */
 
+#ifdef I4L_CTRL_TIMRU
+#	include "ctrltimru.h"
+#endif /* I4L_CTRL_TIMRU */
+
 #define CMD_IFCONFIG "ifconfig"
 #define CMD_OPT_IFCONFIG "down"
+
+
+/* list of functions to obtain default-configuration of interface */
+typedef	char *(*defs_fcn_t)();
+
+defs_fcn_t defs_fcns [] = {
+	defs_basic,
+
+#ifdef I4L_CTRL_TIMRU
+	defs_timru,
+	defs_budget,
+#endif
+
+	NULL
+};
+
 
 char nextlistif[10];
 
@@ -1389,6 +1413,66 @@ int exec_args(int fd, int argc, char **argv)
 			        printf("ISDN Configuration read from %s.\n", id);
 			        break;
 #endif /* I4L_CTRL_CONF */
+
+			case IFDEFAULTS: {
+#define	MAX_DEFS_ARGS	64
+
+				int	defs_argc;
+				char	*defs_argv [MAX_DEFS_ARGS + 1];
+				defs_fcn_t	defs_fcn_p;
+				int		i;
+				char	*s, *s0, *t, *u;
+
+
+				i = 0;
+				while((defs_fcn_p = defs_fcns [i++]) != NULL) {
+
+					s = (*defs_fcn_p)(id);
+
+					if(!s || !*s)
+						continue;
+
+					s0 = s = strdup(s);
+
+					while(s && *s) {
+						t = strdup(strtok(s, "\n"));
+						s += strlen(t) + 1;
+
+						if(!t || !*t)
+							continue;
+
+						defs_argc = 0;
+						defs_argv [defs_argc] = NULL;
+
+						u = strtok(t, " \t");
+
+						while(u && *u) {
+							if(++defs_argc >= MAX_DEFS_ARGS) {
+								fprintf(stderr, "default-values overflow.");
+								exit(1);
+							}
+
+							defs_argv [defs_argc - 1] = strdup(u);
+							defs_argv [defs_argc] = NULL;
+
+							u = strtok(NULL, " \t");
+						}
+
+						if(defs_argc)  {
+							exec_args(fd, defs_argc, defs_argv);
+
+							while(defs_argc--)
+								free(defs_argv [defs_argc]);
+						}
+
+						free(t);
+					}
+
+					free(s0);
+				}
+
+			}
+			break;
 		}
 
 #if DEBUG
@@ -1399,6 +1483,17 @@ int exec_args(int fd, int argc, char **argv)
 	}
 
 	return 0;
+}
+
+
+char	*defs_basic(char *id) {
+	static char	r [1024];
+	char	*p = r;
+
+	p += sprintf(p, "status %s off\n", id);
+	p += sprintf(p, "huptimeout %s 60\n", id);
+
+	return(r);
 }
 
 void check_version() {

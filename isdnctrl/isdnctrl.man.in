@@ -73,6 +73,11 @@ is appended,
 .BI ifconfig " name " down
 before removing an interface.
 .TP
+.BI ifdefaults " name "
+resets the interface
+.IR name
+to some reasonable defaults.
+.TP
 .BI addphone " name " out " num"
 Adds the phone number
 .I num
