@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/07/12 11:37:37  calle
+ * Bugfix: isdnrep defined print_msg as function pointer, the object files
+ *         in tools directory, declare it as external function.
+ * 	compiler and linker did not detect the problem.
+ * 	Now print_msg is a function in rep_main.c and I copied
+ * 	print_in_modules from isdnconf. Also set_print_fct_for_isdnrep
+ * 	is removed from isdnrep.c. isdnrep didn´t crash now, but throw
+ * 	out warning messages about rate.dat and did´t generate output.
+ *
  * Revision 1.14  1999/05/04 19:33:19  akool
  * isdnlog Version 3.24
  *
@@ -134,6 +143,7 @@ _EXTERN int     print_msg(int Level, const char *, ...);
 _EXTERN int     incomingonly    _SET_0;
 _EXTERN int     outgoingonly    _SET_0;
 _EXTERN int     verbose         _SET_0;
+_EXTERN int	bill		_SET_0;
 _EXTERN int     timearea        _SET_0;
 _EXTERN int     phonenumberonly _SET_0;
 _EXTERN int     compute         _SET_0;

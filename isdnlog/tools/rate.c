@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.35  1999/07/15 16:42:10  akool
+ * small enhancement's and fixes
+ *
  * Revision 1.34  1999/07/12 18:50:06  akool
  * replace "0" by "+49"
  *
@@ -932,7 +935,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	    i=day2; day2=day1; day1=i;
 	  }
 	  for (i=day1; i<=day2; i++)
-	    day|=(1<<i);
+	    day|=(1<<(i+MONDAY-1));
 	} else {
 	  warning (dat, "invalid day '%c'", *s);
 	  day=0;
@@ -1166,7 +1169,7 @@ int getRate(RATE *Rate, char **msg)
   HOUR  *Hour;
   UNIT  *Unit;
   int    prefix, freeze, hour, cur, max, i, j;
-  double now, run, end;
+  double now, run, end, jmp;
   char  *day;
   time_t time;
   struct tm tm;
@@ -1275,6 +1278,11 @@ int getRate(RATE *Rate, char **msg)
       freeze=Hour->Freeze;
       Rate->Hour=Hour->Name;
       Unit=Hour->Unit;
+      jmp=run;
+      while (Unit->Delay!=UNKNOWN && Unit->Delay<=jmp) {
+	jmp-=Unit->Delay;
+	Unit++;
+      }
     }
 
     now+=Unit->Duration;
@@ -1428,6 +1436,7 @@ void main (int argc, char *argv[])
       getNumber (strdup("+43-1-4711"), Rate.dst);
   }
 
+#if 1
   time(&Rate.start);
   Rate.now=Rate.start+153;
 
@@ -1471,10 +1480,13 @@ void main (int argc, char *argv[])
 
   exit (0);
 
+#else 
+
   printf ("---Date--- --Time--  --Charge-- ( Basic  Price)  Unit   Dur  Time  Rest\n");
 
+  time(&Rate.start)
   while (1) {
-    time(&Rate.now);
+    time(&Rate.now)
     if (getRate(&Rate, &msg)==UNKNOWN) {
       printf ("Ooops: %s\n", msg);
       exit (1);
@@ -1487,5 +1499,6 @@ void main (int argc, char *argv[])
 
     sleep(1);
   }
+#endif
 }
 #endif

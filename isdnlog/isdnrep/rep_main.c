@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1999/07/12 11:37:38  calle
+ * Bugfix: isdnrep defined print_msg as function pointer, the object files
+ *         in tools directory, declare it as external function.
+ * 	compiler and linker did not detect the problem.
+ * 	Now print_msg is a function in rep_main.c and I copied
+ * 	print_in_modules from isdnconf. Also set_print_fct_for_isdnrep
+ * 	is removed from isdnrep.c. isdnrep didn´t crash now, but throw
+ * 	out warning messages about rate.dat and did´t generate output.
+ *
  * Revision 1.8  1999/06/13 14:08:08  akool
  * isdnlog Version 3.32
  *
@@ -180,7 +189,7 @@ int main(int argc, char *argv[], char *envp[])
 	auto char  fnbuff[512] = "";
 	auto char  usage[]     = "%s: usage: %s [ -%s ]\n";
 	auto char  wrongdate[] = "unknown date: %s\n";
-	auto char  options[]   = "ac:d:f:hinop:s:t:uvw:NVF:M:R:";
+	auto char  options[]   = "ac:d:f:hinop:s:t:uvw:NVF:M:R:b";
 	auto char *myname      = basename(argv[0]);
 	auto char *ptr         = NULL;
 	auto char *linefmt     = "";
@@ -258,6 +267,9 @@ int main(int argc, char *argv[], char *envp[])
       case 'R' : preselect = (int)strtol(optarg, NIL, 0);
       	       	 break;
 
+      case 'b' : bill++;
+      	       	 break;
+
       case 'V' : print_version(myname);
                  exit(0);
 
@@ -322,6 +334,9 @@ int print_msg(int Level, const char *fmt, ...)
 	va_start(ap, fmt);
 	vsnprintf(String, LONG_STRING_SIZE, fmt, ap);
 	va_end(ap);
+
+  	if (Level == PRT_ERR)
+    	  return(1);
 
 	if (Level & PRT_ERR)
 		fprintf(stderr, "%s", String);
