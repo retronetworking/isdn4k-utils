@@ -22,7 +22,7 @@ INSTALL=install
 INSTALL_MAN=$(INSTALL) -o 0 -g 0 -m 0644
 MANPAGE=imontty.8
 
-CCFLAGS=-O2
+CCFLAGS=-O2 -I$(CONFIG_KERNELDIR)/include
 #CCFLAGS=-I$(ISDN_INCLUDE) -g
 
 # nothing to change behind this line
