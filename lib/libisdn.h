@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1998/05/11 19:43:51  luethje
+ * Some changes for "vorwahlen.dat"
+ *
  * Revision 1.8  1998/05/10 22:12:04  luethje
  * Added support for VORWAHLEN2.EXE
  *
@@ -63,7 +66,13 @@ extern char *basename __P((__const char *__name));
 
 /****************************************************************************/
 
-#define CONFDIR_VAR "ISDN_CONF_PATH"
+#ifndef NUMBER_SIZE
+#	define NUMBER_SIZE 40
+#endif
+
+#ifndef CONFDIR_VAR
+#	define CONFDIR_VAR "ISDN_CONF_PATH"
+#endif
 
 #define C_SLASH '/'
 /* #define C_SLASH '\\' */

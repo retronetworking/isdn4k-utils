@@ -18,6 +18,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/05/09 23:31:09  luethje
+ * isdnlog: new switch -O
+ * isdnrep: new format %S
+ * bugfix in handle_runfiles()
+ *
  * Revision 1.5  1997/04/15 00:20:18  luethje
  * replace variables: some bugfixes, README comleted
  *
@@ -641,6 +646,31 @@ char *int2str(int value, int prec)
 		sprintf(RetCode,"%*d",prec,value);
 
 	return RetCode;
+}
+
+/****************************************************************************/
+
+char *Strncat(char *dest, const char *src, int len)
+{
+	int destlen = strlen(dest);
+
+	return Strncpy(dest+destlen,src,len-destlen);
+}
+
+/****************************************************************************/
+
+char *Strncpy(char *dest, const char *src, int len)
+{
+	int l = strlen(src);
+
+	if (l > len - 1)
+		l = len - 1;
+
+	strncpy(dest,src,l);
+
+	dest[l] = '\0';
+
+	return dest;
 }
 
 /****************************************************************************/

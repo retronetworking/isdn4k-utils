@@ -24,6 +24,22 @@
  *
  *
  * $Log$
+ * Revision 1.46  1998/10/04 12:04:21  akool
+ *  - README
+ *      New entries "CALLFILE" and "CALLFMT" documented
+ *      Small Correction from Markus Werner <mw@empire.wolfsburg.de>
+ *      cosmetics
+ *
+ *  - isdnrep.c
+ *      Bugfix (Thanks to Arnd Bergmann <arnd@uni.de>)
+ *
+ *  - processor.c
+ *      Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *        Makes CHARGEMAX work without AOC-D
+ *
+ *      Patch from Stefan Gruendel <sgruendel@adulo.de>
+ *        gcc 2.7.2.1 Optimizer-Bug workaround
+ *
  * Revision 1.45  1998/10/03 18:06:35  akool
  *  - processor.c, takt_at.c : Patch from Michael Reinelt <reinelt@eunet.at>
  *    try to guess the zone of the calling/called party
@@ -1134,9 +1150,10 @@ static int print_bottom(double unit, char *start, char *stop)
 		       else
                        if ((p = get_areacode(unknown[i].num, &l, flag)) != 0) {
                          if (l > 1) {
-                           strncpy(areacode, unknown[i].num, 2 + prefix);
+                           /* Sehr gefaehrlich, was ist mit Laendern, die einen dreistelligen Code haben??? */
+                           Strncpy(areacode, unknown[i].num, 3 + prefix);
                            if ((l - (2 + prefix)) > 0) {
-                           strncpy(vorwahl,  unknown[i].num + 2 + prefix, l - (2 + prefix));
+                           Strncpy(vorwahl,  unknown[i].num + 2 + prefix, l - (2 + prefix) + 1);
                             vorwahl[l - (2 + prefix)] = 0;
                            }
                            else
