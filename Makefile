@@ -24,7 +24,7 @@ CONFIGURATION = config
 do-it-all:      config
 endif
 
-EXTRADIRS = isdnlog/tools/zone isdnlog/tools/dest
+EXTRADIRS = isdnlog/tools/zone isdnlog/tools/dest isdnlog/tools/cdb
 
 SUBDIRS :=
 ifeq ($(CONFIG_ISDNLOG),y)
