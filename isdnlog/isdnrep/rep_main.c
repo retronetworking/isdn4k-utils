@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/05/04 20:19:58  luethje
+ * README completed
+ * isdnrep finished
+ * interval-bug fixed
+ *
  * Revision 1.2  1997/04/20 22:52:29  luethje
  * isdnrep has new features:
  *   -variable format string
@@ -146,10 +151,11 @@ int main(int argc, char *argv[], char *envp[])
 	auto char  fnbuff[512] = "";
 	auto char  usage[]     = "%s: usage: %s [ -%s ]\n";
 	auto char  wrongdate[] = "unknown date: %s\n";
-	auto char  options[]   = "ac:d:f:hinop:s:t:uvw:NVF:";
+	auto char  options[]   = "ac:d:f:hinop:s:t:uvw:NVF:M:";
 	auto char *myname      = basename(argv[0]);
 	auto char *ptr         = NULL;
 	auto char *linefmt     = "";
+	auto char *htmlreq     = NULL;
 
 
 	set_print_fct_for_tools(printf);
@@ -214,6 +220,9 @@ int main(int argc, char *argv[], char *envp[])
       case 'N' : use_new_config = 0;
                  break;
 
+      case 'M' : htmlreq = strdup(optarg);
+                 break;
+
       case 'V' : print_version(myname);
                  exit(0);
 
@@ -223,6 +232,12 @@ int main(int argc, char *argv[], char *envp[])
 
   if (readconfig(myname) != 0)
   	return 1;
+
+  if (htmlreq)
+  {
+		send_html_request(myname,htmlreq);
+		exit(0);
+  }
 
 	if (!html && (ptr = strrchr(myname,'.')) != NULL && !strcasecmp(ptr+1,"cgi"))
 		html = H_PRINT_HEADER;
@@ -266,11 +281,11 @@ int main(int argc, char *argv[], char *envp[])
 static int print_in_modules(int Level, const char *fmt, ...)
 {
 	auto va_list ap;
-	auto char    String[LONG_STRING_SIZE];
+	auto char    String[BUFSIZ*3];
 
 
 	va_start(ap, fmt);
-		(void)vsnprintf(String, LONG_STRING_SIZE, fmt, ap);
+		(void)vsnprintf(String, BUFSIZ*3, fmt, ap);
 	va_end(ap);
 
 	return fprintf(Level == PRT_ERR?stderr:stdout, "%s", String);

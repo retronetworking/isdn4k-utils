@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/04/20 22:52:28  luethje
+ * isdnrep has new features:
+ *   -variable format string
+ *   -can create html output (option -w1 or ln -s isdnrep isdnrep.cgi)
+ *    idea and design from Dirk Staneker (dirk.staneker@student.uni-tuebingen.de)
+ * bugfix of processor.c from akool
+ *
  * Revision 1.5  1997/04/16 22:23:00  luethje
  * some bugfixes, README completed
  *
@@ -88,6 +95,7 @@ _EXTERN int read_logfile(char *myname);
 _EXTERN void set_print_fct_for_isdnrep(int (*new_print_msg)(int Level, const char *, ...));
 _EXTERN int get_term (char *String, time_t *Begin, time_t *End,int delentries);
 _EXTERN int set_msnlist(char *String);
+_EXTERN int send_html_request(char *myname, char *option);
 
 _EXTERN int     (*print_msg)(int Level, const char *, ...) _SET_NULL;
 _EXTERN int     incomingonly    _SET_0;
