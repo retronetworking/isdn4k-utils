@@ -28,7 +28,8 @@ comment 'Runtime defaults'
 string 'Write .pid files here' CONFIG_RUNDIR /var/run
 string 'General configuration directory' CONFIG_I4LCONFDIR /etc/isdn
 string 'Global configuration file' CONFIG_CONFFILE isdn.conf
-string 'User configuration file' CONFIG_USERCONFFILE .isdn
+string 'Global phone number file file' CONFIG_CALLERIDFILE callerid.conf
+string 'User configuration file' CONFIG_USERCONFFILE ~/.isdn
 comment 'Configuration library options'
 string 'Default country prefix' CONFIG_COUNTRY_PREFIX +
 string 'Default area prefix' CONFIG_AREA_PREFIX 0

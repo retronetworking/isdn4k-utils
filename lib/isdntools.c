@@ -70,7 +70,6 @@
 
 /****************************************************************************/
 
-#include <fnmatch.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -136,13 +135,13 @@ char *avonlib;
 
 /****************************************************************************/
 
-void set_print_fkt_for_lib(int (*new_print_msg)(const char *, ...))
+void set_print_fct_for_lib(int (*new_print_msg)(const char *, ...))
 {
 	print_msg = new_print_msg;
-	set_print_fkt_for_conffile(new_print_msg);
-	set_print_fkt_for_libtools(new_print_msg);
+	set_print_fct_for_conffile(new_print_msg);
+	set_print_fct_for_libtools(new_print_msg);
 #ifndef LIBAREA
-	set_print_fkt_for_avon(new_print_msg);
+	set_print_fct_for_avon(new_print_msg);
 #endif
 }
 
@@ -202,17 +201,11 @@ char *expand_number(char *s)
 
 	while(*Ptr != '\0')
 	{
-		switch (*Ptr)
+		if (isdigit(*Ptr) || *Ptr == '?' || *Ptr == '*')
 		{
-			case '\t':
-			case ' ':
-			case '-':
-			case '/':
-			          break;
-			default : Index = strlen(Help);
-			          Help[Index] = *Ptr;
-			          Help[Index+1] = '\0';
-			          break;
+			Index = strlen(Help);
+			Help[Index] = *Ptr;
+			Help[Index+1] = '\0';
 		}
 
 		Ptr++;
@@ -404,7 +397,7 @@ int Set_Codes(section* Section)
 		ptr[0] = avonlib = strdup(Entry->value);
 	else
 	{
-		sprintf(s, "%s%c%s", CONFIG_AVON_DATA, C_SLASH, AVON);
+		sprintf(s, "%s%c%s", confdir(), C_SLASH, AVON);
 		ptr[0] = avonlib = strdup(s);
 	}
 #endif
@@ -421,6 +414,8 @@ int Set_Codes(section* Section)
 
 		if (ptr[1] != NULL)
 			RetCode++;
+		else
+			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_AREA);
 	}
 
 	if ((Entry = Get_Entry(Section->entries,CONF_ENT_COUNTRY)) != NULL &&
@@ -437,6 +432,21 @@ int Set_Codes(section* Section)
 			
 		if ((ptr[2] = mycountry = strdup(ptr2)) != NULL)
 			RetCode++;
+		else
+			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_COUNTRY);
+	}
+
+	if ((Section = Get_Section(Section,CONF_SEC_VAR)) != NULL)
+	{
+		Entry = Section->entries;
+
+		while(Entry != NULL)
+		{
+			if (setenv(Entry->name, Entry->value, 1) != 0)
+				print_msg("Warning: Can not set environment variable `%s=%s'!\n", Entry->name, Entry->value);
+
+			Entry = Entry->next;
+		}
 	}
 
 	return (RetCode==2?0:-1);
@@ -613,6 +623,73 @@ static char *_get_areacode(char *code, int *Len, int flag)
 	return NULL;
 }
 #endif
+
+/****************************************************************************/
+
+int read_conffiles(section **Section, char *groupfile)
+{
+	static section *conf_dat = NULL;
+	static int read_again = 0;
+	auto char    s[4][BUFSIZ];
+	auto char ***vars = NULL;
+	auto char **svars = NULL;
+	auto char **files = NULL;
+	auto int      RetCode = -1;
+
+	*Section = NULL;
+
+	if (!read_again)
+	{
+	  sprintf(s[0], "%s%c%s", confdir(), C_SLASH, CONFFILE);
+	  append_element(&files,s[0]);
+
+	  sprintf(s[1], "%s%c%s", confdir(), C_SLASH, CALLERIDFILE);
+	  append_element(&files,s[1]);
+
+	  if (groupfile != NULL)
+	  {
+		  strcpy(s[2],groupfile);
+			append_element(&files,s[2]);
+		}
+
+	  strcpy(s[3],expand_file(USERCONFFILE));
+		append_element(&files,s[3]);
+	}
+
+	append_element(&svars,CONF_SEC_MSN);
+	append_element(&svars,CONF_ENT_ALIAS);
+	append_element(&vars,svars);
+	svars = NULL;
+	append_element(&svars,CONF_SEC_NUM);
+	append_element(&svars,CONF_ENT_ALIAS);
+	append_element(&vars,svars);
+	svars = NULL;
+	append_element(&svars,CONF_SEC_MSN);
+	append_element(&svars,CONF_ENT_NUM);
+	append_element(&vars,svars);
+	svars = NULL;
+	append_element(&svars,CONF_SEC_NUM);
+	append_element(&svars,CONF_ENT_NUM);
+	append_element(&vars,svars);
+
+	if ((RetCode = read_files(&conf_dat, files, vars, C_OVERWRITE|C_NOT_UNIQUE|C_NO_WARN_FILE)) > 0)
+	{
+		*Section = conf_dat;
+
+		if (Set_Codes(conf_dat) != 0)
+			return -1;
+	}
+	else
+		*Section = conf_dat;
+
+	if (!read_again)
+		delete_element(&files,0);
+
+	delete_element(&vars,1);
+
+	read_again = 1;
+	return RetCode;
+}
 
 /****************************************************************************/
 

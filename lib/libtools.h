@@ -32,28 +32,11 @@ extern char *basename __P((__const char *__name));
 
 /****************************************************************************/
 
-#define CONFDIR_VAR "ISDN"
 #define C_SLASH '/'
 /* #define C_SLASH '\\' */
 
 #ifndef TMPDIR
 # define TMPDIR P_tmpdir
-#endif
-
-#ifndef I4LCONFDIR
-# define I4LCONFDIR "/etc/isdn"
-#endif
-
-#ifndef RUNDIR
-# define RUNDIR "/var/run"
-#endif
-
-#ifndef CONFFILE
-# define CONFFILE "isdn.conf"
-#endif
-
-#ifndef USERCONFFILE
-#	define USERCONFFILE "~/.isdn"
 #endif
 
 /****************************************************************************/
@@ -88,7 +71,7 @@ extern char *basename __P((__const char *__name));
 #define _EXTERN extern
 #endif
 
-_EXTERN void set_print_fkt_for_libtools(int (*new_print_msg)(const char *, ...));
+_EXTERN void set_print_fct_for_libtools(int (*new_print_msg)(const char *, ...));
 _EXTERN char *Not_Space(char *String);
 _EXTERN char *To_Upper (char *String);
 _EXTERN char *Kill_Blanks(char *String);
