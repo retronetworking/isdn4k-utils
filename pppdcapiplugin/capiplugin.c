@@ -1102,7 +1102,7 @@ static void disconnectall(void)
 	    handlemessages();
         } while (connections && time(0) < t);
 
-	if (connections)
+	if (connections && !exiting)
         	fatal("capiplugin: disconnectall failed");
 }
 
