@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.83  2000/12/07 16:26:12  leo
+ * Fixed isdnrate -X50
+ *
  * Revision 1.82  2000/11/19 14:33:05  leo
  * Work around a SIGSEGV with R:Tags - V4.44
  *
@@ -1175,6 +1178,7 @@ static int parseDate(char **s, time_t *t) {
     return 0;
   (*s)++;
   tm.tm_year = strtoul(*s, s, 10)-1900;
+  tm.tm_isdst = -1;
   *t = mktime(&tm);
   return 1;
 }

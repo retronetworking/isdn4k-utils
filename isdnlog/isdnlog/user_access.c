@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1999/10/25 18:33:15  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.2  1997/04/03 22:34:52  luethje
  * splitt the files callerid.conf and ~/.isdn.
  *
@@ -102,7 +107,7 @@ static int NoName = 1;
 /****************************************************************************/
 
 static int _read_file (void);
-static char *Find_Section(char* String);
+static char *Find_Section(char* Dest, char const *Src);
 static int Clear_All (user_access **Cursor);
 static int Set_Flags(access_flags **Cursor, char *String);
 static int _Set_Entry (char* Name, char* User, char *Host, char *Flags);
@@ -198,9 +203,8 @@ static int _read_file (void)
 
 		if (*String != '\0' && *String != '\n')
 		{
-			if ((Ptr = Find_Section(String)) != NULL)
+			if (Find_Section(Name, String) != NULL)
 			{
-				strcpy(Name,Ptr);
 				To_Upper(Name);
 				print_msg(PRT_DEBUG_CS,"Name:*%s*\n",Name);
 			}
@@ -248,13 +252,14 @@ static int _read_file (void)
 
 /****************************************************************************/
 
-static char *Find_Section(char* String)
+static char *Find_Section(char* Dest, char const *Src)
 {
 	char *Ptr = NULL;
 	char Help[SHORT_STRING_SIZE];
+	char *String;
 
 
-	strcpy(Help,String);
+	strcpy(Help,Src);
 	String = Kill_Blanks(Help);
 
 	if (*String == '\0' || *String != '[')
@@ -264,7 +269,8 @@ static char *Find_Section(char* String)
 	if (Ptr == strchr(String,']'))
 	{
 		*Ptr = '\0';
-		return String+1;
+		strcpy(Dest, String+1);
+		return Dest;
 	}
 
 	return NULL;
