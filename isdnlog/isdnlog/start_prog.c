@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/04/15 22:37:10  luethje
+ * allows the character `"' in the program argument like the shell.
+ * some bugfixes.
+ *
  * Revision 1.3  1997/04/10 23:32:19  luethje
  * Added the feature, that environment variables are allowed in the config files.
  *
@@ -54,6 +58,9 @@
 
 #define C_TAB   '\t'
 #define C_SPACE ' '
+#define C_AT    '@'
+
+#define S_AT    "@"
 
 /*************************************************************************/
 
@@ -267,7 +274,7 @@ static int GetArgs(char *Line, char *Args[], char *Opts[], int MaxArgs)
 			MemPtr[j] = NULL;
 		}
 
-		if (*Arg == '@')
+		if (*Arg == C_AT)
 		{
 			FILE *fp = fopen(Arg+1,"r");
 
@@ -297,11 +304,9 @@ static int GetArgs(char *Line, char *Args[], char *Opts[], int MaxArgs)
 			Arg = "?";
 		}
 
-/*
 		Ptr = Arg;
-		while((Ptr = Check_Quote(Ptr, S_QUOTES, QUOTE_DELETE)) != NULL && Ptr[0] != '\0')
+		while((Ptr = Check_Quote(Ptr, S_AT, QUOTE_DELETE)) != NULL && Ptr[0] != '\0')
 			Ptr++;
-*/
 
 		if (i < MaxArgs) Args[i++] = Arg;
 	}
@@ -375,7 +380,6 @@ static char *Replace_Opts(char *String, char *Opts[], int MaxOpts)
 	char *Begin = NULL;
 	char *Var = NULL;
 	char *End = NULL;
-	char *Value = NULL;
 	char *Ptr = String;
 	int cnt = 0;
 	int num = 0;
@@ -429,7 +433,7 @@ static char *Replace_Opts(char *String, char *Opts[], int MaxOpts)
 
 				Begin[Ptr-RetCode] = '\0';
 
-				if ((RetCode = (char*) realloc(RetCode,sizeof(char)*strlen(RetCode)+strlen(Value)-strlen(Var))) == NULL)
+				if ((RetCode = (char*) realloc(RetCode,sizeof(char)*strlen(RetCode)+strlen(Opts[Num-1])-strlen(Var))) == NULL)
 				{
 					print_msg(PRT_ERR,"%s!\n","Error: Can not allocate memory!\n");
 					return NULL;

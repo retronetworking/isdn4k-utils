@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/04/08 21:56:59  luethje
+ * Create the file isdn.conf
+ * some bug fixes for pid and lock file
+ * make the prefix of the code in `isdn.conf' variable
+ *
  * Revision 1.5  1997/04/06 21:17:46  luethje
  * Bugfix von Andreas Jaeger.
  *
@@ -770,7 +775,9 @@ go:   	         if (!ndigit)
 
 int print_version(char *myname)
 {
-	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997 Andreas Kool\n",myname,VERSION);
+	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997\n",myname,VERSION);
+	_print_msg("                                   Andreas Kool (akool@Kool.f.EUnet.de)\n");
+	_print_msg("                               and Stefan Luethje (luethje@sl-gw.lake.de)\n\n");
 	_print_msg("%s comes with ABSOLUTELY NO WARRANTY; for details see COPYING.\n", myname);
 	_print_msg("This is free software, and you are welcome to redistribute it\n");
 	_print_msg("under certain conditions; see COPYING for details.\n");

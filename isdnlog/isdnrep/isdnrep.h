@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/04/03 22:30:03  luethje
+ * improved performance
+ *
  * Revision 1.3  1997/03/24 22:52:14  luethje
  * isdnrep completed.
  *
@@ -89,6 +92,7 @@ _EXTERN int     delentries      _SET_0;
 _EXTERN int     numbers         _SET_0;
 _EXTERN int     header          _SET_1;
 _EXTERN char	  timestring[256] _SET_EMPTY;
+_EXTERN char	  *lineformat     _SET_NULL;
 _EXTERN time_t  begintime;
 _EXTERN time_t  endtime;
 
