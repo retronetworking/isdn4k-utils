@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1999/12/31 13:57:19  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *  - resolved *any* warnings against rate-de.dat
+ *  - Many new rates
+ *  - CREDITS file added
+ *
  * Revision 1.6  1999/09/26 10:55:20  akool
  * isdnlog-3.55
  *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -99,7 +106,7 @@ extern const char *basename (const char *name);
 static COUNTRY *Country = NULL;
 static int      nCountry = 0;
 static int      line=0;
-
+static int 	verbose=0;
 
 static void warning (char *file, char *fmt, ...)
 {
@@ -110,7 +117,8 @@ static void warning (char *file, char *fmt, ...)
   vsnprintf (msg, BUFSIZ, fmt, ap);
   va_end (ap);
 #ifdef STANDALONE
-  fprintf(stderr, "WARNING: %s line %3d: %s\n", basename(file), line, msg);
+  if(verbose)
+    fprintf(stderr, "WARNING: %s line %3d: %s\n", basename(file), line, msg);
 #else
   print_msg(PRT_NORMAL, "WARNING: %s line %3d: %s\n", basename(file), line, msg);
 #endif
@@ -373,10 +381,10 @@ int initCountry(char *path, char **msg)
       s+=2; while(isblank(*s)) s++;
       strcpy(version, s);
       break;
-      
+
     case 'R':
     case 'T':
-      break;  
+      break;
 
     default:
       warning(path, "Unknown tag '%c'", *s);

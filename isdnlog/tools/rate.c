@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.73  2000/02/03 18:24:51  akool
+ * isdnlog-4.08
+ *   isdnlog/tools/rate.c ... LCR patch again
+ *   isdnlog/tools/isdnrate.c ... LCR patch again
+ *   isdnbill enhanced/fixed
+ *   DTAG AktivPlus fixed
+ *
  * Revision 1.72  2000/02/02 22:43:10  akool
  * isdnlog-4.07
  *  - many new rates per 1.2.2000
@@ -484,7 +491,7 @@
  *
  * int getSpecial (char *number)
  *   überprüft, ob die Nummer einem N:-Tag = Service entspricht
- *   wird für die Sondernummern benötigt, retouniert service# oder 0
+ *   wird für die Sondernummern benötigt, retouniert (service# + 1) oder 0
  *
  * char *getSpecialName(char *number)
  *   get the Service Name of a special number
@@ -492,7 +499,7 @@
  * char *getServiceNum(char *name)
  *   returns the first Tel-Number for Service 'name',
  *   call it with name=NULL to get the next number
- *   returns NULL if no mor numbers
+ *   returns NULL if no more numbers
  *
  * char *getServiceNames(int first)
  *   returns the name of a Service
@@ -960,9 +967,13 @@ int pnum2prefix_variant(char * pnum, time_t when) {
 
 int vbn2prefix(char *vbn, int *len) {
   int i;
+  time_t when;
+
+  time(&when);
   for(i=0;i<nProvider;i++)
     if(*Provider[i].Vbn) {
       if(strncmp(Provider[i].Vbn, vbn, strlen(Provider[i].Vbn))==0 &&
+          isProviderValid(i, when) &&
           (Provider[i]._provider._variant == UNKNOWN ||
            Provider[i].booked==1) ) {
 	*len = strlen(Provider[i].Vbn);
@@ -1020,6 +1031,19 @@ static int parse2dates(char *dat, char **s, time_t *from_d, time_t *to_d)
   return 1;
 }
 
+static char * epnum(int prefix) {
+  static char s[20];
+
+  if ((prefix < 0) || (prefix > nProvider))
+    sprintf(s, "???");
+  else if (Provider[prefix]._provider._variant)
+    sprintf(s,"%d (%d)", Provider[prefix]._provider._prefix, prefix);
+  else
+    sprintf(s,"%d_%d (%d)", Provider[prefix]._provider._prefix,
+      Provider[prefix]._provider._variant, prefix);
+  return s;
+}
+
 int initRate(char *conf, char *dat, char *dom, char **msg)
 {
   static char message[LENGTH];
@@ -1036,6 +1060,11 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   int      i, n, t, u, v, z;
   int      any;
   time_t   from_d, to_d;
+#define  MAX_INCLUDE 3
+  int	lines[MAX_INCLUDE];
+  FILE  *streams[MAX_INCLUDE];
+  char  *files[MAX_INCLUDE];
+  int include = 0;
 
   initTelNum(); /* we need defnum */
   mytld = getMynum()->tld;
@@ -1072,7 +1101,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	any = 0;
 	for (i=0; i<nBooked; i++)
 	  if(prefix==Booked[i]._prefix) {
-	    warning(conf, "Duplicate entry provider %d", prefix);
+	    warning(conf, "Duplicate entry provider %s", epnum(prefix));
 	    any++;
 	    break;
 	  }
@@ -1108,6 +1137,11 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
     }
     fclose (stream);
   }
+  else {
+    if (msg) snprintf (message, LENGTH, "Warning: no rate.conf specified in %s!",
+		       conf);
+    return 0;
+  }
 
   if (!dat || !*dat) {
     if (msg) snprintf (message, LENGTH, "Warning: no rate database specified in %s!",
@@ -1115,15 +1149,20 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
     return 0;
   }
 
+  prefix=UNKNOWN;
+  zone=UNKNOWN;
+  files[include]=strdup(dat);
+open:
+  line=0;
+  lines[include]=line;
+  dat=files[include];
   if ((stream=fopen(dat,"r"))==NULL) {
     if (msg) snprintf (message, LENGTH, "Error: could not load rate database from %s: %s",
 		       dat, strerror(errno));
     return -1;
   }
-
-  line=0;
-  prefix=UNKNOWN;
-  zone=UNKNOWN;
+  streams[include]=stream;
+again:
   while ((s=fgets(buffer,LENGTH,stream))!=NULL) {
     line++;
     if (*(s=strip(s))=='\0')
@@ -1134,6 +1173,27 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
     }
 
     switch (*s) {
+    case 'I': /* I:file include */
+      s+=2;  while(isblank(*s)) s++;
+      if (include >= MAX_INCLUDE-1) {
+        warning(dat, "I:nclude nested to deeply - ignored");
+	continue;
+      }
+      lines[include]=line;
+      include++;
+      if(strchr(s, '/')) /* absolute pathname */
+        files[include]=strdup(s);
+      else {
+        char *newname=malloc(strlen(files[0])+strlen(s)+1);
+	strcpy(newname, files[0]);
+	if ((c=strrchr(newname, '/')) != NULL)
+	  strcpy(c+1, s);
+	else
+	  strcpy(newname, s);
+	files[include] = newname;
+      }
+      goto open;
+      break;
 
     case 'V': /* V:xxx Version der Datenbank */
       s+=2; while(isblank(*s)) s++;
@@ -1159,7 +1219,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	    whimper (dat, "Zone %d has no 'T:' Entries", zone);
 #if 0 /* AK:28Dec1999 - Sorry, Leo ... Millenium-Release! */
 	if (!(where & FEDERAL))
-	  whimper (dat, "Provider %d has no default domestic zone #1 (missing 'A:%s')", prefix, mycountry);
+	  whimper (dat, "Provider %s has no default domestic zone #1 (missing 'A:%s')", epnum(prefix), mycountry);
 #endif
 	line++;
       }
@@ -1169,7 +1229,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       }
       if(nProvider) {
 	if(!*Provider[prefix].Vbn) {
-	  error(dat, "Provider %s has no valid B:-Tag - ignored", getProvider(prefix));
+	  error(dat, "Provider %s has no valid B:-Tag - ignored", epnum(prefix));
 	  free_provider(prefix);
 	  nProvider--;
 	}
@@ -1668,7 +1728,14 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
     }
   }
   fclose(stream);
-
+  if (include) {
+    free(files[include]);
+    include--;
+    stream=streams[include];
+    line=lines[include];
+    dat=files[include];
+    goto again;
+  }
   if (zone!=UNKNOWN) {
     Provider[prefix].Zone[zone].Domestic = (where & DOMESTIC) == DOMESTIC;
     line--;
@@ -1677,7 +1744,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
         whimper (dat, "Zone %d has no 'T:' Entries", zone);
 #if 0 /* AK:31Dec1999 - Sorry, Leo ... Millenium-Release! Michi: Hier wird _Bloedsinn_ gemeldet!! */
     if (!(where & FEDERAL))
-      whimper (dat, "Provider %d has no default domestic zone #2 (missing 'A:%s')", prefix, mycountry);
+      whimper (dat, "Provider %s has no default domestic zone #2 (missing 'A:%s')", epnum(prefix), mycountry);
 #endif
     line++;
   }
@@ -1687,7 +1754,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   }
   if(nProvider)
     if(!*Provider[prefix].Vbn) {
-      error(dat, "Provider %s has no valid B:-Tag - ignored", getProvider(prefix));
+      error(dat, "Provider %s has no valid B:-Tag - ignored", epnum(prefix));
       free_provider(prefix);
       nProvider--;
     }
@@ -1705,6 +1772,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   if (msg) snprintf (message, LENGTH,
 		     "Rates   Version %s loaded [%d Providers, %d Zones, %d Areas, %d Specials, %d Services, %d Comments, %d Rates from %s]",
 		     Version, nProvider, Zones, Areas, Specials, nService, Comments, Hours, dat);
+  free(files[0]);
 
   return 0;
 }
@@ -1747,7 +1815,7 @@ int getSpecial (char *number) {
   for (i=0; i<nService; i++)
     for(j=0; j<Service[i].nCode; j++)
       if(strmatch(Service[i].Codes[j], number)>=l)
-        return i;
+        return i+1; /* must be > 0 for 1. Service */
   return 0;
 }
 
@@ -1838,12 +1906,11 @@ int getRate(RATE *Rate, char **msg)
 
   prefix=Rate->prefix;
 #if 0
-  print_msg(PRT_V, "P:%d,%d Rate dst0='%s' dst1='%s' dst2='%s'\n",
-  	Provider[prefix]._provider._prefix, Provider[prefix]._provider._variant,
-	Rate->dst[0], Rate->dst[1], Rate->dst[2]);
+  print_msg(PRT_V, "P:%s Rate dst0='%s' dst1='%s' dst2='%s'\n",
+  	epnum(prefix),Rate->dst[0], Rate->dst[1], Rate->dst[2]);
 #endif
   if (prefix<0 || prefix>=nProvider) {
-    if (msg) snprintf(message, LENGTH, "Unknown provider %d", prefix);
+    if (msg) snprintf(message, LENGTH, "Unknown provider %s",epnum(prefix));
     return UNKNOWN;
   }
 
@@ -1883,7 +1950,8 @@ int getRate(RATE *Rate, char **msg)
       }
     }
     if (Rate->_area==UNKNOWN) {
-      if (msg) snprintf (message, LENGTH, "No area info for provider %d, destination %s", prefix, number);
+      if (msg) snprintf (message, LENGTH,
+      	"No area info for provider %s, destination %s",	epnum(prefix), number);
       Rate->_zone=UNZONE;
       return UNKNOWN;
     }
@@ -1903,7 +1971,8 @@ int getRate(RATE *Rate, char **msg)
 	    }
 	  }
 	}
-	if (msg) snprintf (message, LENGTH, "Provider %d domestic zone %d not found in rate database", prefix, z);
+	if (msg) snprintf (message, LENGTH, "Provider %s domestic zone %d not found in rate database",
+	  epnum(prefix), z);
 	Rate->_zone=UNZONE;
 	return UNKNOWN;
       done:
@@ -1962,8 +2031,8 @@ int getRate(RATE *Rate, char **msg)
       }
       if (!Hour) {
 	if (msg) snprintf(message, LENGTH,
-			  "No rate found for provider=%d, zone=%d day=%d hour=%d",
-			  prefix, Zone->Number[0], tm.tm_wday+1, tm.tm_hour);
+			  "No rate found for provider=%s, zone=%d day=%d hour=%d",
+			  epnum(prefix), Zone->Number[0], tm.tm_wday+1, tm.tm_hour);
 	return UNKNOWN;
       }
       freeze=Hour->Freeze;
@@ -2046,6 +2115,7 @@ int getLeastCost (RATE *Current, RATE *Cheapest, int booked, int skip)
     return (Cheapest->prefix==Current->prefix ? UNKNOWN : cheapest); /* no serv */
 
   /* we have a service: try other numbers for this service */
+  serv--; /* getSpecial returns serv + 1 */
   l=strlen(number);
    /* try all numbers for the service */
   for(cod=0; cod<Service[serv].nCode; cod++) {

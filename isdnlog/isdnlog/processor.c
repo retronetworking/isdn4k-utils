@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.102  2000/02/20 19:03:07  akool
+ * isdnlog-4.12
+ *  - ABC_LCR enhanced
+ *  - country-de.dat more aliases
+ *  - new rates
+ *  - isdnlog/Makefile.in ... defined NATION
+ *  - isdnlog/isdnlog/processor.c ... msn patch for NL
+ *  - isdnlog/tools/isdnconf.c ... default config
+ *
  * Revision 1.101  2000/02/12 16:40:22  akool
  * isdnlog-4.11
  *  - isdnlog/Makefile.in ... sep install-targets, installs samples, no isdnconf
@@ -4939,7 +4948,7 @@ static void processlcr(char *p)
   info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
 
   if (!*destnum.msn /* && ((abclcr & 1) == 1) */) { /* Future expansion, Sonderrufnummer? */
-    sprintf(s, "ABC_LCR: \"%s\" is a Sonderrufnummer -- no action --", destnum.area);
+    sprintf(s, "ABC_LCR: \"%s\" is a special number, no action", destnum.area);
     abort = 1;
     goto action;
   } /* if */
@@ -4975,7 +4984,7 @@ static void processlcr(char *p)
     } /* else */
 
     if ((strcmp(myarea, destnum.area) == 0) && own_country && ((abclcr & 2) == 2)) {
-      sprintf(s, "ABC_LCR: \"%s\" is a local number -- no action", destnum.msn);
+      sprintf(s, "ABC_LCR: \"%s\" is a local number, no action", destnum.msn);
       abort = 1;
       goto action;
     } /* if */
