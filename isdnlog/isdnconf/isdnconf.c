@@ -20,6 +20,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1999/04/15 19:14:29  akool
+ * isdnlog Version 3.15
+ *
+ * - reenable the least-cost-router functions of "isdnconf"
+ *   try "isdnconf -c <areacode>" or even "isdnconf -c ."
+ * - README: "rate-xx.dat" documented
+ * - small fixes in processor.c and rate.c
+ * - "rate-de.dat" optimized
+ * - splitted countries.dat into countries-de.dat and countries-us.dat
+ *
  * Revision 1.19  1999/04/14 13:16:18  akool
  * isdnlog Version 3.14
  *
@@ -625,18 +635,17 @@ static void showLCR()
 {
   auto int   tz, hour, provider, lastprovider = UNKNOWN, lasthour = UNKNOWN, *p;
   auto int   useds = 0, maxhour, leastprovider = UNKNOWN;
-  auto char  ignoreprovider[BUFSIZ];
+  auto int   ignoreprovider = UNKNOWN;
   auto RATE  Rate;
   auto int   duration = 181;
-  int  probe[] = { REGIOCALL, GERMANCALL, D2_NETZ, 0 };
-  int  used[100];
-  int  hours[100];
+  auto int   probe[] = { REGIOCALL, GERMANCALL, D2_NETZ, 0 };
+  auto int   used[MAXPROVIDER];
+  auto int   hours[MAXPROVIDER];
   auto struct tm *tm;
   auto time_t werktag, wochenende;
 
 
   print_msg(PRT_NORMAL, "Least-Cost-Routing-Table:\n\n");
-  *ignoreprovider = 0;
 
   time(&werktag);
   tm = localtime(&werktag);
@@ -683,15 +692,16 @@ retry:
       while (1) {
 
         tm->tm_hour = hour;
+        tm->tm_sec = tm->tm_min = 0;
       	memset(&Rate, 0, sizeof(Rate));
       	Rate.zone = *p;
       	Rate.start = mktime(tm);
       	Rate.now  = Rate.start + duration;
 
-        provider = getLeastCost(&Rate, UNKNOWN);
+        provider = getLeastCost(&Rate, ignoreprovider);
 
 #if 0
-        print_msg(PRT_NORMAL, "DEBUG::tz=%d, zone=%d, Hour=%02d, P=%d, %s  lasthour=%d, lastprovider=%d\n", tz, *p, hour, provider, getProvidername(provider), lasthour, lastprovider);
+        print_msg(PRT_NORMAL, "DEBUG::tz=%d, zone=%d, Hour=%02d, P=%d, %s  lasthour=%d, lastprovider=%d, now=%s", tz, *p, hour, provider, getProvidername(provider), lasthour, lastprovider, ctime(&Rate.start));
 #endif
 
         if (lastprovider == UNKNOWN)
@@ -740,7 +750,7 @@ retry:
   maxhour = 9999999;
   useds = 0;
 
-  for (provider = 0; provider < 100; provider++)
+  for (provider = 0; provider < MAXPROVIDER; provider++)
     if (used[provider]) {
       print_msg(PRT_NORMAL, "010%02d:%s\t(%d hours)\n", provider, getProvidername(provider), hours[provider]);
       useds++;
@@ -751,15 +761,16 @@ retry:
       } /* if */
     } /* if */
 
-#if 0
-  if (useds > 5) {
-    print_msg(PRT_NORMAL, "OOOPS: More than 5 providers used. Retry with 010%02d:%s ignored\n",
-      leastprovider, getProvidername(leastprovider));
+#if 1
+  if (useds == 6) {
+    if (ignoreprovider != leastprovider) {
 
-    p1 = strchr(ignoreprovider, 0);
-    *p1 = leastprovider;
-    *++p1 = 0;
-    goto retry;
+      print_msg(PRT_NORMAL, "OOOPS: More than 5 providers used. Retry with 010%02d:%s ignored\n",
+        leastprovider, getProvidername(leastprovider));
+
+      ignoreprovider = leastprovider;
+      goto retry;
+    } /* if */
   } /* if */
 #endif
 } /* showLCR */
