@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.5  2000/07/24 08:38:04  calle
+ * - Bugfix: devfs mount was never detected, because an extra / in path.
+ *
  * Revision 1.4  2000/06/30 14:08:45  calle
  * - creat /dev/capi if not exist, and mount capifs if available and devfs
  *   not availabe or not mounted on /dev.
@@ -1151,8 +1154,6 @@ int main_start(void)
 	for (card = cards; card; card = card->next) {
 		if (!driver_loaded(card->driver))
 			load_driver(card->driver);
-	}
-	for (card = cards; card; card = card->next) {
 		if (card->ioaddr)
 			add_card(card);
 	}
