@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.31  1998/11/24 18:18:57  paul
+ * detect kernel < 2.0.36; warn if dialmode is accessed with older kernels
+ *
  * Revision 1.30  1998/11/18 13:20:07  fritz
  * Fixed display of dialmode.
  *
@@ -408,7 +411,9 @@ static void listif(int isdnctrl, char *name, int errexit)
         char nn[1024];
 
         memset(&cfg, 0, sizeof cfg);	/* clear in case of older kernel */
+#ifdef ISDN_NET_DM_OFF
 	cfg.dialmode = 0xDEADBEEF;
+#endif
         strcpy(cfg.name, name);
         if (ioctl(isdnctrl, IIOCNETGCF, &cfg) < 0) {
                 if (errexit) {
