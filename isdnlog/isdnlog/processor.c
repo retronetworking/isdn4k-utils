@@ -19,6 +19,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.25  1998/09/26 18:29:15  akool
+ *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
+ *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
+ *  - Support for tesion)) Baden-Wuerttemberg Tarif
+ *  - more Providers
+ *  - Patches from Wilfried Teiken <wteiken@terminus.cl-ki.uni-osnabrueck.de>
+ *    - better zone-info support in "tools/isdnconf.c"
+ *    - buffer-overrun in "isdntools.c" fixed
+ *  - big Austrian Patch from Michael Reinelt <reinelt@eunet.at>
+ *    - added $(DESTDIR) in any "Makefile.in"
+ *    - new Configure-Switches "ISDN_AT" and "ISDN_DE"
+ *      - splitted "takt.c" and "tools.c" into
+ *          "takt_at.c" / "takt_de.c" ...
+ *          "tools_at.c" / "takt_de.c" ...
+ *    - new feature
+ *        CALLFILE = /var/log/caller.log
+ *        CALLFMT  = %b %e %T %N7 %N3 %N4 %N5 %N6
+ *      in "isdn.conf"
+ *  - ATTENTION:
+ *      1. "isdnrep" dies with an seg-fault, if not HTML-Mode (Stefan?)
+ *      2. "isdnlog/Makefile.in" now has hardcoded "ISDN_DE" in "DEFS"
+ *      	should be fixed soon
+ *
  * Revision 1.24  1998/09/22 20:59:15  luethje
  * isdnrep:  -fixed wrong provider report
  *           -fixed wrong html output for provider report
@@ -4600,8 +4623,8 @@ doppelt:break;
 
           info(chan, PRT_SHOWHANGUP, STATE_HANGUP, sx);
 
-	  if (chargemax != 0.0) {
           if (!call[chan].dialin && ((c = call[chan].confentry[OTHER]) > -1)) {
+	    if (chargemax != 0.0) {
             sprintf(sx, "CHARGEMAX total=%s %s today=%s %s remaining=%s %s",
               currency,
               double2str(known[c]->scharge + known[c]->charge, 7, 2, DEB),
@@ -4610,7 +4633,7 @@ doppelt:break;
               currency,
               double2str((chargemax - known[c]->charge), 6, 2, DEB));
             info(chan, PRT_SHOWCHARGEMAX, STATE_HANGUP, sx);
-	  }
+	    } /* if */
 
             if (connectmax != 0.0) {
               if (connectmaxmode == 1)
