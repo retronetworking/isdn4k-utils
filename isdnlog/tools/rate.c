@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.76  2000/05/07 11:29:32  akool
+ * isdnlog-4.21
+ *  - isdnlog/tools/rate.{c,h} ...     new X:tag for exclusions
+ *  - isdnlog/tools/telnum.c ... 	    new X:tag for exclusions
+ *  - isdnlog/tools/rate-files.man ... -"-
+ *  - isdnlog/tools/NEWS ... 	    -"-
+ *  - isdnlog/README ... 		    -"-
+ *  - new rates
+ *
  * Revision 1.75  2000/02/28 19:53:56  akool
  * isdnlog-4.14
  *   - Patch from Roland Rosenfeld <roland@spinnaker.de> fix for isdnrep
@@ -1012,6 +1021,8 @@ static void prsel_find_zone_area(void) {
     zone = Prsel[k].zone;
     prefix = Prsel[k]._prefix = pnum2prefix(Prsel[k].provider, 0);
     /* find _area and _zone for provider prefix and external zone */
+    if (zone == UNKNOWN)
+      continue;
     for (i=0; i<Provider[prefix].nZone; i++) {
 	for (j=0; j<Provider[prefix].Zone[i].nNumber; j++) {
 	  if (Provider[prefix].Zone[i].Number[j]==zone) {
@@ -1158,6 +1169,7 @@ void parse_X(char *s, char *dat)
 	     Prsel[nPrsel].numre = strdup(c);
 	     Prsel[nPrsel].provider = p;
 	     Prsel[nPrsel].zone = z;
+	     Prsel[nPrsel]._zone = Prsel[nPrsel]._area = UNKNOWN;
 	     nPrsel++;
 	  }
 	else
@@ -2063,8 +2075,8 @@ int getRate(RATE *Rate, char **msg)
 
   getPrsel(number, &prefix, &Rate->_zone, &Rate->_area);	/* X:ception */
 #if 0
-  print_msg(PRT_V, "P:%s Rate dst0='%s' dst1='%s' dst2='%s'\n",
-  	epnum(prefix),Rate->dst[0], Rate->dst[1], Rate->dst[2]);
+  print_msg(PRT_V, "P:%s Rate dst0='%s' dst1='%s' dst2='%s' _zone %d _area %d\n",
+  	epnum(prefix),Rate->dst[0], Rate->dst[1], Rate->dst[2], Rate->_zone, Rate->_area);
 #endif
   if (prefix<0 || prefix>=nProvider) {
     if (msg) snprintf(message, LENGTH, "Unknown provider %s",epnum(prefix));
