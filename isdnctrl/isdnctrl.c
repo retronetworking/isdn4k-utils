@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1998/03/08 01:04:19  fritz
+ * Fix: Did not compile without TIMRU in kernel.
+ *
  * Revision 1.14  1998/03/08 00:18:25  detabc
  * include config-support for abc-extension
  * only isdnctrl encap will be used and only use the options [-ATU]rawip
@@ -1079,7 +1082,7 @@ int exec_args(int fd, int argc, char **argv)
 			        	return -1;
 			        }
 			        if (result)
-			        	printf("Can't increase number of links: %d\n", result);
+			        	printf("Can't increase the number of links. Error %d\n",-result);
 			        else
 			        	printf("Ok, added a new link. (dialing)\n");
 			        break;
