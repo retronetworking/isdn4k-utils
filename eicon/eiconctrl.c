@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.15  2000/04/24 07:53:03  armin
+ * Extended interface to divaload.
+ *
  * Revision 1.14  2000/03/25 12:56:40  armin
  * First checkin of new version 2.0
  * - support for 4BRI, includes orig Eicon
@@ -191,7 +194,7 @@ char *spid_state[] =
 __u16 xlog(FILE * stream,void * buffer);
 
 void eiconctrl_usage() {
-  fprintf(stderr,"Eiconctrl Utility Version 2.0                      (c) 2000 Cytronics & Melware\n");
+  fprintf(stderr,"Eiconctrl Utility Version 2.1                      (c) 2000 Cytronics & Melware\n");
   fprintf(stderr,"usage: %s add <DriverID> <membase> <irq>              (add card)\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] membase [membase-addr]      (get/set memaddr)\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] irq   [irq-nr]              (get/set irq)\n",cmd);
@@ -1478,25 +1481,25 @@ int main(int argc, char **argv) {
 				newargv[newarg] = malloc(4);
 				strcpy(newargv[newarg], "-t");
 				newarg++;
-				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				newargv[newarg] = malloc(strlen(argv[i]) + 1);
 				strcpy(newargv[newarg], argv[i] + 2);
 			} else
 			if ((!(strncmp(argv[i], "-l", 2))) && (strlen(argv[i]) > 2)){
 				newargv[newarg] = malloc(4);
 				strcpy(newargv[newarg], "-l");
 				newarg++;
-				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				newargv[newarg] = malloc(strlen(argv[i]) + 1);
 				strcpy(newargv[newarg], argv[i] + 2);
 			} else
 			if ((!(strncmp(argv[i], "-s", 2))) && (strlen(argv[i]) > 2)){
 				newargv[newarg] = malloc(4);
 				strcpy(newargv[newarg], "-s");
 				newarg++;
-				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				newargv[newarg] = malloc(strlen(argv[i]) + 1);
 				strcpy(newargv[newarg], argv[i] + 2);
 			} else
 			{
-				newargv[newarg] = malloc(sizeof(argv[i]) + 1);
+				newargv[newarg] = malloc(strlen(argv[i]) + 1);
 				strcpy(newargv[newarg], argv[i]);
 			}
 			if ((!(strcmp(argv[i],"-c"))) || (!(strcmp(argv[i],"-all")))) {

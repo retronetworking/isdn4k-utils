@@ -1,5 +1,8 @@
 $Id$
 
+V2.1 - 2000-06-07 - Fixed OAD, OSA and SPID parameter settings.
+                    Thanks to Brian Moran.
+
 V2.0 - 2000-03-23 - Eicon's divautils included to support new
                     kernel-driver 2.0 
                     Support for 4BRI card.
