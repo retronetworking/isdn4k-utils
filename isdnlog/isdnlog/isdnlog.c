@@ -19,6 +19,11 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.73  2004/09/05 22:04:55  tobiasb
+ * New parameter file entry "ignoreUPD" for suppressing "Unexpected
+ * discrimator (...)" messages, demanded by Günther J. Niederwimmer
+ * on the suse-isdn mailing list.
+ *
  * Revision 1.72  2004/01/28 14:27:46  tobiasb
  * Second step in restricting fds at isdnlog restart and script starting.
  * The fd limit is now taken from getrlimit() instead of NR_OPEN.
@@ -810,7 +815,7 @@ static void init_variables(int argc, char* argv[])
   watchdog = 0;
   use_new_config = 1;
 
-  ignoreRR = ignoreCOLP = 0;
+  ignoreRR = ignoreCOLP = ignoreCLIP = 0;
 
 #ifdef Q931
   q931dmp = 0;
@@ -1018,8 +1023,15 @@ int set_options(int argc, char* argv[])
       case 'u' : ignoreRR = atoi(optarg);
       	       	 break;
 
-      case 'U' : ignoreCOLP = atoi(optarg);
-      	       	 break;
+			case 'U' : 
+			           if ((p = strchr(optarg, ':'))) {
+			             *p = 0;
+			             ignoreCOLP = atoi(optarg);
+			             ignoreCLIP = atoi(p + 1);
+			           }
+			           else
+			             ignoreCOLP = ignoreCLIP = atoi(optarg);
+			           break;
 
       case 'B' : free(vbn);
       	         vbn = strdup(optarg);
@@ -1262,8 +1274,15 @@ static int read_param_file(char *FileName)
 				if (!strcmp(Ptr->name,CONF_ENT_IGNORERR))
 					ignoreRR = (int)strtol(Ptr->value, NIL, 0);
 				else
-				if (!strcmp(Ptr->name,CONF_ENT_IGNORECOLP))
-					ignoreCOLP = (int)strtol(Ptr->value, NIL, 0);
+				if (!strcmp(Ptr->name,CONF_ENT_IGNORECOLP)) {
+					if ((p = strchr(Ptr->value, ':'))) {
+						*p = 0;
+						ignoreCOLP = atoi(Ptr->value);
+						ignoreCLIP = atoi(p + 1);
+					}
+					else
+						ignoreCOLP = ignoreCLIP = (int)strtol(Ptr->value, NIL, 0);
+				}
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_VBN)) {
 					free(vbn);

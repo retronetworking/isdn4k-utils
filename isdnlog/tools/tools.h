@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.62  2004/09/05 22:04:57  tobiasb
+ * New parameter file entry "ignoreUPD" for suppressing "Unexpected
+ * discrimator (...)" messages, demanded by Günther J. Niederwimmer
+ * on the suse-isdn mailing list.
+ *
  * Revision 1.61  2004/07/24 16:16:56  tobiasb
  * New entry `REPOPTIONS' in section [ISDNLOG] of the isdn configuration
  * file.  This will be used for commandline options defaults of isdnrep.
@@ -1177,6 +1182,7 @@ _EXTERN char    mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;
 _EXTERN int	ignoreCOLP;
+_EXTERN int	ignoreCLIP;
 _EXTERN int 	interns0;
 _EXTERN	char    *vbn;
 _EXTERN	char    *vbnlen;
