@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  2001/05/23 14:48:23  kai
+ * make isdnctrl independent of the version of installed kernel headers,
+ * we have our own copy now.
+ *
  * Revision 1.17  1999/11/20 22:23:53  detabc
  * added netinterface abc-secure-counter reset (clear) support.
  *
@@ -119,12 +123,6 @@ enum {
         L2_PROT, L3_PROT, ADDLINK, REMOVELINK,
         ENCAP, TRIGGER, RESET,
         DIALTIMEOUT, DIALWAIT, DIALMODE,
-#ifdef I4L_CTRL_TIMRU
-        ADDRULE, INSRULE, DELRULE, SHOWRULES,
-        FLUSHRULES, FLUSHALLRULES, DEFAULT,
-		BUDGET, SHOWBUDGETS,
-		SAVEBUDGETS, RESTOREBUDGETS,
-#endif
 #ifdef I4L_CTRL_CONF
         WRITECONF, READCONF,
 #endif /* I4L_CTRL_CONF */
@@ -184,19 +182,6 @@ cmd_struct cmds[] =
         {"dialtimeout", "12"},
         {"dialwait", "12"},
         {"dialmode", "12"},
-#ifdef I4L_CTRL_TIMRU
-        {"addrule", "12"},
-        {"insrule", "1"},
-        {"delrule", "1"},
-        {"showrules", "1"},
-        {"flushrules", "1"},
-        {"flushallrules", "1"},
-        {"default", "1"},
-        {"budget", "1"},
-        {"showbudgets", "1"},
-        {"savebudgets", "1"},
-        {"restorebudgets", "1"},
-#endif
 #ifdef I4L_CTRL_CONF
         {"writeconf", "01"},
         {"readconf", "01"},

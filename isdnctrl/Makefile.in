@@ -28,12 +28,6 @@ MODULES		+= ctrlconf.o
 MANPAGES    += .isdnctrl_conf.8
 endif
 
-ifeq (@CONFIG_ISDNCTRL_TIMRU@,y)
-COPTS		+= -DI4L_CTRL_TIMRU
-MODULES		+= ctrltimru.o
-MANPAGES    += .isdnctrl_timru.8
-endif
-
 ifeq (@CONFIG_ISDNCTRL_DWABC_UDP_INFO@,y)
 COPTS		+= -DI4L_DWABC_UDPINFO
 ABCLIBDIR   = /usr/lib
@@ -77,13 +71,6 @@ ifeq (@CONFIG_ISDNCTRL_CONF@,y)
 else
 	sed -e 's%@MANINC_CONF@%.\\\"%' < $<.tmp > $@
 endif
-	cp $@ $<.tmp
-ifeq (@CONFIG_ISDNCTRL_TIMRU@,y)
-	sed -e 's%@MANINC_TIMRU@%.so%' < $<.tmp > $@
-else
-	sed -e 's%@MANINC_TIMRU@%.\\\"%' < $<.tmp > $@
-endif
-	rm -f $<.tmp
 
 $(PROGRAM):	$(MODULES)
 	$(CC) $(CFLAGS) $(MODULES) $(LDFLAGS) -o $@
