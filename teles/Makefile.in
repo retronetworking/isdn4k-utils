@@ -68,10 +68,10 @@ install-strip: $(PROGRAMS) $(MANPAGES)
 	$(INSTALL_MAN) $(MANPAGES) $(MAN8DIR)
 
 uninstall:
-	@for i in $(PROGRAMS) ; do \
+	@for i in `echo $(PROGRAMS)` ; do \
 		rm -f $(SBINDIR)/$$i ; \
 	done
-	@for i in $(MANPAGES) ; do \
+	@for i in `echo $(MANPAGES)` ; do \
 		rm -f $(MAN8DIR)/$$i ; \
 	done
 

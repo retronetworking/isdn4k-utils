@@ -7,6 +7,7 @@
 # For a description of the syntax of this configuration file,
 # see the Menuconfig script.
 #
+CONFIG_HASX11=n
 if [ "`type -p xmkmf`" != "" ]; then
 CONFIG_HASX11=y
 fi
