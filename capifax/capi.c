@@ -17,6 +17,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/10/23 12:50:46  fritz
+ * Added RCS keywords and GPL notice.
+ *
  */
 #include <stdio.h>
 #include <sys/time.h>
@@ -76,7 +79,7 @@ void Handle_Indication(void) {
 			 * of the application
 			 */
 			ALERT_REQ (CMSG, Appl_Id, 0, CONNECT_IND_PLCI(CMSG),
-				   NULL, NULL, NULL, NULL);
+				   NULL, NULL, NULL, NULL, NULL);
 			/* inform the user application */
 			SetState(Connection, D_ConnectPending);
 			IncomingCall(Connection, GetCallingPartyNumber (Connection));
