@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.2  1997/03/23 23:11:48  luethje
+## improved performance
+##
 ## Revision 1.1  1997/03/23 19:22:33  fritz
 ## Make isdnlog configurable.
 ##
@@ -73,6 +76,7 @@ POSTGRES			:= @POSTGRES@
 POSTGRESDIR			:= @POSTGRESDIR@
 SERV_PORT			:= @SERV_PORT@
 USERFILE			:= @USERFILE@
+DEFS                :=
 
 ifndef ROOTDIR
 export ROOTDIR=$(shell pwd)
@@ -86,8 +90,10 @@ ifeq ($(MAKELIB),1)
 SUBDIRS     = $(LIBISDNDIR)
 endif
 
+export CFLAGS  = -Wall -pipe -O6 -m486 -fomit-frame-pointer -fforce-mem -fforce-addr -funroll-loops -fstrength-reduce
+
 ifndef _CC
-export _CC  = gcc -Wall -pipe -O6 -m486 -fomit-frame-pointer -fforce-mem -fforce-addr -funroll-loops -fstrength-reduce
+export _CC  = gcc
 endif
 
 CC          = $(_CC)
@@ -111,20 +117,23 @@ SERVICEFILE = /etc/services
 VERSION     = 2.99.2
 
 ifeq ($(POSTGRES),1)
-CFLAGS     += -DPOSTGRES
+DEFS       += -DPOSTGRES
 INCLUDE    += -I$(POSTGRESDIR)/include
 LIB        += -L$(POSTGRESDIR)/lib -lpq
 endif
 
 ifdef DBMALLOC
-CFLAGS     += -DDBMALLOC=1
+DEFS       += -DDBMALLOC=1
 LIB        += -ldbmalloc
 endif
 
-CFLAGS       += \
+DEFS       += \
                -DVERSION=\"$(VERSION)\"   \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
                 $(INCLUDE)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(DEFS) $(INCLUDE) -c -o $@ $<
 
 ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
                 isdnlog/server.o isdnlog/start_prog.o isdnlog/messages.o  \
@@ -271,5 +280,5 @@ connect/connect.o:         connect/connect.c         connect/socket.h tools/tool
 depend: .depend
 
 .depend:
-		$(CPP) -M $(CFLAGS) */*.c >.depend
-#		$(CPP) -M $(CFLAGS) */*.c */*/*.c >.depend
+		$(CPP) -M $(CFLAGS) $(DEFS) $(INCLUDE) */*.c >.depend
+#		$(CPP) -M $(CFLAGS) $(DEFS) $(INCLUDE) */*.c */*/*.c >.depend
