@@ -419,8 +419,6 @@ static void start_vboxtoau(int samplemode, int samplerate)
 
 static void leave_vboxtoau(int sig)
 {
-fprintf(stderr, "sig: %d\n", sig);
-
 	if (vboxtmpfile) fclose(vboxtmpfile);
 	
 	if (vboxtmpname)
