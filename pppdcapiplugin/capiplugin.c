@@ -1236,6 +1236,14 @@ static void incoming(capi_connection *cp,
 			   if (demand) goto wakeupmatch;
 			   if (coso == COSO_LOCAL) goto callback;
 			   goto accept;
+	                } else if (proto == PROTO_V110_ASYNC) {
+			   if (demand) goto wakeupmatch;
+			   if (coso == COSO_LOCAL) goto callback;
+			   goto accept;
+	                } else if (proto == PROTO_V120_ASYNC) {
+			   if (demand) goto wakeupmatch;
+			   if (coso == COSO_LOCAL) goto callback;
+			   goto accept;
 			} else {
 	                   info("capiplugin: ignoring digital call from %s",
 			   		callingnumber);
