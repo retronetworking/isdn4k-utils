@@ -5,7 +5,8 @@
 #
 #
 SHELL			= /bin/sh
-CFLAGS			= -Wall -Wstrict-prototypes -O2 -g -I. -DDEBUG -I@KERNELDIR@drivers/isdn/pcbit
+CFLAGS			= -Wall -Wstrict-prototypes -O2 -g
+INCLUDES		= -I. -DDEBUG -I@KERNELDIR@drivers/isdn/pcbit
 LDFLAGS			= -L../lib @LIBS@
 PROGRAM			= pcbitctl
 MODULES			= pcbitctl.o convhexbin.o
@@ -27,6 +28,9 @@ CC				= @CC@
 
 .SUFFIXES:
 .SUFFIXES: .c .o
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCLUDES) -c -o $@ $<
 
 all: $(PROGRAM)
 
