@@ -19,6 +19,20 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.71  2004/01/26 15:20:08  tobiasb
+ * First step to close all unnecessary open file descriptors before
+ * starting a start script as reaction to a call.  The same applies to the
+ * restart of isdnlog using SIGHUP.  Till now each restart increases the
+ * number of used fds.
+ * For now the modifications are inactive by default.  They can be enabled
+ * by adding the line "DEFS += -DFD_AT_EXEC_MODE=1" to ../Makefile.in.
+ * The next isdnlog (4.68) will have this enabled per default.
+ * The upper limit for fd numbers is taken from NR_OPEN in <linux/limits.h>.
+ * If there is a smarter way to access this limit, please let me know.
+ * Another approach would be to set the close-on-exec flag on each fd
+ * directly after it is opened.  This would require more extensive changes.
+ * I'd like to thank Jan Bernhardt for discovering this problem.
+ *
  * Revision 1.70  2004/01/04 02:22:53  tobiasb
  * Show supported database(s) at startup.
  *
@@ -568,7 +582,8 @@ static void hup_handler(int isig)
 {
   print_msg(PRT_INFO, "restarting %s\n", myname);
   Exit(-9);
-  Close_Fds(3); /* avoid duplicate fds after restart */
+	if (param_closefds)
+  	Close_Fds(3); /* avoid duplicate fds after restart */
   execv(myname, hup_argv);
   print_msg(PRT_ERR,"Cannot restart %s: %s!\n", myname, strerror(errno));
 } /* hup_handler */
@@ -1142,18 +1157,14 @@ static int read_param_file(char *FileName)
 				if (!strcmp(Ptr->name,CONF_ENT_PIPE))
 					stdoutput = toupper(*(Ptr->value)) == 'Y'?PRT_LOG:0;
 				else
-				if (!strcmp(Ptr->name,CONF_ENT_MON))
-					imon = toupper(*(Ptr->value)) == 'Y'?1:0;
-				else
 				if (!strcmp(Ptr->name,CONF_ENT_HANGUP)) {
 				  hupctrl++;
-      	       	 		  if ((p = strchr(Ptr->value, ':'))) {
-                 		    *p = 0;
-                 		    hup1 = atoi(Ptr->value);
-                 		    hup2 = atoi(p + 1);
-
-				    if ((p = strchr(p + 1, ':')))
-				      hup3 = atoi(p + 1);
+					if ((p = strchr(Ptr->value, ':'))) {
+						*p = 0;
+						hup1 = atoi(Ptr->value);
+						hup2 = atoi(p + 1);
+						if ((p = strchr(p + 1, ':')))
+							hup3 = atoi(p + 1);
 				  } /* if */
 				  else
 				    printf("%s: WARNING: \"-h\" Option requires 2 .. 3 arguments\n", myshortname);
@@ -1165,27 +1176,27 @@ static int read_param_file(char *FileName)
 				if (!strcmp(Ptr->name,CONF_ENT_ABCLCR))
 				  abclcr = atoi(Ptr->value);
 				else
-                                if (!strcmp(Ptr->name, CONF_ENT_CIINTERVAL)) {
-                                  if ((p = strchr(Ptr->value, ':'))) {
-                                    *p = 0;
-                                    ciInterval = atoi(Ptr->value);
-                                    ehInterval = atoi(p + 1);
-                                  }
-                                  else
-                                    ciInterval = ehInterval = atoi(Ptr->value);
-                                }
+				if (!strcmp(Ptr->name, CONF_ENT_CIINTERVAL)) {
+					if ((p = strchr(Ptr->value, ':'))) {
+						*p = 0;
+						ciInterval = atoi(Ptr->value);
+						ehInterval = atoi(p + 1);
+					}
+					else
+						ciInterval = ehInterval = atoi(Ptr->value);
+				}
 				else
-                                if (!strcmp(Ptr->name, CONF_ENT_TRIM)) {
-                                  trim++;
-                                  if ((p = strchr(Ptr->value, ':'))) {
-                                    *p = 0;
-                                    trimi = atoi(Ptr->value);
-                                    trimo = atoi(p + 1);
-                                  }
-                                  else
-                                    trimi = trimo = atoi(Ptr->value);
-                                }
-                                else
+				if (!strcmp(Ptr->name, CONF_ENT_TRIM)) {
+					trim++;
+					if ((p = strchr(Ptr->value, ':'))) {
+						*p = 0;
+						trimi = atoi(Ptr->value);
+						trimo = atoi(p + 1);
+					}
+					else
+					trimi = trimo = atoi(Ptr->value);
+				}
+        else
 				if (!strcmp(Ptr->name,CONF_ENT_BI))
 					bilingual = toupper(*(Ptr->value)) == 'Y'?1:0;
 				else
@@ -1208,7 +1219,7 @@ static int read_param_file(char *FileName)
         }
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_AMT))
-                                       amtsholung = strdup(Ptr->value);
+					amtsholung = strdup(Ptr->value);
 				else
 #ifdef Q931
 				if (!strcmp(Ptr->name,CONF_ENT_Q931))
@@ -1230,33 +1241,36 @@ static int read_param_file(char *FileName)
 				if (!strcmp(Ptr->name,CONF_ENT_INTERNS0))
 					interns0 = (int)strtol(Ptr->value, NIL, 0);
 				else
-                                if (!strcmp(Ptr->name,CONF_ENT_PRESELECT))
-				        preselect = (int)strtol(Ptr->value, NIL, 0);
-                                else
-                                if (!strcmp(Ptr->name,CONF_ENT_OTHER))
-				        other = toupper(*(Ptr->value)) == 'Y'?1:0;
-                                else
+				if (!strcmp(Ptr->name,CONF_ENT_PRESELECT))
+					preselect = (int)strtol(Ptr->value, NIL, 0);
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_OTHER))
+					other = toupper(*(Ptr->value)) == 'Y'?1:0;
+				else
 #if 0 /* Fixme: remove */
 				if (!strcmp(Ptr->name,CONF_ENT_CW))
 				  CityWeekend++;
-                                else
+				else
 #endif
-                                if (!strcmp(Ptr->name,CONF_ENT_IGNORERR))
-				        ignoreRR = (int)strtol(Ptr->value, NIL, 0);
-                                else
-                                if (!strcmp(Ptr->name,CONF_ENT_IGNORECOLP))
-				        ignoreCOLP = (int)strtol(Ptr->value, NIL, 0);
-                                else
-                                if (!strcmp(Ptr->name,CONF_ENT_VBN)) {
-                                        free(vbn);
-				        vbn = strdup(Ptr->value);
-                                }
-                                else
-                                if (!strcmp(Ptr->name,CONF_ENT_VBNLEN)) {
-                                        free(vbnlen);
-				        vbnlen = strdup(Ptr->value);
-                                }
-                                else
+				if (!strcmp(Ptr->name,CONF_ENT_IGNORERR))
+					ignoreRR = (int)strtol(Ptr->value, NIL, 0);
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_IGNORECOLP))
+					ignoreCOLP = (int)strtol(Ptr->value, NIL, 0);
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_VBN)) {
+					free(vbn);
+					vbn = strdup(Ptr->value);
+				}
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_VBNLEN)) {
+					free(vbnlen);
+					vbnlen = strdup(Ptr->value);
+				}
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_CLOSEFDS))
+					param_closefds = toupper(*(Ptr->value)) == 'Y'?1:0;
+				else
 					print_msg(PRT_ERR,"Error: Invalid entry `%s'!\n",Ptr->name);
 
 				Ptr = Ptr->next;
