@@ -413,7 +413,12 @@ int ccp_test (int ccp_unit, u_char *opt_ptr, int opt_len, int for_transmit)
 		return -1;
 	}
 	memcpy(data.options,opt_ptr+2,data.optlen);
-	data.xmit = for_transmit;
+
+	data.flags = 0;
+	if(for_transmit)
+		data.flags |= IPPP_COMP_FLAG_XMIT;
+	if(ccp_fsm[ccp_unit].protocol == PPP_LINK_CCP)
+		data.flags |= IPPP_COMP_FLAG_LINK;
 
 	if (ioctl(lns[linkunit].fd, PPPIOCSCOMPRESSOR, (caddr_t) &data) >= 0)
 		return 1;

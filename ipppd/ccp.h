@@ -45,4 +45,5 @@ extern ccp_options ccp_allowoptions[];
 extern ccp_options ccp_hisoptions[];
 
 extern struct protent ccp_protent;
+extern struct protent ccp_link_protent;
 
