@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.38  1999/11/20 22:23:53  detabc
+ * added netinterface abc-secure-counter reset (clear) support.
+ *
  * Revision 1.37  1999/11/07 22:04:05  detabc
  * add dwabc-udpinfo-utilitys in isdnctrl
  *
@@ -619,7 +622,7 @@ static void statusif(int isdnctrl, char *name, int errexit)
 		return;
 	}
 	if (errno == EINVAL) {
-		puts("Sorry, not configured in your kernel");
+		puts("Sorry, not available in your kernel (2.2.12 or higher is required)");
 		exit(-1);
 	}
 	if (errexit) {
