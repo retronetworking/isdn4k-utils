@@ -74,11 +74,12 @@ extern char *vboxd_get_message(void);
 
 #define CTRL_NAME_MAGIC       "vboxctrl-"
 
-#define CTRL_NAME_STOP			CTRL_NAME_MAGIC "stop"
+#define CTRL_NAME_STOP		CTRL_NAME_MAGIC "stop"
 #define CTRL_NAME_ANSWERNOW	CTRL_NAME_MAGIC "answernow"
 #define CTRL_NAME_ANSWERALL	CTRL_NAME_MAGIC "answerall"
-#define CTRL_NAME_REJECT		CTRL_NAME_MAGIC "reject"
-#define CTRL_NAME_AUDIO       CTRL_NAME_MAGIC "audio"
+#define CTRL_NAME_REJECT	CTRL_NAME_MAGIC "reject"
+#define CTRL_NAME_AUDIO		CTRL_NAME_MAGIC "audio"
+#define CTRL_NAME_SUSPEND	CTRL_NAME_MAGIC "suspend"
 
 #define CTRL_MODE_REMOVE		(0)
 #define CTRL_MODE_CREATE		(1)

@@ -83,5 +83,6 @@ extern int		modem_check_input(void);
 extern int		modem_hangup(void);
 extern char	  *modem_get_s_register(int);
 extern int		modem_get_sequence(char *);
+extern int		modem_wait_sequence(char *);
 
 #endif /* _VBOX_MODEM_H */
