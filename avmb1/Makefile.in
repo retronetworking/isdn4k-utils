@@ -66,4 +66,4 @@ clean:
 	rm -f *.o *~ $(PROGRAMS) *.8
 
 distclean: clean
-	rm -f config.status config.cache config.log Makefile
+	rm -f config.status config.cache config.log confdefs.h Makefile
