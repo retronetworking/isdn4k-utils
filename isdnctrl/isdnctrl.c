@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1997/09/26 09:07:18  fritz
+ * Check for missing triggercps in configuration.
+ *
  * Revision 1.10  1997/09/11 19:03:32  fritz
  * Bugfix: Tried to get Version-Info on wrong device.
  *
@@ -102,8 +105,6 @@
  *
  *
  */
-
-#undef  ISDN_DEBUG_MODEM_SENDOPT
 
 #include <stdio.h>
 #include <stdlib.h>
