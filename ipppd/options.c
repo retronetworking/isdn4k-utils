@@ -407,6 +407,7 @@ static struct cmd {
     {"ms-dns", 1, setdnsaddr},         /* DNS address for the peer's use */
     {"ms-wins", 1, setwinsaddr},         /* WINS address for the peer's use */
     {"ms-get-dns", 0, setgetdnsaddr},  /* DNS address for the my use */
+    {"usepeerdns", 0, setgetdnsaddr},      /* for compatibility with async pppd */
     {"ms-get-wins", 0, setgetwinsaddr},    /* Nameserver for SMB over TCP/IP for me */
     {"noipx",  0, resetipxproto},      /* Disable IPXCP (and IPX) */
     {"-ipx",   0, resetipxproto},      /* Disable IPXCP (and IPX) */
