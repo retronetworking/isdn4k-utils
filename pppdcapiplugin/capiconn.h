@@ -10,6 +10,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.2  2000/10/25 10:01:47  calle
+ * (c) in all files
+ *
  * Revision 1.1  2000/05/18 14:58:35  calle
  * Plugin for pppd to support PPP over CAPI2.0.
  *
@@ -190,6 +193,7 @@
 
 /* ----------------------------------------------------------------------- */
 
+char *capiconn_version(void);
 
 /* -------- context ------------------------------------------------------ */
 
