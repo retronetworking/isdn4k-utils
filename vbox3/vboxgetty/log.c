@@ -4,13 +4,24 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.3  1998/07/06 09:05:25  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 ** Revision 1.2  1998/06/17 17:01:20  michael
 ** - First part of the automake/autoconf implementation. Currently vbox will
 **   *not* compile!
 **
 */
 
-#include "../config.h"
+#ifdef HAVE_CONFIG_H
+#	include "../config.h"
+#endif
 
 #if TIME_WITH_SYS_TIME
 #   include <sys/time.h>
@@ -58,6 +69,8 @@ static struct logsequence logsequence[] =
 int log_open(char *name)
 {
 	if ((logtxtio = fopen(name, "a"))) return(0);
+
+fprin
 
 	return(-1);
 }
@@ -234,4 +247,14 @@ void log_code(int level, char *sequence)
 			log_char(level, sequence[i]);
 		}
 	}
+}
+
+
+														 /*************************************************************************/
+														 /**  **/
+														 /*************************************************************************/
+
+void xxx(123)
+{
+
 }
