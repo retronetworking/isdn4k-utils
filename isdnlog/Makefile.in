@@ -19,6 +19,20 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.54  1999/03/07 18:18:21  akool
+## - new 01805 tarif of DTAG
+## - new March 1999 tarife
+## - added new provider "01051 Telecom"
+## - fixed a buffer overrun from Michael Weber <Michael.Weber@Post.RWTH-Aachen.DE>
+## - fixed a bug using "sondernnummern.c"
+## - fixed chargeint change over the time
+## - "make install" now install's "sonderrufnummern.dat", "tarif.dat",
+##   "vorwahl.dat" and "tarif.conf"! Many thanks to
+##   Mario Joussen <mario.joussen@post.rwth-aachen.de>
+## - Euracom Frames would now be ignored
+## - fixed warnings in "sondernnummern.c"
+## - "10plus" messages no longer send to syslog
+##
 ## Revision 1.53  1999/02/28 19:32:17  akool
 ## Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
 ## CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -418,7 +432,7 @@ SERVICEFILE = /etc/services
 
 VERSION     = 3.03
 
-MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
+MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
@@ -441,6 +455,8 @@ DEFS       += \
                -DVERSION=\"$(VERSION)\"   \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
 	       -D@NATION_MACRO@=1		\
+               -DDATADIR=\"$(DATADIR)\"		\
+               -DI4LCONFDIR=\"$(I4LCONFDIR)\"	\
                 $(INCLUDE)
 
 %.o: %.c
