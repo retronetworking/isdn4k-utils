@@ -38,6 +38,9 @@ endif
 ifeq ($(CONFIG_ISDNCTRL),y)
 	SUBDIRS := $(SUBDIRS) isdnctrl
 endif
+ifeq ($(CONFIG_DIVERTCTRL),y)
+	SUBDIRS := $(SUBDIRS) divertctrl
+endif
 ifeq ($(CONFIG_IPROFD),y)
 	SUBDIRS := $(SUBDIRS) iprofd
 endif
