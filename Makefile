@@ -3,7 +3,9 @@
 # Toplevel Makefile for isdn4k-utils
 #
 
-export I4LVERSION = 2.1b1
+.EXPORT_ALL_VARIABLES:
+
+export I4LVERSION = 2.1b2
 
 all:	do-it-all
 
@@ -51,6 +53,9 @@ else
 endif
 ifeq ($(CONFIG_AVMCAPICTRL),y)
 	SUBDIRS := $(SUBDIRS) avmb1
+endif
+ifeq ($(CONFIG_ACTCTRL),y)
+	SUBDIRS := $(SUBDIRS) act2000
 endif
 ifeq ($(CONFIG_LOOPCTRL),y)
 	SUBDIRS := $(SUBDIRS) loop
