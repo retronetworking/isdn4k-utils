@@ -4,7 +4,7 @@
 .SH NAME
 autovbox \- ISDN voice box (sound converter)
 .SH SYNOPSIS
-autovbxox [-2 | -3 | -4 | -h | -v] [-n name] [-p phone] [-l location]
+autovbox [-2 | -3 | -4 | -h | -v] [-n name] [-p phone] [-l location]
 .SH "DESCRIPTION"
 Convert .au files (Sun audio format) on standard input into vbox files
 (vbox audio header) on standard output. autovbox is a link to vboxcnvt(1).
