@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.29  1998/11/17 18:29:31  paul
+ * isdnctrl.c now compiles with kernel sources without dialmode stuff.
+ *
  * Revision 1.28  1998/11/11 23:53:02  fritz
  * Make isdnctrl compile without TIMRU in kernel (2.0.36-pre20/21)
  *
@@ -441,7 +444,7 @@ static void listif(int isdnctrl, char *name, int errexit)
 	else if (cfg.dialmode == ISDN_NET_DM_AUTO)
 		puts("auto");
 	else
-		puts("on");
+		puts("manual");
 #else
 #warning ISDN_NET_DM_OFF not defined? Old isdn4kernel?
         printf("Dial mode:              not available at compilation\n");
