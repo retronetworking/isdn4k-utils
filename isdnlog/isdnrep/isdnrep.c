@@ -24,6 +24,17 @@
  *
  *
  * $Log$
+ * Revision 1.51  1998/11/24 20:52:41  akool
+ *  - changed my email-adress
+ *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
+ *  - made Provider-Prefix 6 digits long
+ *  - full support for internal S0-bus implemented (-A, -i Options)
+ *  - isdnlog now ignores unknown frames
+ *  - added 36 allocated, but up to now unused "Auskunft" Numbers
+ *  - added _all_ 122 Providers
+ *  - Patch from Jochen Erwied <mack@Joker.E.Ruhr.DE> for Quante-TK-Anlagen
+ *    (first dialed digit comes with SETUP-Frame)
+ *
  * Revision 1.50  1998/11/17 00:37:48  akool
  *  - fix new Option "-i" (Internal-S0-Bus)
  *  - more Providers (Nikoma, First Telecom, Mox)
@@ -2033,7 +2044,7 @@ static void how_expensive(one_call *cur_call)
   extern   double pay(time_t ts, int dauer, int tarifz, int pro);
 
 
-  if (!cur_call->dir && (dur > 0) && !cur_call->dm) {
+  if (!cur_call->dir && (dur > 0) && (cur_call->dm <= 0.0)) {
 
     if (*cur_call->num[1] && memcmp(cur_call->num[1] + 3, "19", 2))
       zone2 = area_diff(NULL, cur_call->num[1]);
@@ -2077,7 +2088,7 @@ static void how_expensive(one_call *cur_call)
         if (pro) {
           cur_call->dm = pay(cur_call->t, (int)cur_call->duration, zone, pro);
 
-          if (!cur_call->dm) { /* ooops - not supported by that provider ... retry with Telekom */
+          if (cur_call->dm <= 0.0) { /* ooops - not supported by that provider ... retry with Telekom */
             cur_call->dm = pay(cur_call->t, (int)cur_call->duration, zone, pro = 33);
             cur_call->provider = 0;
           } /* if */
@@ -2139,7 +2150,7 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
                   pro = preselect;
 
                 if (nx[CALLED] != -1) {
-		  if (!cur_call->dm) {
+		  if (cur_call->dm <= 0.0) {
 
                     tarifz = known[nx[CALLED]]->zone;
 

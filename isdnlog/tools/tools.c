@@ -19,6 +19,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1998/11/24 20:53:07  akool
+ *  - changed my email-adress
+ *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
+ *  - made Provider-Prefix 6 digits long
+ *  - full support for internal S0-bus implemented (-A, -i Options)
+ *  - isdnlog now ignores unknown frames
+ *  - added 36 allocated, but up to now unused "Auskunft" Numbers
+ *  - added _all_ 122 Providers
+ *  - Patch from Jochen Erwied <mack@Joker.E.Ruhr.DE> for Quante-TK-Anlagen
+ *    (first dialed digit comes with SETUP-Frame)
+ *
  * Revision 1.14  1998/09/26 18:30:14  akool
  *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
  *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
@@ -853,8 +864,13 @@ go:   	         if (!ndigit)
 		 break;
 
       case 'p' : s = sx;
-      	         if (call[chan].provider != -1)
+      	         if (call[chan].provider != -1) {
+
+      		   if (call[chan].provider < 100)
       	       	   sprintf(sx, "010%02d", call[chan].provider);
+      		   else
+		     sprintf(sx, "010%03d", call[chan].provider - 100);
+      	         }
       		 else
                    *sx = 0;
                  p = s + strlen(s);

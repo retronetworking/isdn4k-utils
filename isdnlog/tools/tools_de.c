@@ -21,6 +21,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1998/11/24 20:53:18  akool
+ *  - changed my email-adress
+ *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
+ *  - made Provider-Prefix 6 digits long
+ *  - full support for internal S0-bus implemented (-A, -i Options)
+ *  - isdnlog now ignores unknown frames
+ *  - added 36 allocated, but up to now unused "Auskunft" Numbers
+ *  - added _all_ 122 Providers
+ *  - Patch from Jochen Erwied <mack@Joker.E.Ruhr.DE> for Quante-TK-Anlagen
+ *    (first dialed digit comes with SETUP-Frame)
+ *
  * Revision 1.4  1998/11/17 00:37:57  akool
  *  - fix new Option "-i" (Internal-S0-Bus)
  *  - more Providers (Nikoma, First Telecom, Mox)
@@ -86,7 +97,7 @@ char *Providername(int number)
     case  16 : return("LausitzNet");                               /* Telekommunikationsgesellschaft mbH, Lausitzer Straße 1-7, 03046 Cottbus 01016 */
     case  17 : return("SEC");                                      /* Service AG, Dieskaustraße 246, 04249 Leipzig 01017 */
     case  18 : return("debitel");                                  /* Kommunikationstechnik GmbH & Co KG, Schelmenwasenstr. 37 - 39, 70567 Stuttgart 01018 */
-    case  19 : return("CityLine");                                 /* Telefondienste GmbH, Schwarzer Weg 13, 24837 Schleswig 01019 */
+    case  19 : return("CityLine (Mobilcom)");                      /* Telefondienste GmbH, Schwarzer Weg 13, 24837 Schleswig 01019 */
     case  20 : return("ISIS");                                     /* Multimedia Net GmbH, Kaistraße 6, 40221 Düsseldorf 01020 */
     case  21 : return("QS");                                       /* Communication Service GmbH, Oberländer Ufer 180-182, 50968 Köln 01021 */
     case  22 : return("NetCologne");                               /* GmbH, Maarweg 163, 50825 Köln 01022 */
