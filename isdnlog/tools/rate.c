@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.71  2000/01/16 12:36:58  akool
+ * isdnlog-4.03
+ *  - Patch from Gerrit Pape <pape@innominate.de>
+ *    fixes html-output if "-t" option of isdnrep is omitted
+ *  - Patch from Roland Rosenfeld <roland@spinnaker.de>
+ *    fixes "%p" in ILABEL and OLABEL
+ *
  * Revision 1.70  1999/12/31 13:57:20  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -862,16 +869,17 @@ void exitRate(void)
 char   *prefix2provider(int prefix, char *s)
 {
   if (prefix<0 || prefix>=nProvider)
-    return "?*?";
-  strcpy(s,Provider[prefix].Vbn);
-  return Provider[prefix].Vbn;
+    strcpy(s, "?*?");
+  else
+    strcpy(s,Provider[prefix].Vbn);
+  return(s);
 }
 
 char   *prefix2provider_variant(int prefix, char *s)
 {
   if (prefix<0 || prefix>=nProvider)
-    return "?*?";
-  if(Provider[prefix]._provider._variant != UNKNOWN)
+    strcpy(s, "?*?");
+  else if(Provider[prefix]._provider._variant != UNKNOWN)
     sprintf(s,"%s_%d",Provider[prefix].Vbn,Provider[prefix]._provider._variant);
   else
     strcpy(s,Provider[prefix].Vbn);

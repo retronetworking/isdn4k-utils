@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.56  1999/12/31 13:30:01  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *
  * Revision 1.55  1999/11/08 21:09:39  akool
  * isdnlog-3.65
  *   - added "B:" Tag to "rate-xx.dat"
@@ -1432,20 +1436,22 @@ int main(int argc, char *argv[], char *envp[])
             mynum = strdup(s);
             myicountry = atoi(mycountry + strlen(countryprefix));
 
+#ifndef Q931
 	    initHoliday(holifile, &version);
 
-	    if (!Q931dmp && *version)
+	    if (*version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
 	    initDest(destfile, &version);
 
-	    if (!Q931dmp && *version)
+	    if (*version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
 	    initRate(rateconf, ratefile, zonefile, &version);
 
-	    if (!Q931dmp && *version)
+	    if (*version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
+#endif
 
             loop();
 
