@@ -24,6 +24,10 @@
  *
  *
  * $Log$
+ * Revision 1.69  1999/06/16 19:12:42  akool
+ * isdnlog Version 3.34
+ *   fixed some memory faults
+ *
  * Revision 1.68  1999/06/15 20:04:31  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -782,13 +786,6 @@ void info(int chan, int reason, int state, char *msg)
 {
   /* DUMMY - dont needed here! */
 } /* info */
-
-/*****************************************************************************/
-
-void set_print_fct_for_isdnrep(int (*new_print_msg)(int Level, const char *, ...))
-{
-  print_msg = new_print_msg;
-}
 
 /*****************************************************************************/
 

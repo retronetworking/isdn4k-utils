@@ -20,6 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1999/05/04 19:33:19  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.13  1999/03/24 19:38:41  akool
  * - isdnlog Version 3.10
  * - moved "sondernnummern.c" from isdnlog/ to tools/
@@ -117,13 +125,12 @@
 #endif
 
 _EXTERN int read_logfile(char *myname);
-_EXTERN void set_print_fct_for_isdnrep(int (*new_print_msg)(int Level, const char *, ...));
 _EXTERN int get_term (char *String, time_t *Begin, time_t *End,int delentries);
 _EXTERN int set_msnlist(char *String);
 _EXTERN int send_html_request(char *myname, char *option);
 _EXTERN int new_args(int *nargc, char ***nargv);
 
-_EXTERN int     (*print_msg)(int Level, const char *, ...) _SET_NULL;
+_EXTERN int     print_msg(int Level, const char *, ...);
 _EXTERN int     incomingonly    _SET_0;
 _EXTERN int     outgoingonly    _SET_0;
 _EXTERN int     verbose         _SET_0;

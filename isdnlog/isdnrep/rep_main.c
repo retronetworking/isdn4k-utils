@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1999/06/13 14:08:08  akool
+ * isdnlog Version 3.32
+ *
+ *  - new option "-U1" (or "ignoreCOLP=1") to ignore CLIP/COLP Frames
+ *  - TEI management decoded
+ *
  * Revision 1.7  1999/01/24 19:02:33  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -162,7 +168,8 @@
 
 /*****************************************************************************/
 
-static int print_in_modules(int Level, const char *fmt, ...);
+int print_msg(int Level, const char *fmt, ...);
+int print_in_modules(const char *fmt, ...);
 static int set_linefmt(char *linefmt);
 
 /*****************************************************************************/
@@ -180,8 +187,7 @@ int main(int argc, char *argv[], char *envp[])
 	auto char *htmlreq     = NULL;
 
 
-	set_print_fct_for_tools(printf);
-	set_print_fct_for_isdnrep(print_in_modules);
+	set_print_fct_for_tools(print_in_modules);
 
 	/* we don't need this at the moment:
 	new_args(&argc,&argv);
@@ -307,18 +313,38 @@ int main(int argc, char *argv[], char *envp[])
 
 /*****************************************************************************/
 
-static int print_in_modules(int Level, const char *fmt, ...)
+int print_msg(int Level, const char *fmt, ...)
 {
 	auto va_list ap;
-	auto char    String[BUFSIZ*3];
+	auto char    String[LONG_STRING_SIZE];
 
 
 	va_start(ap, fmt);
-	(void)vsnprintf(String, BUFSIZ*3, fmt, ap);
+	vsnprintf(String, LONG_STRING_SIZE, fmt, ap);
 	va_end(ap);
 
-	return fprintf(Level == PRT_ERR?stderr:stdout, "%s", String);
-} /* print_in_modules */
+	if (Level & PRT_ERR)
+		fprintf(stderr, "%s", String);
+	else
+		fprintf(stdout, "%s", String);
+
+	return 0;
+}
+
+/*****************************************************************************/
+
+int print_in_modules(const char *fmt, ...)
+{
+	auto va_list ap;
+	auto char    String[LONG_STRING_SIZE];
+
+
+	va_start(ap, fmt);
+	(void)vsnprintf(String, LONG_STRING_SIZE, fmt, ap);
+	va_end(ap);
+
+	return print_msg(PRT_ERR, "%s", String);
+}
 
 /*****************************************************************************/
 
