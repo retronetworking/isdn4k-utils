@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.8  2001/04/18 10:21:42  calle
+ * support for "AVM ISDN Controller C2" added.
+ *
  * Revision 1.7  2000/08/31 08:23:35  calle
  * - produce an error message, if a driver could not be loaded.
  *
@@ -950,6 +953,16 @@ static struct capicard *load_firmware(int contr, struct capicard *card)
 			addpatchbyte("CtlrNr", i);
 			addpatchvalues(&cp->patchinfo);
 			if (cp->next && strcmp(cp->next->driver, "c4") == 0)
+				cp = cp->next;
+		}
+		next = cp->next;
+	} else if (strcmp(card->driver, "c2") == 0) {
+		struct capicard *cp;
+		int i;
+		for (i=0,cp=card; i < 2; i++) {
+			addpatchbyte("CtlrNr", i);
+			addpatchvalues(&cp->patchinfo);
+			if (cp->next && strcmp(cp->next->driver, "c2") == 0)
 				cp = cp->next;
 		}
 		next = cp->next;
