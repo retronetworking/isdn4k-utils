@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/02/17 00:09:21  fritz
+ * New CVS tree
+ *
  * Revision 1.14  1996/06/06 22:08:46  fritz
  * Bugfix: verbose and getconf checked wrong number of parameters.
  * thanks to Andreas Jaeger <aj@arthur.pfalz.de>
@@ -343,7 +346,7 @@ static cmd_struct cmds[] =
         {"pppbind", "1"},
         {"pppunbind", "0"},
         {"busreject", "1"},
-        {"mapping", "0"},
+        {"mapping", "01"},
         {"system", "0"},
         {"hangup", "0"},
         {"addphone", "2"},
