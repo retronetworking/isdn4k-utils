@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.24  1999/12/31 13:30:02  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *
  * Revision 1.23  1999/11/16 18:09:39  akool
  * isdnlog-3.67
  *   isdnlog-3.66 writes wrong provider number into it's logfile isdn.log
@@ -434,8 +438,12 @@ _EXTERN	char   *outfile;
 _EXTERN	char    tmpout[PATH_MAX];
 _EXTERN int     readkeyboard;
 _EXTERN	int	other;
-_EXTERN IFO     ifo[ISDN_MAX_CHANNELS];
-_EXTERN IO      io[ISDN_MAX_CHANNELS];
+
+// I think 16 is the maximum isdnlog currently handles, but to
+// be on the safe side, keep it at 64
+
+_EXTERN IFO     ifo[64];
+_EXTERN IO      io[64];
 
 #undef _EXTERN
 
