@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.31  1999/06/22 19:41:25  akool
+ * zone-1.1 fixes
+ *
  * Revision 1.30  1999/06/16 19:13:03  akool
  * isdnlog Version 3.34
  *   fixed some memory faults
@@ -1063,6 +1066,9 @@ go:   	         if (!ndigit)
                    *sx = 0;
                  p = s + strlen(s);
                  break;
+
+      case 'S' : p = itoa(call[chan].si1, p, 10, 0);
+      	       	 break;
 
       default  : *p++ = c;
 	         break;

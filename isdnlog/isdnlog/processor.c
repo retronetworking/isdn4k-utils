@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.77  1999/07/15 16:41:32  akool
+ * small enhancement's and fixes
+ *
  * Revision 1.76  1999/07/11 15:30:55  akool
  * Patch from Karsten (thanks a lot!)
  *
@@ -909,7 +912,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
   strcpy(n, num);
   strcpy(result, "");
 
-  *intern = strlen(num) < interns0;
+  *intern = ((strlen(num) < interns0) || !isdigit(*num));
 
   if (trim && !*intern) {
     if (dir && (who == CALLING))
@@ -951,14 +954,15 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
   if (!dir && (who == CALLED) && !memcmp(num, vbn, strlen(vbn))) { /* Provider */
     register int l, c;
 
-    if (num[3] == '0') /* dreistellige Verbindungsnetzbetreiberkennzahl? */
-      l = 6;
+    l = strlen(vbn);
+    if (num[l] == '0') /* dreistellige Verbindungsnetzbetreiberkennzahl? */
+      l += 3;
     else
-      l = 5;
+      l += 2;
 
     c = num[l];
     num[l] = 0;
-    *provider = atoi(num + 3);
+    *provider = atoi(num + strlen(vbn));
 
     /* die dreistelligen Verbindungsnetzbetreiberkennzahlen werden
        intern erst mal mit einem Offset von 100 verarbeitet
@@ -968,7 +972,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
        vergeben werden ...
     */
 
-    if (l == 6)
+    if (l == 6) /* Fixme: German specific */
       *provider += 100;
 
     num[l] = c;
@@ -1579,9 +1583,8 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                     break;
 
-#ifdef ISDN_DE /* Fixme: never defined! */
         case 0x28 : /* DISPLAY ... z.b. Makelweg, AOC-E ... */
-                    if (Q931dmp) {
+                    {
                       auto     char  s[BUFSIZ];
                       register char *ps = s;
 
@@ -1591,12 +1594,12 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                       *ps = 0;
 
+                      if (Q931dmp)
                       Q931dump(TYPE_STRING, -2, s, version);
-                    }
                     else
-                      p += (l * 3);
+                        info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
+                    }
                     break;
-#endif
 
         case 0x2d : /* SUSPEND ACKNOWLEDGE (Parkweg) */
                     p += (l * 3);
@@ -4432,7 +4435,7 @@ doppelt:break;
             qmsg(TYPE_CAUSE, version, call[chan].cause));
         } /* if */
 
-        if (OUTGOING) {
+        if (OUTGOING && call[chan].duration) {
 	  processRate(chan);
 
       	  if (call[chan].tarifknown) {
@@ -4440,7 +4443,7 @@ doppelt:break;
 
 	    processLCR(chan, h);
 
-            while (h)
+            while (h && *h)
               info(chan, PRT_SHOWHANGUP, STATE_HANGUP, strsep(&h, "\n"));
       	  } /* if */
         } /* if */
@@ -4691,6 +4694,7 @@ void processflow()
 int morectrl(int card)
 {
   register char      *p, *p1, *p2, *p3;
+  register int	      go;
   static   char       s[MAXCARDS][BIGBUFSIZ * 2];
   static   char      *ps[MAXCARDS] = { s[0], s[1] };
   auto     int        n = 0;
@@ -4754,9 +4758,15 @@ retry:
           processctrl(atoi(p3), p3 + 3);
       }
       else {
-        if (ignoreRR && (strlen(p1) < 17))
-          ;
-        else
+        go = 1;
+
+        if (((ignoreRR & 1) == 1) && (strlen(p1) < 17))
+          go = 0;
+
+        if (((ignoreRR & 2) == 2) && !memcmp(p1 + 14, "AA", 2))
+          go = 0;
+
+        if (go)
           processctrl(card, p1);
       } /* else */
 
@@ -4950,7 +4960,7 @@ void processcint()
  	info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
 
 	processLCR(chan, h);
-	while (h)
+	while (h && *h)
 	  info(chan, PRT_SHOWHANGUP, STATE_HANGUP, strsep(&h,"\n"));
 
  	huptime(chan, 0);
