@@ -1,24 +1,29 @@
 /*
 ** $Id$
 **
-** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
+** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.3  1998/06/18 12:38:17  michael
+** - 2nd part of the automake/autoconf implementation (now compiles again).
+**
 ** Revision 1.2  1998/06/17 17:01:24  michael
 ** - First part of the automake/autoconf implementation. Currently vbox will
 **   *not* compile!
 **
 */
 
+#include "../config.h"
+
 #include <tcl.h>
 #include <string.h>
 #include <unistd.h>
 
-#include "config.h"
 #include "vboxgetty.h"
 #include "log.h"
 #include "modem.h"
 #include "tclscript.h"
+#include "stringutils.h"
 
 static Tcl_Interp *interpreter = NULL;
 
@@ -29,6 +34,7 @@ static Tcl_Interp *interpreter = NULL;
 int vbox_block(VBOX_TCLFUNC_PROTO);
 int vbox_log(VBOX_TCLFUNC_PROTO);
 int vbox_modem_command(VBOX_TCLFUNC_PROTO);
+int vbox_voice(VBOX_TCLFUNC_PROTO);
 
 
 static struct vbox_tcl_function vbox_tcl_functions[] =
@@ -36,6 +42,7 @@ static struct vbox_tcl_function vbox_tcl_functions[] =
 	{ "exit", vbox_block },
 	{ "vbox_log", vbox_log },
 	{ "vbox_modem_command", vbox_modem_command },
+	{ "vbox_voice"				, vbox_voice },
 	{ NULL, NULL }
 };
 
@@ -89,26 +96,27 @@ void scr_remove_interpreter(void)
 /** <=					0 on success or -1 on error								**/
 /*************************************************************************/
 
-int scr_execute(char *name, char *user)
+int scr_execute(char *name, struct vboxuser *user)
 {
 	int canrun = 0;
 
 	if (user)
 	{
+		printstring(temppathname, "%s/%s/scripts/%s", user->home, user->name, name);
 
-		canrun = 0;
+		if (access(temppathname, F_OK|R_OK) == 0) canrun = 1;
 	}
 
 	if (!canrun)
 	{
-		printstring(temppathname, "%s/%s/%s", DATADIR, PACKAGE, name);
+		printstring(temppathname, "%s/%s", PKGDATADIR, name);
 
 		if (access(temppathname, F_OK|R_OK) == 0) canrun = 1;
 	}
 
 	if (canrun)
 	{
-		log_line(LOG_A, "Running \"%s\"...\n", temppathname);
+		log_line(LOG_D, "Running \"%s\"...\n", temppathname);
 
 		if (Tcl_EvalFile(interpreter, temppathname) == TCL_OK)
 		{
@@ -269,12 +277,120 @@ int vbox_modem_command(VBOX_TCLFUNC)
 	return(TCL_OK);
 }
 
+/*************************************************************************/
+/** vbox_voice():	Tcl Kommando "vbox_voice". Die Funktion gibt immer		**/
+/**					TCL_OK zurück. Das Ergebnis der jeweiligen Funktion	**/
+/**					wird als Rückgabe des Tcl Kommandos geliefert.			**/
+/*************************************************************************/
 
+int vbox_voice(VBOX_TCLFUNC)
+{
+	char *cmd;
+	char *arg;
+	int	rc;
+	int	i;
 
+	if (objc == 3)
+	{
+		cmd = Tcl_GetStringFromObj(objv[1], NULL);
+		arg = Tcl_GetStringFromObj(objv[2], NULL);
 
+		if ((cmd) && (arg))
+		{
+			switch (*cmd)
+			{
+				case 'W':
+				case 'w':
+				{
+						/* Zeitspanne warten und dabei auch eingehende	*/
+						/* Daten vom Modem bearbeiten.						*/
 
+					switch (voice_wait(xstrtol(arg, 60)))
+					{
+						case 0:
+							Tcl_SetResult(intp, "OK", NULL);
+							break;
 
+						case 1:
+							Tcl_SetResult(intp, "TOUCHTONE", NULL);
+							break;
 
+						case 2:
+							Tcl_SetResult(intp, "SUSPEND", NULL);
+							break;
+
+						default:
+							Tcl_SetResult(intp, "HANGUP", NULL);
+							break;
+					}
+				}
+				break;
+
+				case 'P':
+				case 'p':
+				{
+						/* Nachricht(en) abspielen und dabei auch eingeh-	*/
+						/* ende Daten vom Modem bearbeiten.						*/
+
+				}
+				break;
+
+				case 'R':
+				case 'r':
+				{
+						/* Speicherung der Audiodaten starten/stoppen	*/
+						/* (record). In diesem Fall wird ERROR bei ei-	*/
+						/* nem Fehler oder OK zurückgegeben.				*/
+
+					if (strcasecmp(arg,  "stop") == 0) rc = voice_save(0);
+					if (strcasecmp(arg, "start") == 0) rc = voice_save(1);
+
+					switch (rc)
+					{
+						case 0:
+							Tcl_SetResult(intp, "OK", NULL);
+							break;
+
+						default:
+							Tcl_SetResult(intp, "ERROR", NULL);
+							break;
+					}
+				}
+				break;
+
+				case 'H':
+				case 'h':
+				{
+						/* Eingehende Audiodaten zum mithören an ein	*/
+						/* anderes Device schicken.						*/
+
+					if (strcasecmp(arg,  "stop") == 0) rc = voice_hear(0);
+					if (strcasecmp(arg, "local") == 0) rc = voice_hear(1);
+
+					switch (rc)
+					{
+						case 0:
+							Tcl_SetResult(intp, "OK", NULL);
+							break;
+
+						default:
+							Tcl_SetResult(intp, "ERROR", NULL);
+							break;
+					}
+				}
+				break;
+
+				default:
+				{
+					Tcl_SetResult(intp, "ERROR", NULL);
+				}
+				break;
+			}
+		}
+	}
+
+	return(TCL_OK);
+}
 
 
 

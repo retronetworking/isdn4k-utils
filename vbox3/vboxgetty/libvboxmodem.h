@@ -1,13 +1,14 @@
 /*
 ** $Id$
 **
-** Copyright 1997-1998 by Michael 'Ghandi' Herold
+** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 */
 
 #ifndef _VBOX_LIBMODEM_H
 #define _VBOX_LIBMODEM_H 1
 
 #include <unistd.h>
+#include <errno.h>
 
 /** Defines **************************************************************/
 
@@ -36,7 +37,7 @@ struct vboxmodem
 /** Prototypes ***********************************************************/
 
 extern int				 vboxmodem_open(struct vboxmodem *, unsigned char *);
-extern void				 vboxmodem_close(struct vboxmodem *);
+extern int				 vboxmodem_close(struct vboxmodem *);
 extern unsigned char *vboxmodem_error(void);
 extern int				 vboxmodem_raw_read(struct vboxmodem *, unsigned char *, int);
 extern size_t			 vboxmodem_raw_write(struct vboxmodem *, unsigned char *, int);

@@ -1,5 +1,5 @@
 ##
-## vboxgetty/examples/Makefile.am - (C) 1997-1998 Michael Herold
+## $Id$
 ##
 
 ## Other directories #####################################################

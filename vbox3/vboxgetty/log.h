@@ -1,7 +1,7 @@
 /*
 ** $Id$
 **
-** Copyright 1997-1998 by Michael 'Ghandi' Herold
+** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 */
 
 #ifndef _VBOX_LOG_H

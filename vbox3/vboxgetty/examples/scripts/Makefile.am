@@ -1,5 +1,5 @@
 ##
-## vboxgetty/examples/scripts/Makefile.am - (C) 1997-1998 Michael Herold
+## $Id$
 ##
 
 ## The tcl scripts to install ############################################

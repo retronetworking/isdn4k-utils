@@ -4,17 +4,17 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 */
 
-#ifndef _VBOX_STRINGUTILS_H
-#define _VBOX_STRINGUTILS_H 1
+#ifndef _VBOX_CONTROL_H
+#define _VBOX_CONTROL_H 1
 
 /** Defines **************************************************************/
 
-#define printstring	sprintf
+#define VBOX_CTRL_MAX_RCLINE	64
 
 /** Prototypes ***********************************************************/
 
-extern void xstrncpy(char *, char *, int);
-extern long xstrtol(char *, long);
-extern long xstrtoo(char *, long);
+extern char *ctrl_exists(char *, char *);
+extern int	 ctrl_create(char *, char *, char *);
+extern int	 ctrl_remove(char *, char *);
 
-#endif /* _VBOX_STRINGUTILS_H */
+#endif /* _VBOX_CONTROL_H */

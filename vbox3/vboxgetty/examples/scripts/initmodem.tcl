@@ -15,7 +15,7 @@
 if { [vbox_modem_command "$vbxv_init" "OK"] > 0 } {
 	if { [vbox_modem_command "$vbxv_initnumber" "OK"] > 0 } {
 		if { [vbox_modem_command "AT+FCLASS=8" "OK"] > 0 } {
-			if { [vbox_modem_command "ATS13.2=1S13.4=1" "OK"] > 0 } {
+			if { [vbox_modem_command "ATS13.2=1S13.4=1S13.6=0S13.7=1" "OK"] > 0 } {
 				return
 			}
 		}

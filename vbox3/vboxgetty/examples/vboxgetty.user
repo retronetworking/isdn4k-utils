@@ -7,4 +7,5 @@
 #
 # Format: number:user:group:umask:freespace
 
-784051[34]:michael:users:0077:2000000
+7840513:michael:users:0077:2000000
+7840514:nicole:users:0077:2000000
