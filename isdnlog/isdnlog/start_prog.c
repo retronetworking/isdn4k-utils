@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/03/16 20:58:55  luethje
+ * Added the source code isdnlog. isdnlog is not working yet.
+ * A workaround for that problem:
+ * copy lib/policy.h into the root directory of isdn4k-utils.
+ *
  * Revision 2.3.27  1996/05/05  20:35:46  akool
  *
  * Revision 2.21  1996/03/13  11:58:46  akool
@@ -115,7 +120,7 @@ int Ring(info_args *Cmd, char *Opts[], int Die, int Async)
 	pid_t pid;
 	FILE *fp;
 
-	print_msg(PRT_DEBUG_EXEC, "Ring: Cmd: '%s' Die: %d Async: %d\n", (Cmd&&Cmd->infoarg)?Cmd->infoarg:"NO COMMAND", Die, Async);
+	print_msg(PRT_DEBUG_EXEC, "Ring: Cmd: `%s' Die: %d Async: %d\n", (Cmd&&Cmd->infoarg)?Cmd->infoarg:"NO COMMAND", Die, Async);
 
 	if (Die <= 0)
 	{
