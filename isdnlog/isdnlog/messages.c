@@ -137,6 +137,7 @@ static char *InformationElement[] = {
   "\x70 Called party number",
   "\x71 Called party subaddress",
   "\x74 Redirecting number",
+  "\x76 Redirection number",
   "\x78 Transit network selection",
   "\x79 Restart indicator",
   "\x7c Low layer compatibility",

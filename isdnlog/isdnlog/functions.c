@@ -19,6 +19,11 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.7  1997/05/09 23:30:45  luethje
+ * isdnlog: new switch -O
+ * isdnrep: new format %S
+ * bugfix in handle_runfiles()
+ *
  * Revision 1.6  1997/04/08 00:02:12  luethje
  * Bugfix: isdnlog is running again ;-)
  * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
@@ -291,7 +296,7 @@ int print_msg(int Level, const char *fmt, ...)
   if (Level & xinfo)
     print_from_server(String);
 
-  if (Level & PRT_LOG) {
+  if (verbose && (Level & PRT_LOG)) {
     fprintf(fprot, "%s  %s", stl, String);
 
     if (synclog)

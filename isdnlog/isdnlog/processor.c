@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/05/28 21:22:53  luethje
+ * isdnlog option -b is working again ;-)
+ * isdnlog has new \$x variables
+ * README completed
+ *
  * Revision 1.6  1997/04/20 22:52:14  luethje
  * isdnrep has new features:
  *   -variable format string
@@ -343,9 +348,7 @@ static void info(int chan, int reason, int state, char *msg)
   if (allflags & PRT_DEBUG_GENERAL)
     if (allflags & PRT_DEBUG_INFO)
       print_msg(PRT_DEBUG_INFO, "%d INFO> ", chan);
-    else
-      return;
-
+  
   (void)iprintf(s, chan, call[chan].dialin ? ilabel : olabel, left, msg, right);
 
   print_msg(PRT_DEBUG_INFO, "%s", s);
@@ -392,10 +395,10 @@ static int facility(int type, int l)
 
   switch(type) {
     case AOC_INITIAL          : ID = OP = EH = MP = 0;
-#if 0
+
                                 if (asnp == NULL)
                                   return(AOC_OTHER);
-#endif
+
                                 c = strtol(asnp += 3, NIL, 16);              /* Ext/Spare/Profile */
 
                                 switch (c) {                                 /* Remote Operation Protocol */
@@ -1241,7 +1244,14 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version)
 
     case 0x30 : break;                       /* 011 Network specific number */
 
-    case 0x40 : sprintf(result, "%s%s", mycountry, myarea); /* 100 Subscriber number */
+    case 0x40 : if (*num != '0')             /* 100 Subscriber number */
+                  sprintf(result, "%s%s", mycountry, myarea);
+                else {
+                  strcpy(result, mycountry);
+                  
+                  while (*num && (*num == '0')) 
+                    num++;
+                } /* else */
                 break;
 
     case 0x60 : break;                       /* 110 Abbreviated number */
@@ -2149,6 +2159,38 @@ static void decode(int chan, register char *p, int type, int version)
                     break;
 
 
+        case 0x74 : /* Redirecting number */
+        case 0x76 : /* Redirection number */
+
+                    oc3 = strtol(p += 3, NIL, 16);
+
+                    pd = s;
+
+                    while (--l)
+                      *pd++ = strtol(p += 3, NIL, 16);
+
+                    *pd = 0;
+
+                    strcpy(call[chan].onum[REDIR], s);
+                    buildnumber(s, oc3, -1, call[chan].num[REDIR], version);
+
+                    strcpy(call[chan].vnum[REDIR], vnum(chan, REDIR));
+#ifdef Q931
+                    if (q931dmp && (*call[chan].vnum[REDIR] != '?') && *call[chan].vorwahl[REDIR] && oc3 && ((oc3 & 0x70) != 0x40)) {
+                      auto char s[BUFSIZ];
+
+                      sprintf(s, "%s %s/%s, %s",
+                        call[chan].areacode[REDIR],
+                        call[chan].vorwahl[REDIR],
+                        call[chan].rufnummer[REDIR],
+                        call[chan].area[REDIR]);
+
+                      Q931dump(TYPE_STRING, -2, s, version);
+                    } /* if */
+#endif
+                    break;
+
+
         case 0x01 : /* Bearer capability 1TR6 */
                     if (l > 0)
                       call[chan].bearer = strtol(p + 3, NIL, 16);
@@ -2469,7 +2511,7 @@ escape:             for (c = 0; c <= sxp; c++)
                       Q931dump(TYPE_STRING, sn[0], sx[0], version);
                     else
 #endif
-                      info(chan, PRT_SHOWNUMBERS, STATE_RING, sx[0]);
+                      info(chan, PRT_SHOWBEARER, STATE_RING, sx[0]);
 
                     if (c == 0x8a)
                       call[chan].channel = 2;
@@ -2537,7 +2579,7 @@ escape:             for (c = 0; c <= sxp; c++)
                       else
 #endif
                       if (*sx[c])
-                        info(chan, PRT_SHOWNUMBERS, STATE_RING, sx[c]);
+                        info(chan, PRT_SHOWBEARER, STATE_RING, sx[c]);
 
                     p += (l * 3);
                     break;
@@ -3329,7 +3371,7 @@ static void processctrl(int card, char *s)
 
   if (!memcmp(ps, "HEX: ", 5)) { /* new HiSax Driver */
 
-    if ((verbose & VERBOSE_HEX) && !(verbose & VERBOSE_CTRL))
+    if (((verbose & VERBOSE_HEX) && !(verbose & VERBOSE_CTRL)) || stdoutput)
       print_msg(PRT_LOG, "%2d %s\n", card, s);
 
     if (firsttime) {

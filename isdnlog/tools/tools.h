@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1997/05/25 19:41:16  luethje
+ * isdnlog:  close all files and open again after kill -HUP
+ * isdnrep:  support vbox version 2.0
+ * isdnconf: changes by Roderich Schupp <roderich@syntec.m.EUnet.de>
+ * conffile: ignore spaces at the end of a line
+ *
  * Revision 1.14  1997/05/15 22:21:49  luethje
  * New feature: isdnrep can transmit via HTTP fax files and vbox files.
  *
@@ -338,6 +344,7 @@
 #define  OTHER (call[chan].dialin ? CALLING : CALLED)
 #define  ME    (call[chan].dialin ? CALLED : CALLING)
 #define	 CLIP  2
+#define	 REDIR 3
 #define  _OTHER(call) (call->dialin ? CALLING : CALLED)
 #define  _ME(call)    (call->dialin ? CALLED : CALLING)
 
@@ -461,13 +468,13 @@ typedef struct {
   int     bearer;
   int	  si1;     /* Service Indicator entsprechend i4l convention */
   int	  si11;	   /* if (si1 == 1) :: 0 = Telefon analog / 1 = Telefon digital */
-  char    onum[3][NUMSIZE];
+  char    onum[4][NUMSIZE];
   int	  screening;
-  char    num[3][NUMSIZE];
-  char    vnum[3][256];
+  char    num[4][NUMSIZE];
+  char    vnum[4][256];
   char    id[32];
   char	  usage[16];
-  int	  confentry[3];
+  int	  confentry[4];
   time_t  time;
   time_t  connect;
   time_t  t_duration;
@@ -480,11 +487,11 @@ typedef struct {
   long	  lobytes;
   double  ibps;
   double  obps;
-  char	  areacode[3][NUMSIZE];
-  char	  vorwahl[3][NUMSIZE];
-  char	  rufnummer[3][NUMSIZE];
-  char	  alias[3][NUMSIZE];
-  char	  area[3][128];
+  char	  areacode[4][NUMSIZE];
+  char	  vorwahl[4][NUMSIZE];
+  char	  rufnummer[4][NUMSIZE];
+  char	  alias[4][NUMSIZE];
+  char	  area[4][128];
   char	  money[64];
   char	  currency[32];
   char    msg[128];
