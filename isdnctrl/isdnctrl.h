@@ -21,6 +21,31 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1998/06/09 18:11:33  cal
+ * added the command "isdnctrl name ifdefaults": the named device is reset
+ * to some reasonable defaults.
+ *
+ * Internally, isdnctrl.c contains a list of functions (defs_fcns []), which
+ * are called one after the other with the interface-name as a patameter.
+ * Each function returns a char* to a string containing iscnctrl-commands
+ * to be executed. Example:
+ *
+ * char *
+ * defs_budget(char *id) {
+ * 	static char	r [1024];
+ * 	char	*p = r;
+ *
+ * 	p += sprintf(p, "budget %s dial 10 1min\n", id);
+ * 	p += sprintf(p, "budget %s charge 100 1day\n", id);
+ * 	p += sprintf(p, "budget %s online 8hour 1day\n", id);
+ *
+ * 	return(r);
+ * }
+ *
+ * The advantage of this approach is, that even complex commands can be executed.
+ *
+ * PS: The function defs_basic() in isdnctrl.c is not complete.
+ *
  * Revision 1.10  1998/03/16 09:40:56  cal
  * fixed a problem parsing TimRu-Commands
  * started with TimRu-man-page
@@ -72,7 +97,7 @@ enum {
         CBHUP, IHUP, SECURE, CALLBACK,
         L2_PROT, L3_PROT, ADDLINK, REMOVELINK,
         ENCAP, TRIGGER, RESET,
-        DIALTIMEOUT, DIALWAIT, STATUS,
+        DIALTIMEOUT, DIALWAIT, DIALMODE,
 #ifdef I4L_CTRL_TIMRU
         ADDRULE, INSRULE, DELRULE, SHOWRULES,
         FLUSHRULES, FLUSHALLRULES, DEFAULT,
@@ -133,7 +158,7 @@ cmd_struct cmds[] =
         {"reset", "01"},
         {"dialtimeout", "12"},
         {"dialwait", "12"},
-        {"status", "12"},
+        {"dialmode", "12"},
 #ifdef I4L_CTRL_TIMRU
         {"addrule", "12"},
         {"insrule", "1"},
