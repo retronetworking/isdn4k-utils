@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/08/21 14:46:58  fritz
+ * Added Version-Checking of NET_DV.
+ *
  * Revision 1.4  1997/07/23 20:39:14  luethje
  * added the option "force" for the commands delif and reset
  *
@@ -234,8 +237,11 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 		sprintf(string,"%d",cfg.slavedelay);
 		if (Set_Entry(SubSec,interface,CONF_ENT_SDELAY, string, C_OVERWRITE | C_WARN) == NULL)
 			return NULL;
-		
+#ifdev HAVE_TRIGGERCPS		
 		sprintf(string,"%d",(data_version < 3)?6000:cfg.triggercps);
+#else
+		sprintf(string,"6000");
+#endif
 		if (Set_Entry(SubSec,interface,CONF_ENT_TRIGGERCPS, string, C_OVERWRITE | C_WARN) == NULL)
 			return NULL;
 		
