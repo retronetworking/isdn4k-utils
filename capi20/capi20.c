@@ -2,6 +2,10 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.15  2000/04/10 09:08:06  calle
+ * capi20_wait_for_message will now return CapiReceiveQueueEmpty on
+ * timeout and error.
+ *
  * Revision 1.14  2000/04/07 16:06:09  calle
  * Bugfix: without devfs open where without NONBLOCK, ahhh.
  *
@@ -62,11 +66,6 @@
 #include <stdio.h>
 #include <linux/capi.h>
 #include "capi20.h"
-
-#define	CAPIMSG_LEN(m)		(m[0] | (m[1] << 8))
-#define	CAPIMSG_COMMAND(m)	(m[4])
-#define	CAPIMSG_SUBCOMMAND(m)	(m[5])
-#define CAPIMSG_DATALEN(m)	(m[16] | (m[17]<<8))
 
 static char capidevname[] = "/dev/capi20";
 static char capidevnamenew[] = "/dev/isdn/capi20";
