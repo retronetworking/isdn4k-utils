@@ -99,6 +99,13 @@ Full path of the vbox config file. Default value is <spooldir>/vbox.conf.
 Number of bytes that must be available on the partition with the spool
 directory, so that a call may be taken. Default is 0.
 
+.TP
+.B debuglevel <string>
+What messages are be written to @LOGFILEDIR@/vboxgetty-<device>.log.
+The string consists of letters representing the severities of the messages
+to log (F=FATAL, E=ERROR, W=WARNING, I=INFO, D=DEBUG, J=JUNK).  Default
+is FEWI.
+
 .SH FILES
 .TP
 .B @I4LCONFDIR@/vboxgetty.conf
