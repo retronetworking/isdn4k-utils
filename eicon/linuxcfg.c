@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  2000/06/08 20:56:42  armin
+ * added checking for card id.
+ *
  * Revision 1.1  2000/03/25 12:56:40  armin
  * First checkin of new version 2.0
  * - support for 4BRI, includes orig Eicon
@@ -35,6 +38,7 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+#include <string.h>
 
 #include <linux/types.h>
 #include <linux/isdn.h>
