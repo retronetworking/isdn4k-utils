@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1999/04/20 20:31:58  akool
+ * isdnlog Version 3.19
+ *   patches from Michael Reinelt
+ *
  * Revision 1.7  1999/04/19 19:25:07  akool
  * isdnlog Version 3.18
  *
@@ -222,13 +226,13 @@ static char *strip (char *s)
 {
   char *p;
 
-  while (*s==' ' || *s=='\t') s++;
+  while (isblank(*s)) s++;
   for (p=s; *p; p++)
     if (*p=='#' || *p=='\n') {
       *p='\0';
       break;
     }
-  for (p--; p>s && (*p==' '||*p=='\t'); p--)
+  for (p--; p>s && isblank(*s); p--)
     *p='\0';
   return s;
 }
