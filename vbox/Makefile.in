@@ -212,7 +212,7 @@ DIRECTORIES_I	= $(prefix) \
 
 directories-i:	  ignore
 		  @set -e; for i in `echo $(DIRECTORIES_I)`; do \
-			if [ ! -d $$i ]; then \
+			if [ ! -d $(DESTDIR)$$i ]; then \
 				$(INSTALL_DIRS) $(DESTDIR)$$i; \
 			fi; \
 		  done

@@ -4,6 +4,9 @@
 # (C) 1998 Carsten Paeth
 #
 # $Log$
+# Revision 1.3  1998/08/30 09:57:13  calle
+# I hope it is know readable for everybody.
+#
 # Revision 1.1  1998/08/25 16:33:14  calle
 # Added CAPI2.0 library. First Version.
 #
@@ -20,8 +23,10 @@ INSTALL_DATA		:= $(INSTALL) -m 0644 -o 0 -g 0
 all: libcapi20.a
 
 install: all
-	$(INSTALL_DATA) libcapi20.a $(LIBDIR)
-	$(INSTALL_DATA) capi20.h $(INCLUDEDIR)
+	[ -d $(DESTDIR)$(LIBDIR)     ] || mkdir -p $(DESTDIR)$(LIBDIR)
+	[ -d $(DESTDIR)$(INCLUDEDIR) ] || mkdir -p $(DESTDIR)$(INCLUDEDIR)
+	$(INSTALL_DATA) libcapi20.a $(DESTDIR)$(LIBDIR)
+	$(INSTALL_DATA) capi20.h $(DESTDIR)$(INCLUDEDIR)
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
