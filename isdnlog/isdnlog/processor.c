@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.121  2001/03/13 14:39:30  leo
+ * added IIOCNETGPN support for 2.0 kernels
+ * s. isdnlog/kernel_2_0/README for more information (isdnlog 4.51)
+ *
  * Revision 1.120  2000/12/21 09:56:47  leo
  * modilp, ilp - show duration, bugfix
  * s. isdnlog/ilp/README for more information isdnlog 4.48
@@ -1371,6 +1375,9 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
 
     if (l == 6) /* Fixme: German specific */
       *provider += 100;
+
+    if (l == 7) /* Fixme: German specific */
+      *provider += 200;
 
     num[l] = c;
     num += l;
@@ -3399,10 +3406,6 @@ static void huptime(int chan, int setup)
       } /* else */
     } /* if */
   } /* if */
-  else if (hupctrl) {
-    sprintf(sx, "No HUP: HUP = %d c = %d *INTERFACE=%c", hupctrl, c, *INTERFACE);
-    info(chan, PRT_ERR, STATE_HUPTIMEOUT, sx);
-  }    
 } /* huptime */
 
 
@@ -3491,7 +3494,7 @@ static int findinterface(void)
 #if IIOCNETGPN == -1
      /* IIOCDBGVAR works on isdnctrl */
     rc = iiocnetgpn(sockets[ISDNCTRL].descriptor, &phone);
-#else    
+#else
     rc = ioctl(sockets[ISDNINFO].descriptor, IIOCNETGPN, &phone);
 #endif
     if (rc) {
@@ -4917,9 +4920,9 @@ static void processctrl(int card, char *s)
 
         if (sound)
           ringer(chan, RING_CONNECT);
-	  
+
 	procinfo(call[chan].channel, &call[chan], CONNECT);
-	
+
 doppelt:break;
 
       case SUSPEND_ACKNOWLEDGE :

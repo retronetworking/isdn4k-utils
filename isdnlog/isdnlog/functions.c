@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.32  2001/08/18 12:04:08  paul
+ * Don't attempt to write to stderr if we're a daemon.
+ *
  * Revision 1.31  2000/12/15 14:36:05  leo
  * modilp, ilp - B-chan usage in /proc/isdnlog
  * s. isdnlog/ilp/README for more information
@@ -295,7 +298,7 @@ void _Exit_isdnlog(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 do
     if (xinfo && sockets[IN_PORT].descriptor != -2)
       close(sockets[IN_PORT].descriptor);
   } /* if */
-  
+
   procinfo(1, NULL, -1);	/* close proc */
   closelog();
 
@@ -435,7 +438,7 @@ void logger(int chan)
 			              call[chan].cause, call[chan].ibytes, call[chan].obytes,
 			              LOG_VERSION, call[chan].si1, call[chan].si11,
 			              currency_factor, currency, call[chan].pay,
-				      prefix2pnum(call[chan].provider),
+				      			prefix2pnum(call[chan].provider),
 			              call[chan].zone);
 
 			fclose(flog);
@@ -479,7 +482,7 @@ void logger(int chan)
   mysql_db_set.currency_factor = currency_factor;
   strcpy(mysql_db_set.currency, currency);
   mysql_db_set.pay = call[chan].pay;
-  strcpy(mysql_db_set.provider, getProvider(call[chan].provider));
+  strcpy(mysql_db_set.provider, call[chan].dialin ? "" : getProvider(call[chan].provider));
   mysql_dbAdd(&mysql_db_set);
 #endif
 #ifdef ORACLE
