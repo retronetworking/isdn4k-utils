@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/06/24 23:35:26  luethje
+ * isdnctrl can use a config file
+ *
  *
  */
 
@@ -48,6 +51,7 @@
 #define CONF_ENT_ENCAP            "ENCAP"
 #define CONF_ENT_SDELAY           "SDELAY"
 #define CONF_ENT_ADDSLAVE         "ADDSLAVE"
+#define CONF_ENT_TRIGGERCPS       "TRIGGER"
 #define CONF_ENT_BIND             "BIND"
 #define CONF_ENT_PPPBIND          "PPPBIND"
 

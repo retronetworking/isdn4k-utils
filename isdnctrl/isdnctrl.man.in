@@ -1,11 +1,14 @@
 #!/bin/sh
 # $Id$
 #
-# Makefile for isdnctrl manpage generation
-# (C) 1997 Fritz Elfert
+# Generator for isdnctrl manpage
+# (C) 1997 Stefan Luethje
 #
 #
 # $Log$
+# Revision 1.2  1997/06/26 21:01:25  luethje
+# bugfix
+#
 # Revision 1.1  1997/06/26 21:00:29  luethje
 # Create a dynamic man page.
 #
@@ -415,17 +418,23 @@ Allowed values are "rawip", "ip", "cisco_h", "ethernet", "syncppp" and "uihdlc".
 .B Example:
 ENCAP = rawip
 .TP 5
-.B SDELAY
-Set the delay in seconds for the slave-dialing.
-
-.B Example:
-SDELAY = 0
-.TP 5
 .B ADDSLAVE
 Adds a slave interface for channel-bundling.
 
 .B Example:
 ADDSLAVE = s-ippp0
+.TP 5
+.B SDELAY
+Set the delay in seconds for the slave-dialing.
+
+.B Example:
+SDELAY = 10
+.TP 5
+.B TRIGGER
+Set trigger level for slave-dialing.
+
+.B Example:
+TRIGGER = 5
 .TP 5
 .B BIND
 Binds the current interface to a specific physical channel.
