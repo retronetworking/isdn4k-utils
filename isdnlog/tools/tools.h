@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1998/03/08 11:43:18  luethje
+ * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
+ *
  * Revision 1.16  1997/05/29 17:07:30  akool
  * 1TR6 fix
  * suppress some noisy messages (Bearer, Channel, Progress) - can be reenabled with log-level 0x1000
@@ -468,6 +471,7 @@ typedef struct {
   int     tei;
   int	  dialin;
   int	  cause;
+  int	  loc;
   int	  aoce;
   int	  traffic;
   int	  channel;
@@ -479,7 +483,8 @@ typedef struct {
   int	  screening;
   char    num[4][NUMSIZE];
   char    vnum[4][256];
-  char	  provider[NUMSIZE]; 
+  int	  provider;
+  int	  sondernummer;
   char    id[32];
   char	  usage[16];
   int	  confentry[4];
@@ -514,7 +519,6 @@ typedef struct {
   char	  digits[NUMSIZE];
   int	  oc3;
   int	  takteChargeInt;
-  int	  aoc;
   int 	  card;
   int	  knock; 
 } CALL;
@@ -592,7 +596,7 @@ typedef struct {
   double currency_factor;
   char	 currency[32];
   double pay;
-  char	 provider[NUMSIZE];
+  int	 provider;
 } one_call;
 
 /****************************************************************************/
@@ -612,6 +616,18 @@ typedef struct {
   int  f;
   char n[20];
 } IFO;
+
+/****************************************************************************/
+
+typedef struct {
+  char  *msn;      /* Telefonnummer */
+  char  *sinfo;    /* Kurzbeschreibung */
+  int    tarif;    /* 0 = free, 1 = CityCall, -1 = see grund1 .. takt2 */
+  double grund1;   /* Grundtarif Werktage 9-18 Uhr */
+  double grund2;   /* Grundtarif uebrige Zeit */
+  double takt1;	   /* Zeittakt Werktage 9-18 Uhr */
+  double takt2;	   /* Zeittakt uebrige Zeit */
+} SonderNummern;
 
 /****************************************************************************/
 
@@ -654,7 +670,8 @@ _EXTERN int     	CityWeekend;
 _EXTERN int	dual;
 _EXTERN char    	mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
-
+_EXTERN SonderNummern *SN;
+_EXTERN int	      nSN;
 #undef _EXTERN
 
 /****************************************************************************/
@@ -708,7 +725,7 @@ _EXTERN char  *time2str(time_t sec);
 _EXTERN char  *double2clock(double n);
 _EXTERN char  *vnum(int chan, int who);
 _EXTERN char  *i2a(int n, int l, int base);
-_EXTERN char  *Providername(char *number);
+_EXTERN char  *Providername(int number);
 _EXTERN int    iprintf(char *obuf, int chan, register char *fmt, ...);
 _EXTERN char  *qmsg(int type, int version, int val);
 _EXTERN char  *Myname;

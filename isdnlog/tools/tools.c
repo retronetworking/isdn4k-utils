@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Utilities)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1998/05/06 14:43:27  paul
+ * Assumption about country codes always being 2 digits long fixed for the
+ * USA case (caused strncpy to be called with length -1; ouch).
+ *
  * Revision 1.10  1998/04/09 19:15:45  akool
  *  - CityPlus Implementation from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
  *  - dont change huptimeout, if disabled (via isdnctrl huptimeout isdnX 0)
@@ -406,7 +410,7 @@ char *vnum(int chan, int who)
   register int    l = strlen(call[chan].num[who]), got = 0;
   register int    flag = C_NO_WARN | C_NO_EXPAND;
   auto     char  *ptr;
-  auto	   int    ll;
+  auto	   int    ll, lx;
   auto	   int 	  prefix = strlen(countryprefix);
   auto	   int 	  cc_len = 2;   /* country code length defaults to 2 */
 
@@ -437,11 +441,23 @@ char *vnum(int chan, int who)
     flag |= C_NO_ERROR;
 #endif
 
+  if (call[chan].sondernummer != -1) {
+    strcpy(call[chan].rufnummer[who], call[chan].num[who]);
+
+    if (cnf > -1)
+      strcpy(retstr[retnum], call[chan].alias[who]);
+    else
+      strcpy(retstr[retnum], SN[call[chan].sondernummer].sinfo);
+
+    return(retstr[retnum]);
+  }
+  else {
   if ((ptr = get_areacode(call[chan].num[who], &ll, flag)) != 0) {
     strcpy(call[chan].area[who], ptr);
     l = ll;
     got++;
   } /* if */
+  } /* else */
 
   if (l > 1) {
     if (call[chan].num[who][prefix] == '1')
@@ -450,8 +466,16 @@ char *vnum(int chan, int who)
      * there should be code for country codes > 2 in length,
      * but that at least doesn't cause a possible strncpy(x, y, -1) call!
      */
-    strncpy(call[chan].areacode[who], call[chan].num[who], cc_len + prefix);
-    strncpy(call[chan].vorwahl[who], call[chan].num[who] + cc_len + prefix, l - cc_len - prefix);
+    lx = cc_len + prefix;
+
+    if (lx > 0)
+      strncpy(call[chan].areacode[who], call[chan].num[who], lx);
+
+    lx = l - cc_len - prefix;
+
+    if (lx > 0)
+      strncpy(call[chan].vorwahl[who], call[chan].num[who] + cc_len + prefix, lx);
+
     strcpy(call[chan].rufnummer[who], call[chan].num[who] + l);
   } /* if */
 
@@ -579,52 +603,34 @@ static char *ltoa(register unsigned long num, register char *p, register int rad
 
 /****************************************************************************/
 
-char *Providername(char *number)
+char *Providername(int number)
 {      
-  if (!memcmp(number + 3, "70", 2))
-    return("Arcor");
-  else if (!memcmp(number + 3, "66", 2))
-    return("Interroute");
-  else if (!memcmp(number + 3, "20", 2))
-    return("Isis");
-  else if (!memcmp(number + 3, "19", 2))
-    return("Mobilcom");
-  else if (!memcmp(number + 3, "22", 2))
-    return("NetCologne");
-  else if (!memcmp(number + 3, "11", 2))
-    return("o.tel.o");
-  else if (!memcmp(number + 3, "50", 2))
-    return("Talkline");
-  else if (!memcmp(number + 3, "30", 2))
-    return("TelDaFax");
-  else if (!memcmp(number + 3, "33", 2))
-    return("Telekom");
-  else if (!memcmp(number + 3, "24", 2))
-    return("TelePassport");
-  else if (!memcmp(number + 3, "90", 2))	
-    return("Viag Interkom");
-  else if (!memcmp(number + 3, "85", 2))
-    return("WESTCom");
-  else if (!memcmp(number + 3, "88", 2))
-    return("WorldCom");
-  else if (!memcmp(number + 3, "25", 2))
-    return("Citykom Muenster");
-  else if (!memcmp(number + 3, "13", 2))
-    return("Tele 2");
-  else if (!memcmp(number + 3, "49", 2))
-    return("ACC");
-  else if (!memcmp(number + 3, "18", 2))
-    return("Debitel");
-  else if (!memcmp(number + 3, "55", 2))
-    return("Esprit");
-  else if (!memcmp(number + 3, "14", 2))
-    return("EWE");
-  else if (!memcmp(number + 3, "41", 2))
-    return("HanseNet");
-  else if (!memcmp(number + 3, "36", 2))
-    return("Hutchison Telekom");
-  else
-    return("UNKNOWN PROVIDER");
+  switch (number) {
+    case 11 : return("o.tel.o");
+    case 13 : return("Tele2");
+    case 14 : return("EWE TEL");
+    case 18 : return("Debitel");
+    case 19 : return("Mobilcom");
+    case 20 : return("Isis");
+    case 22 : return("NetCologne");
+    case 24 : return("TelePassport");
+    case 25 : return("Citykom Muenster");
+    case 30 : return("TelDaFax");
+    case 33 : return("Telekom");
+    case 36 : return("Hutchison Telekom");
+    case 39 : return("tesion))");
+    case 41 : return("HanseNet");
+    case 46 : return("KomTel");
+    case 49 : return("ACC");
+    case 50 : return("Talkline");
+    case 55 : return("Esprit");
+    case 66 : return("Interoute");
+    case 70 : return("Arcor");
+    case 85 : return("WESTCom");
+    case 88 : return("WorldCom");
+    case 90 : return("Viag Interkom");
+    default : return("UNKNOWN Provider");
+  } /* switch */
 } /* Providername */
 
 /****************************************************************************/
@@ -754,6 +760,17 @@ int iprintf(char *obuf, int chan, register char *fmt, ...)
                  p = s + strlen(s);
                  break;
 
+      case 'z' : p = itoa(area_diff(NULL, call[chan].num[OTHER]), p, 10, 0);
+      	       	 break;
+
+      case 'Z' : s = sx;
+      	         if (*call[chan].num[OTHER])
+      	       	   sprintf(sx, " %s", area_diff_string(NULL, call[chan].num[OTHER]));
+      	         else
+                   *sx = 0;
+                 p = s + strlen(s);
+                 break;
+
       case 'n' : who = ME;    goto go;
       case 'c' : who = CLIP;  goto go;
       case 'N' :
@@ -805,15 +822,15 @@ go:   	         if (!ndigit)
 		 break;
 
       case 'p' : s = sx;
-      	         if (*call[chan].provider)
-      	       	   sprintf(sx, "%s", call[chan].provider);
+      	         if (call[chan].provider != -1)
+      	       	   sprintf(sx, "010%02d", call[chan].provider);
       		 else
                    *sx = 0;
                  p = s + strlen(s);
                  break;
 
       case 'P' : s = sx;
-      	         if (*call[chan].provider)
+      	         if (call[chan].provider != -1)
       	       	   sprintf(sx, " via %s", Providername(call[chan].provider));
       		 else
                    *sx = 0;
@@ -858,9 +875,9 @@ go:   	         if (!ndigit)
 
 int print_version(char *myname)
 {
-	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997\n",myname,VERSION);
+	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997, 1998\n",myname,VERSION);
 	/*
-	_print_msg("                                   Andreas Kool (akool@Kool.f.EUnet.de)\n");
+	_print_msg("                                   Andreas Kool (akool@Kool.f.UUnet.de)\n");
 	_print_msg("                               and Stefan Luethje (luethje@sl-gw.lake.de)\n\n");
 	*/
 	_print_msg("                                   Andreas Kool and Stefan Luethje\n");
@@ -895,11 +912,11 @@ char *t2tz(int zeit)
 char *z2s(int zone)
 {
   switch (zone) {
-    case  1 : return("City");         break;
-    case  2 : return("R50");          break;
-    case  3 : return("R200");         break;
-    case  4 : return("Fern");         break;
-    case  5 : return("EuroC");        break;
+    case  1 : return("CityCall");     break;
+    case  2 : return("RegioCall");    break;
+    case  3 : return("GermanCall");   break;
+    case  4 : return("GermanCall");   break;
+    case  5 : return("GlobalCall");   break;
     case  6 : return("Vis1");         break;
     case  7 : return("Vis2");         break;
     case  8 : return("Vis3");         break;

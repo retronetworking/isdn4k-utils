@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.19  1998/05/19 15:55:51  paul
+ * Moved config stuff for City Weekend from isdnlog.c to tools/isdnconf.c, so
+ * that isdnrep also understands a "cityweekend=y" line in isdn.conf.
+ *
  * Revision 1.18  1998/05/19 15:47:03  paul
  * If logfile name is specified with leading '+', the logfile is not truncated
  * when isdnlog starts; instead, new messages are appended.
@@ -893,7 +897,7 @@ int main(int argc, char *argv[], char *envp[])
           if (q931dmp) {
   	    mymsns         = 3;
   	    mycountry      = "+49";
-  	    myarea   	     = "6408";
+  	    myarea   	   = "6171";
         currency   	   = NULL;
         dual	         = 1;
   	    chargemax  	   = 0.0;
@@ -951,6 +955,9 @@ int main(int argc, char *argv[], char *envp[])
 #ifdef MYSQLDB
 	    mysql_dbOpen();
 #endif
+
+	    initSondernummern();
+
             loop();
 
             if (sockets[ISDNINFO].descriptor >= 0)

@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/05/25 19:41:02  luethje
+ * isdnlog:  close all files and open again after kill -HUP
+ * isdnrep:  support vbox version 2.0
+ * isdnconf: changes by Roderich Schupp <roderich@syntec.m.EUnet.de>
+ * conffile: ignore spaces at the end of a line
+ *
  * Revision 1.6  1997/05/09 23:30:50  luethje
  * isdnlog: new switch -O
  * isdnrep: new format %S
@@ -123,16 +129,17 @@
 #define	PRT_SHOWIMON	       0x800
 #define PRT_SHOWBEARER	      0x1000
 #define	PRT_SHOWTICKS	      0x2000
-#define PRT_DEBUG_GENERAL     0x4000
-#define PRT_DEBUG_DIAG 	      0x8000
-#define PRT_DEBUG_INFO 	     0x10000
-#define PRT_DEBUG_EXEC 	     0x20000
-#define PRT_DEBUG_BUGS 	     0x40000
-#define PRT_DEBUG_DECODE     0x80000
-#define PRT_DEBUG_RING	    0x100000
+#define PRT_SHOWCHARGEMAX     0x4000
+#define PRT_DEBUG_GENERAL     0x8000
+#define PRT_DEBUG_DIAG       0x10000
+#define PRT_DEBUG_INFO       0x20000
+#define PRT_DEBUG_EXEC       0x40000
+#define PRT_DEBUG_BUGS       0x80000
+#define PRT_DEBUG_DECODE    0x100000
+#define PRT_DEBUG_RING      0x200000
 #define PRT_DEBUG_CS	    0x200000
-#define PRT_DEBUG_PROT	    0x400000
-#define PRT_NOTHING   	    0x800000
+#define PRT_DEBUG_PROT      0x800000
+#define PRT_NOTHING        0x1000000
 
 #define IS_DEBUG(VALUE) (VALUE >= PRT_DEBUG_GENERAL && VALUE < PRT_NOTHING)
 
@@ -277,6 +284,8 @@ _EXTERN void set_time_str(void);
 _EXTERN void now(void);
 _EXTERN void logger(int chan);
 _EXTERN int  ringer(int chan, int event);
+_EXTERN void initSondernummern(void);
+_EXTERN int  is_sondernummer(char *num);
 
 #undef _EXTERN
 
