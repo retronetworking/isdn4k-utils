@@ -19,6 +19,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.67  1999/12/17 22:51:55  akool
+ * isdnlog-3.79
+ *  - isdnlog/isdnrep/isdnrep.{c,h} ... error -handling, print_msg
+ *  - isdnlog/isdnrep/rep_main.c
+ *  - isdnlog/isdnrep/isdnrep.1.in
+ *  - isdnlog/tools/rate.c  ... dupl entry in rate.conf
+ *  - isdnlog/tools/NEWS
+ *  - isdnlog/tools/isdnrate.c
+ *  - isdnlog/tools/dest/configure{,.in}
+ *  - isdnlog/tools/zone/configure{,.in}
+ *
  * Revision 1.66  1999/12/02 19:28:03  akool
  * isdnlog-3.73
  *  - isdnlog/tools/telrate/telrate.cgi.in faster
@@ -1052,7 +1063,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	  if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
 	    whimper (dat, "Zone %d has no 'T:' Entries", zone);
 	if (!(where & FEDERAL))
-	  whimper (dat, "Provider %d has no default domestic zone (missing 'A:%s')", prefix, mycountry);
+	  whimper (dat, "Provider %d has no default domestic zone #1 (missing 'A:%s')", prefix, mycountry);
 	line++;
       }
       else if(nProvider) { /* silently ignore empty providers */
@@ -1571,7 +1582,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
         whimper (dat, "Zone %d has no 'T:' Entries", zone);
     if (!(where & FEDERAL))
-      whimper (dat, "Provider %d has no default domestic zone (missing 'A:%s')", prefix, mycountry);
+      whimper (dat, "Provider %d has no default domestic zone #2 (missing 'A:%s')", prefix, mycountry);
     line++;
   }
   else if(nProvider) { /* silently ignore empty providers */
