@@ -21,6 +21,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.85  2002/07/25 18:16:06  akool
+ * isdnlog-2.60:
+ *   - new provider "01081" (1,5 EuroCent/minute)
+ * 	- good bye Euro ;-)
+ *   	with the entry "U:^%.3f c" in "rate-de.dat" now isdnlog/isdnbill
+ *     shows amounts in EuroCent (Value *= 100.0)
+ *
  * Revision 1.84  2002/04/22 19:07:50  akool
  * isdnlog-4.58:
  *   - Patches from Enrico Scholz <enrico.scholz@informatik.tu-chemnitz.de>
@@ -663,7 +670,7 @@
  *
  * int pnum2prefix(int pnum, time_t when)
  *   converts the external provider number to the internal prefix at
- *   the given date/time when, or know if when is 0
+ *   the given date/time when, or now if when is 0
  *
  * inline int prefix2pnum(int prefix)
  *    returns the external provider number

@@ -19,6 +19,31 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.126  2003/08/26 19:46:12  tobiasb
+ * isdnlog-4.66:
+ *  - Added support for AVM B1 (with layer 2 d-channel trace) in point-to-
+ *    point mode, where only TEI 0 is used ("Anlagenanschluss" in German).
+ *    Many thanks to Klaus Heske for his testing efforts.
+ *  - The source number "0" in outgoing calls is now expanded to
+ *    +<country><area>0.  This may be useful for point-to-point setups,
+ *    when <area> contains area code and local number without extension.
+ *  - Basic support for different codesets in (E)DSS1 messages.  Except
+ *    for codeset 0, unknown information elements are now silently
+ *    ignored (controlled by ignore_unknown_IE in isdnlog/isdnlog.h).
+ *  - Added some information elements to isdnlog/messages.c.
+ *  - Increased the length of msn (local number) in struct telnum.
+ *  - Fixed seperation of country and area code for long numbers
+ *    in getDest, tools/dest.c.
+ *  - Changed broken (with gcc 2.95.2) generation of .depend.  The old
+ *    output did not consider the location of objectfiles in subdirs.
+ *    Remove this file before compiling this upgraded isdnlog.
+ *  - Moved DUALFIX... defines from tools/tools.h to isdnlog/isdnlog.h.
+ *  - Added missing R:-Links for cellphone entries in country-de.dat.
+ *  - Different entry for each city "Neustadt" in tools/zone/de/code.
+ *  - Earlier changes since isdnlog-4.65:
+ *     - Allow dualmode workaround 0x100 (DUALFIX_DESTNUM) to work also with
+ *       CALL_PROCEEDING messages for cleaning up unanswered incoming calls.
+ *
  * Revision 1.125  2003/08/14 12:18:57  tobiasb
  * Allow dualmode workaround 0x100 aka DUALFIX_DESTNUM to work also with
  *   CALL_PROCEEDING messages for cleaning up unanswered incoming calls.
@@ -4467,6 +4492,7 @@ static void processctrl(int card, char *s)
   register int         i, c;
   register int         wegchan; /* fuer gemakelte */
   auto     int         dialin, type = 0, cref = -1, creflen, version;
+  auto     int         dialin_cref;
   static   int         tei = BROADCAST, sapi = 0, net = 1, firsttime = 1;
   auto     char        sx[BUFSIZ], s1[BUFSIZ], s2[BUFSIZ];
   auto	   char       *why, *hint;
@@ -4788,10 +4814,12 @@ static void processctrl(int card, char *s)
 
     type = strtol(ps += 3, NIL, 16);
 
+    dialin_cref = (cref>>7)!=net;
+
     if (isAVMB1)
       dialin = (cref & 0x80);  /* first (SETUP) tells us who initiates the connection */
     else if (isAVMB1_D2 && tei==0) /* AVMB1 with D2 D-channel trace connected */
-      dialin = (cref>>7)!=net;  /* point to point (PtP) to NT or PABX */
+      dialin = dialin_cref;        /* point to point (PtP) to NT or PABX */
     else
       dialin = (tei == BROADCAST); /* dialin (Broadcast), alle anderen haben schon eine Tei! */
 
@@ -4948,12 +4976,15 @@ static void processctrl(int card, char *s)
          * - ... && type=SETUP_ACKNOWLEDGE is to restrictrive.  In case of
          *   SETUP with complete called party number, the exchange responds
          *   with C_PROC instead of S_ACK and C_PROC contains the B-channel. 
+         * - ... && !dialin_cref is necessary, because C_PROC may be send
+         *   by local terminal on incoming call and dialin is 0 instead of
+         *   1 in this case.  (Wrong call direction due to depency on tei 127.)
          * This workaround requires the value of DUALFIX_DESTNUM in dualfix,
          * which is set with -2.. or dual=.. at command line or parameter file. 
-         * |TB| 2003-08-14
+         * |TB| 2003-09-16
          */
         if (!chanused[chan] || (dualfix & DUALFIX_DESTNUM &&
-            !call[chan].dialog && !call[5].dialin)) { 
+            !call[chan].dialog && !call[5].dialin && !dialin_cref)) { 
           /* nicht --channel, channel muss unveraendert bleiben! */
           if (chanused[chan]) { /* catch second line condition */
             print_msg(PRT_DEBUG_BUGS, " DEBUG> %s: %s contained channel B%d which is marked as in use -- overwriting anyway.\n", st+4, (type==SETUP_ACKNOWLEDGE)?"S_ACK":"C_PROC", call[5].channel);

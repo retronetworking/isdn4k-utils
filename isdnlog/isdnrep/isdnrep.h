@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  2000/10/15 12:53:04  leo
+ * Changed iobytes to double
+ *
  * Revision 1.20  2000/08/17 21:34:44  akool
  * isdnlog-4.40
  *  - README: explain possibility to open the "outfile=" in Append-Mode with "+"
@@ -146,6 +149,7 @@
 #include <tools.h>
 #include <holiday.h>
 #include <rate.h>
+#include <telnum.h>
 
 /*****************************************************************************/
 
@@ -165,6 +169,19 @@
 #define H_PRINT_HEADER 2
 
 /*****************************************************************************/
+
+typedef struct {
+  char	 mode;    /* \0 (none), - (logged provider), p (provider), v (vbn) */
+  int    prefix;  /* internal provider number */
+  int    count;   /* number of calls suitable for recomputing */
+  int    unknown; /* thereof the calls which have not been recomputed */
+  int    cheaper; /* number of calls where a cheaper provider was found */
+  char  *input;   /* input from command line after -r[vp] */
+} RECALC;
+
+/*****************************************************************************/
+
+/* isdnrep.c defines _REP_FUNC_C_, rep_main.c definies _ISDNREP_C_, ... */
 
 #ifdef _REP_FUNC_C_
 #define _EXTERN
@@ -188,6 +205,7 @@ _EXTERN int get_term (char *String, time_t *Begin, time_t *End,int delentries);
 _EXTERN int set_msnlist(char *String);
 _EXTERN int send_html_request(char *myname, char *option);
 _EXTERN int new_args(int *nargc, char ***nargv);
+_EXTERN int prep_recalc(void);
 
 _EXTERN int     print_msg(int Level, const char *, ...);
 _EXTERN int     incomingonly    _SET_0;
@@ -210,12 +228,24 @@ _EXTERN time_t  endtime         _SET_0;
 _EXTERN int     preselect	_SET_33;
 #endif
 _EXTERN int     summary		_SET_0;
-
+_EXTERN RECALC  recalc; /* initialiation done in main */
 
 #undef _SET_NULL
 #undef _SET_0
 #undef _SET_1
 #undef _SET_EMPTY
+#undef _EXTERN
+
+/*****************************************************************************/
+
+#ifdef _OPT_TIME_C_
+#define _EXTERN
+#else
+#define _EXTERN extern
+#endif
+
+_EXTERN int get_term (char *String, time_t *Begin, time_t *End,int delentries);
+
 #undef _EXTERN
 
 /*****************************************************************************/
@@ -228,9 +258,6 @@ _EXTERN int     summary		_SET_0;
 /*****************************************************************************/
 
 #define C_DELIM '|'
-
-/*****************************************************************************/
-
 
 /*****************************************************************************/
 
@@ -267,7 +294,7 @@ typedef struct {
   int    dir;
   double duration;
   char   num[2][NUMSIZE];
-  char   who[2][NUMSIZE];
+  char   who[2][RETSIZE];
   char	 sarea[2][TN_MAX_SAREA_LEN]; /* lt */
   double ibytes;
   double obytes;
@@ -280,7 +307,7 @@ typedef struct {
   int	 provider;
   int	 zone; /* fixme: zones may vary over time */
 } one_call;
-
+  
 /*****************************************************************************/
 
 #endif /* _ISDNREP_H_ */

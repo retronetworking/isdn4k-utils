@@ -20,6 +20,31 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  2003/07/25 22:18:03  tobiasb
+ * isdnlog-4.65:
+ *  - New values for isdnlog option -2x / dual=x with enable certain
+ *    workarounds for correct logging in dualmode in case of prior
+ *    errors.  See `man isdnlog' and isdnlog/processor.c for details.
+ *  - New isdnlog option -U2 / ignoreCOLP=2 for displaying ignored
+ *    COLP information.
+ *  - Improved handling of incomplete D-channel frames.
+ *  - Increased length of number aliases shown immediately by isdnlog.
+ *    Now 127 instead of 32 chars are possible. (Patch by Jochen Erwied.)
+ *  - The zone number for an outgoing call as defined in the rate-file
+ *    is written to the logfile again and used by isdnrep
+ *  - Improved zone summary of isdnrep.  Now the real zone numbers as
+ *    defined in the rate-file are shown.  The zone number is taken
+ *    from the logfile as mentioned before or computed from the current
+ *    rate-file.  Missmatches are indicated with the chars ~,+ and *,
+ *    isdnrep -v ... explains the meanings.
+ *  - Fixed provider summary of isdnrep. Calls should no longer be
+ *    treated wrongly as done via the default (preselected) provider.
+ *  - Fixed the -pmx command line option of isdnrep, where x is the xth
+ *    defined [MSN].
+ *  - `make install' restarts isdnlog after installing the data files.
+ *  - A new version number generates new binaries.
+ *  - `make clean' removes isdnlog/isdnlog/ilp.o when called with ILP=1.
+ *
  * Revision 1.15  2002/03/11 16:17:11  paul
  * DM -> EUR
  *
@@ -243,7 +268,7 @@ int main(int argc, char *argv[], char *envp[])
 	auto char  fnbuff[512] = "";
 	auto char  usage[]     = "%s: usage: %s [ -%s ]\n";
 	auto char  wrongdate[] = "unknown date: %s\n";
-	auto char  options[]   = "ad:f:hinop:s:t:uvw:NVF:M:R:bES";
+	auto char  options[]   = "ad:f:hinop:r:s:t:uvw:NVF:M:R:bES";
 	auto char *myname      = basename(argv[0]);
 	auto char *ptr         = NULL;
 	auto char *linefmt     = "";
@@ -252,6 +277,9 @@ int main(int argc, char *argv[], char *envp[])
 
 
 	set_print_fct_for_tools(print_in_modules);
+
+	recalc.mode = '\0'; recalc.prefix = UNKNOWN; recalc.input = NULL;
+	recalc.count = recalc.unknown = recalc.cheaper = 0;
 
 	/* we don't need this at the moment:
 	new_args(&argc,&argv);
@@ -338,6 +366,10 @@ int main(int argc, char *argv[], char *envp[])
 
       case 'S' : summary++;
       	       	 break;
+
+      case 'r' : recalc.mode = *optarg;
+                 recalc.input = strdup(optarg+1);
+                 break;
 
       case '?' : printf(usage, argv[0], argv[0], options);
                  return(1);
@@ -453,4 +485,4 @@ int set_linefmt(char *linefmt)
 }
 
 /*****************************************************************************/
-
+/* vim:set ts=2: */
