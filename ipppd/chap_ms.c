@@ -21,9 +21,7 @@
  */
 
 #ifdef USE_MSCHAP
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
+char chap_ms_rcsid[] = "$Id$";
 
 #include <stdio.h>
 #include <string.h>

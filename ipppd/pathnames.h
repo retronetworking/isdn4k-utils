@@ -13,15 +13,15 @@
 # define _PATH_DEVNULL	"/dev/null"
 #endif
 
-#define _PATH_UPAPFILE 	"/etc/ppp/pap-secrets"
-#define _PATH_CHAPFILE 	"/etc/ppp/chap-secrets"
-#define _PATH_SYSOPTIONS "/etc/ppp/ioptions"
-#define _PATH_IPUP	"/etc/ppp/ip-up"
-#define _PATH_IPDOWN	"/etc/ppp/ip-down"
-#define _PATH_TTYOPT	"/etc/ppp/ioptions."
-#define _PATH_CONNERRS	"/etc/ppp/connect-errors"
-#define _PATH_PEERFILES     "/etc/ppp/peers/"
-#define _PATH_USEROPT	".ippprc"
+#define _PATH_UPAPFILE		"/etc/ppp/pap-secrets"
+#define _PATH_CHAPFILE		"/etc/ppp/chap-secrets"
+#define _PATH_SYSOPTIONS	"/etc/ppp/ioptions"
+#define _PATH_IPUP			"/etc/ppp/ip-up"
+#define _PATH_IPDOWN		"/etc/ppp/ip-down"
+#define _PATH_TTYOPT		"/etc/ppp/ioptions."
+#define _PATH_CONNERRS		"/etc/ppp/connect-errors"
+#define _PATH_USERIPTAB		"/etc/ppp/useriptab"
+#define _PATH_PEERFILES		"/etc/ppp/peers/"
 
 /* Programs for processing authenticated logins */
 #define _PATH_AUTHUP   "/etc/ppp/auth-up"

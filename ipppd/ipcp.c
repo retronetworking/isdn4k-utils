@@ -17,9 +17,7 @@
  * WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
+char ipcp_rcsid[] = "$Id$";
 
 /*
  * TODO:
@@ -152,11 +150,13 @@ void ipcp_init(int unit)
     ipcp_options *wo = &ipcp_wantoptions[unit];
     ipcp_options *ao = &ipcp_allowoptions[unit];
 
+	memset(f,0,sizeof(fsm));
+
     f->unit = -1;
     f->protocol = PPP_IPCP;
     f->callbacks = &ipcp_callbacks;
     f->inuse = 0;
-    fsm_init(&ipcp_fsm[unit]);
+    fsm_init(f);
 
 	memset(wo, 0, sizeof(*wo));
 	memset(ao, 0, sizeof(*ao));

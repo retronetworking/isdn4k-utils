@@ -42,9 +42,7 @@ in the developr/rfc directory.
 
 #define PPP_CBCP        0xc029  /* Callback Control Protocol */
 
-#ifndef lint
-static char rcsid[] = "$Id$";
-#endif
+char cbcp_rcsid[] = "$Id$";
 
 #include <stdio.h>
 #include <string.h>
