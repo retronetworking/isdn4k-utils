@@ -56,10 +56,10 @@ else
 endif
 
 ifeq ($(CONFIG_RCAPID),y)
-	SUBDIRS := $(SUBDIRS) capi20
+	SUBDIRS := $(SUBDIRS) capi20 capiinfo
 else
 	ifeq ($(CONFIG_AVMCAPICTRL),y)
-		SUBDIRS := $(SUBDIRS) capi20
+		SUBDIRS := $(SUBDIRS) capi20 capiinfo
 	endif
 endif
 
