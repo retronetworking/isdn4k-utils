@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.9  1999/11/21 12:41:25  armin
+ * Added further check for future driver changes.
+ *
  * Revision 1.8  1999/10/12 18:01:52  armin
  * Backward compatible to older driver versions.
  *
@@ -2076,7 +2079,7 @@ void load_startup_code(char *startupcode, char *fileext)
 		perror("ioctl LOADBOOT");
 		exit(-1);
 	}
-	if ((tmp = ioctl(fd, EICON_IOCTL_GETTYPE + IIOCDRVCTL, &ioctl_s)) < 1) {
+	if ((tmp = ioctl(fd, EICON_IOCTL_GETTYPE + IIOCDRVCTL, &ioctl_s)) < 0) {
 		perror("ioctl GETTYPE");
 		exit(-1);
 	}
