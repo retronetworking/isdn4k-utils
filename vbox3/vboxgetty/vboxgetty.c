@@ -4,12 +4,6 @@
 ** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
-** Revision 1.2  1998/06/17 12:20:37  michael
-** - Changes for automake/autoconf added.
-**
-** Revision 1.1  1998/06/10 13:31:58  michael
-** Source added.
-**
 */
 
 #include <stdlib.h>

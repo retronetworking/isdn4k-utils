@@ -4,9 +4,6 @@
 ** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
-** Revision 1.1  1998/06/10 13:31:59  michael
-** Source added.
-**
 */
 
 #include <sys/types.h>

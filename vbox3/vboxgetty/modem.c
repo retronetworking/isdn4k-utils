@@ -4,12 +4,6 @@
 ** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
-** Revision 1.2  1998/06/17 12:20:36  michael
-** - Changes for automake/autoconf added.
-**
-** Revision 1.1  1998/06/10 13:31:53  michael
-** Source added.
-**
 */
 
 #if TIME_WITH_SYS_TIME

@@ -1,3 +1,10 @@
+/*
+** $Id$
+**
+** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
+**
+** $Log$
+*/
 
 #include <string.h>
 
