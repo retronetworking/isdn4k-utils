@@ -1045,7 +1045,8 @@ int main(int argc, char *argv[], char *envp[])
 
           *p = x;
 
-          memmove(c.num[CALLED] + 3, c.num[CALLED] + 8, strlen(c.num[CALLED]) - 7);
+          if (strlen(c.num[CALLED]) > 7)
+            memmove(c.num[CALLED] + 3, c.num[CALLED] + 8, strlen(c.num[CALLED]) - 7);
 
           if (verbose)
             fprintf(stderr, "REPAIR: Provider=%d\n", c.provider);
