@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.45  2000/01/12 23:22:54  akool
+ * - isdnlog/tools/holiday.c ... returns ERVERYDAY for '*'
+ * - FAQ/configure{,.in} ...  test '==' => '='
+ * - isdnlog/tools/dest/configure{,.in} ...  test '==' => '='
+ * - isdnlog/tools/dest/Makefile.in ...  test '==' => '='
+ * - isdnlog/tools/zone/configure{,.in} ...  test '==' => '='
+ *
+ * - isdnlog/tools/rate-at.c ... P:1069
+ * - isdnlog/rate-at.dat ... P:1069
+ * - isdnlog/country-de.dat ... _DEMF
+ *
+ * - many new rates
+ * - more EURACOM sequences decoded
+ *
  * Revision 1.44  2000/01/01 15:05:24  akool
  * isdnlog-4.01
  *  - first Y2K-Bug fixed
@@ -1159,11 +1173,7 @@ go:   	         if (!ndigit)
 
       case 'p' : s = sx;
       	         if (call[chan].provider != UNKNOWN) {
-
-      		   if (call[chan].provider < 100)
-      	       	     sprintf(sx, "%s%02d", vbn, call[chan].provider);
-      		   else
-		     sprintf(sx, "%s%03d", vbn, call[chan].provider - 100);
+		   sprintf(sx, "%s", getProviderVBN(call[chan].provider));
       	         }
       		 else
                    *sx = 0;
