@@ -23,7 +23,7 @@ not given, show only the connections made today.
 
 .TP
 .B \-S	Summary
-Show a summary (no inidvidual calls) for selected date range. If this
+Show a summary (no individual calls) for selected date range. If this
 option is given twice, the summaries per day are hidden too. Don't use with
 .B \-h
 
