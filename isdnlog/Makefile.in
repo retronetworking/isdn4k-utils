@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.55  1999/03/10 08:35:48  paul
+## use DATADIR from "make config" phase instead of hardcoded /usr/lib/isdn
+##
 ## Revision 1.54  1999/03/07 18:18:21  akool
 ## - new 01805 tarif of DTAG
 ## - new March 1999 tarife
@@ -456,7 +459,6 @@ DEFS       += \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
 	       -D@NATION_MACRO@=1		\
                -DDATADIR=\"$(DATADIR)\"		\
-               -DI4LCONFDIR=\"$(I4LCONFDIR)\"	\
                 $(INCLUDE)
 
 %.o: %.c
