@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.4  1998/11/18 17:05:44  paul
+ * fixed a (harmless) warning
+ *
  * Revision 1.3  1998/08/30 09:57:14  calle
  * I hope it is know readable for everybody.
  *
@@ -282,7 +285,7 @@ capi20_get_profile(unsigned Controller, CAPI_MESSAGE LpBuffer)
         return (MESSAGE_EXCHANGE_ERROR)ioctl_data.errcode;
     }
     if (Controller)
-        memcpy(LpBuffer, &ioctl_data.profile, CAPI_SERIAL_LEN);
+        memcpy(LpBuffer, &ioctl_data.profile, sizeof(struct capi_profile));
     else
         memcpy(LpBuffer, &ioctl_data.profile.ncontroller,
                        sizeof(ioctl_data.profile.ncontroller));
