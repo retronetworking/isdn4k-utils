@@ -78,7 +78,7 @@ subtargets: $(CONFIGURATION)
 	set -e; for i in $(SUBDIRS); do $(MAKE) -C $$i all; done
 
 rootperm:
-	@if [ `id -u` != 0 ] ; then \
+	@if [ "`echo $UID`" != "0" ] ; then \
 		echo -e "\n\n      Need root permission for (de)installation!\n\n"; \
 		exit 1; \
 	fi
@@ -95,15 +95,15 @@ uninstall: rootperm
 #
 clean:
 	-set -e; allow_null_glob_expansion=1; \
-	for i in */Makefile; do $(MAKE) -i -C `dirname $$i` clean; done
-	for i in */GNUmakefile; do $(MAKE) -i -C `dirname $$i` clean; done
+	for i in */Makefile; do $(MAKE) -i -C `dirname $$i` clean; done; \
+	for i in */GNUmakefile; do $(MAKE) -i -C `dirname $$i` clean; done; \
 	rm -f *~ *.o
 
 distclean: clean
 	-$(MAKE) -C scripts/lxdialog clean
 	-set -e; allow_null_glob_expansion=1; \
-	for i in */Makefile; do $(MAKE) -i -C `dirname $$i` distclean; done
-	for i in */GNUmakefile; do $(MAKE) -i -C `dirname $$i` distclean; done
+	for i in */Makefile; do $(MAKE) -i -C `dirname $$i` distclean; done; \
+	for i in */GNUmakefile; do $(MAKE) -i -C `dirname $$i` distclean; done; \
 	rm -f *~ .config .config.old scripts/autoconf.h .menuconfig \
 		Makefile.tmp .menuconfig.log scripts/defconfig.old
 
@@ -144,6 +144,12 @@ menuconfig: scripts/lxdialog/lxdialog
 	@cp Makefile Makefile.tmp
 	$(MAKE) -f Makefile.tmp subconfig
 	@rm -f Makefile.tmp
+
+#
+# For testing: runs Menuconfig only
+#
+testconfig: scripts/lxdialog/lxdialog
+	@scripts/Menuconfig scripts/config.in
 
 config: menuconfig
 
