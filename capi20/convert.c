@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  1998/10/23 12:20:44  fritz
+ * Added some missing functions.
+ *
  * Revision 1.3  1998/08/30 09:57:21  calle
  * I hope it is know readable for everybody.
  *
@@ -407,7 +410,7 @@ unsigned capi_cmsg_answer (_cmsg *cmsg)
 }
 
 /*-------------------------------------------------------*/
-unsigned capi_cmsg_header (_cmsg *cmsg, _cword _ApplId,
+unsigned capi20_cmsg_header (_cmsg *cmsg, unsigned _ApplId,
 				 _cbyte _Command, _cbyte _Subcommand,
 				 _cword _Messagenumber, _cdword _Controller) {
     memset (cmsg, 0, sizeof(_cmsg));
@@ -420,7 +423,7 @@ unsigned capi_cmsg_header (_cmsg *cmsg, _cword _ApplId,
 }
 
 /*-------------------------------------------------------*/
-unsigned capi_put_cmsg (_cmsg *cmsg)
+unsigned short capi20_put_cmsg (_cmsg *cmsg)
 {
     static unsigned char msg[2048];
 
@@ -429,7 +432,7 @@ unsigned capi_put_cmsg (_cmsg *cmsg)
 }
 
 /*-------------------------------------------------------*/
-unsigned capi_get_cmsg (_cmsg *cmsg, unsigned applid)
+unsigned short capi20_get_cmsg (_cmsg *cmsg, unsigned applid)
 {
     MESSAGE_EXCHANGE_ERROR rtn;
     CAPI_MESSAGE msg;
