@@ -411,7 +411,7 @@ int voice_get_message(char *name, char *timestr, int save)
 
 		if (!header_put(fd, &header))
 		{
-	      log(L_ERROR, gettext("Can't write raw voice audio header.\n"));
+	      log(L_ERROR, gettext("Can't write vbox audio header.\n"));
       
 			voice_close_or_unlink(fd, name);
 
