@@ -24,6 +24,18 @@
  *
  *
  * $Log$
+ * Revision 1.53  1999/01/10 15:24:09  akool
+ *  - "message = 0" bug fixed (many thanks to
+ *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
+ *  - CITYWEEKEND via config-file possible
+ *  - fixes from Michael Reinelt <reinelt@eunet.at>
+ *  - fix a typo in the README from Sascha Ziemann <szi@aibon.ping.de>
+ *  - Charge for .at optimized by Michael Reinelt <reinelt@eunet.at>
+ *  - first alpha-Version of the new chargeinfo-Database
+ *    ATTENTION: This version requires the following manual steps:
+ *      cp /usr/src/isdn4k-utils/isdnlog/tarif.dat /usr/lib/isdn
+ *      cp /usr/src/isdn4k-utils/isdnlog/samples/tarif.conf /etc/isdn
+ *
  * Revision 1.52  1998/12/09 20:39:54  akool
  *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
  *  - new option "-o" to suppress causes of other ISDN-Equipment
@@ -498,6 +510,7 @@
 /*****************************************************************************/
 
 #define MAXPROVIDER  199
+#define	UNKNOWNZONE  MAXZONES
 
 /*****************************************************************************/
 
@@ -576,11 +589,11 @@ static int find_format_length(char *string);
 
 static int      invertnumbers = 0;
 static int      unknowns = 0;
-static UNKNOWN  unknown[MAXUNKNOWN];
-static int      zones[MAXZONES];
-static int      zones_usage[MAXZONES];
-static double  	zones_dm[MAXZONES];
-static double  	zones_dur[MAXZONES];
+static UNKNOWNS unknown[MAXUNKNOWN];
+static int      zones[MAXZONES + 1];
+static int      zones_usage[MAXZONES + 1];
+static double   zones_dm[MAXZONES + 1];
+static double   zones_dur[MAXZONES + 1];
 static char**   ShowMSN = NULL;
 static int*     colsize = NULL;
 static double   h_percent = 100.0;
@@ -624,6 +637,7 @@ static double *dur_sum;
 static int    usage_provider[MAXPROVIDER];
 static double duration_provider[MAXPROVIDER];
 static double pay_provider[MAXPROVIDER];
+static char   unknownzones[4096];
 
 /*****************************************************************************/
 
@@ -676,7 +690,7 @@ int send_html_request(char *myname, char *option)
 					         break;
 					default: print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 				           print_msg(PRT_NORMAL, "%s: unsupported compression type of vbox file :`%d'\n",myname,compression);
-				           return -1;
+                                           return(UNKNOWN);
 					         break;
 				}
 			}
@@ -685,7 +699,7 @@ int send_html_request(char *myname, char *option)
 		{
 			print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 			print_msg(PRT_NORMAL, "%s: unsupported version of vbox `%c'\n",myname,option[0]);
-			return -1;
+                        return(UNKNOWN);
 		}
 	}
 	else
@@ -704,14 +718,14 @@ int send_html_request(char *myname, char *option)
 		{
 			print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 			print_msg(PRT_NORMAL, "%s:unsupported version of fax `%c%c'\n",myname,option[0]);
-			return -1;
+                        return(UNKNOWN);
 		}
 	}
 	else
 	{
 		print_msg(PRT_NORMAL, "Content-Type: %s\n\n",H_APP_TEXT);
 		print_msg(PRT_NORMAL, "%s:invalid option string `%c%c'\n",myname,option[0],option[1]);
-		return -1;
+                return(UNKNOWN);
 	}
 
 	if (command == NULL)
@@ -733,7 +747,7 @@ int send_html_request(char *myname, char *option)
 		if (unlink(vboxfile))
 		{
 			print_msg(PRT_ERR,"Can not delete file `%s': %s!\n",file, strerror(errno));
-			return -1;
+                        return(UNKNOWN);
 		}
 	}
 
@@ -748,17 +762,23 @@ int read_logfile(char *myname)
   auto	   int	      nx[2];
   auto	   time_t     now, from = 0;
   auto 	   struct tm *tm;
-  auto	   int	      lday = -1;
+  auto     int        lday = UNKNOWN;
   auto	   char	      start[20] = "", stop[20];
   auto	   char*      tmpfile = NULL;
   auto     FILE      *fi, *ftmp = NULL;
   auto     char       string[BUFSIZ], s[BUFSIZ];
   one_call            cur_call;
+  auto     char       msg[BUFSIZ];
 
+
+  initTarife(msg);
+  initSondernummern();
+  interns0 = 3; /* FIXME */
 
   msn_sum = calloc(mymsns + 1, sizeof(double));
   usage_sum = calloc(mymsns + 1, sizeof(int));
   dur_sum = calloc(mymsns + 1, sizeof(double));
+  *unknownzones = 0;
 
 	_myname = myname;
 	_begintime = begintime;
@@ -775,7 +795,7 @@ int read_logfile(char *myname)
 	}
 			
 	if (get_format(lineformat) == NULL)
-		return -1;
+                return(UNKNOWN);
 
 	/* following two lines must be after get_format()! */
 	if (html)
@@ -791,13 +811,13 @@ int read_logfile(char *myname)
 		if ((known = (KNOWN**) realloc(known, sizeof(KNOWN *) * (knowns+1))) == NULL)
     {
       print_msg(PRT_ERR, nomemory);
-      return -1;
+      return(UNKNOWN);
     }
 
 		if ((known[knowns] = (KNOWN*) calloc(1,sizeof(KNOWN))) == NULL)
     {
       print_msg(PRT_ERR, nomemory);
-      return -1;
+      return(UNKNOWN);
     }
 
     known[knowns]->who = S_UNKNOWN;
@@ -809,17 +829,17 @@ int read_logfile(char *myname)
     if(begintime)
     {
       print_msg(PRT_ERR, wrongdate2, timestring);
-      return -1;
+      return(UNKNOWN);
     }
     else
     {
       if ((tmpfile = tmpnam(NULL)) == NULL)
-      	return -1;
+        return(UNKNOWN);
 
   		if ((ftmp = fopen(tmpfile, "w")) == (FILE *)NULL)
       {
         print_msg(PRT_ERR, msg1, tmpfile, strerror(errno));
-        return -1;
+        return(UNKNOWN);
       }
     }
   }
@@ -837,10 +857,10 @@ int read_logfile(char *myname)
 
   if ((fi = fopen(logfile, "r")) == (FILE *)NULL){
   	print_msg(PRT_ERR,"Can not open file `%s': %s!\n",logfile,strerror(errno));
-  	return -1;
+        return(UNKNOWN);
   }
 
-  memset(zones, 0, sizeof(zones));
+  memset(zones_usage, 0, sizeof(zones_usage));
 
   while (fgets(s, BUFSIZ, fi)) {
     strcpy(string,s);
@@ -923,9 +943,9 @@ int read_logfile(char *myname)
 	fclose(fi);
 
 	if (delentries) /* Erzeugt neue verkuerzte Datei */
-		lday = -1;
+                lday = UNKNOWN;
 
-	if (lday == -1 && html)
+        if (lday == UNKNOWN && html)
 	{
 		if (begintime == 0)
 			begintime = time(NULL);
@@ -945,10 +965,10 @@ int read_logfile(char *myname)
 		print_line2(F_TEXT_LINE,"");
 		print_line2(F_TEXT_LINE,"no calls from %s to %s", start, stop);
 		print_line2(F_TEXT_LINE,"");
-		lday = -1;
+                lday = UNKNOWN;
 	}
 
-	if (lday != -1 && header)
+        if (lday != UNKNOWN && header)
 		print_bottom(einheit, start, stop);
 
 	if (delentries) /* Erzeugt neue verkuerzte Datei */
@@ -958,12 +978,12 @@ int read_logfile(char *myname)
 		if ((ftmp = fopen(tmpfile, "r")) == (FILE *)NULL)
 		{
 			print_msg(PRT_ERR, msg1, tmpfile, strerror(errno));
-			return -1;
+                        return(UNKNOWN);
 		}
 		if ((fi = fopen(logfile, "w")) == (FILE *)NULL)
 		{
 			print_msg(PRT_ERR, msg1, logfile, strerror(errno));
-			return -1;
+                        return(UNKNOWN);
 		}
 
 		while (fgets(s, BUFSIZ, ftmp))
@@ -980,21 +1000,6 @@ int read_logfile(char *myname)
 
 	return 0;
 } /* read_logfile */
-
-/*****************************************************************************/
-
-int is_sondernummer(char *num)
-{
-  register int i;
-
-
-  if (*num)
-    for (i = 0; i < nSN; i++)
-      if (!strcmp(num, SN[i].msn))
-        return(i);
-
-  return(-1);
-} /* sondernummer */
 
 /*****************************************************************************/
 
@@ -1068,8 +1073,8 @@ static int print_bottom(double unit, char *start, char *stop)
 					          /*!numbers?*/known[i]->who/*:known[i]->num*/,
 					          known[i]->usage[j],
 					          double2clock(known[i]->dur[j]),
-					          j==DIALOUT?print_currency(known[i]->dm,0):
-					                     fill_spaces(print_currency(known[i]->dm,0)),
+                                                  j==DIALOUT?print_currency(known[i]->pay,0):
+                                                             fill_spaces(print_currency(known[i]->pay,0)),
 					          set_byte_string(GET_IN|GET_BYTES,known[i]->ibytes[j]),
 					          set_byte_string(GET_OUT|GET_BYTES,known[i]->obytes[j]));
 				} /* if */
@@ -1088,39 +1093,16 @@ static int print_bottom(double unit, char *start, char *stop)
 		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Zone");
 		strich(1);
 
-		/* Andreas: zones[i] ist manchmal immer NULL, warum ? */
-		for (i = 0; i < MAXZONES; i++)
-			if (zones[i]) {
-
-				p = "";
-
-				switch (i) {
-                                        case 0 : p = S_UNKNOWN;    break;
-					case 1 : p = "CityCall";   break;
-					case 2 : p = "RegioCall";  break;
-					case 3 :
-					case 4 : p = "GermanCall"; break;
-			    default: p = "GlobalCall"; break;
-				} /* switch */
-
-				print_line3(NULL,
-				          "Zone", (char) i+48, p, zones_usage[i],
-				          double2clock(zones_dur[i]), print_currency(zones_dm[i],0));
+                for (i = 0; i < MAXZONES + 1; i++)
+                  if (zones_usage[i]) {
+                    print_line3(NULL, "Zone", (char)((i > 9) ? (i + '7') : (i + '0')),
+                    ((i == UNKNOWNZONE) ? S_UNKNOWN : zonen[i]), zones_usage[i],
+                                double2clock(zones_dur[i]), print_currency(zones_dm[i], 0));
 			} /* if */
 
-/* Was soll das werden, Andreas ? */
-#if 0 /* War Quatsch - vergiss es ... */
-		if (known[knowns-1]->eh > 0)
-		{
-			print_line3(NULL,
-			          "Zone", 'x', S_UNKNOWN,
-			          known[knowns-1]->usage[DIALOUT], double2clock(known[knowns-1]->dur[DIALOUT]),
-#ifdef ISDN_NL
-			          print_currency(known[knowns-1]->eh * unit + known[knowns-1]->usage[DIALOUT] * 0.0825,0));
-#else
-			          print_currency(known[knowns-1]->eh * unit, 0));
-#endif
-		}
+#if DEBUG
+                if (zones_usage[UNKNOWNZONE])
+                  print_msg(PRT_NORMAL, "(%s)\n", unknownzones);
 #endif
 
 		print_line2(F_BODY_BOTTOM2,"");
@@ -1267,7 +1249,7 @@ static int print_line3(const char *fmt, ...)
 		fmtstring = get_format(fmt);
 
 	if (fmtstring == NULL)
-		return -1;
+                return(UNKNOWN);
 
 	va_start(ap, fmt);
 
@@ -1360,7 +1342,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 	int dir;
 	int i = 0;
 	int free_col;
-	int last_free_col = -1;
+        int last_free_col = UNKNOWN;
 
 
 	if (colsize == NULL || status == F_COUNT_ONLY)
@@ -1370,7 +1352,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 		if ((colsize = (int*) calloc(get_format_size()+1,sizeof(int))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
-			return -1;
+                        return(UNKNOWN);
 		}
 	}
 
@@ -1554,11 +1536,11 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          	if (cur_call->dir)
 				          		colsize[i] = append_string(&string,NULL,"            ");
 				          	else
-				          		colsize[i] = append_string(&string,*fmtstring,print_currency(cur_call->dm,computed));
+                                                        colsize[i] = append_string(&string,*fmtstring,print_currency(cur_call->pay,computed));
 				          }
 				          else
 				          if ((status == F_BODY_LINE) &&
-				              (cur_call->cause != -1) &&
+                                              (cur_call->cause != UNKNOWN) &&
 				              (cur_call->cause != 0x10) &&  /* Normal call clearing */
                                               (cur_call->cause != 0x1f))    /* Normal, unspecified */
 				          	colsize[i] = append_string(&string,*fmtstring,qmsg(TYPE_CAUSE, VERSION_EDSS1, cur_call->cause));
@@ -1650,7 +1632,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 		i++;
 	}
 
-	if (last_free_col != -1)
+        if (last_free_col != UNKNOWN)
 	{
 		char *help2 = NULL;
 
@@ -1658,7 +1640,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 		if ((help2 = (char*) calloc(strlen(H_BODY_BOTTOM1)+(string?strlen(string):0)+strlen(overlap)+1,sizeof(char))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
-			return -1;
+                        return(UNKNOWN);
 		}
 
 		sprintf(help2,H_BODY_BOTTOM1,last_free_col+1,overlap,string?string:"");
@@ -1668,7 +1650,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 		overlap = NULL;
 	}
 
-	colsize[i] = -1;
+        colsize[i] = UNKNOWN;
 
 	if (status == F_COUNT_ONLY)
 		return strlen(string);
@@ -1714,7 +1696,7 @@ static int append_string(char **string, prt_fmt *fmt_ptr, char* value)
 		if ((tmpfmt = (char*) alloca(sizeof(char)*(strlen(htmlfmt)+strlen(tmpfmt2)+1))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
-			return -1;
+                        return(UNKNOWN);
 		}
 
 		sprintf(tmpfmt,htmlfmt,tmpfmt2);
@@ -1732,7 +1714,7 @@ static int append_string(char **string, prt_fmt *fmt_ptr, char* value)
 	if (*string == NULL)
 	{
 		print_msg(PRT_ERR, nomemory);
-		return -1;
+                return(UNKNOWN);
 	}
 
 	strcat(*string,tmpstr);
@@ -1834,12 +1816,12 @@ static int set_col_size(void)
 	if ((tmp_call = (one_call*) calloc(1,sizeof(one_call))) == NULL)
 	{
 		print_msg(PRT_ERR, nomemory);
-		return -1;
+                return(UNKNOWN);
 	}
 
 	print_line(F_COUNT_ONLY,tmp_call,0,NULL);
 
-	while(colsize[i] != -1)
+        while(colsize[i] != UNKNOWN)
 		if (html)
 			print_msg(PRT_NORMAL,H_BODY_HEADER2,colsize[i++]);
 		else
@@ -2046,231 +2028,34 @@ static prt_fmt** get_format(const char *format)
 
 /*****************************************************************************/
 
-static void how_expensive(one_call *cur_call)
-{
-  register int    zone = -1, zone2 = -1, pro = -1, dur = (int)cur_call->duration;
-  auto	   double pay2, onesec;
-#if OLD
-  extern   double pay(time_t ts, int dauer, int tarifz, int pro);
-#endif
-
-
-  if (!cur_call->dir && (dur > 0) && (cur_call->dm <= 0.0)) {
-
-    if (*cur_call->num[1] && memcmp(cur_call->num[1] + 3, "19", 2))
-      zone2 = area_diff(NULL, cur_call->num[1]);
-
-#if 0
-    if ((c = call[chan].confentry[OTHER]) > -1)
-      zone = known[c]->zone;
-
-    if ((zone == -1) && (zone2 > 0)) {
-      sprintf(sx, "WARNING: Assuming ZONE %d", zone2);
-      zone = zone2;
-      info(chan, PRT_SHOWHANGUP, STATE_HANGUP, sx);
-    } /* if */
-
-    if ((zone != -1) && (zone2 != -1) && (zone != zone2)) {
-      sprintf(sx, "WARNING: Wrong ZONE (%d), assuming %d", zone, zone2);
-      zone = zone2;
-
-      info(chan, PRT_SHOWHANGUP, STATE_HANGUP, sx);
-    } /* if */
-#else
-    zone = zone2;
-#endif
-
-    if (cur_call->eh > 0) /* Gebuehrentakt AOC-E kam (Komfortanschluss, via Telekom */
-      cur_call->dm = cur_call->eh * currency_factor;
-    else {
-      if (zone > 0) {
-        switch (zone) { /* map "isdnlog" to "gebuehr.c" Zones */
-          case 2 : zone = 3;
-                   break;
-          case 3 : zone = 4;
-                   break;
-        } /* switch */
-
-        pro = cur_call->provider;
-
-        if (pro == -1)
-          pro = preselect;
-
-        if (pro) {
-#if OLD
-          cur_call->dm = pay(cur_call->t, (int)cur_call->duration, zone, pro);
-#endif
-
-          if (cur_call->dm <= 0.0) { /* ooops - not supported by that provider ... retry with Telekom */
-#if OLD
-            cur_call->dm = pay(cur_call->t, (int)cur_call->duration, zone, pro = 33);
-#endif
-            cur_call->provider = 0;
-          } /* if */
-        } /* if */
-      } /* if */
-    } /* else */
-
-    if ((dur > 600) && (zone > 1) && ((cur_call->eh > 0) || (pro == 33))) {
-      onesec = cur_call->dm / dur;
-      pay2 = (dur - 600) * onesec * 0.30;
-      cur_call->dm -= pay2;
-    } /* if */
-
-  } /* if */
-
-} /* how_expensive */
-
-/*****************************************************************************/
-
 static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 {
-	register int i, pro;
-  auto int     computed = 0;
-#if OLD
-	extern double pay(time_t ts, int dauer, int tarifz, int pro);
-#endif
-#if 0
-	register int tarifz;
-	auto double  takt;
-  auto int     go, zone = 1, zeit = -1;
-	auto time_t  t1, t2;
-#endif
-	auto int     zone;
+  register int i, zone, computed = 0;
 
 
-#if 0
-	if (cur_call->dm && !(cur_call->eh > 0))
-	/* Falls Betrag vorhanden und Einheiten nicht, Einheiten berechnen */
-		cur_call->eh = cur_call->dm/unit;
-	else if (cur_call->currency_factor                          &&
-		       cur_call->currency_factor != unit && cur_call->eh>0  )
-		/* Falls Einheiten sich auf anderen Einheiten-Faktor beziehen, Einheiten korrigieren */
-		cur_call->eh /= unit / cur_call->currency_factor;
-#endif
+  if (cur_call->dir == DIALOUT) {
 
-        how_expensive(cur_call);
-
-#if 0
-#if 0
-	if (compute && !currency_factor &&
-	    !cur_call->dir && ((cur_call->eh == -1) ||
-	    (!cur_call->eh && cur_call->duration && cur_call->cause == -1))) { /* DIALOUT, keine AOCE Meldung */
-#else
-	go = 0;
-
-	if ((cur_call->eh == -1) && !cur_call->dir) { /* Rauswahl, Gebuehr unbekannt */
-
-                pro = cur_call->provider;
-
-                if (pro == -1)
-                  pro = preselect;
-
-                if (nx[CALLED] != -1) {
-		  if (cur_call->dm <= 0.0) {
-
-                    tarifz = known[nx[CALLED]]->zone;
-
-      		    switch (tarifz) { /* map "isdnlog" to "gebuehr.c" Zones */
-        	      case 2 : tarifz = 3;
-                      	       break;
-        	      case 3 : tarifz = 4;
-                      	       break;
-      		    } /* switch */
-#if OLD
-	            unit = cur_call->dm = cur_call->dm =
-	              pay(cur_call->t, (int)cur_call->duration, tarifz, pro);
-#endif
-                    cur_call->eh = 0;
-		  } /* if */
-		  usage_provider[pro]++;
-		  duration_provider[pro] += cur_call->duration;
-		  pay_provider[pro] += cur_call->dm;
-		  computed = 1;
-                  go = 0;
-                }
-		else if (nx[CALLED] == -1) {       		      	/* Gegner unbekannt! */
-			if (compute) {
-				zone = compute;                       /* in "-c x" Zone vermuten */
-				go = 1;
-			}
-			else {                                  /* mit 0 DM berechnen */
-				cur_call->eh = 0;
-				go = 0;
-			} /* else */
-		}
-		else {
-			go = 1;
-			if (!(zone = known[nx[CALLED]]->zone))
-				go = cur_call->eh = 0;
-		} /* else */
-        }
-        else if (!cur_call->dir) { /* Rauswahl, evtl. != Telebums */
-          pro = cur_call->provider;
-
-          if (pro == -1)
-            pro = preselect;
-
-          computed = 1;
-          go = 0;
-
-          usage_provider[pro]++;
-				  duration_provider[pro] += cur_call->duration;
-				  pay_provider[pro] += cur_call->dm;
-	} /* if */
-
-	if (go) {
-#endif
-		t1 = cur_call->t;
-		t2 = cur_call->t + cur_call->duration;
-
-		cur_call->eh = takt = 0;
-		computed = 1;
-
-		while (t1 < t2) {
-			if (Tarif96)
-				takt = cheap96(t1, zone, &zeit);
-			else
-				takt = cheap(t1, zone);
-
-			if (!takt) {
-				print_msg(PRT_ERR, "%s: OOPS! Abbruch: Zeittakt==0 ???\n", myname);
-				break;
-			} /* if */
-
-			cur_call->eh++;
-			t1 += takt;
-
-		} /* while */
-	} /* if */
-#endif
-	pro = cur_call->provider;
-
-	if (pro == -1)
-		pro = preselect;
-
-	if (cur_call->duration || (cur_call->eh > 0)) {
-
-#if 1 /* AK:07-Oct-98 */
-		if ((cur_call->dir == DIALOUT) && (nx[CALLED] == -1)) {
-      		  zone = area_diff(NULL, cur_call->num[CALLED]);
-
-                  if (zone == AREA_ERROR)
-                    zone = AREA_UNKNOWN;
+    zone = (cur_call->zone >= 0) ? cur_call->zone : UNKNOWNZONE;
 
 		  zones[zone] += cur_call->eh;
-		  zones_dm[zone] += cur_call->dm;
+    zones_dm[zone] += cur_call->pay;
 
 		  if (cur_call->duration > 0)
 		    zones_dur[zone] += cur_call->duration;
 
-		  zones_usage[zone]++;
+    zones_usage[zone] += 1;
+
+    if (zone == UNKNOWNZONE) {
+      if (*unknownzones)
+        strcat(unknownzones, ", ");
+
+      strcat(unknownzones, cur_call->num[1]);
                 } /* if */
-#endif
-		add_one_call(computed?&day_com_sum:&day_sum,cur_call,unit);
+
+    add_one_call(computed ? &day_com_sum : &day_sum, cur_call, unit);
 
 		if (cur_call->dir) {
-			if (nx[CALLING] == -1) {
+      if (nx[CALLING] == UNKNOWN) {
 				known[knowns-1]->usage[DIALIN]++;
 				known[knowns-1]->ibytes[DIALIN] += cur_call->ibytes;
 				known[knowns-1]->obytes[DIALIN] += cur_call->obytes;
@@ -2278,23 +2063,21 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 				if (cur_call->duration > 0)
 					known[knowns-1]->dur[DIALIN] += cur_call->duration;
 			}
-			else
-			{
+      else {
 				known[nx[CALLING]]->usage[cur_call->dir]++;
 				known[nx[CALLING]]->dur[cur_call->dir] += cur_call->duration;
 				known[nx[CALLING]]->ibytes[DIALIN] += cur_call->ibytes;
 				known[nx[CALLING]]->obytes[DIALIN] += cur_call->obytes;
-			}
+      } /* else */
 		}
 		else {
+      usage_provider[cur_call->provider]++;
+      duration_provider[cur_call->provider] += cur_call->duration;
+      pay_provider[cur_call->provider] += cur_call->pay;
 
-			usage_provider[pro]++;
-			duration_provider[pro] += cur_call->duration;
-			pay_provider[pro] += cur_call->dm;
-
-			if (nx[CALLED] == -1) {
+      if (nx[CALLED] == UNKNOWN) {
 				known[knowns-1]->eh += cur_call->eh;
-				known[knowns-1]->dm += cur_call->dm;
+      	known[knowns-1]->pay += cur_call->pay;
 				known[knowns-1]->ibytes[DIALOUT] += cur_call->ibytes;
 				known[knowns-1]->obytes[DIALOUT] += cur_call->obytes;
 				known[knowns-1]->usage[DIALOUT]++;
@@ -2304,50 +2087,42 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 			}
 			else {
 				known[nx[CALLED]]->eh += cur_call->eh;
-				known[nx[CALLED]]->dm += cur_call->dm;
+      	known[nx[CALLED]]->pay += cur_call->pay;
 				known[nx[CALLED]]->usage[cur_call->dir]++;
 				known[nx[CALLED]]->dur[cur_call->dir] += cur_call->duration;
 				known[nx[CALLED]]->ibytes[DIALOUT] += cur_call->ibytes;
 				known[nx[CALLED]]->obytes[DIALOUT] += cur_call->obytes;
-
-				zones[known[nx[CALLED]]->zone] += cur_call->eh;
-				zones_dm[known[nx[CALLED]]->zone] += cur_call->dm;
-
-				if (cur_call->duration > 0)
-					zones_dur[known[nx[CALLED]]->zone] += cur_call->duration;
-
-				zones_usage[known[nx[CALLED]]->zone]++;
-
 			} /* if */
 		} /* else */
 	}
 	else {
-		if (cur_call->cause != -1)
+    if (cur_call->cause != UNKNOWN)
 			day_sum.err++;
 	} /* else */
 
       	 	      		if (cur_call->dir == DIALOUT) {
-      	 	      		  int first_found = -1;
+    int first_found = UNKNOWN;
 
                                   for (i = 0; i < mymsns; i++) {
                                     if (!n_match(known[i]->num, cur_call->num[0], cur_call->version)) {
                                       /* Ermitteln der ersten passenden MSN (lt. README) */
-                                      if(first_found == -1)
+        if (first_found == UNKNOWN)
                                         first_found = i;
-                                      /* exakte Übereinstimmung inkl. SI */
+          /* exakte Uebereinstimmung inkl. SI */
                                       if (known[i]->si == cur_call->si) {
-				      msn_sum[i] += cur_call->dm;
+          msn_sum[i] += cur_call->pay;
                                       usage_sum[i]++;
                                       dur_sum[i] += cur_call->duration;
                                       break;
                                     } /* if */
                                     } /* if */
                                   } /* for */
+
                                   if (i == mymsns) {
                                     /* keine exakte Uebereinstimmung, aber ohne SI */
-                                    if(first_found != -1)
+      if (first_found != UNKNOWN)
                                       i = first_found;
-                                    msn_sum[i] += cur_call->dm;
+      msn_sum[i] += cur_call->pay;
                                     usage_sum[i]++;
                                     dur_sum[i] += cur_call->duration;
                                   } /* if */
@@ -2355,8 +2130,9 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
       	 	      		} /* if */
 
 	print_line(F_BODY_LINE,cur_call,computed,NULL);
-	return 0;
-}
+
+  return(0);
+} /* print_entries */
 
 /*****************************************************************************/
 
@@ -2366,7 +2142,7 @@ static int print_header(int lday)
 	time_t now;
 
 
-	if (lday == -1) {
+        if (lday == UNKNOWN) {
 		time(&now);
 		print_line2(F_1ST_LINE,"I S D N  Connection Report  -  %s", ctime(&now));
 	}
@@ -2411,8 +2187,8 @@ static int print_header(int lday)
 static char *get_time_value(time_t t, int *day, int flag)
 {
 	static char time_string[4][18] = {"","",""};
-	static int  oldday = -1;
-	static int  oldyear = -1;
+        static int  oldday = UNKNOWN;
+        static int  oldyear = UNKNOWN;
 	struct tm *tm;
 	
 
@@ -2471,7 +2247,7 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 
 
 	for (n = CALLING; n <= CALLED; n++) {
-		nx[n] = -1;
+                nx[n] = UNKNOWN;
 		hit = 0;
 
 		if (!*(cur_call->num[n])) {
@@ -2494,6 +2270,7 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 					{
 						if (!strcmp(cur_call->version,LOG_VERSION_2) ||
 						    !strcmp(cur_call->version,LOG_VERSION_3) ||  
+                                                    !strcmp(cur_call->version,LOG_VERSION_4) ||
 						    !strcmp(cur_call->version,LOG_VERSION) )
 							cc = ((known[i]->si == cur_call->si) || j) &&
 							     !n_match(known[i]->num, cur_call->num[n], cur_call->version);
@@ -2560,38 +2337,85 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 	return 0;
 }
 
+static void repair(one_call *cur_call)
+{
+  auto char why[BUFSIZ], hint[BUFSIZ];
+
+
+#if 0 /* FIXME */
+  if (cur_call->provider == DTAG)
+    return;
+#endif
+
+  call[0].connect = cur_call->t;
+  call[0].disconnect = cur_call->t + cur_call->duration;
+  call[0].intern[CALLED] = strlen(cur_call->num[CALLED]) < interns0;
+  call[0].provider = cur_call->provider;
+  call[0].sondernummer[CALLED] = is_sondernummer(cur_call->num[CALLED]);
+  call[0].aoce = cur_call->eh;
+  call[0].dialin = 0;
+  strcpy(call[0].num[CALLED], cur_call->num[CALLED]);
+  strcpy(call[0].onum[CALLED], cur_call->num[CALLED]);
+
+  preparecint(0, why, hint);
+
+  if (call[0].zone == GLOBALCALL) {
+#if DEBUG
+    print_msg(PRT_NORMAL, "Ooops: GlobalCall %s -- assuming \"Welt 4\"",
+      cur_call->num[CALLED]);
+#endif
+    call[0].zone = WELT_4;
+  } /* if */
+
+  price(0, why);
+
+#if DEBUG
+  if (fabs(cur_call->pay - call[0].pay) > 0.01)
+    print_msg(PRT_NORMAL, "\ncur_call->pay=%f, call[0].pay=%f, diff=%f\n",
+      cur_call->pay, call[0].pay, cur_call->pay - call[0].pay);
+#endif
+
+  if (call[0].pay < 0.0) /* dirty, but ... */
+    call[0].pay = 0.0;
+
+  cur_call->pay = call[0].pay;
+  cur_call->zone = call[0].zone;
+} /* repair */
+
 /*****************************************************************************/
 
 static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 {
   register int    i = 0, adapt = 0;
   auto     char **array;
+  auto     double dur1 = 0.0, dur2 = 0.0;
 
 
 	array = string_to_array(string);
 
 	if (array[5] == NULL)
-		return -1;
+                return(UNKNOWN);
 
 	cur_call->t = atol(array[5]);
 
 	if (timearea && (cur_call->t < begintime || cur_call->t > endtime))
-		return -1;
+                return(UNKNOWN);
 	else
 		if (cur_call->t < from)
-			return -1;
+                        return(UNKNOWN);
 
 	cur_call->eh = 0;
-	cur_call->dir = -1;
-	cur_call->cause = -1;
+        cur_call->dir = UNKNOWN;
+        cur_call->cause = UNKNOWN;
 	cur_call->ibytes = cur_call->obytes = 0L;
-	cur_call->dm    = 0.0;
+        cur_call->pay    = 0.0;
 	cur_call->version[0] = '\0';
 	cur_call->si = cur_call->si1 = 0;
 	cur_call->dir = DIALOUT;
 	cur_call->who[0][0] = '\0';
 	cur_call->who[1][0] = '\0';
-	cur_call->provider = 0;
+        cur_call->provider = UNDEFINED;
+        cur_call->zone = UNDEFINED;
 
 	for (i = 1; array[i] != NULL; i++)
 	{
@@ -2621,12 +2445,12 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 			          } /* else */
                                   
                                   if (adapt)
-                                    strcpy(cur_call->version, LOG_VERSION);
+                                    strcpy(cur_call->version, LOG_VERSION_4);
 
 			          break;
-			case  3 : cur_call->duration = strtod(array[i],NULL);
+                        case  3 : dur1 = cur_call->duration = strtod(array[i],NULL);
 			          break;
-			case  4 : cur_call->duration = strtod(array[i],NULL)/HZ;
+                        case  4 : dur2 = cur_call->duration = strtod(array[i],NULL)/HZ;
 			          break;
 			case  5 : /*cur_call->t = atol(array[i]);*/
 			          break;
@@ -2651,11 +2475,23 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 			          break;
 			case  15: strncpy(cur_call->currency, array[i], 3);
 			          break;
-			case  16: cur_call->dm = atof(array[i]);
+                        case  16: cur_call->pay = atof(array[i]);
+                                  /* Korrektur der falschen Eintr„ge vor dem 16-Jan-99 */
+                                  if (cur_call->pay == -1.0)
+                                    cur_call->pay = 0.0;
 			          break;
 
-			case  17: if (!adapt)
+                        case  17: if (!adapt) {
 			      	    cur_call->provider = atoi(array[i]);
+
+                                    /* Korrektur der falschen Eintrage bis zum 16-Jan-99 */
+                                    if (cur_call->provider == UNKNOWN)
+                                      cur_call->provider = preselect;
+                                  } /* if */
+                                  break;
+
+                                  /* Seit 21-Jan-99 steht die Zone im Logfile */
+                        case  18: cur_call->zone = atoi(array[i]);
 			      	  break;
 
 			default : print_msg(PRT_ERR,"Unknown element found `%s'!\n",array[i]); 
@@ -2664,9 +2500,36 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 	}
 
 	if (i < 3)
-		return -1;
+                return(UNKNOWN);
 
-	return 0;
+  /* alle Eintraege vor dem 21-Jan-99 ergaenzen:
+       - zone fehlte
+       - pay war falsch
+  */
+
+  {
+#if DEBUG
+    auto char yy[BUFSIZ];
+#endif
+
+    if (abs((int)dur1 - (int)dur2) > 1) {
+#if DEBUG
+      sprintf(yy, "\nWARNING: Wrong duration! dur1=%f, dur2=%f, durdiff=%f\n",
+        dur1, dur2, dur1 - dur2);
+      print_msg(PRT_NORMAL, yy);
+#endif
+      cur_call->duration = dur1;
+    }
+
+  }
+
+  if ((cur_call->dir == DIALOUT) &&
+      (cur_call->duration > 0) &&
+      *cur_call->num[1] &&
+      strcmp(cur_call->version, LOG_VERSION))
+    repair(cur_call);
+
+  return(0);
 }
 
 /*****************************************************************************/
@@ -2756,7 +2619,7 @@ static time_t get_month(char *String, int TimeStatus)
   TimeStruct->tm_min = 0;
   TimeStruct->tm_hour= 0;
   TimeStruct->tm_mday= 1;
-  TimeStruct->tm_isdst= -1;
+  TimeStruct->tm_isdst= UNKNOWN;
 
   ArgCnt = sscanf(String,"%d/%d/%d",&(Args[0]),&(Args[1]),&(Args[2]));
 
@@ -2811,7 +2674,7 @@ static time_t get_time(char *String, int TimeStatus)
   TimeStruct->tm_sec = 0;
   TimeStruct->tm_min = 0;
   TimeStruct->tm_hour= 0;
-  TimeStruct->tm_isdst= -1;
+  TimeStruct->tm_isdst= UNKNOWN;
 
   switch (strlen(String))
   {
@@ -2972,11 +2835,11 @@ static int print_sum_calls(sum_calls *s, int computed)
 	if ((tmp_call = (one_call*) calloc(1,sizeof(one_call))) == NULL)
 	{
 		print_msg(PRT_ERR, nomemory);
-		return -1;
+                return(UNKNOWN);
 	}
 
 	tmp_call->eh = s->eh;
-	tmp_call->dm = s->dm;
+        tmp_call->pay    = s->pay;
 	tmp_call->obytes = s->obytes;
 	tmp_call->ibytes = s->ibytes;
 
@@ -3003,19 +2866,17 @@ static int add_one_call(sum_calls *s1, one_call *s2, double units)
   }
   else
   {
-    /* s2->dm = s2->eh * units;   AK:15-May-98 */
-
     s1->out++;
     s1->dout   += s2->duration > 0?s2->duration:0;
     s1->eh     += s2->eh;
-    s1->dm     += s2->dm;
+    s1->pay    += s2->pay;
   }
 
   s1->ibytes += s2->ibytes;
   s1->obytes += s2->obytes;
 #ifdef ISDN_NL
-  s1->dm       += 0.0825; /* add call setup charge */
-  s2->dm       += 0.0825;
+  s1->pay    += 0.0825; /* add call setup charge */
+  s2->pay    += 0.0825;
 #endif
   return 0;
 }
@@ -3030,7 +2891,7 @@ static int clear_sum(sum_calls *s1)
   s1->err    = 0;
   s1->din    = 0;
   s1->dout   = 0;
-  s1->dm     = 0;
+  s1->pay    = 0;
   s1->ibytes = 0L;
   s1->obytes = 0L;
 
@@ -3047,7 +2908,7 @@ static int add_sum_calls(sum_calls *s1, sum_calls *s2)
   s1->err    += s2->err;
   s1->din    += s2->din;
   s1->dout   += s2->dout;
-  s1->dm     += s2->dm;
+  s1->pay    += s2->pay;
   s1->ibytes += s2->ibytes;
   s1->obytes += s2->obytes;
   return 0;
@@ -3093,10 +2954,10 @@ static void strich(int type)
 
 static int n_match(char *Pattern, char* Number, char* version)
 {
-	int RetCode = -1;
+        int RetCode = UNKNOWN;
 	char s[SHORT_STRING_SIZE];
 
-	if (!strcmp(version,LOG_VERSION_3) || !strcmp(version,LOG_VERSION))
+        if (!strcmp(version,LOG_VERSION_3) || !strcmp(version,LOG_VERSION_4) || !strcmp(version,LOG_VERSION))
 	{
 		RetCode = num_match(Pattern,Number);
 	}
@@ -3259,7 +3120,7 @@ static int set_dir_entries(char *directory, int (*set_fct)(const char *, const c
 				if (eptr->d_name[0] != '.')
 				{
 					if (set_fct(directory,eptr->d_name))
-						return -1;
+                                                return(UNKNOWN);
 				}
 			}
 
@@ -3268,7 +3129,7 @@ static int set_dir_entries(char *directory, int (*set_fct)(const char *, const c
 		else
 		{
 			print_msg(PRT_ERR,"Can not open directory `%s': %s!\n", directory, strerror(errno));
-			return -1;
+                        return(UNKNOWN);
 		}
 	}
 
@@ -3293,7 +3154,7 @@ static int set_vbox_entry(const char *path, const char *file)
 	if ((fp = fopen(string,"r")) == NULL)
 	{
 		print_msg(PRT_ERR,"Can not open file `%s': %s!\n", string, strerror(errno));
-		return -1;
+                return(UNKNOWN);
 	}
 
 	fread(&ptr,sizeof(vaheader_t),1,fp);
@@ -3312,13 +3173,13 @@ static int set_vbox_entry(const char *path, const char *file)
 	 		            &(tm.tm_sec))) != 6)
 		{
 			print_msg(PRT_ERR,"invalid file name `%s'!\n",file);
-			return -1;
+                        return(UNKNOWN);
 		}
 
 		if ((lptr = (file_list*) calloc(1,sizeof(file_list))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
-			return -1;
+                        return(UNKNOWN);
 		}
 
 	 	if (tm.tm_mday > 31)
@@ -3329,7 +3190,7 @@ static int set_vbox_entry(const char *path, const char *file)
 	 	}
 
 		tm.tm_mon--;
-		tm.tm_isdst = -1;
+                tm.tm_isdst = UNKNOWN;
 
 		lptr->name = strdup(file);
 	 	lptr->time = mktime(&tm);
@@ -3345,7 +3206,7 @@ static int set_vbox_entry(const char *path, const char *file)
 		if ((lptr = (file_list*) calloc(1,sizeof(file_list))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
-			return -1;
+                        return(UNKNOWN);
 		}
 
 		lptr->name = strdup(file);
@@ -3360,7 +3221,7 @@ static int set_vbox_entry(const char *path, const char *file)
 	{
 		print_msg(PRT_ERR, "Version %d of vbox is not implemented yet!\n",vboxversion);
 		print_msg(PRT_ERR, "Invalid version %d of vbox!\n",vboxversion);
-		return -1;
+                return(UNKNOWN);
 	}
 */
 
@@ -3379,13 +3240,13 @@ static int set_mgetty_entry(const char *path, const char *file)
 	if (access(string,R_OK))
 	{
 		print_msg(PRT_ERR,"Can not open file `%s': %s!\n", string, strerror(errno));
-		return -1;
+                return(UNKNOWN);
 	}
 
 	if ((lptr = (file_list*) calloc(1,sizeof(file_list))) == NULL)
 	{
 		print_msg(PRT_ERR, nomemory);
-		return -1;
+                return(UNKNOWN);
 	}
 
 	lptr->name = strdup(file);
@@ -3412,7 +3273,7 @@ static int set_element_list(file_list* elem)
 		if ((file_root = (file_list**) realloc(file_root,sizeof(file_list*)*file_root_size)) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
-			return -1;
+                        return(UNKNOWN);
 		}
 	}
 
@@ -3429,7 +3290,7 @@ static int Compare_files(const void *e1, const void *e2)
 		return 1;
 	else
 	if ((*(file_list**) e1)->time < (*(file_list**) e2)->time)
-		return -1;
+                return(UNKNOWN);
 	
 	return 0;
 }
@@ -3494,10 +3355,10 @@ static int time_in_interval(time_t t1, time_t t2, char type)
 	}
 
 	if ((int) t1 < ((int) t2) + begin)
-		return -1;
+                return(-1);
 
 	if ((int) t1 > ((int) t2) + end)
-		return 1;
+                return(1);
 
 	return 0;
 }
@@ -3507,7 +3368,7 @@ static int time_in_interval(time_t t1, time_t t2, char type)
 static char *get_links(time_t filetime, char type)
 {
 	static char *string[5] = {NULL,NULL,NULL,NULL,NULL};
-	static int   cnt = -1;
+        static int   cnt = UNKNOWN;
 	file_list   *ptr;
 
 
@@ -3628,7 +3489,7 @@ static char *get_a_day(time_t t, int d_diff, int m_diff, int flag)
 
 	tm->tm_mday += d_diff;
 	tm->tm_mon  += m_diff;
-	tm->tm_isdst = -1;
+        tm->tm_isdst = UNKNOWN;
 
 	if (flag2 == 1)
 	{
@@ -3904,7 +3765,7 @@ static int find_format_length(char *string)
 	char* dest;
 
 	if (string == NULL)
-		return -1;
+                return(UNKNOWN);
 
 	while (*string != '\0')
 	{
@@ -3919,14 +3780,14 @@ static int find_format_length(char *string)
 			while(index("0123456789-",*string)) string++;
 
 			if (*string == '\0')
-				return -1;
+                                return(UNKNOWN);
 
 			if (*string == '.')
 			{
 				if (sscanf(++string,"%d%c",&len,&type) == 2 && type == 's' && len >= 0)
 				{
 					if ((dest = index(--string,'s')) == NULL)
-						return -1;
+                                                return(UNKNOWN);
 
 					memmove(string,dest,strlen(dest)+1);
 					
@@ -3936,15 +3797,15 @@ static int find_format_length(char *string)
 				if (*string == 's')
 					return 0;
 
-				return -1;
+                                return(UNKNOWN);
 			}
 			else if (*string == 's')
-				return -1;
+                                return(UNKNOWN);
 
 		}
 	}
 
-	return -1;
+        return(UNKNOWN);
 }
 
 /*****************************************************************************/
@@ -3959,7 +3820,7 @@ static int app_fmt_string(char *target, int targetlen, char *fmt, int condition,
 	strcpy(tmpvalue,value);
 	len = find_format_length(tmpfmt);
 
-	if (len != -1 && len > 0 && strlen(tmpvalue) > len)
+        if (len != UNKNOWN && len > 0 && strlen(tmpvalue) > len)
 		tmpvalue[len] = '\0';
 
 	value = condition?html_conv(tmpvalue):tmpvalue;

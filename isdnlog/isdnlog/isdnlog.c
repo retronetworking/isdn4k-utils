@@ -19,6 +19,18 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.33  1999/01/10 15:23:13  akool
+ *  - "message = 0" bug fixed (many thanks to
+ *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
+ *  - CITYWEEKEND via config-file possible
+ *  - fixes from Michael Reinelt <reinelt@eunet.at>
+ *  - fix a typo in the README from Sascha Ziemann <szi@aibon.ping.de>
+ *  - Charge for .at optimized by Michael Reinelt <reinelt@eunet.at>
+ *  - first alpha-Version of the new chargeinfo-Database
+ *    ATTENTION: This version requires the following manual steps:
+ *      cp /usr/src/isdn4k-utils/isdnlog/tarif.dat /usr/lib/isdn
+ *      cp /usr/src/isdn4k-utils/isdnlog/samples/tarif.conf /etc/isdn
+ *
  * Revision 1.32  1998/12/31 09:58:50  paul
  * converted termio calls to termios
  *
@@ -1187,6 +1199,9 @@ int main(int argc, char *argv[], char *envp[])
 	    initSondernummern();
             initTarife(msg);
 
+#ifdef Q931
+      	    if (!q931dmp)
+#endif
             if (*msg)
               print_msg(PRT_NORMAL, "%s\n", msg);
 

@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.36  1999/01/10 15:23:23  akool
+ *  - "message = 0" bug fixed (many thanks to
+ *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
+ *  - CITYWEEKEND via config-file possible
+ *  - fixes from Michael Reinelt <reinelt@eunet.at>
+ *  - fix a typo in the README from Sascha Ziemann <szi@aibon.ping.de>
+ *  - Charge for .at optimized by Michael Reinelt <reinelt@eunet.at>
+ *  - first alpha-Version of the new chargeinfo-Database
+ *    ATTENTION: This version requires the following manual steps:
+ *      cp /usr/src/isdn4k-utils/isdnlog/tarif.dat /usr/lib/isdn
+ *      cp /usr/src/isdn4k-utils/isdnlog/samples/tarif.conf /etc/isdn
+ *
  * Revision 1.35  1998/12/09 20:39:36  akool
  *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
  *  - new option "-o" to suppress causes of other ISDN-Equipment
@@ -1558,9 +1570,6 @@ static int AOC_1TR6(int l, char *p)
 {
   auto   int  EH = 0;
   auto   int  digit = 0;
-#if 0
-  static char curr[64];
-#endif
 
 
 #ifdef ISDN_NL
@@ -1954,31 +1963,9 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                           (call[chan].cause == 16) || /* "Normal call clearing" */
                           (call[chan].cause == 18) || /* "No user responding" */
                           (call[chan].cause == 26)) { /* "non-selected user clearing" */
-
-#if 0
-                        auto char sx[200];
-
-                        if ((call[chan].cause != -1) && (call[chan].cause != cause)) {
-                          sprintf(sx, "USING cause %d:%s (%s),\nOVERWRITING cause %d:%s (%s)",
-                            cause, qmsg(TYPE_CAUSE, version, cause), location(loc),
-                            call[chan].cause, qmsg(TYPE_CAUSE, version, call[chan].cause), location(call[chan].loc));
-                          info(chan, PRT_SHOWHANGUP, STATE_HANGUP, sx);
-                        } /* if */
-#endif
-
                         call[chan].cause = cause;
                         call[chan].loc = loc;
-                      }
-#if 0
-                      else {
-                        auto char sx[200];
-
-                        sprintf(sx, "IGNORING cause %d:%s (%s),\nLEAVING cause %d:%s (%s)",
-                          cause, qmsg(TYPE_CAUSE, version, cause), location(loc),
-                          call[chan].cause, qmsg(TYPE_CAUSE, version, call[chan].cause), location(call[chan].loc));
-                        info(chan, PRT_SHOWHANGUP, STATE_HANGUP, sx);
-                      } /* else */
-#endif
+                      } /* if */
 
 #ifdef Q931
                       if (q931dmp)
@@ -2075,32 +2062,6 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                       if (n == AOC_OTHER)
                         ; /* info(chan, PRT_SHOWAOCD, STATE_AOCD, asnm); */
-#if 0
-                      else if (!memcmp(call[chan].provider, "01019", 5) ||
-                      	       !memcmp(call[chan].provider, "01070", 5)) {
-
-		        if (type != FACILITY) { /* "AOC-E" Meldung */
-			  if (!memcmp(call[chan].provider, "01019", 5)) { /* Mobilcom */
-                            tx = cur_time - call[chan].connect;
-
-                            call[chan].aoce = (int)((tx + 59) / 60);
-                            call[chan].pay = call[chan].aoce * 0.19;
-
-                            if (tx)
-                              sprintf(s, "%s %s (%s)",
-                                currency,
-                                double2str(call[chan].pay, 6, 2, DEB),
-                                double2clock(tx));
-                            else
-                              sprintf(s, "%s %s",
-                                currency,
-                                double2str(call[chan].pay, 6, 2, DEB));
-
-                            info(chan, PRT_SHOWAOCD, STATE_AOCD, s);
-                          } /* if */
-                        } /* if */
-                      }
-#endif
                       else {
 
                         /* Dirty-Hack: Falls auch AOC-E als AOC-D gemeldet wird:
@@ -2169,7 +2130,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                                   double2str(call[chan].pay, 6, 2, DEB));
                             } /* else */
 
-                            if (chargemax != 0.0) {
+                            if (!replay && (chargemax != 0.0)) {
                               if (day != known[c]->day) {
                                 sprintf(s1, "CHARGEMAX resetting %s's charge (day %d->%d)",
                                   known[c]->who, (known[c]->day == -1) ? 0 : known[c]->day, day);
@@ -2197,7 +2158,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                                 chargemaxAction(chan, (known[c]->charge - chargemax));
                             } /* if */
 
-                            if (connectmax != 0.0) {
+                            if (!replay && (connectmax != 0.0)) {
                               if (month != known[c]->month) {
                                 sprintf(s1, "CONNECTMAX resetting %s's online (month %d->%d)",
                                   known[c]->who, (known[c]->month == -1) ? 0 : known[c]->month, month);
@@ -2291,7 +2252,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                           /* muss mit Teles-Karte sein, da eigene MSN bekannt */
                           /* seit 2 Gebuehrentakten kein Traffic mehr! */
 
-                          if (watchdog && ((c = call[chan].confentry[OTHER]) > -1)) {
+                          if (!replay && watchdog && ((c = call[chan].confentry[OTHER]) > -1)) {
                             if ((type == FACILITY) && (version == VERSION_EDSS1) && expensive(call[chan].bchan) && (*known[c]->interface > '@')) {
                               if (call[chan].aoce > call[chan].traffic + watchdog + 2)
                                 emergencyStop(chan, 4);
@@ -2309,7 +2270,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                             known[c]->charge -= known[c]->rcharge;
                             known[c]->charge += pay;
 
-                            if (chargemax != 0.0) { /* only used here if no AOC-D */
+                            if (!replay && (chargemax != 0.0)) { /* only used here if no AOC-D */
                               if (day != known[c]->day) {
                                 sprintf(s, "CHARGEMAX resetting %s's charge (day %d->%d)",
                                   known[c]->who, (known[c]->day == -1) ? 0 : known[c]->day, day);
@@ -2322,7 +2283,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                               } /* if */
                             } /* if */
 
-                            if (connectmax != 0.0) { /* only used here if no AOC-D */
+                            if (!replay && (connectmax != 0.0)) { /* only used here if no AOC-D */
                               if (month != known[c]->month) {
                                 sprintf(s, "CONNECTMAX resetting %s's online (month %d->%d)",
                                   known[c]->who, (known[c]->month == -1) ? 0 : known[c]->month, month);
@@ -3505,33 +3466,6 @@ static void huptime(int chan, int bchan, int setup)
 
       newchargeint = taktlaenge(chan, why);
 
-#ifdef ISDN_DE
-      if (call[chan].provider == 19) { /* Mobilcom 60/60 Takt */
-        newchargeint = 60;
-      	sprintf(why, "via %s", Providername(call[chan].provider));
-      }
-      else if (call[chan].provider == 24) { /* TelePasswort 1s Takt */
-        newchargeint = 1;
-      	sprintf(why, "via %s", Providername(call[chan].provider));
-      }
-      else if (call[chan].provider == 70) { /* Arcor 1s Takt */
-        newchargeint = 1;
-      	sprintf(why, "via %s", Providername(call[chan].provider));
-      }
-      else if (call[chan].provider == 30) { /* TelDaFax 1s Takt */
-        newchargeint = 1;
-      	sprintf(why, "via %s", Providername(call[chan].provider));
-      }
-      else if (call[chan].provider == 13) { /* Tele 2 1s Takt */
-        newchargeint = 1;
-      	sprintf(why, "via %s", Providername(call[chan].provider));
-      }
-      else if (call[chan].provider == 24) { /* TelePassport 1/1 Takt */
-        newchargeint = 1;
-      	sprintf(why, "via %s", Providername(call[chan].provider));
-      } /* else */
-#endif
-
 #if NET_DV >= NETDV_CHARGEINT
       if (net_dv >= NETDV_CHARGEINT) {
         if (hup1 && hup2)
@@ -3971,6 +3905,7 @@ void clearchan(int chan, int total)
   call[chan].aoce = -1;
 
   call[chan].provider = -1;
+  call[chan].zone = -1;
 
   for (i = 0; i < MAXMSNS; i++) {
     strcpy(call[chan].vnum[i], "?");
@@ -3982,25 +3917,7 @@ void clearchan(int chan, int total)
 } /* clearchan */
 
 
-static void dumpme()
-{
-  register int  chan;
-  auto	   char s[BUFSIZ];
-
-
-  for (chan = 0; chan < MAXCHAN; chan++) {
-    sprintf(s, "^CHAN[%d]: %s -> %s\n",
-      chan,
-      call[chan].vnum[0],
-      call[chan].vnum[CALLED]);
-
-    print_msg(PRT_SHOWNUMBERS, "%s", s);
-  } /* for */
-} /* dumpme */
-
-
-/* mode :: 0 = Add new entry, 1 = change existing entry, 2 = Terminate entry, 3 = dump */
-static void addlist(int chan, int type, int mode)
+static void addlist(int chan, int type, int mode) /* mode :: 0 = Add new entry, 1 = change existing entry, 2 = Terminate entry, 3 = dump */
 {
 
 #define MAXLIST 1000
@@ -4469,8 +4386,6 @@ static void processctrl(int card, char *s)
 
       decode(chan, ps, type, version, tei);
 
-      /* dumpme(); */
-
       if (call[chan].channel) { /* jetzt muesste einer da sein */
 
         chan = call[chan].channel - 1;
@@ -4597,6 +4512,13 @@ static void processctrl(int card, char *s)
 
             sprintf(sx, "NEXT CHARGEINT IN %s (%s)", double2clock(call[chan].cint), why);
           info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
+
+            call[chan].disconnect = cur_time + 1;
+            price(chan, why);
+
+            sprintf(sx, "1.CI %s %s (now)", currency, double2str(call[chan].pay, 6, 3, DEB));
+
+            info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
         } /* if */
         } /* if */
 
@@ -4755,7 +4677,7 @@ doppelt:break;
             else if (call[chan].pay)
               sprintf(sx, "HANGUP (%s %s %s%s)",
                 currency,
-                double2str(call[chan].pay, 6, 2, DEB),
+                ((call[chan].pay == -1.0) ? "UNKNOWN" : double2str(call[chan].pay, 6, 2, DEB)),
                 double2clock((double)(call[chan].disconnect - call[chan].connect)), s2);
             else
               sprintf(sx, "HANGUP (%s%s) %s (%s)",
@@ -4940,6 +4862,8 @@ retry:
 
         } /* if */
 
+      	processcint();
+
         if (!memcmp(p3, "idmap:", 6) ||
             !memcmp(p3, "chmap:", 6) ||
             !memcmp(p3, "drmap:", 6) ||
@@ -5083,7 +5007,7 @@ void processcint()
 
   for (chan = 0; chan < 2; chan++) {
     if (OUTGOING && (call[chan].cint > 1)) {
-      if (call[chan].nextcint == cur_time) {
+      if (cur_time >= call[chan].nextcint) {
 
         dur = cur_time - call[chan].connect;
 
@@ -5101,8 +5025,13 @@ void processcint()
         call[chan].cinth = hour;
         call[chan].ctakt++;
 
-        sprintf(sx, "START %d.CHARGEINT (%s)",
+        call[chan].disconnect = cur_time;
+        price(chan, why);
+
+        sprintf(sx, "%d.CI %s %s (after %s) ",
             call[chan].ctakt,
+            currency,
+            double2str(call[chan].pay, 6, 3, DEB),
             double2clock((double)dur));
 
           info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
