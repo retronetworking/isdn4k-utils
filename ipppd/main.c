@@ -246,8 +246,8 @@ void main(int argc,char **argv)
 	if (!nodetach) {
 		int a,f;
 
-        f = fork();
-        if(f < 0) {
+		f = fork();
+		if(f < 0) {
 			perror("Couldn't detach from controlling terminal");
 			exit(1);
 		}
@@ -920,7 +920,7 @@ int device_script(char *program,int in,int out)
 	setgid(getgid());
 	execl("/bin/sh", "sh", "-c", program, (char *)0);
 	syslog(LOG_ERR, "could not exec /bin/sh: %m");
-	_exit(99);
+	exit(99);
 	/* NOTREACHED */
     }
 

@@ -273,7 +273,9 @@ void output (int linkunit, unsigned char *p, int len)
     
 	if (write(lns[linkunit].fd, p, len) < 0) {
 		syslog(LOG_ERR, "write, unit: %d fd: %d: %m",linkunit,lns[linkunit].fd);
+#if 0
 		die(1);
+#endif
 	}
 }
 
@@ -289,7 +291,9 @@ int read_packet (unsigned char *buf,int linkunit)
 		if (errno == EWOULDBLOCK)
 			return -1;
 		syslog(LOG_ERR, "read(fd): %m");
+#if 0
 		die(1);
+#endif
 	}
 	return len;
 }
