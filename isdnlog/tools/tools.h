@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  1998/10/18 20:13:44  luethje
+ * isdnlog: Added the switch -K
+ *
  * Revision 1.20  1998/09/26 18:30:18  akool
  *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
  *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
@@ -457,6 +460,7 @@
 #define CONF_ENT_Q931		 "Q931DUMP"
 #define CONF_ENT_OUTFILE "OUTFILE"
 #define CONF_ENT_KEYBOARD "KEYBOARD"
+#define CONF_ENT_INTERNS0 "INTERNS0"
 
 /****************************************************************************/
 

@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.45  1998/10/16 12:38:04  keil
+## fixes to compile and install under 2.0.36
+##
 ## Revision 1.44  1998/10/13 22:17:09  luethje
 ## isdnlog: evaluate the variable PATH for program starts.
 ##
@@ -348,7 +351,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 2.99.34
+VERSION     = 2.99.35
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
@@ -370,7 +373,7 @@ endif
 DEFS       += \
                -DVERSION=\"$(VERSION)\"   \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
-	       -DISDN_DE=1			\
+	       -D@NATION_MACRO@=1		\
                 $(INCLUDE)
 
 %.o: %.c

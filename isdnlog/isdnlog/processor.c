@@ -19,6 +19,22 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1998/10/04 12:04:05  akool
+ *  - README
+ *      New entries "CALLFILE" and "CALLFMT" documented
+ *      Small Correction from Markus Werner <mw@empire.wolfsburg.de>
+ *      cosmetics
+ *
+ *  - isdnrep.c
+ *      Bugfix (Thanks to Arnd Bergmann <arnd@uni.de>)
+ *
+ *  - processor.c
+ *      Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *        Makes CHARGEMAX work without AOC-D
+ *
+ *      Patch from Stefan Gruendel <sgruendel@adulo.de>
+ *        gcc 2.7.2.1 Optimizer-Bug workaround
+ *
  * Revision 1.27  1998/10/03 18:05:55  akool
  *  - processor.c, takt_at.c : Patch from Michael Reinelt <reinelt@eunet.at>
  *    try to guess the zone of the calling/called party
@@ -651,8 +667,13 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
                   strcpy(result, countryprefix);  /* 001 International */
                 break;
 
-    case 0x20 : if (version != VERSION_1TR6)
+    case 0x20 : if (version != VERSION_1TR6) {
                   strcpy(result, mycountry);    /* 010 National */
+
+		  if (interns0)
+                    while (*num == '0')
+                      num++;
+    		} /* if */
                 break;
 
     case 0x30 : break;                       /* 011 Network specific number */

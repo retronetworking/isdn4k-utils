@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.26  1998/10/26 20:21:14  paul
+ * thinko in check for symlink in /tmp
+ *
  * Revision 1.25  1998/10/22 14:10:52  paul
  * Check that /tmp/isdnctrl0 is not a symbolic link, which is a potential
  * security threat (it can point to /etc/passwd or so!)
@@ -187,9 +190,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:K";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:K";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -591,6 +594,9 @@ int set_options(int argc, char* argv[])
       case 'K' : readkeyboard++;
       	       	 break;
 
+      case 'i' : interns0++;
+      	       	 break;
+
       case '?' : printf(usage, myshortname, myshortname, options);
 	         exit(1);
     } /* switch */
@@ -757,6 +763,9 @@ static int read_param_file(char *FileName)
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_KEYBOARD))
 					readkeyboard = toupper(*(Ptr->value)) == 'Y'?1:0;
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_INTERNS0))
+					interns0 = toupper(*(Ptr->value)) == 'Y'?1:0;
 				else
 					print_msg(PRT_ERR,"Error: Invalid entry `%s'!\n",Ptr->name);
 

@@ -21,6 +21,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1998/09/26 18:30:24  akool
+ *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
+ *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
+ *  - Support for tesion)) Baden-Wuerttemberg Tarif
+ *  - more Providers
+ *  - Patches from Wilfried Teiken <wteiken@terminus.cl-ki.uni-osnabrueck.de>
+ *    - better zone-info support in "tools/isdnconf.c"
+ *    - buffer-overrun in "isdntools.c" fixed
+ *  - big Austrian Patch from Michael Reinelt <reinelt@eunet.at>
+ *    - added $(DESTDIR) in any "Makefile.in"
+ *    - new Configure-Switches "ISDN_AT" and "ISDN_DE"
+ *      - splitted "takt.c" and "tools.c" into
+ *          "takt_at.c" / "takt_de.c" ...
+ *          "tools_at.c" / "takt_de.c" ...
+ *    - new feature
+ *        CALLFILE = /var/log/caller.log
+ *        CALLFMT  = %b %e %T %N7 %N3 %N4 %N5 %N6
+ *      in "isdn.conf"
+ *  - ATTENTION:
+ *      1. "isdnrep" dies with an seg-fault, if not HTML-Mode (Stefan?)
+ *      2. "isdnlog/Makefile.in" now has hardcoded "ISDN_DE" in "DEFS"
+ *      	should be fixed soon
+ *
  *
  */
 
@@ -36,7 +59,7 @@ char *Providername(int number)
     case 15 : return("RSL COM");
     case 18 : return("Debitel");
     case 19 : return("MobilCom");
-    case 20 : return("Isis");
+    case 20 : return("ISIS");
     case 22 : return("NetCologne");
     case 23 : return("tesion ))");
     case 24 : return("TelePassport");
@@ -49,11 +72,11 @@ char *Providername(int number)
     case 40 : return("Plusnet");
     case 41 : return("HanseNet");
     case 43 : return("KielNet");
-    case 44 : return("VEW TELNET");
+    case 44 : return("VEW Telnet");
     case 46 : return("KomTel");
     case 49 : return("ACC Telecom");
     case 50 : return("Talkline");
-    case 55 : return("Esprit");
+    case 55 : return("Esprit Telecom");
     case 57 : return("Mox");
     case 63 : return("KDD-Conos");
     case 66 : return("Interoute");
@@ -61,6 +84,7 @@ char *Providername(int number)
     case 72 : return("d2privat");
     case 79 : return("Viatel");
     case 85 : return("WESTCom");
+    case 87 : return("HamCom");
     case 88 : return("WorldCom");
     case 90 : return("VIAG Interkom");
     case 98 : return("STAR Telecom");
