@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1998/06/14 15:33:51  akool
+ * AVM B1 support (Layer 3)
+ * Telekom's new currency DEM 0,121 supported
+ * Disable holiday rates #ifdef ISDN_NL
+ * memory leak in "isdnrep" repaired
+ *
  * Revision 1.19  1998/06/07 21:08:43  akool
  * - Accounting for the following new providers implemented:
  *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
@@ -2085,6 +2091,9 @@ static void decode(int chan, register char *p, int type, int version)
 	case 0x03 : /* Date/Time 1TR6   */
         case 0x29 : /* Date/Time E-DSS1 */
                     if ((element == 0x03) && (version == VERSION_1TR6)) {
+			if (l != 17)	/* 1TR6 date/time is always 17? */
+  				/* "Unknown Codeset 7 attribute 3 size 5" */
+				goto UNKNOWN_ELEMENT;
 			tm.tm_mday  = (strtol(p+=3,NIL,16)-'0') * 10;
 			tm.tm_mday +=  strtol(p+=3,NIL,16)-'0';
 			p += 3;	/* skip '.' */
