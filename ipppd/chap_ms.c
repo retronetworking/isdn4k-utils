@@ -34,7 +34,11 @@ char chap_ms_rcsid[] = "$Id$";
 #include "chap_ms.h"
 #include "md4.h"
 
+#ifdef USE_SSLDES
+#include <ssl/des.h>
+#else
 #include <des.h>
+#endif
 
 typedef struct {
     u_char LANManResp[24];
