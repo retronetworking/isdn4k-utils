@@ -339,6 +339,11 @@ raw ip with additional ui-header
 .br
 Special mode for communicating with a Cisco in HDLC-mode with
 Cisco-keepalive switched on.
+.LP
+.B x25iface
+.br
+Provides an interface as required by the Linux X.25 PLP protocol
+implementation (requires Linux 2.1.x or newer).
 .RE
 .LP
 If
