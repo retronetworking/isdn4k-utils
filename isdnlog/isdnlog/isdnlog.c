@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.17  1998/03/29 23:18:07  luethje
+ * mySQL-Patch of Sascha Matzke
+ *
  * Revision 1.16  1998/03/08 12:13:38  luethje
  * Patches by Paul Slootman
  *
@@ -784,7 +787,17 @@ int main(int argc, char *argv[], char *envp[])
 		}
 		else
 		{
-			if ((fout = fopen(outfile,"w")) == NULL)
+			char *openmode;
+			if (*outfile == '+')
+			{
+				outfile++;
+				openmode = "a";
+			}
+			else
+			{
+				openmode = "w";
+			}
+			if ((fout = fopen(outfile, openmode)) == NULL)
 			{
  	 			print_msg(PRT_ERR,"Can not open file `%s': %s!\n",outfile, strerror(errno));
  	  		Exit(45);
