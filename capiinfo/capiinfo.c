@@ -14,6 +14,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  2001/01/15 10:22:50  calle
+ * - error reasons now also as strings using function capi_info2str().
+ *
  * Revision 1.4  2000/11/12 16:06:42  kai
  * fix backwards compatibility in capi20 library, small other changes
  *
@@ -131,8 +134,9 @@ int main(int argc, char **argv)
 
    CAPI20_GET_PROFILE(0, (CAPI_MESSAGE)&cprofile);
    ncontr = cprofile.ncontroller;
-
-   err = CAPI20_REGISTER(0, 0, 2048, &ApplId);
+   printf("Number of Controllers : %d\n", ncontr);
+ 
+   err = CAPI20_REGISTER(1, 1, 2048, &ApplId);
    if (err != CapiNoError) {
        fprintf(stderr, "could not register - %s (%#x)\n", capi_info2str(err), err);
        return 1;
@@ -195,7 +199,6 @@ int main(int argc, char **argv)
 	   fprintf(stderr, "FAC REQ - %s (%#x)\n", capi_info2str(err), err);
 	   continue;
        }
-	
        err = capi20_waitformessage(ApplId, 0);
        if (err != CapiNoError) {
 	   fprintf(stderr, "FAC WAIT - %s (%#x)\n", capi_info2str(err), err);
