@@ -664,7 +664,7 @@ int check_passwd(int linkunit,char *auser,int userlen,char *apasswd,
 
 	syslog(LOG_INFO,"Check_passwd called with user=%s\n",user);
 
-	strcpy(lns[linkunit].peer_authname,user);
+	snprintf(lns[linkunit].peer_authname,sizeof(lns[0].peer_authname), "%s", user);
 
 	/*
 	 * Open the file of upap secrets and scan for a suitable secret
@@ -758,7 +758,7 @@ int radius_check_passwd(linkunit,auser,userlen,apasswd,passwdlen,msg,msglen)
 	passwd[passwdlen] = '\0';
 	BCOPY(auser, user, userlen);
 	user[userlen] = '\0';
-	strcpy(lns[linkunit].peer_authname,user);
+	snprintf(lns[linkunit].peer_authname,sizeof(lns[0].peer_authname), "%s", user);
 
 	ret = UPAP_AUTHACK;
 

@@ -1558,7 +1558,7 @@ static int setdevname(char *cp,int nd)
     if (stat(cp, &statbuf) < 0) {
 	if (errno == ENOENT)
 	    return 0;
-	syslog(LOG_ERR, cp);
+	syslog(LOG_ERR, "%s", cp);
 	return -1;
     }
 
