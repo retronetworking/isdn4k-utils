@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.33  2000/09/01 06:30:20  paul
+ * Now install country-de.dat as country.dat; renaming the source can be done by
+ * someone who is more experienced with CVS.
+ * Default value for country.dat changed in isdnconf.c; also default zonefile
+ * etc. changed from .gdbm to .cdb
+ *
  * Revision 1.32  2000/02/20 19:03:08  akool
  * isdnlog-4.12
  *  - ABC_LCR enhanced
@@ -966,10 +972,10 @@ static section* writeentry(section *SPtr, int Index)
 void setDefaults()
 {
   if (currency == NULL)
-    currency="DEM";
+    currency="EUR";
 
   if (currency_factor == 0.0)
-    currency_factor = 0.12;
+    currency_factor = 0.062;
 
   currency_mode = AOC_UNITS;
 } /* setDefaults */
