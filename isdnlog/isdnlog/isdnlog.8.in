@@ -440,9 +440,11 @@ time=2          # set time: 0 = never; 1 = once; 2 = every time
 start=yes       # enable starting programs
 
 .SH SEE ALSO
-.B isdnconf(8) isdn.conf(5) callerid.conf(5)
-.B isdnlog(5) isdnrep(8)
+.B isdnconf(1) isdn.conf(5) callerid.conf(5)
+.br
+.B isdnlog(5) isdnrep(1) rate-files(5) isdnrate(1)
 
 .SH AUTHOR
 This manual page was written by Andreas Jellinghaus <aj@debian.org>,
-for Debian GNU/Linux and isdn4linux.
+for Debian GNU/Linux and isdn4linux, updated by Leopold Toetsch
+<lt@toetsch.at>.

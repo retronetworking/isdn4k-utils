@@ -19,6 +19,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.135  1999/12/19 20:24:44  akool
+## isdnlog-3.80
+##   - resolved most of the Warnings
+##   - enhanced "isdnbill"
+##
 ## Revision 1.134  1999/12/17 22:51:52  akool
 ## isdnlog-3.79
 ##  - isdnlog/isdnrep/isdnrep.{c,h} ... error -handling, print_msg
@@ -879,6 +884,8 @@ INSTALL_DATA		:= $(INSTALL) -m 0644 -o 0 -g 0
 
 BZIP2                   := @BZIP2@
 BUNZIP2                 := $(BZIP2) -f -d
+AWK				= @AWK@
+SED				= @SED@
 
 LIBISDNDIR		:= @LIBISDNDIR@
 I4LCONFDIR		:= @I4LCONFDIR@
@@ -941,11 +948,12 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.80
+VERSION     = 3.81
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
-	      isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
+	      isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1 \
+	      tools/isdnrate.1 tools/rate-files.5
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
@@ -974,6 +982,16 @@ DEFS       += \
 %.o: %.c
 	@echo Compiling $<
 	@$(CC) $(CFLAGS) $(DEFS) $(INCLUDE) -c -o $@ $<
+
+%.1: %.man
+	MANDATE=`grep CHECKIN $< | $(AWK) '{print $$4}'`; \
+	$(SED) -e s%@MANDATE@%$$MANDATE%g $< > $@
+
+%.5: %.man
+	MANDATE=`grep CHECKIN $< | $(AWK) '{print $$4}'`; \
+	$(SED) -e s%@MANDATE@%$$MANDATE%g $< > $@
+
+
 
 ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
                 isdnlog/server.o isdnlog/start_prog.o isdnlog/messages.o  \
@@ -1085,6 +1103,10 @@ uninstall: rootperm
 			$(DESTDIR)$(MAN5DIR)/callerid.conf$(MAN5EXT)	\
 			$(DESTDIR)$(MAN5DIR)/isdnlog$(MAN5EXT)		\
 			$(DESTDIR)$(MAN5DIR)/isdnlog.users$(MAN5EXT)    \
+			$(DESTDIR)$(MAN1DIR)/isdnrate$(MAN1EXT)		\
+			$(DESTDIR)$(MAN5DIR)/rate-files$(MAN5EXT)	\
+			$(DESTDIR)$(MAN5DIR)/isdn.conf$(MAN5EXT)	\
+			$(DESTDIR)$(MAN5DIR)/isdnformat$(MAN5EXT)	\
 			$(DESTDIR)$(DATADIR)/country-$(NATION).dat	\
 			$(DESTDIR)$(DATADIR)/rate-$(NATION).dat         \
 			$(DESTDIR)$(DATADIR)/dest.gdbm
@@ -1129,6 +1151,10 @@ install: all rootperm installdirs
 		$(INSTALL_DATA) isdnlog/callerid.conf.5 $(DESTDIR)$(MAN5DIR)/callerid.conf$(MAN5EXT)
 		$(INSTALL_DATA) isdnlog/isdnlog.5       $(DESTDIR)$(MAN5DIR)/isdnlog$(MAN5EXT)
 		$(INSTALL_DATA) isdnlog/isdnlog.users.5 $(DESTDIR)$(MAN5DIR)/isdnlog.users$(MAN5EXT)
+		$(INSTALL_DATA) isdnlog/isdn.conf.5 $(DESTDIR)$(MAN5DIR)/isdn.conf$(MAN5EXT)
+		$(INSTALL_DATA) isdnlog/isdnformat.5 $(DESTDIR)$(MAN5DIR)/isdnformat$(MAN5EXT)
+		$(INSTALL_DATA) tools/isdnrate.1     $(DESTDIR)$(MAN1DIR)/isdnrate$(MAN1EXT)
+		$(INSTALL_DATA) tools/rate-files.5     $(DESTDIR)$(MAN5DIR)/rate-files$(MAN5EXT)
 		$(INSTALL_DATA) country-de.dat	$(DESTDIR)$(DATADIR)
 		$(INSTALL_DATA) rate-$(NATION).dat      $(DESTDIR)$(DATADIR)
 		$(INSTALL_DATA) holiday-$(NATION).dat   $(DESTDIR)$(DATADIR)

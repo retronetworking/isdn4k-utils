@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.68  1999/12/19 20:24:46  akool
+ * isdnlog-3.80
+ *   - resolved most of the Warnings
+ *   - enhanced "isdnbill"
+ *
  * Revision 1.67  1999/12/17 22:51:55  akool
  * isdnlog-3.79
  *  - isdnlog/isdnrep/isdnrep.{c,h} ... error -handling, print_msg
@@ -449,6 +454,10 @@
  *   call it with name=NULL to get the next number
  *   returns NULL if no mor numbers
  *
+ * char *getServiceNames(int first)
+ *   returns the name of a Service
+ *   if first=TRUE, the first one, else the next
+ *
  * void clearRate (RATE *Rate)
  *   setzt alle Felder von *Rate zurück
  *
@@ -552,6 +561,8 @@ typedef struct {
   double    Sales;
   int       nUnit;
   UNIT     *Unit;
+  time_t  FromDate;
+  time_t  ToDate;
 } HOUR;
 
 typedef struct {
@@ -591,8 +602,8 @@ typedef struct {
 //  int      used;
   BOOKED _provider;
   char    Vbn[TN_MAX_PROVIDER_LEN+1]; /* B:-Tag */
-  time_t  FromDate; /* N/Y */
-  time_t  ToDate;   /* N/Y */
+  time_t  FromDate;
+  time_t  ToDate;
   char    *Name;
   int      nZone;
   ZONE    *Zone;
@@ -855,6 +866,15 @@ int isProviderValid(int i, time_t when)
 	 (Provider[i].FromDate < when && Provider[i].ToDate >= when) ) ;
 }
 
+static int isHourValid(HOUR *h, time_t when)
+{
+  return
+       ( (h->FromDate == 0 && h->ToDate == 0) ||
+         (h->FromDate == 0 && h->ToDate >= when) ||
+         (h->FromDate < when && h->ToDate == 0) ||
+	 (h->FromDate < when && h->ToDate >= when) ) ;
+}
+
 int pnum2prefix(int pnum, time_t when) {
   int i;
   time_t now;
@@ -926,6 +946,39 @@ static int parseDate(char **s, time_t *t) {
   *t = mktime(&tm);
   return 1;
 }
+
+static int parse2dates(char *dat, char **s, time_t *from_d, time_t *to_d)
+{
+  (*s)++;
+  while (isblank(**s)) (*s)++;
+  if(isdigit(**s)) {
+    if(!parseDate(s, from_d)) {
+       warning (dat, "Invalid date '%s'", *s);
+       return 0;
+    }
+    while (isblank(**s)) (*s)++;
+  }
+  if (**s == '-') {
+    (*s)++;
+    while (isblank(**s)) (*s)++;
+    if(isdigit(**s)) {
+      if(!parseDate(s, to_d)) {
+         warning (dat, "Invalid date '%s'", *s);
+         return 0;
+      }
+    }
+    while (isblank(**s)) (*s)++;
+  }
+  if (**s != ']') {
+    warning(dat, "Expected ']', got '%s'", *s);
+    return 0;
+  }
+  else
+    (*s)++;
+  while (isblank(**s)) (*s)++;
+  return 1;
+}
+
 int initRate(char *conf, char *dat, char *dom, char **msg)
 {
   static char message[LENGTH];
@@ -941,6 +994,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   int     *number, numbers;
   int      i, n, t, u, v, z;
   int      any;
+  time_t   from_d, to_d;
 
   initTelNum(); /* we need defnum */
   mytld = getMynum()->tld;
@@ -1055,7 +1109,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       strcpy (Format, strip(s+2));
       break;
 
-    case 'P': /* P:nn[,v] Bezeichnung */
+    case 'P': /* P:\[daterange\]nn[,v] Bezeichnung */
       if (zone!=UNKNOWN) {
 	Provider[prefix].Zone[zone].Domestic = (where & DOMESTIC) == DOMESTIC;
 	line--;
@@ -1082,6 +1136,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       where = DOMESTIC;
 
       s+=2; while (isblank(*s)) s++;
+      from_d = to_d = 0;
+      if (*s == '[')
+        if (!parse2dates(dat, &s, &from_d, &to_d))
+	  continue;
       if (!isdigit(*s)) {
 	warning (dat, "Invalid provider-number '%c'", *s);
 	prefix=UNKNOWN;
@@ -1094,6 +1152,8 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       prefix=nProvider; /* the internal prefix */
       nProvider++;
       Provider[prefix]._provider._variant=UNKNOWN;
+      Provider[prefix].FromDate = from_d;
+      Provider[prefix].ToDate = to_d;
       while (isblank(*s)) s++;
       if (*s == ',') {
 	s++; while (isblank(*s)) s++;
@@ -1127,7 +1187,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	*c='\0';
 	c=strip(c+1);
 	for (i=0; i<Provider[prefix].nComment; i++) {
-	  if (strcmp (Provider[prefix].Comment[i].Key,s)==0) {
+	  if (s && *s && c && *c && strcmp (Provider[prefix].Comment[i].Key,s)==0) {
 	    char **value=&Provider[prefix].Comment[i].Value;
 	    *value=realloc(*value, strlen(*value)+strlen(c)+2);
 	    strcat(*value, "\n");
@@ -1136,7 +1196,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	    break;
 	  }
 	}
-	if (s) {
+	if (s && *s) {
 	  Provider[prefix].Comment=realloc(Provider[prefix].Comment, (Provider[prefix].nComment+1)*sizeof(COMMENT));
 	  Provider[prefix].Comment[Provider[prefix].nComment].Key=strdup(s);
 	  Provider[prefix].Comment[Provider[prefix].nComment].Value=strdup(c);
@@ -1154,7 +1214,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       s+=2; while (isblank(*s)) s++;
       snprintf (path, LENGTH, dom, s);
       if (initZone(prefix, path, &c)==0) {
-	if (msg && *c) 
+	if (msg && *c)
 	  print_msg(PRT_NORMAL, "%s\n", c);
       } else {
 	error (dat, c);
@@ -1322,7 +1382,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 #endif
       break;
 
-    case 'T':  /* T:d-d/h-h=p/s:t[=]Bezeichnung */
+    case 'T':  /* T: [from-to] d-d/h-h=p/s:t[=]Bezeichnung */
       if (zone==UNKNOWN) {
 	warning (dat, "Unexpected tag '%c'", *s);
 	break;
@@ -1331,8 +1391,12 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       day=0;
       hour=0;
       freeze=0;
+      from_d=to_d = 0;
       while (1) {
 	while (isblank(*s)) s++;
+	if (*s == '[')
+	  if (!parse2dates(dat, &s, &from_d, &to_d))
+	    break;
 	if (*s=='*') {                 /* jeder Tag */
 	  day |= 1<<EVERYDAY;
 	  s++;
@@ -1456,6 +1520,8 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       Provider[prefix].Zone[zone].Hour[t].Sales=0.0;
       Provider[prefix].Zone[zone].Hour[t].nUnit=0;
       Provider[prefix].Zone[zone].Hour[t].Unit=NULL;
+      Provider[prefix].Zone[zone].Hour[t].FromDate = from_d;
+      Provider[prefix].Zone[zone].Hour[t].ToDate = to_d;
 
       s++;
       while (1) {
@@ -1550,22 +1616,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       Hours++;
       break;
 
-    case 'G': /* G:[dd.mm.yyyy][-dd.mm.yyyy] */
-      s+=2;
-      while (isblank(*s)) s++;
-      if(isdigit(*s)) {
-        if(!parseDate(&s, &Provider[prefix].FromDate))
-          warning (dat, "Invalid date '%s'", s);
-      }
-      while (isblank(*s)) s++;
-      if (*s == '-') {
-        s++;
-        while (isblank(*s)) s++;
-        if(isdigit(*s)) {
-          if(!parseDate(&s, &Provider[prefix].ToDate))
-            warning (dat, "Invalid date '%s'", s);
-        }
-      }
+    case 'G': /* obsolete */
       break;
 
     default:
@@ -1676,6 +1727,17 @@ char *getServiceNum(char *name) {
   if(++cod < Service[serv].nCode)
     return Service[serv].Codes[cod];
   return NULL;
+}
+
+char *getServiceNames(int first)
+{
+  static int serv;
+  char *p;
+  if(first)
+    serv=0;
+  p = serv < nService ? Service[serv].Name : NULL;
+  serv++;
+  return p;
 }
 
 void clearRate (RATE *Rate)
@@ -1835,7 +1897,9 @@ int getRate(RATE *Rate, char **msg)
       Hour=NULL;
       cur=max=0;
       for (i=0; i<Zone->nHour; i++) {
-	if ((Zone->Hour[i].Hour & hourBits) && ((cur=isDay(&tm, Zone->Hour[i].Day, &day)) > max)) {
+	if ((Zone->Hour[i].Hour & hourBits) &&
+	    ((cur=isDay(&tm, Zone->Hour[i].Day, &day)) > max) &&
+	    isHourValid(&Zone->Hour[i], Rate->now+now) ) {
 	  max=cur;
 	  Rate->Day=day;
 	  Hour=&(Zone->Hour[i]);
