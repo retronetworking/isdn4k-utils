@@ -6,11 +6,13 @@ AC_INIT(COPYING.authlib)
 #
 # Set these according to your preferrences
 #
+CONFIG_EFTD=${CONFIG_EFTD:-"y"}
 # Shall eurofile daemon use authentification modules from wu-ftpd?
-CONFIG_EFTD_WUAUTH=y
+CONFIG_EFTD_WUAUTH=${CONFIG_EFTD_WUAUTH:-"y"}
+CONFIG_EFTP=${CONFIG_EFTP:-"y"}
 # This will be redefined to "n" by the configure script if no readline
 # library supporting the alternate interface is found
-CONFIG_EFTP_READLINE=y
+CONFIG_EFTP_READLINE=${CONFIG_EFTP_READLINE:-"y"}
 
 I4LCONFDIR=`eval echo ${CONFIG_I4LCONFDIR:-"/etc/isdn"}`
 I4LCONFFILE=`eval echo ${CONFIG_CONFFILE:-"/etc/isdn"}`
