@@ -162,6 +162,17 @@ int eft_get_x25route(struct sockaddr_x25 * x25addr,
 		fprintf(stderr,
 			"eft_get_x25route: could not determine own msn\n");
 		return 1;
+	} else {
+		char *m = msn;
+		while(*m) {
+			if ((*m < '0') || (*m >'9')) {
+				*m = 0;
+				break;
+			}
+			m++;
+		}
+		if (!strlen(msn))
+			strcpy(msn, "0");
 	}
 
 	/*
