@@ -622,7 +622,7 @@ static void log(int level, char *fmt, ...)
 
    va_start(arg, fmt);
    vsyslog(level, fmt, arg);
-   va_end(Arg);
+   va_end(arg);
 	
 	closelog();
 }
