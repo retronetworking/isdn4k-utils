@@ -21,6 +21,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  2000/01/20 07:30:09  kai
+ * rewrote the ASN.1 parsing stuff. No known problems so far, apart from the
+ * following:
+ *
+ * I don't use buildnumber() anymore to translate the numbers to aliases, because
+ * it apparently did never work quite right. If someone knows how to handle
+ * buildnumber(), we can go ahead and fix this.
+ *
  * Revision 1.3  1999/12/31 13:30:01  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -120,7 +128,7 @@ ParseReturnResultComponentSequence(struct Aoc *chanp, u_char *p, u_char *end, in
  	case 17: XSEQUENCE(ParseRESInterrogateServedUserNumbers, ASN1_TAG_SET, ASN1_NOT_TAGGED); break;
 	default: return -1;
 	}
-		
+
 	return p - beg;
 }
 
@@ -166,7 +174,7 @@ ParseReturnErrorComponent(struct Aoc *chanp, u_char *p, u_char *end, int dummy)
 	case 48: sprintf(error, "request already accepted"); break;
 	default: sprintf(error, "(%d)", errorValue); break;
 	}
-	print_msg(PRT_SHOWNUMBERS, "ReturnError: %s\n", error);
+	showmsg("ReturnError: %s\n", error);
 
 	return p - beg;
 }

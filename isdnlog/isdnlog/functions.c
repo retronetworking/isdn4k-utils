@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.29  1999/12/31 13:30:01  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *
  * Revision 1.28  1999/11/25 22:58:39  akool
  * isdnlog-3.68
  *  - new utility "isdnbill" added
@@ -418,7 +422,7 @@ void logger(int chan)
 			              call[chan].aoce, call[chan].dialin ? 'I' : 'O',
 			              call[chan].cause, call[chan].ibytes, call[chan].obytes,
 			              LOG_VERSION, call[chan].si1, call[chan].si11,
-			              currency_factor, currency, call[chan].pay, 
+			              currency_factor, currency, call[chan].pay,
 				      prefix2pnum(call[chan].provider),
 			              call[chan].zone);
 
@@ -645,6 +649,21 @@ void info(int chan, int reason, int state, char *msg)
 
 /*****************************************************************************/
 
+void showmsg(const char *fmt, ...)
+{
+  auto char    s[BUFSIZ], s1[BUFSIZ];
+  auto va_list ap;
+
+
+  va_start(ap, fmt);
+  (void)vsnprintf(s, BUFSIZ, fmt, ap);
+  va_end(ap);
+
+  (void)iprintf(s1, -1, mlabel, "", s, "");
+  print_msg(PRT_SHOWNUMBERS, "%s", s1);
+} /* showmsg */
+
+/*****************************************************************************/
 int ringer(int chan, int event)
 {
   register int i, j, c;
