@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.48  1999/10/25 18:30:04  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.47  1999/06/28 19:16:54  akool
  * isdnlog Version 3.38
  *   - new utility "isdnrate" started
@@ -529,7 +534,7 @@
 
 /****************************************************************************/
 
-#define NUMSIZE       30
+#define NUMSIZE    (ISDN_MSNLEN + 1)
 #define	FNSIZE	      64
 #define RETSIZE      128
 #define MAXRET	       5
@@ -1019,11 +1024,12 @@ _EXTERN CALL    	call[MAXCHAN];
 #ifdef Q931
 _EXTERN int     	q931dmp;
 #endif
-#if 0 /* Fixme: remove */				
+#if 0 /* Fixme: remove */
 _EXTERN int     	CityWeekend;
 #endif
 _EXTERN	int	 preselect;
 _EXTERN int	dual;
+_EXTERN int	hfcdual;
 _EXTERN char    	mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;

@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.84  1999/10/26 18:17:13  akool
+ * isdnlog-3.58
+ *   - big cleanup ( > 1.3 Mb removed!)
+ *   - v0.02 of destination support - better, but not perfect
+ *     (does't work with gcc-2.7.2.3 yet - use egcs!)
+ *
  * Revision 1.83  1999/09/13 09:09:43  akool
  * isdnlog-3.51
  *   - changed getProvider() to not return NULL on unknown providers
@@ -1634,7 +1640,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                         info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
                     }
                     break;
-#endif		    
+#endif
 
         case 0x2d : /* SUSPEND ACKNOWLEDGE (Parkweg) */
                     p += (l * 3);
@@ -3235,8 +3241,12 @@ static void processinfo(char *s)
 
       if (!Q931dmp) {
         print_msg(PRT_NORMAL, "(ISDN subsystem with ISDN_MAX_CHANNELS > 16 detected - %d active channels, %d MSN/SI entries)\n", chans, mymsns);
-        if (dual)
-          print_msg(PRT_NORMAL, "(watching \"%s\" and \"%s\")\n", isdnctrl, isdnctrl2);
+        if (dual) {
+          if (hfcdual)
+            print_msg(PRT_NORMAL, "(watching \"%s\" as HFC/echo mode)\n", isdnctrl);
+          else
+            print_msg(PRT_NORMAL, "(watching \"%s\" and \"%s\")\n", isdnctrl, isdnctrl2);
+        } /* if */
       } /* if */
 
       /*

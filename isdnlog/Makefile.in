@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.114  1999/10/29 12:43:02  akool
+## fixed "make install"
+##
 ## Revision 1.113  1999/10/28 18:36:43  akool
 ## isdnlog-3.59
 ##  - problems with gcc-2.7.2.3 fixed
@@ -802,7 +805,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.59
+VERSION     = 3.60
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -829,6 +832,7 @@ DEFS       += \
                -DVERSION=\"$(VERSION)\"   \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
 	       -D@NATION_MACRO@=1		\
+	       -DBIG_PHONE_NUMBERS=1		\
                 $(INCLUDE)
 
 %.o: %.c
