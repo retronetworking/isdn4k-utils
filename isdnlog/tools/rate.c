@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  1999/05/22 10:19:28  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.17  1999/05/13 11:40:03  akool
  * isdnlog Version 3.28
  *
@@ -931,7 +945,7 @@ int initRate(char *conf, char *dat, char *countries, char **msg, char **cmsg)
 	      warning(dat, "Unknown country \"%s\"", c);
             else if ((*c != '+') &&
                      (!zones->data ||
-                     ((zones->data > 19) && (zones->data < 100)))) {
+                     ((zones->data > 39) && (zones->data < 200)))) {
 /* ^MICHI:
     Anstelle dieser wuesten Abfrage auf die Zonen [0,5..10,20..99]
     benoetige ich das besprochene neue Flag in der "rate-xx.dat"!

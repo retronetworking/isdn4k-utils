@@ -20,6 +20,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.27  1999/05/22 10:18:18  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.26  1999/05/13 11:39:09  akool
  * isdnlog Version 3.28
  *
@@ -1044,8 +1058,8 @@ int main(int argc, char *argv[], char *envp[])
 
 
  		initHoliday(holifile, NULL);
- 		/* initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL); */
- 		initRate(NULL, "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL);
+ 		initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL);
+ 		/* initRate(NULL, "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL); */
 		currency = strdup("DM");
 		vbn = strdup("010");
 
