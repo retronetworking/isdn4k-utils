@@ -322,7 +322,7 @@ raw ip encapsulation (default)
 .br
 IP + typefield encapsulation
 .LP
-.B cisco_h
+.B cisco-h
 .br
 Special mode for communicating with a Cisco in HDLC-mode with
 Cisco-keepalive switched off.
@@ -342,7 +342,7 @@ Synchronous PPP over
 .br
 raw ip with additional ui-header
 .LP
-.B cisco_hk
+.B cisco-hk
 .br
 Special mode for communicating with a Cisco in HDLC-mode with
 Cisco-keepalive switched on.
