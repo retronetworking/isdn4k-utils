@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1996 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/03/23 20:58:09  luethje
+ * some bugfixes
+ *
  */
 
 #ifndef _ISDN_CONF_H_

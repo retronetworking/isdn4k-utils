@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Utilities)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,29 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1998/09/26 18:30:14  akool
+ *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
+ *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
+ *  - Support for tesion)) Baden-Wuerttemberg Tarif
+ *  - more Providers
+ *  - Patches from Wilfried Teiken <wteiken@terminus.cl-ki.uni-osnabrueck.de>
+ *    - better zone-info support in "tools/isdnconf.c"
+ *    - buffer-overrun in "isdntools.c" fixed
+ *  - big Austrian Patch from Michael Reinelt <reinelt@eunet.at>
+ *    - added $(DESTDIR) in any "Makefile.in"
+ *    - new Configure-Switches "ISDN_AT" and "ISDN_DE"
+ *      - splitted "takt.c" and "tools.c" into
+ *          "takt_at.c" / "takt_de.c" ...
+ *          "tools_at.c" / "takt_de.c" ...
+ *    - new feature
+ *        CALLFILE = /var/log/caller.log
+ *        CALLFMT  = %b %e %T %N7 %N3 %N4 %N5 %N6
+ *      in "isdn.conf"
+ *  - ATTENTION:
+ *      1. "isdnrep" dies with an seg-fault, if not HTML-Mode (Stefan?)
+ *      2. "isdnlog/Makefile.in" now has hardcoded "ISDN_DE" in "DEFS"
+ *      	should be fixed soon
+ *
  * Revision 1.13  1998/06/21 11:53:23  akool
  * First step to let isdnlog generate his own AOCD messages
  *
@@ -479,13 +502,15 @@ char *vnum(int chan, int who)
     flag |= C_NO_ERROR;
 #endif
 
-  if (call[chan].sondernummer != -1) {
+  if ((call[chan].sondernummer[who] != -1) || call[chan].intern[who]) {
     strcpy(call[chan].rufnummer[who], call[chan].num[who]);
 
     if (cnf > -1)
       strcpy(retstr[retnum], call[chan].alias[who]);
+    else if (call[chan].sondernummer[who] != -1)
+      strcpy(retstr[retnum], SN[call[chan].sondernummer[who]].sinfo);
     else
-      strcpy(retstr[retnum], SN[call[chan].sondernummer].sinfo);
+      sprintf(retstr[retnum], "TN %s", call[chan].num[who]);
 
     return(retstr[retnum]);
   }
@@ -883,7 +908,7 @@ int print_version(char *myname)
 {
 	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997, 1998\n",myname,VERSION);
 	/*
-	_print_msg("                                   Andreas Kool (akool@Kool.f.UUnet.de)\n");
+	_print_msg("                                   Andreas Kool (akool@isdn4linux.de)\n");
 	_print_msg("                               and Stefan Luethje (luethje@sl-gw.lake.de)\n\n");
 	*/
 	_print_msg("                                   Andreas Kool and Stefan Luethje\n");

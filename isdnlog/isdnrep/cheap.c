@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Feiertagsberechnung)
  *
- * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1998/04/09 19:15:21  akool
+ *  - CityPlus Implementation from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - dont change huptimeout, if disabled (via isdnctrl huptimeout isdnX 0)
+ *  - Support for more Providers (TelePassport, Tele 2, TelDaFax)
+ *
  * Revision 1.3  1997/04/03 22:29:59  luethje
  * improved performance
  *

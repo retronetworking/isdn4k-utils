@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Q.931-Messages)
  *
- * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

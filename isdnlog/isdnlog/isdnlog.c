@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (log-module)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.29  1998/11/17 00:37:39  akool
+ *  - fix new Option "-i" (Internal-S0-Bus)
+ *  - more Providers (Nikoma, First Telecom, Mox)
+ *  - isdnrep-Bugfix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ *  - Configure.help completed
+ *
  * Revision 1.28  1998/11/07 17:12:56  akool
  * Final cleanup. This _is_ isdnlog-3.00
  *
@@ -203,9 +209,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -450,6 +456,7 @@ static void init_variables(int argc, char* argv[])
   sprintf(mlabel, "%%s%s  %%s%%s", "%e.%b %T %I");
   amtsholung = NULL;
   dual = 0;
+  preselect = 33; /* Telekomik */
 
   myname = argv[0];
   myshortname = basename(myname);
@@ -607,7 +614,10 @@ int set_options(int argc, char* argv[])
       case 'K' : readkeyboard++;
       	       	 break;
 
-      case 'i' : interns0 = strtol(optarg, NIL, 0);
+      case 'i' : interns0 = (int)strtol(optarg, NIL, 0);
+      	       	 break;
+
+      case 'R' : preselect = (int)strtol(optarg, NIL, 0);
       	       	 break;
 
       case '?' : printf(usage, myshortname, myshortname, options);
@@ -780,6 +790,9 @@ static int read_param_file(char *FileName)
 				if (!strcmp(Ptr->name,CONF_ENT_INTERNS0))
 					interns0 = (int)strtol(Ptr->value, NIL, 0);
 				else
+                                if (!strcmp(Ptr->name,CONF_ENT_PRESELECT))
+				        preselect = (int)strtol(Ptr->value, NIL, 0);
+                                else
 					print_msg(PRT_ERR,"Error: Invalid entry `%s'!\n",Ptr->name);
 
 				Ptr = Ptr->next;

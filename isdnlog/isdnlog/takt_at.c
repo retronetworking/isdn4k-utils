@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (log-module)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/10/03 18:06:03  akool
+ *  - processor.c, takt_at.c : Patch from Michael Reinelt <reinelt@eunet.at>
+ *    try to guess the zone of the calling/called party
+ *
+ *  - isdnrep.c : cosmetics (i hope, you like it, Stefan!)
+ *
  * Revision 1.1  1998/09/26 18:29:22  akool
  *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
  *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!

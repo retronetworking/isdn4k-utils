@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1998/03/29 19:54:17  luethje
+ * idnrep: added html feature (incoming/outgoing calls)
+ *
  * Revision 1.9  1998/03/08 11:43:08  luethje
  * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
  *
@@ -90,12 +93,14 @@ _EXTERN double cheap(time_t when, int zone);
 #define _SET_NULL   = NULL
 #define _SET_0      = 0
 #define _SET_1      = 1
+#define _SET_33	    = 33
 #define _SET_EMPTY  = ""
 #else
 #define _EXTERN extern
 #define _SET_NULL
 #define _SET_0
 #define _SET_1
+#define _SET_33
 #define _SET_EMPTY
 #define _SET_FILE
 #endif
@@ -123,6 +128,7 @@ _EXTERN char	  timestring[256] _SET_EMPTY;
 _EXTERN char	  *lineformat     _SET_NULL;
 _EXTERN time_t  begintime       _SET_0;
 _EXTERN time_t  endtime         _SET_0;
+_EXTERN int     preselect	_SET_33;
 
 #undef _SET_NULL
 #undef _SET_0

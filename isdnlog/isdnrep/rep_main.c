@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Report-module)
  *
- * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1998/03/29 19:54:22  luethje
+ * idnrep: added html feature (incoming/outgoing calls)
+ *
  * Revision 1.4  1997/05/15 22:21:41  luethje
  * New feature: isdnrep can transmit via HTTP fax files and vbox files.
  *
@@ -154,7 +157,7 @@ int main(int argc, char *argv[], char *envp[])
 	auto char  fnbuff[512] = "";
 	auto char  usage[]     = "%s: usage: %s [ -%s ]\n";
 	auto char  wrongdate[] = "unknown date: %s\n";
-	auto char  options[]   = "ac:d:f:hinop:s:t:uvw:NVF:M:";
+	auto char  options[]   = "ac:d:f:hinop:s:t:uvw:NVF:M:R:";
 	auto char *myname      = basename(argv[0]);
 	auto char *ptr         = NULL;
 	auto char *linefmt     = "";
@@ -229,6 +232,9 @@ int main(int argc, char *argv[], char *envp[])
 
       case 'M' : htmlreq = strdup(optarg);
                  break;
+
+      case 'R' : preselect = (int)strtol(optarg, NIL, 0);
+      	       	 break;
 
       case 'V' : print_version(myname);
                  exit(0);

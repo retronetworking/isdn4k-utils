@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (log-module)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.14  1998/09/09 12:49:31  paul
+ * fixed crash when using mysql (call to Providername() was omitted)
+ *
  * Revision 1.13  1998/06/21 11:52:43  akool
  * First step to let isdnlog generate his own AOCD messages
  *
@@ -260,7 +263,7 @@ void logger(int chan)
 			print_msg(PRT_ERR, "Can not open file `%s': %s!\n", logfile, strerror(errno));
 		else
 		{
-			fprintf(flog, "%s|%-16s|%-16s|%5d|%10d|%10d|%5d|%c|%3d|%10ld|%10ld|%s|%d|%d|%g|%s|%g|%02d|\n",
+			fprintf(flog, "%s|%-16s|%-16s|%5d|%10d|%10d|%5d|%c|%3d|%10ld|%10ld|%s|%d|%d|%g|%s|%g|%03d|\n",
 			              s + 4, call[chan].num[CALLING], call[chan].num[CALLED],
 			              (int)(call[chan].disconnect - call[chan].connect),
 			              (int)call[chan].duration, (int)call[chan].connect,
@@ -538,7 +541,7 @@ int is_sondernummer(char *num)
   register int i;
 
 
-  if (*num)
+  if (strlen(num) >= interns0)
     for (i = 0; i < nSN; i++)
       if (!strncmp(num, SN[i].msn, strlen(SN[i].msn)))
         return(i);

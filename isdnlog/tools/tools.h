@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  1998/11/01 08:50:35  akool
+ *  - fixed "configure.in" problem with NATION_*
+ *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
+ *  - isdnrep: Outgoing calls ordered by Zone/Provider/MSN corrected
+ *  - new Switch "-i" -> running on internal S0-Bus
+ *  - more providers
+ *  - "sonderrufnummern.dat" extended (Frag Fred, Telegate ...)
+ *  - added AVM-B1 to the documentation
+ *  - removed the word "Teles" from the whole documentation ;-)
+ *
  * Revision 1.21  1998/10/18 20:13:44  luethje
  * isdnlog: Added the switch -K
  *
@@ -422,6 +432,8 @@
 #define  _OTHER(call) (call->dialin ? CALLING : CALLED)
 #define  _ME(call)    (call->dialin ? CALLED : CALLING)
 
+#define	 MAXMSNS  (REDIR + 1)
+
 /****************************************************************************/
 
 #define SHORT_STRING_SIZE      256
@@ -461,6 +473,7 @@
 #define CONF_ENT_OUTFILE "OUTFILE"
 #define CONF_ENT_KEYBOARD "KEYBOARD"
 #define CONF_ENT_INTERNS0 "INTERNS0"
+#define CONF_ENT_PRESELECT "PRESELECTED"
 
 /****************************************************************************/
 
@@ -548,15 +561,16 @@ typedef struct {
   int     bearer;
   int	  si1;     /* Service Indicator entsprechend i4l convention */
   int	  si11;	   /* if (si1 == 1) :: 0 = Telefon analog / 1 = Telefon digital */
-  char    onum[4][NUMSIZE];
+  char    onum[MAXMSNS][NUMSIZE];
   int	  screening;
-  char    num[4][NUMSIZE];
-  char    vnum[4][256];
+  char    num[MAXMSNS][NUMSIZE];
+  char    vnum[MAXMSNS][256];
   int	  provider;
-  int	  sondernummer;
+  int	  sondernummer[MAXMSNS];
+  int	  intern[MAXMSNS];
   char    id[32];
   char	  usage[16];
-  int	  confentry[4];
+  int	  confentry[MAXMSNS];
   time_t  time;
   time_t  connect;
   time_t  t_duration;
@@ -569,11 +583,11 @@ typedef struct {
   long	  lobytes;
   double  ibps;
   double  obps;
-  char	  areacode[4][NUMSIZE];
-  char	  vorwahl[4][NUMSIZE];
-  char	  rufnummer[4][NUMSIZE];
-  char	  alias[4][NUMSIZE];
-  char	  area[4][128];
+  char	  areacode[MAXMSNS][NUMSIZE];
+  char	  vorwahl[MAXMSNS][NUMSIZE];
+  char	  rufnummer[MAXMSNS][NUMSIZE];
+  char	  alias[MAXMSNS][NUMSIZE];
+  char	  area[MAXMSNS][128];
   char	  money[64];
   char	  currency[32];
   char    msg[128];

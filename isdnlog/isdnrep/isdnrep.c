@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Report-module)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.UUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.50  1998/11/17 00:37:48  akool
+ *  - fix new Option "-i" (Internal-S0-Bus)
+ *  - more Providers (Nikoma, First Telecom, Mox)
+ *  - isdnrep-Bugfix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ *  - Configure.help completed
+ *
  * Revision 1.49  1998/11/01 08:50:11  akool
  *  - fixed "configure.in" problem with NATION_*
  *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
@@ -471,6 +477,10 @@
 
 /*****************************************************************************/
 
+#define MAXPROVIDER  199
+
+/*****************************************************************************/
+
 typedef struct {
 	int   type;
 	char *string;
@@ -591,9 +601,9 @@ static double *msn_sum;
 static int    *usage_sum;
 static double *dur_sum;
 
-static int    usage_provider[100];
-static double duration_provider[100];
-static double pay_provider[100];
+static int    usage_provider[MAXPROVIDER];
+static double duration_provider[MAXPROVIDER];
+static double pay_provider[MAXPROVIDER];
 
 /*****************************************************************************/
 
@@ -1102,8 +1112,11 @@ static int print_bottom(double unit, char *start, char *stop)
 		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Provider");
 		strich(1);
 
-		for (i = 1; i < 100; i++) {
-			sprintf(string,"010%02d",i);
+		for (i = 1; i < MAXPROVIDER; i++) {
+                  if (i < 100)
+		    sprintf(string, "010%02d ", i);
+                  else
+		    sprintf(string, "010%03d", i - 100);
 
 		  if (usage_provider[i]) {
 		    print_line3(NULL, "Provider", string, Providername(i),
@@ -2059,7 +2072,7 @@ static void how_expensive(one_call *cur_call)
         pro = cur_call->provider;
 
         if (pro == -1)
-          pro = 33; /* Telekom */
+          pro = preselect;
 
         if (pro) {
           cur_call->dm = pay(cur_call->t, (int)cur_call->duration, zone, pro);
@@ -2123,7 +2136,7 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
                 pro = cur_call->provider;
 
                 if (pro == -1)
-                  pro = 33; /* Telekom */
+                  pro = preselect;
 
                 if (nx[CALLED] != -1) {
 		  if (!cur_call->dm) {
@@ -2168,7 +2181,7 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
           pro = cur_call->provider;
 
           if (pro == -1)
-            pro = 33; /* Telekom */
+            pro = preselect;
 
           computed = 1;
           go = 0;
@@ -2206,7 +2219,7 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 	pro = cur_call->provider;
 
 	if (pro == -1)
-		pro = 33; /* Telekom */
+		pro = preselect;
 
 	if (cur_call->duration || (cur_call->eh > 0)) {
 
@@ -2286,16 +2299,26 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 	} /* else */
 
       	 	      		if (cur_call->dir == DIALOUT) {
+      	 	      		  int first_found = -1;
+
                                   for (i = 0; i < mymsns; i++) {
-                                    if (!n_match(known[i]->num, cur_call->num[0], cur_call->version) && (known[i]->si == cur_call->si)) {
+                                    if (!n_match(known[i]->num, cur_call->num[0], cur_call->version)) {
+                                      /* Ermitteln der ersten passenden MSN (lt. README) */
+                                      if(first_found == -1)
+                                        first_found = i;
+                                      /* exakte Übereinstimmung inkl. SI */
+                                      if (known[i]->si == cur_call->si) {
 				      msn_sum[i] += cur_call->dm;
                                       usage_sum[i]++;
                                       dur_sum[i] += cur_call->duration;
                                       break;
                                     } /* if */
+                                    } /* if */
                                   } /* for */
-
                                   if (i == mymsns) {
+                                    /* keine exakte Uebereinstimmung, aber ohne SI */
+                                    if(first_found != -1)
+                                      i = first_found;
                                     msn_sum[i] += cur_call->dm;
                                     usage_sum[i]++;
                                     dur_sum[i] += cur_call->duration;
