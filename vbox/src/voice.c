@@ -321,7 +321,12 @@ int voice_put_message(char *message)
 			printstring(line_o, "%c%c", DLE, ETX);
 			modem_raw_write(line_o, strlen(line_o));
 			if (modem_command("", "VCON")>0) {
-				if (modem_command("AT+S1", "OK") <= 0) {
+#ifdef VBOX_SUSPEND_VALUE
+				printstring(line_o, "AT+S%d", VBOX_SUSPEND_VALUE);
+#else
+				printstring(line_o, "AT+S");
+#endif
+				if (modem_command(line_o, "OK") <= 0) {
 					log(L_WARN, "Can't suspend call\n");
 				} else {
 					log(L_INFO, "Call suspended\n");
@@ -533,7 +538,12 @@ int voice_get_message(char *name, char *timestr, int save)
 			modem_raw_write(line_o, strlen(line_o));
 			modem_wait_sequence(line_i);
 			if (modem_command("", "VCON")>0) {
-				if (modem_command("AT+S1", "OK") <= 0) {
+#ifdef VBOX_SUSPEND_VALUE
+				printstring(line_o, "AT+S%d", VBOX_SUSPEND_VALUE);
+#else
+				printstring(line_o, "AT+S");
+#endif
+				if (modem_command(line_o, "OK") <= 0) {
 					log(L_WARN, "Can't suspend call\n");
 				} else {
 					log(L_INFO, "Call suspended\n");

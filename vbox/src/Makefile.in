@@ -41,7 +41,7 @@ script.o:	$(HEADERS) script.c
 		$(CC) $(CFLAGS) -DBINDIR='"$(VBOX_BINDIR)"' -c script.c
 
 voice.o:	$(HEADERS) voice.c
-		$(CC) $(CFLAGS) -c voice.c
+		$(CC) $(CFLAGS) $(VBOX_SUSPEND_DEF) -c voice.c
 
 streamio.o:	$(HEADERS) streamio.c
 		$(CC) $(CFLAGS) -c streamio.c
