@@ -27,7 +27,7 @@
 
 /** Defines **************************************************************/
 
-#define VBOXVOICE_BUFSIZE  		32			  /* Voice/Audio Buffer Größe	*/
+#define VBOXVOICE_BUFSIZE  		64			  /* Voice/Audio Buffer Größe	*/
 #define VBOXVOICE_SAMPLERATE		8000		/* Samplerate (nur zum Check)	*/
 #define VBOXVOICE_SEQUENCE			64				 /* Touchtone Buffer Größe	*/
 

@@ -4,6 +4,9 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.4  1998/08/31 10:43:07  michael
+** - Changed "char" to "unsigned char".
+**
 ** Revision 1.3  1998/07/06 09:05:26  michael
 ** - New control file code added. The controls are not longer only empty
 **   files - they can contain additional informations.
@@ -442,7 +445,7 @@ static void modem_timeout_function(int s)
 	alarm(0);
 	signal(SIGALRM, SIG_IGN);
 
-	log_line(LOG_D, "*** Timeout function called (%d) ***\n", s);
+	log_line(LOG_D, "*** Timeout [%d] ***\n", s);
 
 	timeoutstatus = 1;
 }

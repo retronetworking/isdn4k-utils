@@ -4,6 +4,9 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.8  1998/08/31 10:43:12  michael
+** - Changed "char" to "unsigned char".
+**
 ** Revision 1.7  1998/08/30 17:32:07  michael
 ** - Total new audio setup - now it works correct and don't crash the
 **   machine.
@@ -65,6 +68,8 @@
 #include "modem.h"
 #include "tclscript.h"
 #include "stringutils.h"
+#include "breaklist.h"
+
 
 static Tcl_Interp *interpreter = NULL;
 
@@ -76,6 +81,7 @@ int vbox_block(VBOX_TCLFUNC_PROTO);
 int vbox_log(VBOX_TCLFUNC_PROTO);
 int vbox_modem_command(VBOX_TCLFUNC_PROTO);
 int vbox_voice(VBOX_TCLFUNC_PROTO);
+int vbox_breaklist(VBOX_TCLFUNC_PROTO);
 
 
 static struct vbox_tcl_function vbox_tcl_functions[] =
@@ -84,6 +90,7 @@ static struct vbox_tcl_function vbox_tcl_functions[] =
 	{ "vbox_log", vbox_log },
 	{ "vbox_modem_command", vbox_modem_command },
 	{ "vbox_voice"				, vbox_voice },
+	{ "vbox_breaklist", vbox_breaklist },
 	{ NULL, NULL }
 };
 
@@ -460,3 +467,104 @@ int vbox_voice(VBOX_TCLFUNC)
 
 	return(TCL_OK);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int vbox_breaklist(VBOX_TCLFUNC)
+{
+	unsigned char *cmd;
+	unsigned char *arg;
+	int	rc;
+	int	i;
+	char *rs;
+
+	if (objc == 2)
+	{
+		if ((cmd = Tcl_GetStringFromObj(objv[1], NULL)))
+		{
+			switch (*cmd)
+			{
+				case 'c':
+				case 'C':
+					breaklist_clear();
+					break;
+
+				case 'd':
+					breaklist_dump();
+					break;
+
+				default:
+					log(LOG_W, "Usage: vbox_breaklist <clear|dump>", cmd);
+					break;
+			}
+
+			Tcl_SetResult(intp, "OK", NULL);
+		}
+
+		return(TCL_OK);
+	}
+
+	if (objc >= 3)
+	{
+		cmd = Tcl_GetStringFromObj(objv[1], NULL);
+		arg = Tcl_GetStringFromObj(objv[2], NULL);
+
+		if ((cmd) && (arg))
+		{
+			switch (*cmd)
+			{
+				case 'A':
+				case 'a':
+				{
+					rs = breaklist_add(arg);
+
+					Tcl_SetResult(intp, (rs ? "OK" : "ERROR"), NULL);
+				}
+				break;
+
+				case 'R':
+				case 'r':
+				{
+					rc = breaklist_del(arg);
+
+					Tcl_SetResult(intp, (rc == 0 ? "OK" : "ERROR"), NULL);
+				}
+				break;
+
+				default:
+				{
+					log(LOG_W, "Usage: vbox_breaklist <add|remove> <sequence>\n");
+
+					Tcl_SetResult(intp, "ERROR", NULL);
+				}
+				break;
+			}
+		}
+	}
+
+	return(TCL_OK);
+}
+
+
+
+
+
+
+
+
+
+
+

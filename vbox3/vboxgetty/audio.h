@@ -7,6 +7,15 @@
 #ifndef _VBOX_AUDIO_H
 #define _VBOX_AUDIO_H 1
 
+/** Defines **************************************************************/
+
+	/* Define the next line if you want to set the audio buffer size	*/
+	/* to the same as the voice buffer size (this will reduce the		*/
+	/* echo effect). But note, this can crash your machine (kernel		*/
+	/* bug)!																				*/
+
+#undef VBOXAUDIO_SET_FRAGEMENTSIZE
+
 /** Prototypes ***********************************************************/
 
 extern int audio_open_dev(unsigned char *);

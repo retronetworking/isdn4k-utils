@@ -39,7 +39,8 @@ vboxgetty_SOURCES	= log.c log.h \
 			  voice.c voice.h \
 			  control.c control.h \
 			  lock.c lock.h \
-			  audio.c audio.h
+			  audio.c audio.h \
+			  breaklist.c breaklist.h
 
 ## other directories to process ###########################################
 

@@ -4,6 +4,9 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.2  1998/08/31 10:43:14  michael
+** - Changed "char" to "unsigned char".
+**
 ** Revision 1.1  1998/07/06 09:05:33  michael
 ** - New control file code added. The controls are not longer only empty
 **   files - they can contain additional informations.
@@ -169,7 +172,7 @@ int userrc_parse(struct vboxuser *vboxuser, unsigned char *home, unsigned char *
 				}
 
 				vboxuser->space = xstrtol(space, 0);
-				vboxuser->umask = (mode_t)strtol(mask, &stop, 8);
+				vboxuser->umask = (mode_t)strtol(mask, (char **)&stop, 8);
 
 				if (*stop != '\0')
 				{

@@ -4,6 +4,9 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.7  1998/08/31 10:43:16  michael
+** - Changed "char" to "unsigned char".
+**
 ** Revision 1.6  1998/08/30 16:55:50  michael
 ** - Added initgroups() to the permission switch function. Since Kernel 2.1.x
 **   (or 1.3.x?) setgid() don't reset the grouplist.
@@ -68,6 +71,7 @@
 #include "vboxgetty.h"
 #include "control.h"
 #include "lock.h"
+#include "breaklist.h"
 
 /** Variables ************************************************************/
 
@@ -127,6 +131,8 @@ void main(int argc, char **argv)
 	int	i;
 	int	modemstate;
 	int	modeminits;
+
+	breaklist_init();
 
 	progbasename = argv[0];
 
@@ -416,9 +422,8 @@ void quit_program(int rc)
 	}
 
 	scr_remove_interpreter();
-
 	rc_free(rc_getty_c);
-
+	breaklist_clear();
 	log_close();
 
 	exit(rc);
