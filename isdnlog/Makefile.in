@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.56  1999/03/11 09:21:58  paul
+## fixed problems with yesterday's commit
+##
 ## Revision 1.55  1999/03/10 08:35:48  paul
 ## use DATADIR from "make config" phase instead of hardcoded /usr/lib/isdn
 ##
@@ -433,7 +436,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.03
+VERSION     = 3.04
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
 

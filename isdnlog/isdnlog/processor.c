@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.39  1999/03/07 18:18:55  akool
+ * - new 01805 tarif of DTAG
+ * - new March 1999 tarife
+ * - added new provider "01051 Telecom"
+ * - fixed a buffer overrun from Michael Weber <Michael.Weber@Post.RWTH-Aachen.DE>
+ * - fixed a bug using "sondernnummern.c"
+ * - fixed chargeint change over the time
+ * - "make install" now install's "sonderrufnummern.dat", "tarif.dat",
+ *   "vorwahl.dat" and "tarif.conf"! Many thanks to
+ *   Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * - Euracom Frames would now be ignored
+ * - fixed warnings in "sondernnummern.c"
+ * - "10plus" messages no longer send to syslog
+ *
  * Revision 1.38  1999/02/28 19:32:42  akool
  * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
  * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -1866,35 +1880,13 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                         Q931dump(TYPE_STRING, c, s, version);
 
-                        ps = s + sprintf(s, "Location: ");
-
-                        switch (c & 0x0f) {
-                          case 0x00 : sprintf(ps, "Nutzer");                                   break;
-                          case 0x01 : sprintf(ps, "Privates Netz des Nutzers");                break;
-                          case 0x02 : sprintf(ps, "Oeffentliches Netz des Nutzers");           break;
-                          case 0x03 : sprintf(ps, "Transitnetz");                              break;
-                          case 0x04 : sprintf(ps, "Oeffentliches Netz beim fernen Nutzer");    break;
-                          case 0x05 : sprintf(ps, "Privates Netz beim fernen Nutzer");         break;
-                          case 0x07 : sprintf(ps, "Internationales Netz");                     break;
-                          case 0x0a : sprintf(ps, "Netzwerk jenseits des interworking point"); break;
-                            default : sprintf(ps, "UNKNOWN #%d", c & 0x0f);                    break;
-                        } /* switch */
+                        ps = s + sprintf(s, "Location: %s", location(c & 0x0f));
 
                         Q931dump(TYPE_STRING, -1, s, version);
                       } /* if */
 #endif
 
-		      switch ((loc = (c & 0x0f))) {
-                        case 0x00 : py = "User";                                break;
-                        case 0x01 : py = "Private network serving local user";  break;
-                        case 0x02 : py = "Public network serving local user";   break;
-                        case 0x03 : py = "Transit network";                     break;
-                        case 0x04 : py = "Public network serving remote user";  break;
-                        case 0x05 : py = "Private network serving remote user"; break;
-                        case 0x07 : py = "International network";               break;
-                        case 0x0a : py = "Network beyond inter-working point";  break;
-                          default : py = "";             	       	     	break;
-                      } /* switch */
+		      py = location(loc = (c & 0x0f));
 
                       c = strtol(p + 6, NIL, 16);
 		      cause = c & 0x7f;
@@ -2043,11 +2035,17 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                           aoc_debug(-2, s);
                         } /* if */
 
-                        if (n < 0)
+                        if (n < 0) {
+                          if (call[chan].aoce == -1) /* Firsttime */
+                            call[chan].aoce = 1;
+			  else
                           call[chan].aoce++;
+                        } /* if */
 
                         call[chan].pay = pay;
-                        call[chan].aoce = n;  /* AK:08-May-98 */
+
+                        if (currency_mode == AOC_UNITS)
+                          call[chan].aoce = n;
 
                         if (n < 0)
                           sprintf(s, "aOC-D=%d", -n);
@@ -2385,7 +2383,13 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                     else
                     strcpy(call[chan].onum[CALLED], s);
 
-                    buildnumber(s, oc3, oc3a, call[chan].num[CALLED], version, &call[chan].provider, &call[chan].sondernummer[CALLED], &call[chan].intern[CALLED], 0, 0);
+                    /* bei "national" numbers evtl. fuehrende "0" davor */
+                    if (((oc3 & 0x70) == 0x20) && (*s != '0')) {
+                      sprintf(s1, "0%s", s);
+                      strcpy(s, s1);
+                    } /* if */
+
+                    buildnumber(s, oc3, oc3a, call[chan].num[CALLED], version, &call[chan].provider, &call[chan].sondernummer[CALLED], &call[chan].intern[CALLED], 0, CALLED);
 
                     if (!dual)
                     strcpy(call[chan].vnum[CALLED], vnum(chan, CALLED));
@@ -2985,16 +2989,7 @@ escape:             for (c = 0; c <= sxp; c++)
 #ifdef Q931
                     if (!q931dmp)
 #endif
-                      px += sprintf(px, "PROGRESS: ");
-
-                    switch (c) {
-                      case 0x80 : px += sprintf(px, "Location: User");               break;
-                      case 0x81 : px += sprintf(px, "Location: Local:private net");  break;
-                      case 0x82 : px += sprintf(px, "Location: Local:public net");   break;
-                      case 0x84 : px += sprintf(px, "Location: Remote:public net");  break;
-                      case 0x85 : px += sprintf(px, "Location: Remote:private net"); break;
-                      case 0x8a : px += sprintf(px, "Location: Interworking");       break;
-                    } /* switch */
+                      px += sprintf(px, "PROGRESS: %s", location(c & 0x80));
 
                     if (l > 1) {
                       px = sx[++sxp];
@@ -4202,7 +4197,7 @@ static void processctrl(int card, char *s)
       	   	  break;
 
       case 0xaa : version = VERSION_UNKNOWN; /* Euracom Frames */
-                  break;
+		  return;
 
       default   : version = VERSION_UNKNOWN;
       		  sprintf(sx, "Unexpected discriminator 0x%02x -- ignored!", i);
@@ -4649,10 +4644,7 @@ doppelt:break;
                 ((call[chan].pay == -1.0) ? "UNKNOWN" : double2str(call[chan].pay, 6, 2, DEB)),
                 double2clock((double)(call[chan].disconnect - call[chan].connect)), s2);
             else
-              sprintf(sx, "HANGUP (%s%s) %s (%s)",
-                double2clock((double)(call[chan].disconnect - call[chan].connect)), s2,
-                qmsg(TYPE_CAUSE, version, call[chan].cause),
-            	location(call[chan].loc));
+              sprintf(sx, "HANGUP (%s%s)", double2clock((double)(call[chan].disconnect - call[chan].connect)), s2);
           } /* else */
 
           if (!memcmp(sx, "HANGUP (        )", 17))
@@ -4661,7 +4653,8 @@ doppelt:break;
           if ((call[chan].cause != 0x10) && (call[chan].cause != 0x1f)) { /* "Normal call clearing", "Normal, unspecified" */
             strcat(sx, " ");
             strcat(sx, qmsg(TYPE_CAUSE, version, call[chan].cause));
-            if ((p = location(call[chan].loc))) {
+
+            if (((p = location(call[chan].loc) != ""))) {
               strcat(sx, " (");
               strcat(sx, location(call[chan].loc));
               strcat(sx, ")");
