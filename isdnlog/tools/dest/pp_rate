@@ -11,6 +11,8 @@ use wld;
 use strict;
 use IO::File;
 $|=1;
+# perl 5.8.0 could use UTF-8 as default encoding, which has to be prevented.
+eval q( use open ':encoding(iso-8859-1)' );
 use vars qw( %names $COUNTRY %myalias $co_dat );
 use vars qw( $rtags_filename @rtags );
 $COUNTRY = '../country';
