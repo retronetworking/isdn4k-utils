@@ -19,6 +19,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.29  1997/06/15 23:49:28  luethje
+## Some new variables for the isdnlog
+## isdnlog starts programs noe with the file system rights
+## bugfixes
+##
 ## Revision 1.28  1997/05/25 19:40:43  luethje
 ## isdnlog:  close all files and open again after kill -HUP
 ## isdnrep:  support vbox version 2.0
@@ -283,7 +288,10 @@ MODS         =  *.o */*.o
 
 PROGS        =  $(ISDNLOG) $(ISDNREP) $(ISDNCONF)
 
-all:            libs $(PROGS)
+all:            libs mybin $(PROGS)
+
+mybin:
+		-mkdir -p bin
 
 libs:
 		set -e; for i in `echo $(SUBDIRS)`; do $(MAKE) -C $$i; done
