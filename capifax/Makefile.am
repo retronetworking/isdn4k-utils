@@ -3,7 +3,7 @@
 ##
 
 AUTOMAKE_OPTIONS	= foreign
-CLEANFILES              = *~ comperr
+CLEANFILES              = *~ comperr config.cache config.status config.log
 MAINTAINERCLEANFILES    = configure aclocal.m4 Makefile.in config.h.in \
 			  stamp-h.in
 
