@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1999/11/02 20:41:21  keil
+ * make phonenumber ioctl compatible for ctrlconf too
+ *
  * Revision 1.15  1999/09/06 08:03:26  fritz
  * Changed my mail-address.
  *
@@ -119,6 +122,9 @@ enum {
 #ifdef I4L_CTRL_CONF
         WRITECONF, READCONF,
 #endif /* I4L_CTRL_CONF */
+#ifdef I4L_DWABC_UDPINFO
+		ABCCLEAR,
+#endif
 	STATUS,
 		IFDEFAULTS
 };
@@ -189,6 +195,9 @@ cmd_struct cmds[] =
         {"writeconf", "01"},
         {"readconf", "01"},
 #endif /* I4L_CTRL_CONF */
+#ifdef I4L_DWABC_UDPINFO
+		{"abcclear","1"},
+#endif
         {"status", "1"},
         {"ifdefaults", "01"},
         {NULL,}
