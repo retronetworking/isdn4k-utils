@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.1  1999/01/01 17:27:57  armin
+ * First checkin of new created control utility for Eicon.Diehl driver.
+ * diehlctrl is obsolete.
+ *
  *
  */
 
@@ -95,6 +99,7 @@ void usage() {
   fprintf(stderr,"   or: %s [-d <DriverID>] irq   [irq-nr]              (get/set irq)\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] load  <bootcode> <protocol> (load firmware)\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] [-v] loadpci <protocol> [options]\n",cmd);
+  fprintf(stderr,"   or: %s [-d <DriverID>] debug [<debug value>]\n",cmd);
   fprintf(stderr,"load firmware for PCI cards:\n");
   fprintf(stderr," basics  : -d <DriverID> ID defined when eicon module was loaded\n");
   fprintf(stderr,"         : -v            verbose\n");
@@ -1179,6 +1184,30 @@ int main(int argc, char **argv) {
                         close(fd);
                         return 0;
         }
+
+        if (!strcmp(argv[arg_ofs], "debug")) {
+		if (argc <= (arg_ofs + 1))
+			ioctl_s.arg = 1;
+		else	
+			ioctl_s.arg = atol(argv[arg_ofs + 1]);
+		if (ioctl(fd, DIEHL_IOCTL_DEBUGVAR + IIOCDRVCTL, &ioctl_s) < 0) {
+			perror("ioctl DEBUG VALUE");
+			exit(-1);
+		}
+		return 0;
+	}
+
+        if (!strcmp(argv[arg_ofs], "freeit")) {
+		if (argc <= (arg_ofs + 1))
+			ioctl_s.arg = 0;
+		else	
+			ioctl_s.arg = atol(argv[arg_ofs + 1]);
+		if (ioctl(fd, DIEHL_IOCTL_FREEIT + IIOCDRVCTL, &ioctl_s) < 0) {
+			perror("ioctl FREEIT");
+			exit(-1);
+		}
+		return 0;
+	}
 
         if (!strcmp(argv[arg_ofs], "manage")) {
 		mb = malloc(sizeof(eicon_manifbuf));
