@@ -271,6 +271,7 @@ distclean:	  clean
 		  @$(RM) -f $(TOPDIR)/utils/vboxmail
 		  @$(RM) -f $(TOPDIR)/utils/vboxplay
 		  @$(RM) -f config.cache config.log config.status
+		  @$(RM) -f .config
 
 clean:		  ignore
 		  @$(ECHO) ""
