@@ -742,19 +742,6 @@ int main(int argc, char *argv[], char *envp[])
 
     if (replay)
       strcat((char *)logfile, ".rep");
-		else
-			if (access(logfile,W_OK) && errno == ENOENT)
-			{
-				if ((flog = fopen(logfile, "w")) == NULL)
-				{
-			    print_msg(PRT_ERR,"Can not write file `%s' (%s)!\n", logfile, strerror(errno));
-			    Exit(43);
-				}
-				else
-					fclose(flog);
-
-				flog = NULL;
-			}
 
     openlog(myshortname, LOG_NDELAY, LOG_DAEMON);
 
