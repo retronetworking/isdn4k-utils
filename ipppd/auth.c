@@ -1124,7 +1124,7 @@ int auth_ip_addr(int unit,u_int32_t addr)
 		} else {
 			np = getnetbyname (ptr_word);
 			if (np != NULL && np->n_addrtype == AF_INET)
-				a = htonl (*(u_int32_t *)np->n_net);
+				a = htonl ((unsigned long)np->n_net);
 			else
 				a = inet_addr (ptr_word);
 		}
