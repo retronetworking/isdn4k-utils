@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.40  2003/09/04 19:45:07  tobiasb
+ * New option for isdnrate: `-rvNN' requires a vbn starting with NN.
+ * Suggested by Thomas Richter on isdn4linux mailinglist, for reference see
+ * http://listserv.isdn4linux.de/pipermail/isdn4linux/2003-September/000011.html
+ *
  * Revision 1.39  2002/08/15 17:22:43  akool
  * isdnlog-4.63
  *  - new rates/provider ...
@@ -310,7 +315,7 @@
 static void print_header(void);
 
 static char *myname, *myshortname;
-static char options[] = "ab:d:f:h:l:op:r:st:v::x:CD::G:HLNP:O:S:TUVX::Z";
+static char options[] = "ab:c:d:f:h:i:l:op:r:st:v::x:CD::G:HLNP:O:S:TUVX::Z";
 static char usage[] = "%s: usage: %s [ -%s ] Destination ...\n";
 
 static int header = 0, best = MAXPROVIDER, table = 0, explain = 0;
@@ -334,6 +339,8 @@ static int all = 0;
 static int booked = 0;
 static int service = 0;
 static char *require_vbn = NULL;
+static char *opt_rateconf = 0;
+static char *opt_ratefile = 0;
 
 #define SOCKNAME "/tmp/isdnrate"
 static int is_daemon = 0;
@@ -408,7 +415,8 @@ static void init()
   if (verbose && *version)
     print_msg(PRT_V, "%s\n", version);
 
-  initRate(rateconf, ratefile, zonefile, message);
+  initRate(opt_rateconf?opt_rateconf:rateconf,
+           opt_ratefile?opt_ratefile:ratefile, zonefile, message);
 
   if (verbose && *version)
     print_msg(PRT_V, "%s\n", version);
@@ -495,7 +503,8 @@ static int opts(int argc, char *argv[])
       best = strtol(optarg, NIL, 0);
       break;
 
-/*    case 'c': country */
+    case 'c':
+      opt_rateconf = optarg;
       break;
 
     case 'd':
@@ -537,6 +546,10 @@ static int opts(int argc, char *argv[])
       }
       else
 	min = 0;
+      break;
+
+    case 'i':
+      opt_ratefile = optarg;
       break;
 
     case 'l':
@@ -691,6 +704,12 @@ static int opts(int argc, char *argv[])
   if (is_client && is_daemon != 3 && is_daemon) {
     is_daemon = 0;
     print_msg(PRT_V, "Conflicting options, -D disabled\n");
+  }
+  if (is_client && opt_rateconf) {
+    print_msg(PRT_V, "Conflicting options, -c ignored in client mode (-C)\n");
+  }
+  if (is_client && opt_ratefile) {
+    print_msg(PRT_V, "Conflicting options, -i ignored in client mode (-C)\n");
   }
   if (list && table) {
     table = 0;
@@ -1783,9 +1802,11 @@ int     main(int argc, char *argv[], char *envp[])
     print_msg(PRT_A, "\n");
     print_msg(PRT_A, "\t-a \tall=show old and newer rates (default actual only)\n", MAXPROVIDER);
     print_msg(PRT_A, "\t-b best\tshow only the first <best> provider(s) (default %d)\n", MAXPROVIDER);
+    print_msg(PRT_A, "\t-c file\tuse <file> as rate.conf\n");
     print_msg(PRT_A, "\t-d d[.m[.y]] | {W|N|E}\tstart date of call (default now)\n");
     print_msg(PRT_A, "\t-f areacode\tyou are calling from <areacode>\n");
     print_msg(PRT_A, "\t-h h[:m[:s]]\tstart time of call (default now)\n");
+    print_msg(PRT_A, "\t-i file\tuse <file> as ratefile (rate-CC.dat)\n");
     print_msg(PRT_A, "\t-l duration\tduration of call in seconds (default %d seconds)\n", LCR_DURATION);
     print_msg(PRT_A, "\t-o \t show only booked providers\n");
     print_msg(PRT_A, "\t-p prov|B[,prov...]\t show only these providers\n");
