@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1999/06/26 12:25:54  akool
+ * isdnlog Version 3.37
+ *   fixed some warnings
+ *
  * Revision 1.8  1999/06/26 10:12:14  akool
  * isdnlog Version 3.36
  *  - EGCS 1.1.2 bug correction from Nima <nima_ghasseminejad@public.uni-hamburg.de>
@@ -473,7 +477,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 }
 
 static int _getZ(struct sth *sthp, char *from, char *sto) {
-	GDBM_FILE fh = sthp->fh;
+	_DB fh = sthp->fh;
 	datum key, value;
 	static char newfrom[LENGTH];
 	bool found = false;
