@@ -350,9 +350,7 @@ void cbcp_resp(cbcp_state *us)
 		PUTCHAR(len , bufp);
 		PUTCHAR(5, bufp); /* delay */
 		PUTCHAR(1, bufp);
-#if 0
-		BCOPY(strlen(cbcp->message), bufp, strlen(cbcp->message) + 1);
-#endif
+		BCOPY(cbcp->message, bufp, strlen(cbcp->message) + 1);
 		cbcp_send(us, CBCP_RESP, buf, len);
 		return;
 	}
