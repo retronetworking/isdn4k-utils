@@ -477,9 +477,13 @@ static time_t get_newest_message_time(char *box)
 		{
 			while ((one = readdir(dir)))
 			{
-				if (stat(one->d_name, &status) == 0 && S_ISREG(status.st_mode))
+                                /* ignore filenames starting with '.' */
+				if ((one->d_name[0] != '.')
+                                    && (stat(one->d_name, &status) == 0)
+                                    && S_ISREG(status.st_mode))
 				{
-					if (status.st_mtime > newest) newest = status.st_mtime;
+					if (status.st_mtime > newest)
+                                            newest = status.st_mtime;
 				}
 			}
 
