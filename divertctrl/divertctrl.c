@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.1  1999/05/07 21:33:01  werner
+ * Initial release of divertctrl
+ *
  *
  */
 
@@ -150,7 +153,7 @@ void setrulepar(void)
 
   /* si1 */
   if (sscanf(*(++argp),"%u",&u) <= 0)
-   { fprintf(stderr,"invalid si1 value %ds\n",*argp);
+   { fprintf(stderr,"invalid si1 value %s\n",*argp);
      usage();
    }
   dr->si1 = u & 0xFF;   
@@ -158,7 +161,7 @@ void setrulepar(void)
   
   /* si2 */
   if (sscanf(*(++argp),"%u",&u) <= 0)
-   { fprintf(stderr,"invalid si2 value %ds\n",*argp);
+   { fprintf(stderr,"invalid si2 value %s\n",*argp);
      usage();
    }
   dr->si2 = u & 0xFF;   
@@ -426,8 +429,7 @@ static void do_command(void)
 
 
 int main(int argc, char *argv[])
-{ int i;
-  char *p,*p1;
+{
 
   exitcode = 0; /* default no error */
 
