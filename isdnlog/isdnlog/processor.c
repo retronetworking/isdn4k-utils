@@ -19,6 +19,35 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.122  2002/01/26 20:43:31  akool
+ * isdnlog-4.56:
+ *  - dont set the Provider-field of the MySQL DB to "?*? ???" on incoming calls
+ *
+ *  - implemented
+ *      0190029 Telebillig        (17,5 Cent/minute to any cellphone)
+ * 		 0190031 Teledump
+ * 		 0190035 TeleDiscount
+ * 		 0190037 Fonfux            (1,5 Cent/minute german-call)
+ * 		 0190087 Phonecraft
+ *
+ *    you have to change:
+ *
+ *    1. "/etc/isdn/rate.conf" - add the following:
+ *
+ *      P:229=0		#E Telebillig
+ * 		 P:231=0		#E Teledump
+ * 		 P:235=0		#E TeleDiscount
+ * 		 P:237=0		#E Fonfux
+ * 		 P:287=0		#E Phonecraft
+ *
+ *    2. "/etc/isdn/isdn.conf" (or "/etc/isdn/callerid.conf"):
+ *
+ * 	     VBN = 010
+ *
+ * 	   to
+ *
+ * 	     VBN = 010:01900
+ *
  * Revision 1.121  2001/03/13 14:39:30  leo
  * added IIOCNETGPN support for 2.0 kernels
  * s. isdnlog/kernel_2_0/README for more information (isdnlog 4.51)
@@ -1518,7 +1547,7 @@ void aoc_debug(int val, char *s)
 /*
     currency_mode   := AOC_UNITS | AOC_AMOUNT
     currency_factor :=
-    currency        := " DM" | "SCHILLING" | "NLG" | "FR."
+    currency        := " EUR" | "GBP" | "NOK" | "DKK" | ...
 */
 
 
@@ -3438,8 +3467,10 @@ static void oops(int where)
 
 } /* oops */
 
-#if IIOCNETGPN == -1
+#ifdef __i386__
+# if IIOCNETGPN == -1
 extern int iiocnetgpn();
+# endif
 #endif
 
 static int findinterface(void)
@@ -3491,9 +3522,13 @@ static int findinterface(void)
       }
 #endif
 /* call emulation for 2.0 kernels */
-#if IIOCNETGPN == -1
+#ifdef __i386__
+# if IIOCNETGPN == -1
      /* IIOCDBGVAR works on isdnctrl */
     rc = iiocnetgpn(sockets[ISDNCTRL].descriptor, &phone);
+# else
+    rc = ioctl(sockets[ISDNINFO].descriptor, IIOCNETGPN, &phone);
+# endif
 #else
     rc = ioctl(sockets[ISDNINFO].descriptor, IIOCNETGPN, &phone);
 #endif
