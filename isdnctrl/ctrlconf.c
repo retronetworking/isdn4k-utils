@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/10/26 23:39:37  fritz
+ * Applied (slightly modified) fix for compiling without triggercps by
+ * Bernhard Rosenkraenzer <root@BOL-SubNet.ml.org>
+ *
  * Revision 1.5  1997/08/21 14:46:58  fritz
  * Added Version-Checking of NET_DV.
  *
@@ -237,7 +241,7 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 		sprintf(string,"%d",cfg.slavedelay);
 		if (Set_Entry(SubSec,interface,CONF_ENT_SDELAY, string, C_OVERWRITE | C_WARN) == NULL)
 			return NULL;
-#ifdev HAVE_TRIGGERCPS		
+#ifdef HAVE_TRIGGERCPS		
 		sprintf(string,"%d",(data_version < 3)?6000:cfg.triggercps);
 #else
 		sprintf(string,"6000");
