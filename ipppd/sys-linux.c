@@ -1509,9 +1509,8 @@ void setifip(int ipcp_unit)
 
 
 /************************ IPX SUPPORT *********************************/
-#if !defined(__GLIBC__) 
-/* <linux/ipx.h> includes <linux/socket.h>, which
-                           breaks glibc 2.x support. Prevent that...   */
+#if defined(__GLIBC__) && (__GLIBC__ > 1)
+/* <linux/ipx.h> includes <linux/socket.h>, which breaks glibc 2.x support. Prevent that...   */
 # define _LINUX_SOCKET_H
 #endif
 
