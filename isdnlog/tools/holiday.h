@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1999/03/14 12:16:41  akool
+ * - isdnlog Version 3.04
+ * - general cleanup
+ * - new layout for "rate-xx.dat" and "holiday-xx.dat" files from
+ *     Michael Reinelt <reinelt@eunet.at>
+ *     unused by now - it's a work-in-progress !
+ * - bugfix for Wolfgang Siefert <siefert@wiwi.uni-frankfurt.de>
+ *     The Agfeo AS 40 (Software release 2.1b) uses AOC_AMOUNT, not AOC_UNITS
+ * - bugfix for Ralf G. R. Bergs <rabe@RWTH-Aachen.DE> - 0800/xxx numbers
+ *     are free of charge ;-)
+ * - tarif.dat V 1.08 - new mobil-rates DTAG
+ *
  */
 
 #ifndef _HOLIDAY_H_
@@ -33,7 +45,7 @@
 #define SUNDAY    7
 #define HOLIDAY   8
 
-int  initHoliday(char *path);
+int  initHoliday(char *path, char **msg);
 void exitHoliday(void);
 int  isHoliday(struct tm *tm, char **name);
 int  getDay(struct tm *tm, char **name);

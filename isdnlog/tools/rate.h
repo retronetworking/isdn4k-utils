@@ -19,14 +19,43 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1999/03/14 12:16:43  akool
+ * - isdnlog Version 3.04
+ * - general cleanup
+ * - new layout for "rate-xx.dat" and "holiday-xx.dat" files from
+ *     Michael Reinelt <reinelt@eunet.at>
+ *     unused by now - it's a work-in-progress !
+ * - bugfix for Wolfgang Siefert <siefert@wiwi.uni-frankfurt.de>
+ *     The Agfeo AS 40 (Software release 2.1b) uses AOC_AMOUNT, not AOC_UNITS
+ * - bugfix for Ralf G. R. Bergs <rabe@RWTH-Aachen.DE> - 0800/xxx numbers
+ *     are free of charge ;-)
+ * - tarif.dat V 1.08 - new mobil-rates DTAG
+ *
  */
 
 #ifndef _RATE_H_
 #define _RATE_H_
 
+typedef struct {
+  int        prefix;
+  int        zone;
+  struct tm  start;
+  struct tm  now;
+  char      *Provider; /* Name des Providers */
+  char      *Zone;     /* Name der Zone */
+  char      *Day;      /* Wochen- oder Feiertag */
+  char      *Hour;     /* Bezeichnung des Tarifs */
+  double     Duration; /* Länge eines Tarifimpulses */
+  double     Price;    /* Preis eines Tarifimpulses */
+  int        Units;    /* verbrauchte Tarifimpulse */
+  double     Charge;   /* gesamte Verbindungskosten */
+  time_t     Time;     /* gesamte Verbindungszeit */
+  time_t     Rest;     /* bezahlte, aber noch nicht verbrauchte Zeit */
+} RATE;
+
 void  exitRate(void);
-int   initRate(char *conf, char *dat, char *msg);
-char *Providername(int prefix);
-char *Zonename(int prefix, int zone);
+int   initRate(char *conf, char *dat, char **msg);
+int   getRate(RATE *Rate, char **msg);
+int   getLeastCost(RATE *Rate);
 
 #endif

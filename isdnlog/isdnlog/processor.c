@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.43  1999/03/15 21:27:58  akool
+ * - isdnlog Version 3.06
+ * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
+ * - isdnconf: added a small LCR-feature - simply try "isdnconf -c 069"
+ * - isdnlog: dont change CHARGEINT, if rate is't known!
+ * - sonderrufnummern 1.02 [15-Mar-99] :: added WorldCom
+ * - tarif.dat 1.09 [15-Mar-99] :: added WorldCom
+ * - isdnlog now correctly handles the new "Ortstarif-Zugang" of UUnet
+ *
  * Revision 1.42  1999/03/14 18:47:44  akool
  * damn CLIP :-( Internal call's are free of charge!!
  *
@@ -747,8 +756,10 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     if (*sondernummer == UNKNOWN)
       *sondernummer = is_sondernummer(num, *provider);
 
-    if (*sondernummer == UNKNOWN)
-      *sondernummer = !memcmp(num, "019", 3); /* anything like 019xx is a Sondernummer! */
+    if (*sondernummer == UNKNOWN) {
+      if (!memcmp(num, "019", 3)) /* anything like 019xx is a Sondernummer! */
+        *sondernummer = 1;
+    } /* if */
 
   } /* if */
 
@@ -2408,10 +2419,15 @@ static void decode(int chan, register char *p, int type, int version, int tei)
 
                     *pd = 0;
 
+                    if (!*s) {
+                      info(chan, PRT_SHOWNUMBERS, STATE_RING, "COLP *INVALID* -- ignored!");
+                      break;
+                    } /* if */
+
                     if (dual && !*s)
                       strcpy(s, call[chan].onum[CALLED]);
                     else
-                    strcpy(call[chan].onum[CALLED], s);
+                      strcpy(call[chan].onum[CALLED], s);
 
                     /* bei "national" numbers evtl. fuehrende "0" davor */
                     if (((oc3 & 0x70) == 0x20) && (*s != '0')) {
@@ -2422,7 +2438,7 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                     buildnumber(s, oc3, oc3a, call[chan].num[CALLED], version, &call[chan].provider, &call[chan].sondernummer[CALLED], &call[chan].intern[CALLED], 0, CALLED);
 
                     if (!dual)
-                    strcpy(call[chan].vnum[CALLED], vnum(chan, CALLED));
+                      strcpy(call[chan].vnum[CALLED], vnum(chan, CALLED));
 
 #ifdef Q931
                     if (q931dmp && (*call[chan].vnum[CALLED] != '?') && *call[chan].vorwahl[CALLED] && oc3 && ((oc3 & 0x70) != 0x40)) {
