@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.31  1998/11/06 14:28:31  calle
+ * AVM-B1 d-channel trace level 2 (newer firmware) now running with isdnlog.
+ *
  * Revision 1.30  1998/11/05 19:09:49  akool
  *  - Support for all the new L2 frames from HiSax 3.0d (RR, UA, SABME and
  *    tei management)
@@ -4276,6 +4279,10 @@ static void processctrl(int card, char *s)
     i = strtol(ps += 5, NIL, 16) >> 1;
     net = i & 1;
     sapi = i >> 1;
+
+    if (sapi == 63) /* AK:07-Nov-98 -- future expansion */
+      return;
+
     tei = strtol(ps += 3, NIL, 16) >> 1;
 
     ps += (tei == BROADCAST) ? 1 : 4;
