@@ -5,7 +5,12 @@
  * heavily modified and extended by Fritz Elfert
  *
  * $Log$
+ * Revision 1.1  1997/02/17 00:09:03  fritz
+ * New CVS tree
+ *
  */
+
+#include <errno.h>
 #include <config.h>
 #include <stdio.h>
 #include <string.h>

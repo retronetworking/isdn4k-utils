@@ -6,6 +6,9 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.1  1997/03/04 22:46:32  calle
+ * Added program to add and download firmware to AVM-B1 card
+ *
  * Revision 2.2  1997/02/12 09:31:39  calle
  * more verbose error messages
  *
@@ -15,6 +18,7 @@
  * 
  */
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/03/19 00:08:43  luethje
+ * README and function expand_number() completed.
+ *
  * Revision 1.5  1997/03/18 23:01:50  luethje
  * Function Compare_Sections() completed.
  *
@@ -83,6 +86,7 @@
 
 /****************************************************************************/
 
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -708,7 +712,7 @@ int read_conffiles(section **Section, char *groupfile)
 	if (!read_again)
 		delete_element(&files,0);
 
-	delete_element(&vars,1);
+	delete_element(&vars,0);
 
 	read_again = 1;
 	return RetCode;
@@ -725,6 +729,9 @@ int paranoia_check(char *cmd)
 	{
 		if (stat(cmd, &stbuf))
 		{
+			if (errno == ENOENT)
+				return 0;
+
 			print_msg("stat() failed for file `%s', stay on the safe side!\n", cmd);
 			return -1;
 		}
