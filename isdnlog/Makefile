@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.1  1997/03/03 04:37:33  fritz
+## Added files in isdnlog
+##
 ## Revision 2.6.37  1997/02/11  17:53:19  akool
 
 ifndef ROOTDIR
@@ -28,6 +31,9 @@ MAKELIB  =1
 else
 PREFIXDIR=$(ROOTDIR)
 endif
+
+PREFIXDIR=..
+LIBAREA=1
 
 LIBISDNDIR  = $(PREFIXDIR)/lib
 ifdef MAKELIB
@@ -80,7 +86,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-#I4LVERSION     = 2.60
+VERSION     = 2.99.1
 
 ifdef POSTGRES
 CFLAGS     += -DPOSTGRES
@@ -106,7 +112,7 @@ CFLAGS       += -DOLDCONFFILE=\"$(OLDCONFFILE)\" \
                 -DLOGFILE=\"$(LOGFILE)\"         \
                 -DRELOADCMD=\"$(RELOADCMD)\"     \
                 -DSTOPCMD=\"$(STOPCMD)\"         \
-                -DI4LVERSION=\"$(I4LVERSION)\"   \
+                -DVERSION=\"$(VERSION)\"   \
                 -DCHARGEFILE=\"$(CHARGEFILE)\"   \
                 -DSERV_PORT=$(SERV_PORT) 	 \
                 -DREBOOTCMD=\"$(REBOOTCMD)\"     \
@@ -212,7 +218,7 @@ xinstall:       xall install
 #               @echo ""
 
 distrib:        xdistclean
-		cd .. && tar cf /tmp/isdnlog-$(I4LVERSION).tar    \
+		cd .. && tar cf /tmp/isdnlog-$(VERSION).tar    \
 		  isdnlog-$(I4LVERSION)/Makefile       \
 		  isdnlog-$(I4LVERSION)/Isdn           \
 		  isdnlog-$(I4LVERSION)/README         \
