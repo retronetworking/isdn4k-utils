@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.109  2000/07/07 19:38:30  akool
+ * isdnlog-4.30
+ *  - isdnlog/tools/rate-at.c ... 1001 onlinetarif
+ *  - isdnlog/rate-at.dat ... 1001 onlinetarif
+ *  - isdnlog $ILABEL / $OLABEL may now contain "\t" (Tab)
+ *  - isdnlog/isdnlog/processor.c ... clearchan .pay = -1
+ *  - added
+ *     - freenet PowerTarif
+ *     - DTAG flatrate
+ *       if you really want to use a flatrate please start isdnlog with the
+ *       Option "-h86399 -I86399" to hangup after 23 hour's 59 seconds ;-)
+ *
+ *     - new Provider 01094:Startec, 010012:11883 Telecom, 010021:FITphone
+ *
  * Revision 1.108  2000/06/29 17:38:27  akool
  *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
  *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
@@ -4942,9 +4956,10 @@ void processflow()
   register int    j;
   auto     char   sx[BUFSIZ];
   auto     double s;
+  int      ret;
+  static   int tries = 3;
 
-
-  if (!ioctl(sockets[ISDNINFO].descriptor, IIOCGETCPS, &io)) {
+  if (!(ret=ioctl(sockets[ISDNINFO].descriptor, IIOCGETCPS, &io))) {
 
     if (verbose & VERBOSE_FLOW) {
       p = sx;
@@ -4972,6 +4987,10 @@ void processflow()
 
     processbytes();
   } /* if */
+  else if (tries) {
+    tries--;
+    print_msg(PRT_ERR, "Can't read iobytes: ioctl IIOCGETCPS returned %d\n", ret);
+  }
 } /* processflow */
 
 

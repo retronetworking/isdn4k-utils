@@ -21,6 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.80  2000/07/18 22:26:05  akool
+ * isdnlog-4.33
+ *   - isdnlog/tools/rate.c ... Bug fixed
+ *   - isdnlog/isdnlog/isdnlog.c ... check for callfmt
+ *   - "rate-de.dat" corrected (duplicates removed)
+ *
  * Revision 1.79  2000/07/17 16:34:23  akool
  * isdnlog-4.32
  *  - added new Prefixes 0160 (D1) and 0162 (D2) to "country-de.dat"
@@ -2253,7 +2259,7 @@ static int get_area1(int prefix, RATE *Rate, char *number, TELNUM *num,
 	*Provider[prefix].Area[a].Code == '+'))
 	continue;
       m=strmatch(Provider[prefix].Area[a].Code, number);
-      if (m>x) {
+      if (m> 0 && m>x) {
   	x=m;
 	Rate->_area = a;
 	Rate->domestic = strcmp(Provider[prefix].Area[a].Code, mycountry)==0 || *(Rate->dst[0])=='\0';
@@ -2305,6 +2311,7 @@ static int get_area(int *prefix, RATE *Rate, char *number,
     if (*Rate->dst[0]) {
       if(getDest(number, &onum))
         *onum.keys = '\0';
+      normalizeNumber(number, &onum, TN_PROVIDER | TN_NOCLEAR);
     }
   }
   num = onum;
@@ -2390,9 +2397,9 @@ int getRate(RATE *Rate, char **msg)
     if (msg) snprintf(message, LENGTH, "Unknown provider %s",epnum(prefix));
     return UNKNOWN;
   }
+  if (Rate->_area==UNKNOWN || Rate->_zone == UNKNOWN)
   if(get_area(&prefix, Rate, number, msg, message) == UNKNOWN)
     return UNKNOWN;
-
 
   Rate->Country  = Provider[prefix].Area[Rate->_area].Name;
   if (Rate->dst[0] && *Rate->dst[0])

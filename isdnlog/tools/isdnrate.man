@@ -237,6 +237,11 @@ don't require a telefon
 .IR isdn.conf ,
 .I telrate.cgi
 and more.
+.br
+Note: The extension of zone- and dest data files depends on configuration.
+Recently
+.I .cdb
+is used.
 .SH EXAMPLES
 .I isdnrate -D2
 .br

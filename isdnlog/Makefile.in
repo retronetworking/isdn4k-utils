@@ -19,6 +19,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.174  2000/07/24 17:02:56  akool
+## isdnlog-4.36
+##  - added new provider 01017.com
+##  - removed too long CbC-entries in "samples/isdn.conf.de"
+##
 ## Revision 1.173  2000/07/21 18:46:24  akool
 ## isdnlog-4.35
 ##  - isdnlog/aclocal.m4 ... postgre95 in mysql, thx Daniel Pluta
@@ -1243,6 +1248,7 @@ MYSQLDIR		:= @MYSQLDIR@
 ORACLE			:= @ORACLE@
 SERV_PORT		:= @SERV_PORT@
 USERFILE		:= @USERFILE@
+CDBEXTRALIBS		:= @CDBEXTRALIBS@
 DEFS			:=
 SUBDIRS			:= tools/zone tools/dest
 
@@ -1290,7 +1296,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.36
+VERSION     = 4.37
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -1368,7 +1374,7 @@ ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
 		isdnlog/asn1.o isdnlog/asn1_generic.o isdnlog/asn1_aoc.o  \
 		isdnlog/asn1_address.o isdnlog/asn1_diversion.o           \
 		isdnlog/asn1_basic_service.o isdnlog/asn1_comp.o          \
-		$(LIBISDNDIR)/libisdn.a
+		$(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 
 ifeq ($(POSTGRES),1)
@@ -1391,24 +1397,24 @@ ISDNREP_OBJS =  isdnrep/rep_main.o tools/tools.o tools/isdnconf.o         \
                 isdnlog/messages.o isdnrep/isdnrep.o     		  \
 		tools/rate.o tools/zone.o tools/holiday.o tools/dest.o \
 		tools/telnum.o						  \
-                $(LIBISDNDIR)/libisdn.a
+                $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 ISDNBILL_OBJS = isdnrep/isdnbill.o tools/tools.o tools/isdnconf.o         \
                 isdnlog/messages.o					  \
 		tools/rate.o tools/zone.o tools/holiday.o tools/dest.o	  \
 		tools/telnum.o						  \
-                $(LIBISDNDIR)/libisdn.a
+                $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 ISDNCONF_OBJS=  isdnconf/isdnconf.o tools/tools.o tools/isdnconf.o        \
 		tools/rate.o tools/zone.o tools/holiday.o \
 		tools/telnum.o	tools/dest.o				  \
-                $(LIBISDNDIR)/libisdn.a
+                $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 ISDNRATE_OBJS=  tools/isdnrate.o tools/isdnconf.o tools/tools.o           \
 		tools/rate.o tools/zone.o tools/dest.o \
 		tools/holiday.o \
 		tools/telnum.o						  \
-                $(LIBISDNDIR)/libisdn.a
+                $(LIBISDNDIR)/libisdn.a $(CDBEXTRALIBS)
 
 
 ORA_LOAD_OBJS= isdnlog/ora_load.o isdnlog/oracle.o
@@ -1485,7 +1491,7 @@ uninstall: rootperm
 			$(DESTDIR)$(MAN5DIR)/isdnformat$(MAN5EXT)	\
 			$(DESTDIR)$(DATADIR)/country-$(NATION).dat	\
 			$(DESTDIR)$(DATADIR)/rate-$(NATION).dat         \
-			$(DESTDIR)$(DATADIR)/dest.gdbm
+			$(DESTDIR)$(DATADIR)/dest.{gdbm,db,cdb}
 
 
 installdirs: rootperm
@@ -1569,7 +1575,7 @@ install-data:
 		$(INSTALL_DATA) country-de.dat	$(DESTDIR)$(DATADIR)
 		$(INSTALL_DATA) rate-$(NATION).dat      $(DESTDIR)$(DATADIR)
 		$(INSTALL_DATA) holiday-$(NATION).dat   $(DESTDIR)$(DATADIR)
-		@for f in `ls zone-$(NATION)-*.{gdbm,db} tools/dest/dest.{gdbm,db} 2>/dev/null` ; do \
+		@for f in `ls zone-$(NATION)-*.{gdbm,db,cdb} tools/dest/dest.{gdbm,db,cdb} 2>/dev/null` ; do \
 		  $(INSTALL_DATA) $$f $(DESTDIR)$(DATADIR); \
 		  echo Installing $(DESTDIR)$(DATADIR)/$$f; \
 		done
