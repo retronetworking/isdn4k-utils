@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.47  1998/10/13 21:53:17  luethje
+ * isdnrep and lib: bugfixes
+ *
  * Revision 1.46  1998/10/04 12:04:21  akool
  *  - README
  *      New entries "CALLFILE" and "CALLFMT" documented
@@ -1433,7 +1436,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				            dir = cur_call->dir?CALLED:CALLING;
 				          	if (cur_call->num[dir][0] != C_UNKNOWN &&
 				          	    cur_call->num[dir][0] != '\0'      &&
-				          	    (Ptr = get_areacode(cur_call->num[dir],NULL,C_NO_ERROR)) != NULL)
+				          	    (Ptr = get_areacode(cur_call->num[dir],NULL,C_NO_WARN | C_NO_ERROR)) != NULL)
 				          		colsize[i] = append_string(&string,*fmtstring, Ptr);
 				          	else
 				          		colsize[i] = append_string(&string,*fmtstring, "");
@@ -1452,7 +1455,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				            dir = cur_call->dir?CALLING:CALLED;
 				          	if (cur_call->num[dir][0] != C_UNKNOWN &&
 				          	    cur_call->num[dir][0] != '\0'      &&
-				          	    (Ptr = get_areacode(cur_call->num[dir],NULL,C_NO_ERROR)) != NULL)
+				          	    (Ptr = get_areacode(cur_call->num[dir],NULL,C_NO_WARN | C_NO_ERROR)) != NULL)
 				          		colsize[i] = append_string(&string,*fmtstring, Ptr);
 				          	else
 				          		colsize[i] = append_string(&string,*fmtstring, "");

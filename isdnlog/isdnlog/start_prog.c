@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1998/10/13 22:17:15  luethje
+ * isdnlog: evaluate the variable PATH for program starts.
+ *
  * Revision 1.10  1997/06/22 23:03:28  luethje
  * In subsection FLAGS it will be checked if the section name FLAG is korrect
  * isdnlog recognize calls abroad
@@ -235,7 +238,8 @@ int Ring(info_args *Cmd, char *Opts[], int Die, int Async)
 			         dup2(filedes[1],STDOUT_FILENO);
 			         dup2(filedes[1],STDERR_FILENO);
 
-			         execvp(Pathfind(Args[0],NULL,NULL), Args);
+/*			         execvp(Pathfind(Args[0],NULL,NULL), Args);*/
+			         execvp(Args[0], Args);
 			         print_msg(PRT_ERR, "Can't start \"%s\" with execvp().\n", Args[0]);
 			         /* Alarm(); */
 			         exit(-1);
