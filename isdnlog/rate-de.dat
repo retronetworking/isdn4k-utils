@@ -1,4 +1,7 @@
-V:1.02-Germany [09-Jun-1999 21:45:26]
+V:1.02-Germany [11-Jun-1999 17:52:39]
+
+# Währungsformat
+U:%.3f DM
 
 # Diese Tariftabelle ist ein Service der I4L-Tarifdatenbank-Crew.
 # Alle Angaben erfolgen ohne Gewähr
@@ -11331,25 +11334,21 @@ A:Schweden
 T:*/*=0.21/60
 Z:202
 A:Kanada
+A:Frankreich
+A:Alaska
+A:Hawaii
 T:*/*=0.22/60
 Z:203
 A:Dänemark
 A:Norwegen
 A:Finnland
+A:Belgien
+A:Schweiz
 T:*/*=0.23/60
 Z:204
 A:Österreich
-A:Frankreich
-A:Schweiz
 A:Australien
 T:*/*=0.25/60
-Z:205
-A:Alaska
-A:Hawaii
-T:*/*=0.26/60
-Z:206
-A:Belgien
-T:*/*=0.27/60
 Z:207
 A:Neuseeland
 A:Hongkong
@@ -11360,13 +11359,11 @@ A:Liechtenstein
 T:*/*=0.31/60
 Z:209
 A:Spanien
+A:Italien
 T:*/*=0.32/60
 Z:210
 A:Luxemburg
 T:*/*=0.34/60
-Z:211
-A:Italien
-T:*/*=0.35/60
 Z:212
 A:Monaco
 T:*/*=0.36/60
