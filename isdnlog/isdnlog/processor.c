@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1997/10/08 05:37:10  calle
+ * Added AVM B1 support to isdnlog, patch is from i4l@tenere.saar.de.
+ *
  * Revision 1.11  1997/09/07 00:43:12  luethje
  * create new error messages for isdnrep
  *
@@ -1906,7 +1909,13 @@ static void decode(int chan, register char *p, int type, int version)
                     tm.tm_hour  = strtol(p += 3, NIL, 16);
                     tm.tm_min   = strtol(p += 3, NIL, 16);
 
-                    tm.tm_sec   = 0;
+		    if (l > 5) {
+		       tm.tm_sec = strtol(p += 3, NIL, 16);
+		       if (l > 6)
+			  p += (l - 6) * 3;
+		    } else {
+                       tm.tm_sec   = 0;
+		    }
                     tm.tm_wday  = tm.tm_yday = 0;
                     tm.tm_isdst = -1;
 
