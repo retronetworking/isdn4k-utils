@@ -24,6 +24,20 @@
  *
  *
  * $Log$
+ * Revision 1.65  1999/05/22 10:18:50  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.64  1999/05/04 19:33:01  akool
  * isdnlog Version 3.24
  *
@@ -890,6 +904,7 @@ int read_logfile(char *myname)
   /* initHoliday(holifile, NULL); FIXME */
   /* initRate(rateconf, ratefile, NULL); FIXME */
   interns0 = 3; /* FIXME */
+  vbn = strdup("010");
 
   msn_sum = calloc(mymsns + 1, sizeof(double));
   usage_sum = calloc(mymsns + 1, sizeof(int));

@@ -20,6 +20,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.42  1999/05/22 10:19:36  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.41  1999/05/13 11:40:11  akool
  * isdnlog Version 3.28
  *
@@ -514,22 +528,15 @@
 #define CITYCALL      2
 #define REGIOCALL     3
 #define GERMANCALL    4
-#define C_MOBILBOX    5
-#define C_NETZ        6
-#define D1_NETZ       7
-#define D2_NETZ       8
-#define E_PLUS_NETZ   9
+#define C_MOBILBOX   10
+#define C_NETZ       10
+#define D1_NETZ      10
+#define D2_NETZ      10
+#define E_PLUS_NETZ  10
 #define E2_NETZ      10
-#define EURO_CITY    11
-#define EURO_1       12
-#define EURO_2       13
-#define WELT_1       14
-#define WELT_2       15
-#define WELT_3       16
-#define WELT_4       17
-#define INTERNET     20
-#define	AUKUNFT_IN   21
-#define AUSKUNFT_AUS 22
+#define INTERNET    100
+#define	AUKUNFT_IN   40
+#define AUSKUNFT_AUS 41
 
 /* Fixme: this is specific to Germany */
 #define	DTAG	     33

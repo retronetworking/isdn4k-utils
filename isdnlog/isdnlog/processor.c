@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.63  1999/05/22 10:18:34  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.62  1999/05/13 11:39:24  akool
  * isdnlog Version 3.28
  *
@@ -1587,7 +1601,9 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                             call[chan].aoce = 1;
 			  else
                             call[chan].aoce++;
-                        } /* if */
+                        }
+                        else if (currency_mode == AOC_UNITS)
+                          call[chan].aoce = n;
 
                         call[chan].aocpay = abs(n) * currency_factor;
 

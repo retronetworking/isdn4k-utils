@@ -19,6 +19,15 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.22  1999/04/19 19:24:35  akool
+ * isdnlog Version 3.18
+ *
+ * - countries-at.dat added
+ * - spelling corrections in "countries-de.dat" and "countries-us.dat"
+ * - LCR-function of isdnconf now accepts a duration (isdnconf -c .,duration)
+ * - "rate-at.dat" and "rate-de.dat" extended/fixed
+ * - holiday.c and rate.c fixed (many thanks to reinelt@eunet.at)
+ *
  * Revision 1.21  1999/04/10 16:35:22  akool
  * isdnlog Version 3.13
  *
@@ -345,8 +354,12 @@ void logger(int chan)
                            "kostenlos", als auf "DM 1,00 geschenkt" stellen!
                         */
 
-                        if (call[chan].pay == -1.00)
-                          call[chan].pay = 0.0;
+                        if (call[chan].pay == -1.00) {
+                          if (call[chan].aocpay > 0.0) /* besser als nix ... */
+                            call[chan].pay = call[chan].aocpay;
+                          else
+                            call[chan].pay = 0.0;
+                        } /* if */
 
 			fprintf(flog, "%s|%-16s|%-16s|%5d|%10d|%10d|%5d|%c|%3d|%10ld|%10ld|%s|%d|%d|%g|%s|%g|%3d|%3d|\n",
 			              s + 4, call[chan].num[CALLING], call[chan].num[CALLED],

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1999/05/27 18:19:58  akool
+ * first release of the new country decoding module
+ *
  *
  */
 
@@ -35,5 +38,6 @@ typedef struct {
 
 int  initCountry(char *path, char **msg);
 void exitCountry(void);
+int  getCountry(char *name, COUNTRY **country);
 
 #endif
