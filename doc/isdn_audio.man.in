@@ -62,7 +62,7 @@ Disable audio mode (default). This command sets register
 .IR 18 " to " 4 .
 .TP
 .B AT+FCLASS=8
-Enable audio mode (default). This command sets register
+Enable audio mode. This command sets register
 .IR 18 " to " 5 .
 .TP
 .B AT+FCLASS=?
