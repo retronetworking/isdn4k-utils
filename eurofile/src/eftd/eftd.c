@@ -737,8 +737,9 @@ int main(int argc, char** argv)
 		 */
  		if( sigprocmask(SIG_BLOCK, &sig_pipe, NULL) )
 			perror("sigprocmask()");
+		#if 1
 		setsockopt(ns,SOL_SOCKET,SO_LINGER,&ling,sizeof(ling));
-	
+		#endif
 		/*
 		 * attach authentication methods to the protocol state machine
 		 */

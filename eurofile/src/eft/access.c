@@ -424,7 +424,9 @@ int tdu_wait_for_end_access(struct tdu_fsm * fsm, struct timeval * timeout)
 int tdu_end_access_received(struct tdu_fsm *fsm)
 {
 	tdu_printf(TDU_LOG_TRC, "tdu_end_access_received()\n");
-
+#if 0
+	tdu_printf(TDU_LOG_AP3, "tdu_end_access_received()\n");
+#endif
 	if( fsm->assoc.slave_handler ){
 		tdu_send_response_pos(fsm,TDU_CI_T_END_ACCESS);
 		fsm->assoc.handler = fsm->assoc.slave_handler;

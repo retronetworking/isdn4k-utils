@@ -86,5 +86,5 @@ AC_SUBST(CONFIG_EFTD)
 AC_SUBST(CONFIG_EFTP_READLINE)
 AC_SUBST(CONFIG_EFTD_WUAUTH)
 AC_SUBST(HAVE_GETDELIM)
-AC_OUTPUT(scripts/eftp_setup scripts/eftp.sh scripts/eftd.sh 
+AC_OUTPUT(scripts/eftp.sh scripts/eftd.sh 
 	src/config.h Rules.make)

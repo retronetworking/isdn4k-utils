@@ -73,9 +73,13 @@ extern void eft_fix_cases(unsigned char *);
 /* extern void eft_set_slash_fix(struct eft *, int);
 extern int eft_need_slash_fix(struct eft *); */
 struct sockaddr_x25;
-extern int eft_get_x25route(struct sockaddr_x25 *, char *isdn_no);
-extern int eft_release_route(struct sockaddr_x25 *, char * isdn_no);
+struct x25_route_struct;
+extern int eft_get_x25route(struct sockaddr_x25 *, struct x25_route_struct *, char *isdn_no);
+extern int eft_release_route(struct x25_route_struct *);
+extern int eft_signal_release_route();
+extern int eft_wait_release_route();
 extern void eft_dl_disconnect(unsigned char *);
+extern int eft_release_device(unsigned char *);
 
 extern long eft_get_flags(struct eft *);
 extern void eft_set_flags(struct eft *, long);
