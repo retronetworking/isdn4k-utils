@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/05/19 22:58:36  luethje
+ * - bugfix: it is possible to install isdnlog now
+ * - improved performance for read files for vbox files and mgetty files.
+ * - it is possible to decide via config if you want to use avon or
+ *   areacode.
+ *
  * Revision 1.2  1997/04/17 23:29:51  luethje
  * new structure of isdnrep completed.
  *
@@ -28,7 +34,11 @@
 #define _CREATEDB_H_
 
 #ifdef linux
+# if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)
+#	include <db1/ndbm.h>
+# else
 #	include <ndbm.h>
+# endif
 #else
 #	include "/usr/ucbinclude/ndbm.h"
 /*#	include <libgen.h>*/
