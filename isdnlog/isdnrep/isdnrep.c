@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.29  1997/06/15 23:49:45  luethje
+ * Some new variables for the isdnlog
+ * isdnlog starts programs noe with the file system rights
+ * bugfixes
+ *
  * Revision 1.28  1997/05/28 21:23:03  luethje
  * isdnlog option -b is working again ;-)
  * isdnlog has new \$x variables
@@ -256,6 +261,10 @@
 
 /*****************************************************************************/
 
+#define STR_FAX "Fax: "
+
+/*****************************************************************************/
+
 #define F_1ST_LINE      1
 #define F_BODY_HEADER   2
 #define F_BODY_HEADERL  4
@@ -393,6 +402,7 @@ static char nomemory[]   = "Out of memory!\n";
 static char htmlconv[][2][10] = {
 	{">", "&gt;"},
 	{"<", "&lt;"},
+	{" ", H_EMPTY},
 	{"" , ""},
 };
 
@@ -1320,6 +1330,9 @@ static int append_string(char **string, prt_fmt *fmt_ptr, char* value)
 			           break;
 		}
 			
+		if (!strncmp(STR_FAX,value,strlen(STR_FAX)))
+			htmlfmt = H_LEFT;
+
 		if ((tmpfmt = (char*) alloca(sizeof(char)*(strlen(htmlfmt)+strlen(tmpfmt2)+1))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
@@ -2886,7 +2899,7 @@ static char *append_fax(char **string, char *file, char type, int version)
 	sprintf(help,H_LINK,_myname,type,version,nam2html(file),help2);
 
 	if (*string == NULL)
-		*string = strdup("Fax: ");
+		*string = strdup(STR_FAX);
 
 	if ((*string = (char*) realloc(*string,sizeof(char)*(strlen(*string)+strlen(help)+2))) == NULL)
 	{

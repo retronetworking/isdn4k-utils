@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/07/20 16:36:28  calle
+ * isdnctrl trigger was not working.
+ *
  * Revision 1.1  1997/06/24 23:35:28  luethje
  * isdnctrl can use a config file
  *
@@ -38,7 +41,7 @@ enum {
         CHARGEINT, DIALMAX, SDELAY, CHARGEHUP,
         CBHUP, IHUP, SECURE, CALLBACK,
         L2_PROT, L3_PROT, ADDLINK, REMOVELINK,
-        ENCAP, TRIGGER,
+        ENCAP, TRIGGER, RESET,
 #ifdef I4L_CTRL_CONF
         WRITECONF, READCONF
 #endif /* I4L_CTRL_CONF */
@@ -90,6 +93,7 @@ cmd_struct cmds[] =
         {"removelink", "1"},
         {"encap", "12"},
         {"trigger", "12"},
+        {"reset", "0"},
 #ifdef I4L_CTRL_CONF
         {"writeconf", "01"},
         {"readconf", "01"},

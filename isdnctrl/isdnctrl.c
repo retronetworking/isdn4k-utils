@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/07/20 16:36:26  calle
+ * isdnctrl trigger was not working.
+ *
  * Revision 1.4  1997/06/24 23:35:26  luethje
  * isdnctrl can use a config file
  *
@@ -106,6 +109,8 @@
 
 char nextlistif[10];
 
+int exec_args(int fd, int argc, char **argv);
+
 void usage(void)
 {
         fprintf(stderr, "%s version %s\n", cmd, VERSION);
@@ -115,6 +120,7 @@ void usage(void)
         fprintf(stderr, "\n");
         fprintf(stderr, "    addif [name]               add net-interface\n");
         fprintf(stderr, "    delif name                 remove net-interface\n");
+        fprintf(stderr, "    reset                      remove all net-interfaces\n");
         fprintf(stderr, "    addphone name in|out num   add phone-number to interface\n");
         fprintf(stderr, "    delphone name in|out num   remove phone-number from interface\n");
         fprintf(stderr, "    eaz name [eaz|msn]         get/set eaz for interface\n");
@@ -163,6 +169,40 @@ int key2num(char *key, char **keytable, int *numtable)
                 if (!strcmp(keytable[i], key))
                         return numtable[i];
         return -1;
+}
+
+int reset_interfaces(int fd)
+{
+	FILE *iflst;
+	char *p;
+	char s[255];
+	char name[255];
+	char *argv[3] = {cmds[DELIF].cmd, name, NULL};
+	isdn_net_ioctl_cfg cfg;
+
+
+	if ((iflst = fopen("/proc/net/dev", "r")) == NULL) {
+		perror("/proc/net/dev");
+		return -1;
+	}
+
+	while (!feof(iflst)) {
+		fgets(s, sizeof(s), iflst);
+		if ((p = strchr(s, ':'))) {
+			*p = 0;
+
+			sscanf(s, "%s", name);
+			strcpy(cfg.name, name);
+
+		  if (ioctl(fd, IIOCNETGCF, &cfg) < 0)
+	      continue;
+
+			exec_args(fd, 2, argv);
+		}
+	}
+
+	fclose(iflst);
+	return 0;
 }
 
 char * num2key(int num, char **keytable, int *numtable)
@@ -1000,6 +1040,9 @@ int exec_args(int fd, int argc, char **argv)
 			             num2key(cfg.p_encap, pencapstr, pencapval));
 			        break;
 
+			case RESET:
+			        reset_interfaces(fd);
+			        break;
 #ifdef I4L_CTRL_CONF
 			case WRITECONF:
 			        if (args == 0) {
