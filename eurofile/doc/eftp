@@ -24,7 +24,7 @@ options:
 
 	-i ISDN_NO
 			specify the isdn no of the remote EUROFILE
-			server to connect to. The server will try to
+			server to connect to. The client will try to
 			set up an isdn connection to this number and
 			an X.25 DTE-DTE connection on top of this.
 

@@ -114,6 +114,9 @@ endif
 ifeq ($(CONFIG_FAQ),y)
 	SUBDIRS := $(SUBDIRS) FAQ
 endif
+ifeq ($(CONFIG_EUROFILE),y)
+	SUBDIRS := $(SUBDIRS) eurofile
+endif
 ifneq ($(SUBDIRS),)
 	ifeq ($(filter lib,$(SUBDIRS)),)
 		SUBDIRS := lib $(SUBDIRS)
