@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/07/01 20:40:07  akool
+ * isdnrate optimized
+ *
  * Revision 1.4  1999/06/30 20:53:28  akool
  * added "-t" option to "isdnrate"
  *
@@ -342,7 +345,7 @@ static int compute()
     Rate.start = start;
     Rate.now   = start + duration;
 
-    if (!getRate(&Rate, NULL)) {
+    if (!getRate(&Rate, NULL) && (Rate.Price != 99.99)) {
       sort[n].prefix = Rate.prefix;
       sort[n].rate = Rate.Charge;
       sort[n].explain = strdup(printrate(Rate));

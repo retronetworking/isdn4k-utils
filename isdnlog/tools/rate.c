@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1999/07/01 20:40:24  akool
+ * isdnrate optimized
+ *
  * Revision 1.29  1999/06/30 17:18:13  akool
  * isdnlog Version 3.39
  *
@@ -370,7 +373,7 @@ static void notice (char *fmt, ...)
 #ifdef STANDALONE
   fprintf(stderr, "%s\n", msg);
 #else
-  print_msg(PRT_ERR, "%s\n", msg);
+  print_msg(PRT_NORMAL, "%s\n", msg);
 #endif
 }
 
