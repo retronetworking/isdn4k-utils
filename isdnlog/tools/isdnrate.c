@@ -19,6 +19,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.27  1999/12/02 19:28:02  akool
+ * isdnlog-3.73
+ *  - isdnlog/tools/telrate/telrate.cgi.in faster
+ *  - doc/isdnrate.man ... -P
+ *  - isdnlog/tools/isdnrate.c ... -P
+ *  - isdnlog/tools/NEWS ... -P
+ *  - isdnlog/tools/rate-at.c ... 194040
+ *  - isdnlog/rate-at.dat
+ *  - isdnlog/tools/rate.c ... SIGSEGV
+ *
  * Revision 1.26  1999/12/01 21:47:25  akool
  * isdnlog-3.72
  *   - new rates for 01051
@@ -153,7 +163,7 @@
 static void print_header(void);
 
 static char *myname, *myshortname;
-static char options[] = "ab:d:f:h:l:op:st:v::x:CD::G:HLNP:S:TUVX::Z";
+static char options[] = "ab:d:f:h:l:op:st:v::x:CD::G:HLNP:O:S:TUVX::Z";
 static char usage[] = "%s: usage: %s [ -%s ] Destination ...\n";
 
 static int header = 0, best = MAXPROVIDER, table = 0, explain = 0;
@@ -189,6 +199,7 @@ static int lcr = 0;
 static TELNUM srcnum, destnum;
 static char *pid_dir = 0;
 static char *pid_file = 0;
+static char * socket_file = 0;
 
 typedef struct {
   int     prefix;
@@ -476,6 +487,10 @@ static int opts(int argc, char *argv[])
       break;
     case 'P':
       pid_dir = strdup(optarg);
+      break;
+    case 'O':
+      free(socket_file);
+      socket_file = strdup(optarg);
       break;
     case 'S':
       sortby = *optarg;
@@ -804,7 +819,7 @@ static int compute(char *num)
       if (first && header)
 	print_header();
       first = 0;
-      printf("@ %s\n", prefix2provider(Rate.prefix, prov));
+      printf("@ %s\n", prefix2provider_variant(Rate.prefix, prov));
       Rate.now = start + 1;
       for (j = 1; j < duration; j++) {
 	if (!getRate(&Rate, NULL) && (Rate.Price != 99.99)) {
@@ -827,7 +842,7 @@ static int compute(char *num)
       if (first && header)
 	print_header();
       first = 0;
-      printf("@ %s\n", prefix2provider(Rate.prefix, prov));
+      printf("@ %s\n", prefix2provider_variant(Rate.prefix, prov));
       for (j = 0; j < (explain == 98 ? 7 * 24 : 24); j++) {
 	if (!getRate(&Rate, NULL) && (Rate.Price != 99.99)) {
 	  printf("%d %.4f\n", j, Rate.Charge);
@@ -1316,7 +1331,7 @@ static int handle_client(int fd)
 void    catch_sig(int sig)
 {
   print_msg(PRT_A, "Signal %d\n", sig);
-  unlink(SOCKNAME);
+  unlink(socket_file);
   if(pid_dir)
     unlink(pid_file);
   err("Sig");
@@ -1325,7 +1340,7 @@ void    catch_sig(int sig)
 static void del_sock(void)
 {
   if (getppid() > 0) {
-    unlink(SOCKNAME);
+    unlink(socket_file);
     if(pid_dir)
       unlink(pid_file);
   }
@@ -1366,7 +1381,7 @@ static void setup_daemon()
   struct sockaddr_un sa;
   struct sockaddr_in client;
   fd_set  active_fd_set, read_fd_set;
-  char    sock_name[] = SOCKNAME;
+  char    *sock_name = socket_file;
   size_t  size;
   struct stat stat_buf;
   int     i;
@@ -1406,16 +1421,18 @@ static void setup_daemon()
 
   if (listen(sock, SOMAXCONN) < 0)
     err("Can't listen");
-  pid_file = malloc(strlen(pid_dir)+strlen(pidname)+2);
-  strcpy(pid_file, pid_dir);
-  if(pid_file[strlen(pid_file)-1] != '/')
-    strcat(pid_file,"/");
-  strcat(pid_file,pidname);
-  if((fp=fopen(pidname,"w"))==0)
-    fprintf(stderr,"Can't write %s\n" , pid_file);
-  else {
-    fprintf(fp,"%d\n",getpid());
-    fclose(fp);
+  if (pid_dir) {
+    pid_file = malloc(strlen(pid_dir)+strlen(pidname)+2);
+    strcpy(pid_file, pid_dir);
+    if(pid_file[strlen(pid_file)-1] != '/')
+      strcat(pid_file,"/");
+    strcat(pid_file,pidname);
+    if((fp=fopen(pidname,"w"))==0)
+      fprintf(stderr,"Can't write %s\n" , pid_file);
+    else {
+      fprintf(fp,"%d\n",getpid());
+      fclose(fp);
+    }
   }
   atexit(del_sock);
   FD_ZERO(&active_fd_set);
@@ -1468,7 +1485,7 @@ static int connect_2_daemon(int argc, char *argv[])
 {
   int     sock;
   struct sockaddr_un sa;
-  char    sock_name[] = SOCKNAME;
+  char    *sock_name = socket_file;
   size_t  size;
   int     i, c, len;
   char   *p, *q, buffer[BUFSIZ];
@@ -1531,6 +1548,7 @@ int     main(int argc, char *argv[], char *envp[])
 
   time(&start);
   splittime();
+  socket_file = strdup(SOCKNAME);
 
   if ((i = opts(argc, argv)) || need_dest == 0) {
     if (is_client)
@@ -1568,6 +1586,7 @@ int     main(int argc, char *argv[], char *envp[])
     print_msg(PRT_A, "\t-G which\tshow raw data\n");
     print_msg(PRT_A, "\t-H\tshow a header\n");
     print_msg(PRT_A, "\t-L\tshow a detailed list\n");
+    print_msg(PRT_A, "\t-O sOcket-path\twrite socket to this file (def:tmp/isdnrate)\n");
     print_msg(PRT_A, "\t-P pid-dir\twrite own PID to pid-dir/isdnrate.pid\n");
     print_msg(PRT_A, "\t-N\tparse the given telefon numbers\n");
     print_msg(PRT_A, "\t-S[v|n]\tsort by v=VBN, n=Name, default=Charge\n");
