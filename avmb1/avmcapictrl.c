@@ -6,6 +6,10 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.11  1999/06/21 15:30:45  calle
+ * extend error message if io port is out of range, now tell user that an
+ * AVM B1 PCI card must be added by loading module b1pci.
+ *
  * Revision 1.10  1998/07/15 15:08:20  calle
  * port and irq check changed.
  *
@@ -50,6 +54,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <ctype.h>
 #include <string.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
@@ -59,6 +64,8 @@
 #include <linux/isdn.h>
 #include <linux/b1lli.h>
 #include <linux/capi.h>
+/* new ioctls */
+#include <linux/kernelcapi.h>
 
 char *cmd;
 char *ctrldev;
@@ -72,6 +79,9 @@ void usage(void)
 	fprintf(stderr, "   or: %s load <bootcode> [contrnr [protocol [P2P | DN1:SPID1 [DN2:SPID2]]]] (load firmware)\n", cmd);
 	fprintf(stderr, "   or: %s reset [contrnr] (reset controller)\n", cmd);
 	fprintf(stderr, "   or: %s remove [contrnr] (reset controller)\n", cmd);
+#ifdef KCAPI_CMD_TRACE
+	fprintf(stderr, "   or: %s trace [contrnr] [off|short|on|full|shortnodate|nodata]\n", cmd);
+#endif
 	exit(1);
 }
 
@@ -323,6 +333,9 @@ int main(int argc, char **argv)
 	avmb1_loadandconfigdef ldef;
 	avmb1_resetdef rdef;
         avmb1_getdef gdef;
+#ifdef KCAPI_CMD_TRACE
+	kcapi_flagdef fdef;
+#endif
 	int newdriver;
 	char *dn1 = 0;
 	char *spid1 = 0;
@@ -523,13 +536,14 @@ int main(int argc, char **argv)
 		ioctl_s.cmd = AVMB1_RESETCARD;
 		ioctl_s.data = &rdef;
 		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
-			perror("\nioctl RESET");
+			perror("\nioctl RESETCARD");
 			exit(2);
 		}
 		close(fd);
 		return 0;
 	}
 	if (   !strcasecmp(argv[arg_ofs], "remove")
+            || !strcasecmp(argv[arg_ofs], "delete")
             || !strcasecmp(argv[arg_ofs], "del")) {
 		int contr = 1;
 
@@ -540,12 +554,56 @@ int main(int argc, char **argv)
 		ioctl_s.cmd = AVMB1_REMOVECARD;
 		ioctl_s.data = &rdef;
 		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
-			perror("\nioctl RESET");
+			perror("\nioctl REMOVECARD");
 			exit(2);
 		}
 		close(fd);
 		return 0;
 	}
+#ifdef KCAPI_CMD_TRACE
+	if (!strcasecmp(argv[arg_ofs], "trace")) {
+		char *s = 0;
+		fdef.contr = 1;
+		fdef.flag = 0;
+
+		if (ac > 2) {
+			s = argv[arg_ofs + 1];
+			if (isdigit(*s)) {
+			   fdef.contr = atoi(argv[arg_ofs + 1]);
+			   s = argv[arg_ofs + 2];
+			}
+		}
+		if (s) {
+			if (isdigit(*s)) {
+				fdef.flag = atoi(s);
+			} else if (strcasecmp(s, "off") == 0) {
+				fdef.flag = KCAPI_TRACE_OFF;
+			} else if (strcasecmp(s, "short") == 0) {
+				fdef.flag = KCAPI_TRACE_SHORT;
+			} else if (strcasecmp(s, "on") == 0) {
+				fdef.flag = KCAPI_TRACE_FULL;
+			} else if (strcasecmp(s, "full") == 0) {
+				fdef.flag = KCAPI_TRACE_FULL;
+			} else if (strcasecmp(s, "shortnodata") == 0) {
+				fdef.flag = KCAPI_TRACE_SHORT_NO_DATA;
+			} else if (strcasecmp(s, "nodata") == 0) {
+				fdef.flag = KCAPI_TRACE_FULL_NO_DATA;
+			} else {
+				usage();
+				exit(1);
+			}
+		}
+
+		ioctl_s.cmd = KCAPI_CMD_TRACE;
+		ioctl_s.data = &fdef;
+		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
+			perror("\nioctl TRACE");
+			exit(2);
+		}
+		close(fd);
+		return 0;
+	}
+#endif
 	usage();
 	return 0;
 }
