@@ -20,6 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/03/20 14:32:56  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.14  1999/03/15 21:27:48  akool
  * - isdnlog Version 3.06
  * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
@@ -681,8 +693,7 @@ int main(int argc, char *argv[], char *envp[])
 		int len, i, zone;
 
 
-	    	initSondernummern(msg);
-	    	/* print_msg(PRT_NORMAL, "%s\n", msg); */
+	    	initSondernummern(snfile, NULL);
             	initTarife(msg);
 	    	/* print_msg(PRT_NORMAL, "%s\n", msg); */
 

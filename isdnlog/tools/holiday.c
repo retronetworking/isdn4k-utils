@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/03/16 17:38:03  akool
+ * - isdnlog Version 3.07
+ * - Michael Reinelt's patch as of 16Mar99 06:58:58
+ * - fix a fix from yesterday with sondernummern
+ * - ignore "" COLP/CLIP messages
+ * - dont show a LCR-Hint, if same price
+ *
  * Revision 1.1  1999/03/14 12:16:23  akool
  * - isdnlog Version 3.04
  * - general cleanup
@@ -56,11 +63,15 @@
 
 #define _HOLIDAY_C_
 
+#ifdef STANDALONE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
 #include <time.h>
+#endif
+#include "isdnlog.h"
+#include "tools.h"
 #include "holiday.h"
 
 #define LENGTH 120  /* max length of lines in data file */
@@ -75,7 +86,7 @@ typedef struct {
 
 static int        line = 0;
 static char      *Weekday[7] = { NULL, };
-static int        nHoliday = 0; 
+static int        nHoliday = 0;
 static HOLIDATE  *Holiday = NULL;
 
 static char *defaultWeekday[] = { "Monday",
@@ -109,6 +120,7 @@ static julian date2julian(int y, int m, int d)
  return (146097*(y/100))/4+(1461*(y%100))/4+(153*m+2)/5+d;
 }
 
+#if 0 /* not used by now */
 static void julian2date(julian jd, int *yp, int *mp, int *dp)
 {
   julian j,c,y,m,d;
@@ -127,6 +139,7 @@ static void julian2date(julian jd, int *yp, int *mp, int *dp)
   *mp=m;
   *dp=d;
 }
+#endif
 
 static julian getEaster(int year)
 {
@@ -156,7 +169,7 @@ static char *strip (char *s)
       *p='\0';
       break;
     }
-  for (p--; p>s && (*p==' '||*p=='\t'); p--) 
+  for (p--; p>s && (*p==' '||*p=='\t'); p--)
     *p='\0';
   return s;
 }
@@ -164,7 +177,7 @@ static char *strip (char *s)
 void exitHoliday(void)
 {
   int i;
-  
+
   for (i=0; i<7; i++) {
     if (Weekday[i]) {
       free (Weekday[i]);
@@ -192,13 +205,13 @@ int initHoliday(char *path, char **msg)
 
   for (i=1; i<7; i++)
     Weekday[i]=strdup(defaultWeekday[i]);
-  
-  if (*path=='\0')
+
+  if ((path == NULL) || (*path=='\0'))
     return 0;
 
   if ((stream=fopen(path,"r"))==NULL)
     return -1;
-  
+
   line=0;
   while ((s=fgets(buffer,LENGTH,stream))!=NULL) {
     line++;
@@ -252,7 +265,7 @@ int initHoliday(char *path, char **msg)
     }
   }
   fclose(stream);
-  
+
   if (msg) snprintf (*msg=message, LENGTH, "Holiday Version %s loaded [%d entries from %s]",
 	   version, nHoliday, path);
 
@@ -263,14 +276,14 @@ int isHoliday(struct tm *tm, char **name)
 {
   int i;
   julian easter, day;
-  
+
   day=date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday);
   easter=getEaster(tm->tm_year+1900);
 
   for (i=0; i<nHoliday; i++) {
     if ((Holiday[i].month==-1 && Holiday[i].day==day-easter) ||
 	(Holiday[i].month==tm->tm_mon+1  && Holiday[i].day==tm->tm_mday)) {
-      if(name) 
+      if(name)
 	*name=Holiday[i].name;
       return 1;
     }
@@ -281,10 +294,10 @@ int isHoliday(struct tm *tm, char **name)
 int getDay(struct tm *tm, char **name)
 {
   julian day;
-  
+
   if (isHoliday(tm, name))
     return HOLIDAY;
-  
+
   day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+1;
   if (name)
     *name=Weekday[day-1];
@@ -299,7 +312,7 @@ void main (int argc, char *argv[])
   char *msg, *name;
   struct tm tm;
 
-  
+
   initHoliday("../holiday-at.dat", &msg);
   printf ("%s\n", msg);
 
@@ -307,7 +320,7 @@ void main (int argc, char *argv[])
     tm.tm_mday=atoi(strsep(argv+i,"."));
     tm.tm_mon=atoi(strsep(argv+i,"."))-1;
     tm.tm_year=atoi(strsep(argv+i,"."))-1900;
-    
+
     d=getDay(&tm,&name);
     printf ("%02d.%02d.%04d\t%d=%s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,name);
   }

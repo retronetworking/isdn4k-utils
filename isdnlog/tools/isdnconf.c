@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.23  1999/03/15 21:28:44  akool
+ * - isdnlog Version 3.06
+ * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
+ * - isdnconf: added a small LCR-feature - simply try "isdnconf -c 069"
+ * - isdnlog: dont change CHARGEINT, if rate is't known!
+ * - sonderrufnummern 1.02 [15-Mar-99] :: added WorldCom
+ * - tarif.dat 1.09 [15-Mar-99] :: added WorldCom
+ * - isdnlog now correctly handles the new "Ortstarif-Zugang" of UUnet
+ *
  * Revision 1.22  1999/02/28 19:33:39  akool
  * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
  * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -130,6 +139,7 @@
 /****************************************************************************/
 
 #include "tools.h"
+#include "sondernummern.h"
 
 /****************************************************************************/
 
@@ -896,7 +906,6 @@ void setDefaults()
   } /* if */
 
   currency_mode = AOC_UNITS;
-
 } /* setDefaults */
 
 /****************************************************************************/
@@ -1023,6 +1032,11 @@ static int _readconfig(char *_myname)
   logfile        = LOGFILE;
   callfile       = NULL;
   callfmt        = NULL;
+  snfile         = NULL;
+  holifile       = NULL;
+  rateconf       = NULL;
+  ratefile       = NULL;
+  lcdfile        = NULL;
   start_procs.infoargs = NULL;
   start_procs.flags    = 0;
   conf_dat       = NULL;
@@ -1161,6 +1175,21 @@ static int Set_Globals(section *SPtr)
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CALLFMT)) != NULL)
 			callfmt = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_SNFILE)) != NULL)
+			snfile = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_HOLIFILE)) != NULL)
+			holifile = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_RATECONF)) != NULL)
+			rateconf = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_RATEFILE)) != NULL)
+			ratefile = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_LCDFILE)) != NULL)
+			lcdfile = CEPtr->value;
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CW)) != NULL)
 			CityWeekend = toupper(*(CEPtr->value)) == 'Y'?1:0;

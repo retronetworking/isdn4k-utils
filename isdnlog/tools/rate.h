@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/03/16 17:38:10  akool
+ * - isdnlog Version 3.07
+ * - Michael Reinelt's patch as of 16Mar99 06:58:58
+ * - fix a fix from yesterday with sondernummern
+ * - ignore "" COLP/CLIP messages
+ * - dont show a LCR-Hint, if same price
+ *
  * Revision 1.1  1999/03/14 12:16:43  akool
  * - isdnlog Version 3.04
  * - general cleanup
@@ -56,6 +63,6 @@ typedef struct {
 void  exitRate(void);
 int   initRate(char *conf, char *dat, char **msg);
 int   getRate(RATE *Rate, char **msg);
-int   getLeastCost(RATE *Rate);
+int   getLeastCost(RATE *Rate, RATE *LC);
 
 #endif

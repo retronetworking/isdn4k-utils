@@ -24,6 +24,18 @@
  *
  *
  * $Log$
+ * Revision 1.59  1999/03/20 14:33:53  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.58  1999/03/15 21:28:32  akool
  * - isdnlog Version 3.06
  * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
@@ -823,8 +835,10 @@ int read_logfile(char *myname)
   auto     char       msg[BUFSIZ];
 
 
+  initSondernummern(snfile, NULL);
+  initHoliday(holifile, NULL);
+  initRate(rateconf, ratefile, NULL);
   initTarife(msg);
-  initSondernummern(msg);
   interns0 = 3; /* FIXME */
 
   msn_sum = calloc(mymsns + 1, sizeof(double));

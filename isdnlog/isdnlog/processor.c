@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.46  1999/03/20 16:54:45  akool
+ * isdnlog 3.09 : support for all Internet-by-call numbers
+ *
  * Revision 1.45  1999/03/20 14:33:07  akool
  * - isdnlog Version 3.08
  * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
@@ -5092,3 +5095,20 @@ void processcint()
     } /* if */
   } /* for */
 } /* processcint */
+
+void lcd4linux (void)
+{
+  static int lcd = -1;
+
+  if (lcdfile == NULL)
+    return;
+
+  if (lcd == -1) {
+    if ((lcd = open (lcdfile, O_WRONLY | O_NDELAY)) == -1) {
+      print_msg (PRT_ERR,"fopen(%s) failed: %s\n", lcdfile, strerror(errno));
+      lcdfile = NULL;
+      return;
+    }
+
+  }
+}

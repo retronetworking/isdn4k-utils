@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1999/01/24 19:02:25  akool
+ *  - second version of the new chargeint database
+ *  - isdnrep reanimated
+ *
  * Revision 1.11  1998/11/24 20:52:46  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -66,6 +70,9 @@
 
 #define PUBLIC extern
 #include <tools.h>
+#include <sondernummern.h>
+#include <holiday.h>
+#include <rate.h>
 
 /*****************************************************************************/
 

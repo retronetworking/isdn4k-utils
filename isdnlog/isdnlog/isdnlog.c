@@ -19,6 +19,18 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.37  1999/03/20 14:33:02  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.36  1999/03/14 14:26:28  akool
  * - isdnlog Version 3.05
  * - new Option "-u1" (or "ignoreRR=1")
@@ -251,6 +263,12 @@
 /*****************************************************************************/
 
 #define X_FD_ISSET(fd, mask)    ((fd) >= 0 && FD_ISSET(fd,mask))
+
+#ifdef Q931
+#define DO(action)  if (!q931dmp) action
+#else
+#define DO(action)  action
+#endif
 
 static void loop(void);
 static void init_variables(int argc, char* argv[]);
@@ -1002,7 +1020,7 @@ int main(int argc, char *argv[], char *envp[])
   register int    i, res = 0;
   auto     int    lastarg;
   auto     char   rlogfile[PATH_MAX];
-  auto	   char	  msg[BUFSIZ];
+  auto	   char	  msg[BUFSIZ], *version;
   auto     char **devices = NULL;
   sigset_t        unblock_set;
 #ifdef TESTCENTER
@@ -1159,8 +1177,8 @@ int main(int argc, char *argv[], char *envp[])
   	    mymsns         = 3;
   	    mycountry      = "+49";
   	    myarea   	   = "6171";
-        currency   	   = NULL;
-        dual	         = 1;
+            currency   	   = NULL;
+            dual	   = 1;
   	    chargemax  	   = 0.0;
   	    connectmax 	   = 0.0;
   	    bytemax        = 0.0;
@@ -1176,17 +1194,11 @@ int main(int argc, char *argv[], char *envp[])
           else
 #endif
           {
-#ifdef Q931
-      	    if (!q931dmp)
-#endif
-    	      print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION);
-
-	    initSondernummern(msg);
+	    DO(print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION));
 
 #ifdef Q931
       	      if (!q931dmp)
 #endif
-              	  print_msg(PRT_NORMAL, "%s\n", msg);
 
             if (readconfig(myshortname) < 0)
               Exit(30);
@@ -1195,11 +1207,11 @@ int main(int argc, char *argv[], char *envp[])
           } /* if */
 
     	  if (replay) {
-						sprintf(rlogfile, "%s.rep", logfile);
-			      logfile = rlogfile;
-					}
+	    sprintf(rlogfile, "%s.rep", logfile);
+	    logfile = rlogfile;
+	  }
 	  else {
-          	append_element(&devices,isdnctrl);
+            append_element(&devices,isdnctrl);
 
             switch (i = handle_runfiles(myshortname,devices,START_PROG)) {
               case  0 : break;
@@ -1214,8 +1226,8 @@ int main(int argc, char *argv[], char *envp[])
           if (replay || ((sockets[ISDNINFO].descriptor = open(INFO, O_RDONLY | O_NONBLOCK)) >= 0)) {
 
             if (readkeyboard) {
-							raw_mode(1);
-							sockets[STDIN].descriptor = dup(fileno(stdin));
+	      raw_mode(1);
+	      sockets[STDIN].descriptor = dup(fileno(stdin));
             } /* if */
 
             now();
@@ -1227,13 +1239,17 @@ int main(int argc, char *argv[], char *envp[])
 	    mysql_dbOpen();
 #endif
 
-            initTarife(msg);
+	    initSondernummern(snfile, &version);
+	    DO(if (*version) print_msg(PRT_NORMAL, "%s\n", version));
 
-#ifdef Q931
-      	    if (!q931dmp)
-#endif
-            if (*msg)
-              print_msg(PRT_NORMAL, "%s\n", msg);
+	    initHoliday(holifile, &version);
+	    DO(if (*version) print_msg(PRT_NORMAL, "%s\n", version));
+
+	    initRate(rateconf, ratefile, &version);
+	    DO(if (*version) print_msg(PRT_NORMAL, "%s\n", version));
+
+            initTarife(msg);
+            DO(if (*msg) print_msg(PRT_NORMAL, "%s\n", msg));
 
             loop();
 
@@ -1276,10 +1292,7 @@ int main(int argc, char *argv[], char *envp[])
       res = 2;
     } /* else */
 
-#ifdef Q931
-    if (!q931dmp)
-#endif
-      print_msg(PRT_NORMAL, "%s Version %s exiting\n", myshortname, VERSION);
+    DO(print_msg(PRT_NORMAL, "%s Version %s exiting\n", myshortname, VERSION));
 
   } /* else */
 
