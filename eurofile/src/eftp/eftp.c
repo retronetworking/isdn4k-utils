@@ -104,9 +104,8 @@
 
    */
 
-       
-
-
+/* for strsignal() */
+#define _GNU_SOURCE       
 
 #include <stdio.h>
 #include <termios.h>
@@ -114,19 +113,20 @@
 #include <sys/time.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 #include <signal.h>
 #include <sys/socket.h>
 #include <sys/ioctl.h>
 #include <sys/wait.h>
 #include <linux/x25.h>
-/* for error mask setting */
-#include <tdu_user.h>
-#include <eft.h>
 #include <string.h>
 #include <stdlib.h>
 #include <glob.h>
 #include <fnmatch.h>
 #include <ctype.h>
+
+#include <tdu_user.h>
+#include <eft.h>
 
 #define MAX_COMMAND_LINE_LEN 4096
 

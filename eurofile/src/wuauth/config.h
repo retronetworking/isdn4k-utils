@@ -45,7 +45,9 @@
 #define __USE_POSIX
 #endif
 #include <limits.h>
+#ifndef NBBY
 #define NBBY 8
+#endif
 #ifndef NCARGS
 #ifdef _POSIX_ARG_MAX
 #define NCARGS _POSIX_ARG_MAX

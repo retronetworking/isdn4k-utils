@@ -11,10 +11,11 @@ struct eft;
 
 extern int eft_connect (struct eft *, unsigned char *);
 extern int eft_disconnect (struct eft *);
+#ifdef FD_SET
 struct timeval;
 extern int eft_select( struct eft *, int, fd_set *,
 		       fd_set *, fd_set *, struct timeval *);
-
+#endif
 extern struct eft * eft_make_instance();
 extern int eft_attach_socket(struct eft *, int);
 extern int eft_get_socket(struct eft *);

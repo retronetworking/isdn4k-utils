@@ -17,14 +17,15 @@
     Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 */ 
+#include <sys/stat.h>
+#include <sys/param.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/stat.h>
-#include <sys/param.h>
 #include <time.h>
 #include <errno.h>
+#include <stdlib.h> /*NEW libc2: realpath*/
 
 #include <pwd.h>
 #include <sys/types.h>
@@ -101,7 +102,6 @@ static int assoc_ind( struct tdu_user *usr, struct tdu_param *par)
 			eft_set_flags(eft,flags|EFT_FLAG_CASEFIX_TN|
 				      EFT_FLAG_CASEFIX_FS|EFT_FLAG_SLASHFIX);
 		}
-
 		/* 20.11.98, ms@msdatec.de: mapping to user eft_map_to_user, if 	  failed 
 		 *
 		 * Slightly modified and moved here (1999-01-07) -- HE:
@@ -574,3 +574,6 @@ void eft_set_auth(struct eft * eft,
 	eft->setup_user = setup_user ? *setup_user : NULL;
 	eft->cleanup_user = cleanup_user ? *cleanup_user : NULL;
 }
+
+
+

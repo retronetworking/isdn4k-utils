@@ -83,10 +83,10 @@ struct aclmember **next;
 /* FUNCTION  : parseacl                                                  */
 /* PURPOSE   : Parse the acl buffer into its components                  */
 /* ARGUMENTS : A pointer to the acl file                                 */
-/* RETURNS   : nothing                                                   */
+/* RETURNS   : != 0 if error is detected                                 */
 /*************************************************************************/
 
-void
+int
 #ifdef __STDC__
 parseacl(void)
 #else
@@ -101,7 +101,7 @@ parseacl()
      *acltail;
 
     if (!aclbuf || !(*aclbuf))
-        return;
+        return 1;
 
     aclmembers = (struct aclmember *) NULL;
     acltail = (struct aclmember *) NULL;
@@ -141,6 +141,7 @@ parseacl()
                 aclmembers = member;
         }
     }
+    return 0;
 }
 
 /*************************************************************************/
@@ -196,3 +197,4 @@ char *aclpath;
     (void) fclose(aclfile);
     return (1);
 }
+

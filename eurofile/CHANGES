@@ -19,6 +19,19 @@
 
 $Log$
 
+- [chg] src/eft* #include <stdlib.h> where needed for realpath()
+	(for glibc2 support)
+- [imp] added paranoia check in eftd.c authentification handling.
+- [imp] wuauth/{main,access,acl}.c: reject login if access file is required
+	but opening or reading fails
+- [imp] wuauth/{*.c,config.h}: changed ordering of #include's and added
+	some conditional #define's to suppress glibc2 warnings
+ 
+
+Revision 1.5  1999/07/26 22:04:24  he
+eftp suid support
+
+
 - [imp] eftp.c, eft_i4l.c: suid support with isdn connect permission
 	check added.
 - [chg] eftd.sh, eft.conf and several other doc files modified to
