@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1997/06/24 23:35:33  luethje
+ * isdnctrl can use a config file
+ *
  * Revision 1.12  1997/06/22 23:03:34  luethje
  * In subsection FLAGS it will be checked if the section name FLAG is korrect
  * isdnlog recognize calls abroad
@@ -57,7 +60,7 @@
 /****************************************************************************/
 
 
-#define  PUBLIC /**/
+#define  PUBLIC extern
 #define  _ISDNCONF_C_
 
 /****************************************************************************/
