@@ -14,8 +14,8 @@
 #include <dirent.h>
 #include <ctype.h>
 #include <signal.h>
-#include <netdb.h>
 #include <errno.h>
+#include <netdb.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
@@ -26,7 +26,8 @@
 
 /** Variables ************************************************************/
 
-char *compressions[] = {
+char *compressions[] =
+{
    "?", "?", "ADPCM-2", "ADPCM-3", "ADPCM-4", "ALAW", "ULAW"
 };
 

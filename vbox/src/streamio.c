@@ -38,7 +38,7 @@ streamio_t *streamio_open(char *name)
 			{
 				if ((file = malloc(status.st_size + 3)))
 				{
-					if ((save = malloc(strlen(name))))
+					if ((save = malloc(strlen(name) + 1)))
 					{
 						xstrncpy(save, name, strlen(name));
 

@@ -2,11 +2,9 @@
 ##
 ## $Id$
 
-CURRLANG="de"
+./utils/mksed <./doc/de/vbox.sgml.in >/home/www/local/tools/vbox/vbox.sgml
 
-./utils/mksed <./doc/$CURRLANG/vbox.sgml.in >/home/www/userspace/michael/vbox.sgml
+cd /home/www/local/tools/vbox
 
-cd /home/www/userspace/michael
-
-sgml2html -l vbox.sgml
+sgml2html -img -l vbox.sgml
 sgml2txt -l vbox.sgml

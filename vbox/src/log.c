@@ -34,7 +34,8 @@ static long	 logdbg = L_DEFAULT;
 
 /** Structures ***********************************************************/
 
-static struct logsequence logsequence[] = {
+static struct logsequence logsequence[] =
+{
 	{ ETX ,  "<ETX>" }, { NL  ,   "<NL>" }, { CR  ,   "<CR>" },
 	{ DLE ,  "<DLE>" }, { XON ,  "<XON>" }, { XOFF, "<XOFF>" },
 	{ DC4 ,  "<DC4>" }, { CAN ,  "<CAN>" }, { 0   ,     NULL }
