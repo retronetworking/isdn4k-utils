@@ -152,6 +152,16 @@
 
 /*****************************************************************************/
 
+#define DEF_FMT "  %t %D %14H %T %-14F %u  %I %O"
+
+/*****************************************************************************/
+
+#define F_TOP    1
+#define F_BODY   2
+#define F_BOTTOM 3
+
+/*****************************************************************************/
+
 typedef struct {
 	int   type;
 	char *string;
@@ -168,7 +178,7 @@ static int add_sum_calls(sum_calls *s1, sum_calls *s2);
 static int print_sum_calls(sum_calls *s, int computed);
 static int add_one_call(sum_calls *s1, one_call *s2, double units);
 static int clear_sum(sum_calls *s1);
-static char *print_currency(int units, double money, int Format);
+static char *print_currency(int units, double money, int Format, int computed);
 static void strich(int type);
 static int n_match(char *Pattern, char* Number, char* version);
 static int set_caller_infos(one_call *cur_call, char *string, time_t from);
@@ -179,6 +189,9 @@ static int print_bottom(double unit, char *start, char *stop);
 static char *get_time_value(time_t t, int *day, int flag);
 static char **string_to_array(char *string);
 static prt_fmt** get_format(char *format);
+static char *set_byte_string(char Direction, double Bytes);
+static int print_line(int flags, one_call *cur_call, int computed);
+static char *append_string(char **string, prt_fmt *fmt_ptr, char* value);
 
 /*****************************************************************************/
 
@@ -237,10 +250,11 @@ int read_logfile(char *myname)
   one_call            cur_call;
 
 
-/*
-get_format(lineformat);
-exit(0);
-*/
+	if (lineformat == NULL)
+		lineformat = DEF_FMT;
+
+	if (get_format(lineformat) == NULL)
+		return -1;
 
   clear_sum(&day_sum);
   clear_sum(&day_com_sum);
@@ -457,14 +471,14 @@ static int print_bottom(double unit, char *start, char *stop)
 				          !numbers?known[i]->who:known[i]->num,
 				          known[i]->usage[DIALOUT],
 				          double2clock(known[i]->dur[DIALOUT]),
-				          print_currency(known[i]->eh,known[i]->dm,7));
+				          print_currency(known[i]->eh,known[i]->dm,7,0));
 			} /* if */
 		} /* for */
 
 		if (restusage) {
 			print_msg(PRT_NORMAL,"%-14s %4d call(s) %s  %s\n",
 			          S_UNKNOWN, restusage, double2clock(restdur),
-			          print_currency(resteh,restdm,7));
+			          print_currency(resteh,restdm,7,0));
 		} /* if */
 
 		print_msg(PRT_NORMAL,"\n");
@@ -510,7 +524,7 @@ static int print_bottom(double unit, char *start, char *stop)
 
 			print_msg(PRT_NORMAL,"Zone %d : %-15s %4d call(s) %s  %s\n", i, p,
 			          zones_usage[i], double2clock(zones_dur[i]),
-			          print_currency(zones[i],zones_dm[i],7));
+			          print_currency(zones[i],zones_dm[i],7,0));
 		} /* if */
 
 		if (resteh)
@@ -518,9 +532,9 @@ static int print_bottom(double unit, char *start, char *stop)
 			print_msg(PRT_NORMAL,"Zone x : %-15s %4d call(s) %s  %s\n", S_UNKNOWN,
 			          restusage, double2clock(restdur),
 #ifdef ISDN_NL
-			          print_currency(resteh, resteh * unit + restusage * 0.0825,7));
+			          print_currency(resteh, resteh * unit + restusage * 0.0825,7,0));
 #else
-			          print_currency(resteh, resteh * unit, 7));
+			          print_currency(resteh, resteh * unit, 7,0));
 #endif
 		}
 
@@ -556,9 +570,148 @@ static int print_bottom(double unit, char *start, char *stop)
 
 /*****************************************************************************/
 
-static int print_line(int flags, char *format)
+static int print_line(int flags, one_call *cur_call, int computed)
 {
+	char *string = NULL;
+	prt_fmt **fmtstring = get_format(NULL);
+	int dir;
+
+	while (*fmtstring != NULL)
+	{
+		if ((*fmtstring)->type == FMT_FMT)
+		{
+			switch((*fmtstring)->s_type)
+			{
+				/* time: */
+				case 't': append_string(&string,*fmtstring,
+				                        get_time_value(0,NULL,GET_TIME));
+				          break;
+				/* duration: */
+				case 'D': append_string(&string,*fmtstring,
+				                        double2clock(cur_call->duration));
+				          break;
+				/* Home (number): */
+				case 'h': if (!numbers)
+				          {
+				          	append_string(&string,*fmtstring,
+				                        cur_call->num[cur_call->dir?CALLED:CALLING]);
+				          	break;
+				          }
+				/* Home (if possible the name): */
+				case 'H': dir = cur_call->dir?CALLED:CALLING;
+				          append_string(&string,*fmtstring,
+				                        cur_call->who[dir][0]?cur_call->who[dir]:cur_call->num[dir]);
+				          break;
+				/* The other (number): */
+				case 'f': if (!numbers)
+				          {
+				          	append_string(&string,*fmtstring,
+				                        cur_call->num[cur_call->dir?CALLED:CALLING]);
+				          	break;
+				          }
+				/* The other (if possible the name): */
+				case 'F': dir = cur_call->dir?CALLING:CALLED;
+				          append_string(&string,*fmtstring,
+				                        cur_call->who[dir][0]?cur_call->who[dir]:cur_call->num[dir]);
+				          break;
+				/* The "To"-sign (-> or <-): */
+				case 'T': append_string(&string,*fmtstring,
+				                        cur_call->dir?"<-":"->");
+				          break;
+				/* The units or/and a message: */
+				case 'u': if (cur_call->duration || cur_call->eh > 0)
+				          {
+				          	if (cur_call->dir)
+				          		append_string(&string,NULL,"                     ");
+				          	else
+				          		append_string(&string,*fmtstring,print_currency(cur_call->eh,cur_call->dm,4,computed));
+				          }
+				          else
+				          if (cur_call->cause != -1)
+				          	append_string(&string,*fmtstring,qmsg(TYPE_CAUSE, VERSION_EDSS1, cur_call->cause));
+				          break;
+				/* In-Bytes: */
+				case 'I': if (cur_call->ibytes)
+				          	append_string(&string,*fmtstring,set_byte_string('I',(double)cur_call->ibytes));
+				          break;
+				/* Out-Bytes: */
+				case 'O': if (cur_call->obytes)
+				          	append_string(&string,*fmtstring,set_byte_string('O',(double)cur_call->obytes));
+				          break;
+				default : print_msg(PRT_ERR, "Internal Error: unknown format `%c'!\n",(*fmtstring)->type);
+				          break;
+			}
+		}
+		else
+		if ((*fmtstring)->type == FMT_STR)
+		{
+			append_string(&string,NULL,(*fmtstring)->string);
+		}
+		else
+			print_msg(PRT_ERR, "Internal Error: unknown format type `%d'!\n",(*fmtstring)->type);
+
+		fmtstring++;
+	}
+
+	append_string(&string,NULL,"\n");
+	print_msg(PRT_NORMAL,"%s",string);
+	free(string);
+
 	return 0;
+}
+
+/*****************************************************************************/
+
+static char *append_string(char **string, prt_fmt *fmt_ptr, char* value)
+{
+	char tmpstr[256];
+	char tmpfmt[20];
+
+	if (fmt_ptr != NULL)
+		sprintf(tmpfmt,"%%%ss",fmt_ptr->range);
+	else
+		strcpy(tmpfmt,"%s");
+
+	sprintf(tmpstr,tmpfmt,value);
+	
+	if (*string == NULL)
+		*string = (char*) calloc(strlen(tmpstr)+1,sizeof(char));
+	else
+		*string = (char*) realloc(*string,sizeof(char)*(strlen(*string)+strlen(tmpstr)+1));
+
+	if (*string == NULL)
+	{
+		print_msg(PRT_ERR, nomemory);
+		return NULL;
+	}
+
+	strcat(*string,tmpstr);
+	return *string;
+}
+
+/*****************************************************************************/
+
+static char *set_byte_string(char Direction, double Bytes)
+{
+	static char string[20];
+
+
+	if (!Bytes)
+		strcpy(string,"            ");
+	else
+	if (Bytes >= 9999999999.0)
+ 		sprintf(string,"%c=%s GB",Direction,double2str(Bytes/1073741824,7,2,0));
+	else
+	if (Bytes >= 9999999)
+		sprintf(string,"%c=%s MB",Direction,double2str(Bytes/1048576,7,2,0));
+	else
+	if (Bytes >= 9999)
+		sprintf(string,"%c=%s kB",Direction,double2str(Bytes/1024,7,2,0));
+	else
+	if (Bytes < 9999)
+		sprintf(string,"%c=%7ld B ",Direction,(long int) Bytes);
+
+	return string;
 }
 
 /*****************************************************************************/
@@ -609,7 +762,7 @@ static prt_fmt** get_format(char *format)
 					append_element(&RetCode,fmt);
 				}
 
-				*End = '\0';
+				*Range = *End = '\0';
 				if ((num = sscanf(Ptr+1,"%[^a-zA-Z]%c%[^\n]",Range,&Type,End)) > 1 ||
 				    (num = sscanf(Ptr+1,"%c%[^\n]",&Type,End))                 > 0   )
 				{
@@ -674,13 +827,6 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 	auto double  takt;
   auto int     computed = 0, go, zone = 1, zeit = -1;
 
-	print_msg(PRT_NORMAL,"  %s %s", get_time_value(0,NULL,GET_TIME),
-	                                double2clock(cur_call->duration));
-
-	if (cur_call->dir)
-		print_msg(PRT_NORMAL," %14s <- %-14s", cur_call->num[CALLED], cur_call->num[CALLING]);
-	else
-		print_msg(PRT_NORMAL," %14s -> %-14s", cur_call->num[CALLING], cur_call->num[CALLED]);
 
 	if (cur_call->pay && !cur_call->eh)
 	/* Falls Betrag vorhanden und Einheiten nicht, Einheiten berechnen */
@@ -775,30 +921,14 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 
 				zones_usage[known[nx[CALLED]]->zone]++;
 			} /* if */
-
-			print_msg(PRT_NORMAL," %s", print_currency(cur_call->eh,cur_call->dm,4));
-
-			if (computed)
-				print_msg(PRT_NORMAL," *");
 		} /* else */
 	}
 	else {
 		if (cur_call->cause != -1)
-		{
-			print_msg(PRT_NORMAL," %s", qmsg(TYPE_CAUSE, VERSION_EDSS1, cur_call->cause));
 			day_sum.err++;
-		}
 	} /* else */
 
-	print_msg(PRT_NORMAL, " %*s", cur_call->dir ? 21 : 0, "");
-
-	if (cur_call->ibytes)
-		print_msg(PRT_NORMAL, " I=%s kB", double2str((double)cur_call->ibytes / 1024.0, 10, 2, 0));
-
-	if (cur_call->obytes)
-		print_msg(PRT_NORMAL, " O=%s kB", double2str((double)cur_call->obytes / 1024.0, 10, 2, 0));
-
-	print_msg(PRT_NORMAL,"\n");
+	print_line(F_BODY,cur_call,computed);
 	return 0;
 }
 
@@ -1355,7 +1485,7 @@ static int show_msn(one_call *cur_call)
 
 /*****************************************************************************/
 
-static char *print_currency(int units, double money, int Format)
+static char *print_currency(int units, double money, int Format, int computed)
 {
   static char RetCode[256];
 
@@ -1365,6 +1495,9 @@ static char *print_currency(int units, double money, int Format)
   else
     sprintf(RetCode,"%.*s     %s %s",Format,"          ",
       double2str(money,8,2,0),currency);
+
+	if (computed)
+		strcat(RetCode," *");
 
   return RetCode;
 }
@@ -1382,14 +1515,14 @@ static int print_sum_calls(sum_calls *s, int computed)
       s->out,
       double2clock(s->dout),
       s->err,
-      print_currency(s->eh,s->dm,7),
+      print_currency(s->eh,s->dm,7,computed),
       double2str((double)s->ibytes / 1024.0, 10, 2, 0),
       double2str((double)s->obytes / 1024.0, 10, 2, 0));
   else
-    sprintf(String,"                 %3d OUT=%s,                %s *\n",
+    sprintf(String,"                 %3d OUT=%s,                %s\n",
       s->out,
       double2clock(s->dout),
-      print_currency(s->eh,s->dm,7));
+      print_currency(s->eh,s->dm,7,computed));
 
   return print_msg(PRT_NORMAL,String);
 }
