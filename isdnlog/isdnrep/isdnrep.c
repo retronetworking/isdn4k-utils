@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1997/05/28 21:23:03  luethje
+ * isdnlog option -b is working again ;-)
+ * isdnlog has new \$x variables
+ * README completed
+ *
  * Revision 1.27  1997/05/25 19:41:06  luethje
  * isdnlog:  close all files and open again after kill -HUP
  * isdnrep:  support vbox version 2.0
@@ -3048,6 +3053,14 @@ static char *create_vbox_file(char *file, int *compression)
 		}
 
 		close(fdout);
+
+		if (len < 0)
+		{
+			print_msg(PRT_ERR,"Can not read from file `%s': %s!\n",file, strerror(errno));
+			close(fdin);
+			unlink(fileout);
+			return NULL;
+		}
 	}
 	
 	close(fdin);
