@@ -21,7 +21,7 @@ MAJ=45
 MIN=0
 rm -f $DEV/isdnctrl* $DEV/ippp*
 while [ $MIN -lt 64 ] ; do
-#	mknod -m 600 $DEV/isdn$MIN c $MAJ $MIN
+	mknod -m 600 $DEV/isdn$MIN c $MAJ $MIN
 	mknod -m 660 $DEV/isdnctrl$MIN c $MAJ `expr $MIN + 64`
 	mknod -m 600 $DEV/ippp$MIN c $MAJ `expr $MIN + 128`
 	MIN=`expr $MIN + 1`
