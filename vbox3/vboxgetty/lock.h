@@ -9,7 +9,7 @@
 
 /** Prototypes ***********************************************************/
 
-extern int	 lock_create(char *);
-extern int	 lock_remove(char *);
+extern int	 lock_create(unsigned char *);
+extern int	 lock_remove(unsigned char *);
 
 #endif /* _VBOX_LOCK_H */

@@ -4,9 +4,20 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.1  1998/07/06 09:05:37  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 */             
 
-#include "../config.h"
+#ifdef HAVE_CONFIG_H
+#  include "../config.h"
+#endif
 
 #if TIME_WITH_SYS_TIME
 #   include <sys/time.h>
@@ -40,12 +51,12 @@ static char *weekdaynames[] =
 
 /** Prototypes ***********************************************************/
 
-static int		vboxrc_check_user_section(FILE *, struct vboxcall *, char *);
-static int		vboxrc_goto_section(FILE *, char *);
-static int		vboxrc_parse_time(char *);
-static int		vboxrc_parse_days(char *);
-static time_t	vboxrc_return_time(time_t, char *, int);
-static void		vboxrc_return_timestr(time_t, char *);
+static int		vboxrc_check_user_section(FILE *, struct vboxcall *, unsigned char *);
+static int		vboxrc_goto_section(FILE *, unsigned char *);
+static int		vboxrc_parse_time(unsigned char *);
+static int		vboxrc_parse_days(unsigned char *);
+static time_t	vboxrc_return_time(time_t, unsigned char *, int);
+static void		vboxrc_return_timestr(time_t, unsigned char *);
 
 /*************************************************************************/
 /** vboxrc_parse():	Liest die "vboxrc" eines Benutzers ein und gibt		**/
@@ -57,17 +68,17 @@ static void		vboxrc_return_timestr(time_t, char *);
 /** => id				Eingegangene CallerID.										**/
 /*************************************************************************/
 
-int vboxrc_parse(struct vboxcall *call, char *home, char *id)
+int vboxrc_parse(struct vboxcall *call, unsigned char *home, unsigned char *id)
 {
-   char	line[VBOXRC_MAX_RCLINE + 1];
-	char  name[PATH_MAX + 1];
-	FILE *rc;
-	int	nr;
-	char *dummy;
-	char *owner;
-	char *phone;
-	char *table;	
-	int	i;
+   unsigned char	line[VBOXRC_MAX_RCLINE + 1];
+	unsigned char  name[PATH_MAX + 1];
+	FILE			  *rc;
+	int				nr;
+	unsigned char *dummy;
+	unsigned char *owner;
+	unsigned char *phone;
+	unsigned char *table;	
+	int				i;
 
 	printstring(name, "%s/vboxrc", home);
 
@@ -101,11 +112,11 @@ int vboxrc_parse(struct vboxcall *call, char *home, char *id)
                                                 
 				while (isspace(*dummy)) dummy++;
 
-				if ((*dummy) && (dummy)) phone = strsep(&dummy, "\t ");
+				if ((*dummy) && (dummy)) phone = strsep((char **)&dummy, "\t ");
 
 				while (isspace(*dummy)) dummy++;
 
-				if ((*dummy) && (phone)) table = strsep(&dummy, "\t ");
+				if ((*dummy) && (phone)) table = strsep((char **)&dummy, "\t ");
 
 				while (isspace(*dummy)) dummy++;
 
@@ -162,16 +173,16 @@ int vboxrc_parse(struct vboxcall *call, char *home, char *id)
 /** vboxrc_check_user_section():														**/
 /*************************************************************************/
 
-static int vboxrc_check_user_section(FILE *rc, struct vboxcall *call, char *section)
+static int vboxrc_check_user_section(FILE *rc, struct vboxcall *call, unsigned char *section)
 {
-   char	line[VBOXRC_MAX_RCLINE + 1];
-	char *time;
-	char *days;
-	char *name;
-	char *save;
-	char *ring;
-	char *toll;
-	char *stop;
+   unsigned char	line[VBOXRC_MAX_RCLINE + 1];
+	unsigned char *time;
+	unsigned char *days;
+	unsigned char *name;
+	unsigned char *save;
+	unsigned char *ring;
+	unsigned char *toll;
+	unsigned char *stop;
 
 	if (vboxrc_goto_section(rc, section) == 0)
 	{
@@ -226,9 +237,9 @@ static int vboxrc_check_user_section(FILE *rc, struct vboxcall *call, char *sect
 /** vboxrc_goto_section():																**/
 /*************************************************************************/
 
-static int vboxrc_goto_section(FILE *rc, char *section)
+static int vboxrc_goto_section(FILE *rc, unsigned char *section)
 {
-   char line[VBOXRC_MAX_RCLINE + 1];
+   unsigned char line[VBOXRC_MAX_RCLINE + 1];
 
 	log_line(LOG_D, "Seeking to section \"%s\"...\n", section);
 
@@ -251,19 +262,19 @@ static int vboxrc_goto_section(FILE *rc, char *section)
 /**								current time.											**/
 /*************************************************************************/
 
-static int vboxrc_parse_time(char *timestr)
+static int vboxrc_parse_time(unsigned char *timestr)
 {
-	char		timestring[VBOXRC_MAX_RCLINE + 1];
-	char		timevaluebeg[8 + 1];
-	char		timevalueend[8 + 1];
-	char		timevaluenow[8 + 1];
-	char	  *timeptr;
-	char	  *timenxt;
-	char	  *timebeg;
-	char	  *timeend;
-	time_t	timenow;
-	time_t	timesecsbeg;
-	time_t	timesecsend;
+	unsigned char		timestring[VBOXRC_MAX_RCLINE + 1];
+	unsigned char		timevaluebeg[8 + 1];
+	unsigned char		timevalueend[8 + 1];
+	unsigned char		timevaluenow[8 + 1];
+	unsigned char	  *timeptr;
+	unsigned char	  *timenxt;
+	unsigned char	  *timebeg;
+	unsigned char	  *timeend;
+	time_t				timenow;
+	time_t				timesecsbeg;
+	time_t				timesecsend;
 
 	log_line(LOG_D, "Parsing time(s) \"%s\"...\n", timestr);
 
@@ -340,15 +351,15 @@ static int vboxrc_parse_time(char *timestr)
 /**								current day.											**/
 /*************************************************************************/
 
-static int vboxrc_parse_days(char *strdays)
+static int vboxrc_parse_days(unsigned char *strdays)
 {
-	struct tm  *timelocal;
-	char		  *beg;
-	char		  *nxt;
-	char			days[VBOXRC_MAX_RCLINE + 1];
-	int			i;
-	int			d;
-	time_t		currenttime;
+	struct tm		*timelocal;
+	unsigned char	*beg;
+	unsigned char	*nxt;
+	unsigned char	 days[VBOXRC_MAX_RCLINE + 1];
+	int				 i;
+	int				 d;
+	time_t			 currenttime;
 
 	xstrncpy(days, strdays, VBOXRC_MAX_RCLINE);
 
@@ -428,17 +439,16 @@ static int vboxrc_parse_days(char *strdays)
 /**								1st januar 1970.										**/
 /*************************************************************************/
 
-static time_t vboxrc_return_time(time_t timenow, char *timestr, int mode)
+static time_t vboxrc_return_time(time_t timenow, unsigned char *timestr, int mode)
 {
-	struct tm *locala;
-	struct tm  localb;
-
-	char	timestring[5 + 1];
-	char *hourstr;
-	char *minsstr;
-	int	hourint;
-	int	minsint;
-	int	secsint;
+	struct tm		*locala;
+	struct tm  		 localb;
+	unsigned char	 timestring[5 + 1];
+	unsigned char	*hourstr;
+	unsigned char	*minsstr;
+	int				 hourint;
+	int				 minsint;
+	int				 secsint;
 
 	xstrncpy(timestring, timestr, 5);
 
@@ -477,7 +487,7 @@ static time_t vboxrc_return_time(time_t timenow, char *timestr, int mode)
 /**									HH:MM:SS.											**/
 /*************************************************************************/
 
-static void vboxrc_return_timestr(time_t timeint, char *timestr)
+static void vboxrc_return_timestr(time_t timeint, unsigned char *timestr)
 {
 	struct tm *tm;
 

@@ -4,6 +4,10 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.6  1998/08/30 16:55:50  michael
+** - Added initgroups() to the permission switch function. Since Kernel 2.1.x
+**   (or 1.3.x?) setgid() don't reset the grouplist.
+**
 ** Revision 1.5  1998/08/28 13:06:16  michael
 ** - Removed audio full duplex mode. Sorry, my soundcard doesn't support
 **   this :-)
@@ -67,11 +71,11 @@
 
 /** Variables ************************************************************/
 
-static char *progbasename;
-static char *isdnttyname;
+static unsigned char *progbasename;
+static unsigned char *isdnttyname;
 
-char temppathname[PATH_MAX + 1];
-char savettydname[NAME_MAX + 1];
+unsigned char temppathname[PATH_MAX + 1];
+unsigned char savettydname[NAME_MAX + 1];
 
 /** Structures ***********************************************************/
 
@@ -106,8 +110,8 @@ struct vboxmodem vboxmodem;
 static int	 vboxgettyrc_parse(unsigned char *);
 static int	 process_incoming_call(void);
 static int 	 run_modem_init(void);
-static void	 pid_create(char *);
-static void	 pid_remove(char *);
+static void	 pid_create(unsigned char *);
+static void	 pid_remove(unsigned char *);
 static void	 show_usage(int, int);
 
 /************************************************************************* 
@@ -558,14 +562,14 @@ static int process_incoming_call(void)
 {
 	struct vboxuser	 vboxuser;
 	struct vboxcall	 vboxcall;
-	char					 line[VBOXMODEM_BUFFER_SIZE + 1];
+	unsigned char		 line[VBOXMODEM_BUFFER_SIZE + 1];
 	int					 haverings;
 	int					 waitrings;
 	int					 usersetup;
 	int					 ringsetup;
 	int					 inputisok;
-	char					*stop;
-	char					*todo;
+	unsigned char		*stop;
+	unsigned char		*todo;
 
 	memset(&vboxuser, 0, sizeof(vboxuser));
 	memset(&vboxcall, 0, sizeof(vboxcall));
@@ -598,7 +602,7 @@ static int process_incoming_call(void)
 
 				if (stop)
 				{
-					log_line(LOG_D, "Control \"vboxctrl-answer\" detected: %s (%s)...\n", stop, todo ? todo : "global");
+					log_line(LOG_D, "Control \"vboxctrl-answer\" detected: %s (%s)...\n", stop, ((char *)todo ? (char *)todo : "global"));
 
 					if ((strcasecmp(stop, "no") == 0) || (strcasecmp(stop, "hangup") == 0) || (strcasecmp(stop, "reject") == 0))
 					{
@@ -647,7 +651,7 @@ static int process_incoming_call(void)
 				ringsetup = 1;
 			}				          
 
-			log_line(LOG_A, "%s #%03d (%s)...\n", line, haverings, (usersetup ? vboxcall.name : "not known"));
+			log_line(LOG_A, "%s #%03d (%s)...\n", line, haverings, ((char *)usersetup ? (char *)vboxcall.name : "not known"));
 		}
 
 			/* CallerID aus dem Modeminput kopieren. Wenn bereits die	*/
@@ -773,7 +777,7 @@ int set_process_permissions(uid_t uid, gid_t gid, int mask)
  ** => name			Name der Datei.													**
  *************************************************************************/
 
-static void pid_create(char *name)
+static void pid_create(unsigned char *name)
 {
 	FILE *pptr;
 
@@ -792,7 +796,7 @@ static void pid_create(char *name)
  ** => name			Name der Datei.													**
  *************************************************************************/
 
-static void pid_remove(char *name)
+static void pid_remove(unsigned char *name)
 {
 	log_line(LOG_D, "Removing \"%s\"...\n", name);
 

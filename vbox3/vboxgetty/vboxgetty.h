@@ -18,8 +18,8 @@
 
 /** Variables ************************************************************/
 
-extern char temppathname[PATH_MAX + 1];
-extern char savettydname[NAME_MAX + 1];
+extern unsigned char temppathname[PATH_MAX + 1];
+extern unsigned char savettydname[NAME_MAX + 1];
 
 /** Structures ***********************************************************/
 

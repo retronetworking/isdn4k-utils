@@ -9,7 +9,7 @@
 
 /** Prototypes ***********************************************************/
 
-extern int audio_open_dev(char *);
+extern int audio_open_dev(unsigned char *);
 extern int audio_close_dev(int);
 
 #endif /* _VBOX_AUDIO_H */

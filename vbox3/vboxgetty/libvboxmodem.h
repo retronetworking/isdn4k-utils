@@ -21,13 +21,13 @@ typedef struct termios TIO;
 struct vboxmodem
 {
 	int				fd;
-	char			  *devicename;
+	unsigned char *devicename;
 	unsigned char *input;
 	int				inputpos;
 	int				inputlen;
 	int				nocarrier;
 	int				nocarrierpos;
-	char			  *nocarriertxt;
+	unsigned char *nocarriertxt;
 };
 
 /** Internal junk ********************************************************/

@@ -4,9 +4,20 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.1  1998/07/06 09:05:23  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 */
 
-#include "../config.h"
+#ifdef HAVE_CONFIG_H
+#  include "../config.h"
+#endif
 
 #include <stdio.h>
 #include <unistd.h>
@@ -26,12 +37,12 @@
 /**						nicht.															**/
 /*************************************************************************/
 
-int lock_create(char *name)
+int lock_create(unsigned char *name)
 {
-	char  line[32];
-	FILE *lptr;
-	long	lock;
-	int	loop;
+	unsigned char  line[32];
+	FILE          *lptr;
+	long	         lock;
+	int	         loop;
 
 	log_line(LOG_D, "Creating lock \"%s\"...\n", name);
 
@@ -108,7 +119,7 @@ int lock_create(char *name)
 /**						wenn nicht.														**/
 /*************************************************************************/
 
-int lock_remove(char *name)
+int lock_remove(unsigned char *name)
 {
 	int loop = 5;
 

@@ -15,15 +15,16 @@
 
 struct vboxcall
 {
-	char	section[VBOXRC_MAX_RCLINE + 1];
-	char	name[VBOXRC_MAX_RCLINE + 1];
-	char	script[VBOXRC_MAX_RCLINE + 1];
-	int	ringring;
-	int	tollring;
-	int	savetime;
+	unsigned char	section[VBOXRC_MAX_RCLINE + 1];
+	unsigned char	name[VBOXRC_MAX_RCLINE + 1];
+	unsigned char	script[VBOXRC_MAX_RCLINE + 1];
+	int				ringring;
+	int				tollring;
+	int				savetime;
 };
 
 /** Prototypes ***********************************************************/
 
+extern int vboxrc_parse(struct vboxcall *, unsigned char *, unsigned char *);
+
 #endif /* _VBOXRC_H */
-                  

@@ -4,9 +4,20 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.1  1998/07/06 09:05:33  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 */
 
-#include "../config.h"
+#ifdef HAVE_CONFIG_H
+#  include "../config.h"
+#endif
 
 #include <stdio.h>
 #include <string.h>
@@ -34,18 +45,18 @@
 /**						konnte oder -1 bei einem Fehler.							**/
 /*************************************************************************/
 
-int userrc_parse(struct vboxuser *vboxuser, char *home, char *phone)
+int userrc_parse(struct vboxuser *vboxuser, unsigned char *home, unsigned char *phone)
 {
 	struct passwd	*pwdent;
 	struct group	*grpent;
-	char				 line[USERRC_MAX_RCLINE + 1];
+	unsigned char	 line[USERRC_MAX_RCLINE + 1];
 	FILE				*rc;
-	char				*stop;
-	char				*pattern;
-	char				*group;
-	char				*name;
-	char				*space;
-	char				*mask;
+	unsigned char	*stop;
+	unsigned char	*pattern;
+	unsigned char	*group;
+	unsigned char	*name;
+	unsigned char	*space;
+	unsigned char	*mask;
 	int				 linenr;
 	int				 havegroup;
 

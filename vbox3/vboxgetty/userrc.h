@@ -21,18 +21,18 @@
 
 struct vboxuser
 {
-	uid_t	uid;
-	gid_t	gid;
-	int	umask;
-	long	space;
-	char	incomingid[VBOXUSER_CALLID + 1];
-	char	localphone[VBOXUSER_NUMBER + 1];
-	char	name[VBOXUSER_USERNAME + 1];
-	char	home[PATH_MAX + 1];
+	uid_t				uid;
+	gid_t				gid;
+	int				umask;
+	long				space;
+	unsigned char	incomingid[VBOXUSER_CALLID + 1];
+	unsigned char	localphone[VBOXUSER_NUMBER + 1];
+	unsigned char	name[VBOXUSER_USERNAME + 1];
+	unsigned char	home[PATH_MAX + 1];
 };
 
 /** Prototypes ***********************************************************/
 
-extern int userrc_parse(struct vboxuser *, char *, char *);
+extern int userrc_parse(struct vboxuser *, unsigned char *, unsigned char *);
 
 #endif /* _USERRC_H */

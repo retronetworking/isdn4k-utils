@@ -13,8 +13,8 @@
 
 /** Prototypes ***********************************************************/
 
-extern void xstrncpy(char *, char *, int);
-extern long xstrtol(char *, long);
-extern long xstrtoo(char *, long);
+extern void xstrncpy(unsigned char *, unsigned char *, int);
+extern long xstrtol(unsigned char *, long);
+extern long xstrtoo(unsigned char *, long);
 
 #endif /* _VBOX_STRINGUTILS_H */
