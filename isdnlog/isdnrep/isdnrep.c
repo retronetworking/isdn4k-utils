@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.95  2001/03/21 10:24:01  paul
+ * Previous patch for correctly deleting entries messed up the printing
+ * of a specific date (or range), now hopefully fixed. Please test!
+ * Also replaced usage of tmpnam() with more secure mkstemp().
+ * Reindented some lines, tabstop of 2 is really strange.
+ *
  * Revision 1.94  2001/02/08 14:04:53  paul
  * Fix bug where deleting up to 31/12/99 caused ALL entries to be deleted;
  * now the entries being deleted are output (as usual with isdnrep), and
@@ -188,6 +194,7 @@
 #define F_BODY_BOTTOM2  32
 #define F_COUNT_ONLY    64
 #define F_TEXT_LINE    128
+#define F_TABLE_LINE   256
 
 /*****************************************************************************/
 
@@ -210,7 +217,7 @@
 #define H_BODY_HEADER3 "<TH colspan=%d>%s</TH>\n"
 #define H_BODY_BOTTOM1 "<TD align=left colspan=%d>%s</TD>%s\n"
 #define H_BODY_BOTTOM2 "</TABLE><P>\n"
-
+#define H_TABLE_LINE   "<TR><TD align=left colspan=%d><TT>%s</TT></TD></TR>\n"
 #define H_LINE "<TR><TD colspan=%d><HR size=%d noshade width=100%%></TD></TR>\n"
 
 #define H_LEFT         "<TD align=left><TT>%s</TT></TD>"
@@ -235,6 +242,14 @@
 
 /*****************************************************************************/
 
+/* flags for zones_src.flags (FZN = flag zone name) */
+#define FZN_KNOWN   0x01  /* zone_names[i] is a valid zone name, not ?? */
+#define FZN_UNSURE  0x02  /* zone_names[i] may be incorrect */
+#define FZN_MPROV   0x04  /* zone i is used with more than one provider */
+#define FZN_MNAME   0x08  /* found different names for zone i */
+
+/*****************************************************************************/
+
 typedef struct {
 	int   type;
 	char *string;
@@ -251,6 +266,11 @@ typedef struct {
 	char  *name;
 } file_list;
 
+typedef struct {
+	int flags;      /* see FZN_ constants */
+  int first_prov; /* for detection of FZN_MPROV */
+} zones_src_t;
+			
 /*****************************************************************************/
 
 static time_t get_month(char *String, int TimeStatus);
@@ -316,6 +336,8 @@ static int      zones_usage[MAXZONES + 1];
 static char *   zones_names[MAXZONES + 1];
 static double   zones_dm[MAXZONES + 1];
 static double   zones_dur[MAXZONES + 1];
+static zones_src_t
+                zones_src[MAXZONES +1];
 static char**   ShowMSN = NULL;
 static int*     colsize = NULL;
 static double   h_percent = 100.0;
@@ -586,6 +608,8 @@ int read_logfile(char *myname)
   }
 
   memset(zones_usage, 0, sizeof(zones_usage));
+	memset(zones_names, 0, sizeof(zones_names));
+	memset(zones_src, 0, sizeof(zones_src)); /* start with zone names unknown */
 
   while (fgets(s, BUFSIZ, fi)) {
     strcpy(string,s);
@@ -803,6 +827,7 @@ static int print_bottom(double unit, char *start, char *stop)
 
 	if (!incomingonly)
 	{
+		int ztypes = 0;
 		h_percent = 60.0;
 		h_table_color = H_TABLE_COLOR3;
 		get_format("%-21.21s %4d call(s) %10.10s  %12s");
@@ -812,21 +837,45 @@ static int print_bottom(double unit, char *start, char *stop)
 		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Zone");
 		strich(1);
 
-                for (i = 0; i < MAXZONES /* + 1 */; i++)
-                  if (zones_usage[i]) {
-                    auto     char  s[BUFSIZ];
+		for (i = 0; i < MAXZONES /* + 1 */; i++)
+			if (zones_usage[i]) {
+				auto     char  s[BUFSIZ];
+				char zinfo=' ';
+				int *zflags=&(zones_src[i].flags);
 
-                    sprintf(s, "Zone %3d:%s", i, zones_names[i]);
+				if (*zflags & FZN_MNAME) {
+					zinfo = '*';
+					ztypes |= FZN_MNAME;
+				}	
+				else if (*zflags & FZN_MPROV) {
+					zinfo = '+';
+					ztypes |= FZN_MPROV;
+				}	
+				else if (*zflags & FZN_UNSURE) {
+					zinfo = '~';
+					ztypes |= FZN_UNSURE;
+				}	
 
-                    print_line3(NULL, s, zones_usage[i],
-                      double2clock(zones_dur[i]),
-                      print_currency(zones_dm[i], 0));
+				sprintf(s, "Zone %3d:%c%s", i, zinfo, zones_names[i]);
+
+				print_line3(NULL, s, zones_usage[i],
+				double2clock(zones_dur[i]),
+				print_currency(zones_dm[i], 0));
 			} /* if */
 
 #if DEBUG
-                if (zones_usage[UNKNOWNZONE])
-                  printf( "(%s)\n", unknownzones);
+		if (zones_usage[UNKNOWNZONE])
+			printf( "(%s)\n", unknownzones);
 #endif
+
+		if (verbose && ztypes) {	/* explain symbol in front of zone number */
+			if (ztypes & FZN_UNSURE)
+				print_line2(F_TABLE_LINE,"         ~ = Zone name not known for sure");
+			if (ztypes & FZN_MPROV)
+				print_line2(F_TABLE_LINE,"         + = Zone summed over several providers");
+			if (ztypes & FZN_MNAME)
+				print_line2(F_TABLE_LINE,"         * = Zone name differs with provider");
+		}
 
 		print_line2(F_BODY_BOTTOM2,"");
 
@@ -867,7 +916,7 @@ static int print_bottom(double unit, char *start, char *stop)
 		strich(1);
 
 		for (k = 0; k <= mymsns; k++) {
-			if (msn_sum[k]) {
+			if (usage_sum[k]) { /* there have been calls with this MSN */
 
 				print_line3(NULL, ((k == mymsns) ? S_UNKNOWN : known[k]->who),
 				  usage_sum[k],
@@ -1020,6 +1069,9 @@ static int print_line2(int status, const char *fmt, ...)
 		                     break;
 		case F_BODY_BOTTOM2: printf(H_BODY_BOTTOM2);
 		                     break;
+		case F_TABLE_LINE:   printf(H_TABLE_LINE, get_format_size(), html_conv(string));
+		                     break;
+
 		default            : printf("%s\n",string);
 		                     break;
 	}
@@ -2083,6 +2135,8 @@ static void repair(one_call *cur_call)
 {
   RATE Rate;
   TELNUM srcnum, destnum;
+	int have_z;    /* Zone Rate.z from getZone valid or not */
+	int best_zone; /* =Rate.z if valid or =Rate.zone if Rate.z invalid */
 
   if (*cur_call->num[CALLING]) {
     normalizeNumber(cur_call->num[CALLING],&srcnum,TN_ALL);
@@ -2127,12 +2181,83 @@ static void repair(one_call *cur_call)
     Rate.now = call[0].disconnect;
     Rate.prefix = cur_call->provider;
     if (!getRate(&Rate,0)) {
-      if(strcmp(cur_call->version, LOG_VERSION))
-         cur_call->pay = Rate.Charge; /* Fixme: is that ok, propably rates have changed */
-      cur_call->zone = Rate._zone;
-      zones_names[Rate._zone] = Rate.Zone ? strdup(Rate.Zone) : strdup("??");
-    }
-  }
+#if DEBUG
+			fprintf(stderr,"Rate.zone=%i Rate.z=%i Rate.domestic=%i call.[0]so..r[CALLED]=%i\n", Rate.zone, Rate.z, Rate.domestic, call[0].sondernummer[CALLED]);
+#endif
+			have_z = (Rate.domestic && !call[0].sondernummer[CALLED] && Rate.z>0);
+			best_zone = have_z ? Rate.z : Rate.zone;
+      if(strcmp(cur_call->version, LOG_VERSION)) {
+				/* LOG_VERSION is "3.2" since 1999-01-24 or isdnlog-3.33, earlier
+				 * calls are recalculated.  At least for Germany this makes nowadays
+				 * (2003-02) no sense, since rates _have_ changed and the Euro was
+				 * introduced on 2002-01-01. */	
+        cur_call->pay = Rate.Charge; /* Fixme: is that ok, propably rates have changed */
+	      cur_call->zone = (best_zone < MAXZONES) ? best_zone : UNKNOWN;
+			}
+			else {
+				/* A patched isdnlog-4.64 or later versions may have written the zone
+				 * in the last field of the log entry.  In this case, keep this zone.
+				 * isdnlog-3.32 and earlier did so too, but with an older LOG_VERSION
+				 * which triggered recalculation above.
+				 * As the zone summation is carried out over all providers, using
+				 * the zone number from the rate-file (Rate.zone) seems a little bit
+				 * closer to the desired result as the internal zone index (Rate._zone)
+				 */
+				if (cur_call->zone == UNKNOWN)
+					cur_call->zone = (best_zone < MAXZONES) ? best_zone : UNKNOWN;
+			}
+			/* Next difficulty: We need a zone name for the zone summation. These
+			 * names may differ between different providers.  Even with a recorded
+			 * zone from the logfile, we need a name.
+			 * As before duplicated strings (strdup) are not released 
+			 * TODO: Use the zone names from the preselected provider with
+			 * priority instead of the current use of the first `best' name. */
+			if (cur_call->zone != UNKNOWN) {	/* valid index for zones_-arrays */
+				int *zflags=&(zones_src[cur_call->zone].flags);
+
+				if ( cur_call->provider>0 && zones_src[cur_call->zone].first_prov>0
+				     && zones_src[cur_call->zone].first_prov != cur_call->provider)
+					*zflags |= FZN_MPROV; /* zone is used at different providers */ 
+
+				if (!zones_names[cur_call->zone]) { /* no zone name yet */
+					/* get a name in any circumstands */
+					if (Rate.Zone) {
+						zones_names[cur_call->zone] = strdup(Rate.Zone);
+						*zflags |= FZN_KNOWN;
+						if (Rate.zone!=cur_call->zone && !have_z && Rate.z!=cur_call->zone)
+							/* zone number from logfile does not match zone from rate file */
+							*zflags |= FZN_UNSURE;
+					}
+					else {
+						zones_names[cur_call->zone] = strdup("??"); /* old behaviour */
+					}
+					zones_src[cur_call->zone].first_prov = cur_call->provider;
+				}
+				else { /* got already a zone name */
+					if ( !(*zflags & FZN_KNOWN) && Rate.Zone ) {
+						/* get a name better than ?? */
+						zones_names[cur_call->zone] = strdup(Rate.Zone);
+						*zflags |= FZN_KNOWN;
+						if (Rate.zone!=cur_call->zone && !have_z && Rate.z!=cur_call->zone)
+							*zflags |= FZN_UNSURE;
+					}
+					else if ( *zflags & FZN_UNSURE && Rate.Zone &&
+					          ( Rate.zone==cur_call->zone ||
+                      (have_z && Rate.z==cur_call->zone) ) ) {
+						/* get a name without zone number difference between log and rate */
+						zones_names[cur_call->zone] = strdup(Rate.Zone);
+						zones_src[cur_call->zone].flags &= ~FZN_UNSURE;
+					}
+					else {
+						/* zone name not replaced */
+						if ( (*zflags & (FZN_KNOWN|FZN_UNSURE|FZN_MNAME|FZN_MPROV)) == (FZN_KNOWN|FZN_MPROV)
+								 && strcmp(zones_names[cur_call->zone], Rate.Zone) )
+							*zflags |= FZN_MNAME; /* diff. names at diff. providers */
+					} 
+				} /* if zone name first time */
+			} /* if valid zones_.. index */
+    } /* if getRate sucessful */
+  } /* if DIALOUT && duration > && num[CALLED] */
 } /* repair */
 
 /*****************************************************************************/
@@ -2240,10 +2365,14 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 			case  17: if (!adapt) {
 			      	    cur_call->provider = atoi(array[i]);
 									/* Korrektur der falschen Eintrage bis zum 16-Jan-99 */
-									if (cur_call->provider <= UNKNOWN || cur_call->provider >= MAXPROVIDER)
+									if (cur_call->provider <= UNKNOWN)
 										cur_call->provider = preselect;
 									/* -lt- provider-# may change during time */
 									cur_call->provider = pnum2prefix(cur_call->provider,cur_call->t);
+									/* provider from logfile unknown in ratefile or rateconf
+									 * --> default to preselected provider */
+									if (cur_call->provider == UNKNOWN)
+										cur_call->provider = pnum2prefix(preselect, cur_call->t);
 								} /* if */
 								break;
 
@@ -2280,6 +2409,11 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 
   }
 
+	/* repair() recalculates the connection cost for entries with LOG_VERSION
+   * older than the current and sets cur_call->zone for outgoing calls with
+   * recorded one of -1 (=UNKNWON).  The necessary information is taken from
+   * the current rate-file.
+   */
   repair(cur_call);
 
   return(rc);
@@ -2491,7 +2625,7 @@ static time_t get_time(char *String, int TimeStatus)
 }
 
 /*****************************************************************************/
-
+/* called for -p ... command line options */ 
 int set_msnlist(char *String)
 {
   int Cnt;

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  2002/03/11 16:17:11  paul
+ * DM -> EUR
+ *
  * Revision 1.14  2000/08/17 21:34:44  akool
  * isdnlog-4.40
  *  - README: explain possibility to open the "outfile=" in Append-Mode with "+"
@@ -245,6 +248,7 @@ int main(int argc, char *argv[], char *envp[])
 	auto char *ptr         = NULL;
 	auto char *linefmt     = "";
 	auto char *htmlreq     = NULL;
+	auto char *phonenumberarg = NULL;
 
 
 	set_print_fct_for_tools(print_in_modules);
@@ -252,6 +256,14 @@ int main(int argc, char *argv[], char *envp[])
 	/* we don't need this at the moment:
 	new_args(&argc,&argv);
 	*/
+
+	/* readconfig should be done before option parsing.  At least -pmx
+	 * needs access to known in set_msnlist.  Otherwise no selection of
+	 * configured MSNs via their index (x=1..) is possible.  By the other
+	 * hand this order can cause problems.  A corrupt config can block
+	 * the simple `isdnrep -V'.  Resolution: parse options first but call
+	 * set_msnlist after readconfig.
+	 */
 
   while ((c = getopt(argc, argv, options)) != EOF)
     switch (c) {
@@ -295,7 +307,7 @@ int main(int argc, char *argv[], char *envp[])
       case 'f' : strcpy(fnbuff, optarg);
                  break;
 
-      case 'p' : if (!phonenumberonly) set_msnlist(optarg);
+      case 'p' : if (!phonenumberonly) phonenumberarg = strdup(optarg);
       	       	 phonenumberonly++;
       	       	 break;
 
@@ -333,6 +345,11 @@ int main(int argc, char *argv[], char *envp[])
 
   if (readconfig(myname) != 0)
   	return 1;
+
+	if (phonenumberonly && phonenumberarg != NULL) {
+		set_msnlist(phonenumberarg);
+		free(phonenumberarg);
+	}
 
   if (htmlreq)
   {

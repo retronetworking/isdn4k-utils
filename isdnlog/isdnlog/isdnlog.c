@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.68  2001/10/15 19:51:48  akool
+ * isdnlog-4.53
+ *  - verified Leo's correction of Paul's byte-order independent Patch to the CDB
+ *    (now it's Ok, Leo, and *many* thanks to Paul!)
+ *  - "rate-de.dat" updated
+ *  - added "-Q" option to isdnlog
+ *
  * Revision 1.67  2001/08/18 12:01:25  paul
  * Close stdout and stderr if we're becoming a daemon.
  *
@@ -764,6 +771,7 @@ static void init_variables(int argc, char* argv[])
   sprintf(mlabel, "%%s%s  %%s%%s", "%e.%b %T %I");
   amtsholung = NULL;
   dual = 0;
+  dualfix = 0;
   hfcdual = 0;
   hup3 = 240;
   abclcr = 0;
@@ -926,6 +934,8 @@ int set_options(int argc, char* argv[])
       	       	 break;
 
       case '2' : dual = strtol(optarg, NIL, 0);
+                 dualfix = dual & ~0xFF;
+                 dual &= 0xFF;
       	       	 break;
 
       case 'O' : outfile = strdup(optarg);
@@ -1162,8 +1172,11 @@ static int read_param_file(char *FileName)
 				if (!strcmp(Ptr->name,CONF_ENT_WIDTH))
 					width = (int)strtol(Ptr->value, NIL, 0);
 				else
-				if (!strcmp(Ptr->name,CONF_ENT_DUAL))
+				if (!strcmp(Ptr->name,CONF_ENT_DUAL)) {
 					dual = (int)strtol(Ptr->value, NIL, 0);
+          dualfix = dual & ~0xFF;
+          dual &= 0xFF;
+        }
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_AMT))
                                        amtsholung = strdup(Ptr->value);

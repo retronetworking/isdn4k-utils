@@ -20,6 +20,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.57  2000/09/05 08:05:03  paul
+ * Now isdnlog doesn't use any more ISDN_XX defines to determine the way it works.
+ * It now uses the value of "COUNTRYCODE = 999" to determine the country, and sets
+ * a variable mycountrynum to that value. That is then used in the code to set the
+ * way isdnlog works.
+ * It works for me, please check it! No configure.in / doc changes yet until
+ * it has been checked to work.
+ * So finally a version of isdnlog that can be compiled and distributed
+ * internationally.
+ *
  * Revision 1.56  2000/08/06 13:06:53  akool
  * isdnlog-4.38
  *  - isdnlog now uses ioctl(IIOCNETGPN) to associate phone numbers, interfaces
@@ -904,6 +914,12 @@
 
 /****************************************************************************/
 
+#define DUALFIX_DESTNUM    0x100
+#define DUALFIX_SRCNUM     0x200
+#define DUALFIX_MULTLOG    0x400
+
+/****************************************************************************/
+
 typedef struct {
   int	  state;
   int     cref;
@@ -918,6 +934,7 @@ typedef struct {
   int     bearer;
   int	  si1;     /* Service Indicator entsprechend i4l convention */
   int	  si11;	   /* if (si1 == 1) :: 0 = Telefon analog / 1 = Telefon digital */
+  int     logcount; /* number of writen logfile entries (for DUALFIX_MULTLOG) */
   char    onum[MAXMSNS][NUMSIZE];
   int	  screening;
   char    num[MAXMSNS][NUMSIZE];
@@ -944,7 +961,7 @@ typedef struct {
   char	  areacode[MAXMSNS][NUMSIZE];
   char	  vorwahl[MAXMSNS][NUMSIZE];
   char	  rufnummer[MAXMSNS][NUMSIZE];
-  char	  alias[MAXMSNS][NUMSIZE];
+  char	  alias[MAXMSNS][RETSIZE];
   char	  area[MAXMSNS][128];
   char	  money[64];
   char	  currency[32];
@@ -1082,6 +1099,12 @@ _EXTERN int     	CityWeekend;
 #endif
 _EXTERN	int	 preselect;
 _EXTERN int	dual;
+/* Bitvalues 0x100 and greater in dual are used for activation of workarounds
+ * in isdnlog/processor.c.  The input value for -2 (commandline) or dual
+ * (parameterfile) is splitted between dual and dualfix. Bitvalues less than
+ * 0x100 remain unchanged in dual, greater values are copied to dualfix and
+ * removed from dual to maintain backward compatibility.  |TB| */
+_EXTERN int	dualfix;
 _EXTERN int	hfcdual;
 _EXTERN int	abclcr;
 _EXTERN char  * providerchange;

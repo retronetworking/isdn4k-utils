@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.51  2001/12/30 17:17:41  akool
+ * isdnlog-4.55:
+ *   Tatahhh: isdnlog speaks Euro :-)
+ *
+ * 	Many thanks to Bernhard Schmidt (berni@birkenwald.de)!
+ *
+ * 	** At least, you have to install "/usr/lib/isdn/rate-de.dat"
+ *   ** and modify your "/etc/isdn/isdn.conf" or "/etc/isdn/callerid.conf"
+ *   ** to read:
+ *   **   [ISDNLOG]
+ * 	**	   CURRENCY = 0.062,EUR
+ *
+ * I wish all of you a happy new year!
+ *
  * Revision 1.50  2001/01/14 12:13:50  akool
  * isdnlog-4.49
  *  - added more Euracom decodings
@@ -837,7 +851,8 @@ char *vnum(int chan, int who)
     } /* else */
   } /* if */
 
-  strcpy(call[chan].alias[who], num2nam(call[chan].num[who], call[chan].si1));
+  strncpy(call[chan].alias[who], num2nam(call[chan].num[who], call[chan].si1), RETSIZE);
+  call[chan].alias[who][sizeof(call[chan].alias[who])-1] = '\0';
 
   if (cnf > UNKNOWN) {                    /* Alias gefunden! */
     call[chan].confentry[who] = cnf;
