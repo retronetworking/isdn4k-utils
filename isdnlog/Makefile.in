@@ -19,6 +19,10 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.189  2000/12/21 09:56:46  leo
+## modilp, ilp - show duration, bugfix
+## s. isdnlog/ilp/README for more information isdnlog 4.48
+##
 ## Revision 1.188  2000/12/15 14:36:04  leo
 ## modilp, ilp - B-chan usage in /proc/isdnlog
 ## s. isdnlog/ilp/README for more information
@@ -1470,6 +1474,9 @@ DEFS       += \
 	       -D@NATION_MACRO@=1		\
  	       -DNATION=\"$(NATION)\"		\
 	       -DBIG_PHONE_NUMBERS=1
+ifdef ILP
+DEFS	+= -DILP=1
+endif
 
 PC = proc
 PCFLAGS = mode=oracle ireclen=160 lines=yes
