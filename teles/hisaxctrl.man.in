@@ -65,10 +65,16 @@ of the HiSax-ISDN device driver.
 .br
 .BR " 9" " load firmware for DSP cards"
 .br
+.BR "10" " set B-channel usage limit to 1 or 2 channels"
+.br
+.BR "12" " set echo logging mode (only for some cards)"
+.br
+.BR "  " " B-channel usage limit needs to be 1 if enabled"
+.br
 .RE
 .TP
 .I parameter
-For debug setings this is an integer representing a bitmask. Every bit in
+For debug settings this is an integer representing a bitmask. Every bit in
 this mask switches a debug facility on or off. Depending on the selected 
 category, the following values are defined:
 .LP
