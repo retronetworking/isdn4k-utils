@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1998/11/11 23:53:02  fritz
+ * Make isdnctrl compile without TIMRU in kernel (2.0.36-pre20/21)
+ *
  * Revision 1.27  1998/10/28 16:12:18  paul
  * Implemented "dialmode all" mode.
  *
@@ -504,6 +507,7 @@ int findcmd(char *str)
 }
 
 
+#ifdef ISDN_NET_DM_OFF
 /*
  * do_dialmode() - handle dialmode settings
  *		   parameters:
@@ -549,7 +553,6 @@ do_dialmode(int args, int dialmode, int fd, char *id, int errexit)
 
 	printf("Dial mode for %s: ", id);
 	/* no args specified, so show dialmode */
-#ifdef ISDN_NET_DM_OFF
 	if      (cfg.dialmode == ISDN_NET_DM_OFF)
 		puts("off");
 	else if (cfg.dialmode == ISDN_NET_DM_AUTO)
@@ -558,11 +561,8 @@ do_dialmode(int args, int dialmode, int fd, char *id, int errexit)
 		puts("manual");
 	else
 		puts("illegal value (wrong kernel version?)");
-#else	/* not in kernel include file */
-	fprintf(stderr, "No 'dialmode' field in kernel source when compiled, old isdn4kernel?\n");
-	exit(-1);
-#endif
 }
+#endif /* dialmode in kernel source */
 
 
 int exec_args(int fd, int argc, char **argv)
