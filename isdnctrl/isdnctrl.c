@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.27  1998/10/28 16:12:18  paul
+ * Implemented "dialmode all" mode.
+ *
  * Revision 1.26  1998/10/21 16:18:45  paul
  * Implementation of "dialmode" (successor of "status")
  *
@@ -226,7 +229,7 @@ typedef	char *(*defs_fcn_t)();
 defs_fcn_t defs_fcns [] = {
 	defs_basic,
 
-#ifdef I4L_CTRL_TIMRU
+#if defined(I4L_CTRL_TIMRU) && defined(HAVE_TIMRU)
 	defs_timru,
 	defs_budget,
 #endif
