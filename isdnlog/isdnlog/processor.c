@@ -19,6 +19,31 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.124  2003/07/25 22:18:03  tobiasb
+ * isdnlog-4.65:
+ *  - New values for isdnlog option -2x / dual=x with enable certain
+ *    workarounds for correct logging in dualmode in case of prior
+ *    errors.  See `man isdnlog' and isdnlog/processor.c for details.
+ *  - New isdnlog option -U2 / ignoreCOLP=2 for displaying ignored
+ *    COLP information.
+ *  - Improved handling of incomplete D-channel frames.
+ *  - Increased length of number aliases shown immediately by isdnlog.
+ *    Now 127 instead of 32 chars are possible. (Patch by Jochen Erwied.)
+ *  - The zone number for an outgoing call as defined in the rate-file
+ *    is written to the logfile again and used by isdnrep
+ *  - Improved zone summary of isdnrep.  Now the real zone numbers as
+ *    defined in the rate-file are shown.  The zone number is taken
+ *    from the logfile as mentioned before or computed from the current
+ *    rate-file.  Missmatches are indicated with the chars ~,+ and *,
+ *    isdnrep -v ... explains the meanings.
+ *  - Fixed provider summary of isdnrep. Calls should no longer be
+ *    treated wrongly as done via the default (preselected) provider.
+ *  - Fixed the -pmx command line option of isdnrep, where x is the xth
+ *    defined [MSN].
+ *  - `make install' restarts isdnlog after installing the data files.
+ *  - A new version number generates new binaries.
+ *  - `make clean' removes isdnlog/isdnlog/ilp.o when called with ILP=1.
+ *
  * Revision 1.123  2002/03/11 16:18:43  paul
  * DM -> EUR; and only test for IIOCNETGPN on i386 systems
  *
@@ -4830,12 +4855,16 @@ static void processctrl(int card, char *s)
          * Hopefully the second line does it right:
          * - !call[chan].dialog && call[chan].dialin && call[chan].cause!=-1
          *   turned out to be to restrictive,
-         * - !call[chan].dialog turned out to be to generally. |TB|
+         * - !call[chan].dialog turned out to be to generally.
+         * - ... && type=SETUP_ACKNOWLEDGE is to restrictrive.  In case of
+         *   SETUP with complete called party number, the exchange responds
+         *   with C_PROC instead of S_ACK and C_PROC contains the B-channel. 
          * This workaround requires the value of DUALFIX_DESTNUM in dualfix,
          * which is set with -2.. or dual=.. at command line or parameter file. 
+         * |TB| 2003-08-14
          */
         if (!chanused[chan] || (dualfix & DUALFIX_DESTNUM &&
-            !call[chan].dialog && !call[5].dialin && type==SETUP_ACKNOWLEDGE)) {
+            !call[chan].dialog && !call[5].dialin)) { 
           /* nicht --channel, channel muss unveraendert bleiben! */
           if (chanused[chan]) { /* catch second line condition */
             print_msg(PRT_DEBUG_BUGS, " DEBUG> %s: %s contained channel B%d which is marked as in use -- overwriting anyway.\n", st+4, (type==SETUP_ACKNOWLEDGE)?"S_ACK":"C_PROC", call[5].channel);
