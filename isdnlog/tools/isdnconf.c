@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  1999/02/28 19:33:39  akool
+ * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+ * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ * isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ * "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+ * sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+ * Fixed a typo in callerid.conf.5
+ *
  * Revision 1.21  1999/01/24 19:02:45  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -881,7 +890,7 @@ void setDefaults()
 #elif defined(ISDN_AT)
     currency_factor = 1.056;
 #else
-    currency_factor = 0.121;
+    currency_factor = 0.12;
 #endif
 
   } /* if */
@@ -1226,7 +1235,7 @@ static int Set_Globals(section *SPtr)
 					_print_msg("%s: ERROR: Can't allocate memory!\n", Myname);
 					return 0;
 				}
-				
+
 				lineformats[++cnt] = NULL;
 	  	}
 

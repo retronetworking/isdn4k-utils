@@ -19,6 +19,13 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # $Log$
+# Revision 1.6  1999/03/14 14:26:18  akool
+# - isdnlog Version 3.05
+# - new Option "-u1" (or "ignoreRR=1")
+# - added version information to "sonderrufnummern.dat"
+# - added debug messages if sonderrufnummern.dat or tarif.dat could not be opened
+# - sonderrufnummern.dat V 1.01 - new 01805 rates
+#
 # Revision 1.5  1999/02/28 19:32:24  akool
 # Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
 # CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -38,7 +45,7 @@
 #
 # Stand: 1/99
 #
-V:1.01 [14-Mar-99]
+V:1.02 [15-Mar-99]
 33|0010    |free|  |     |     |     |Operator Service
 33|0031800 |free|  |     |     |     |Plus Freephone Service (Niederl.)
 33|0041800 |free|  |     |     |     |Plus Freephone Service (Schweiz)
@@ -503,3 +510,4 @@ V:1.01 [14-Mar-99]
 70|01172   |free|  |     |     |     |DTAG-Störungsannahme
 70|01174   |free|  |     |     |     |DTAG-Störungsannahme
 70|2000    |?   |  |     |     |     |EXPO-Hotline
+88|0191999 |City|  |     |     |     |UUnet PPP-Zugang

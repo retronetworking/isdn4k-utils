@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.42  1999/03/14 18:47:44  akool
+ * damn CLIP :-( Internal call's are free of charge!!
+ *
  * Revision 1.41  1999/03/14 14:26:38  akool
  * - isdnlog Version 3.05
  * - new Option "-u1" (or "ignoreRR=1")
@@ -504,7 +507,7 @@
 #define _PROCESSOR_C_
 #include "isdnlog.h"
 
-static int    HiSax = 0, hexSeen = 0, uid = -1;
+static int    HiSax = 0, hexSeen = 0, uid = UNKNOWN;
 static char  *asnp, *asnm;
 #ifdef Q931
 static int    lfd = 0;
@@ -587,7 +590,7 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
   auto int  partner = ((dir && (who == CALLING)) || (!dir && (who == CALLED)));
 
 
-  *sondernummer = -1;
+  *sondernummer = UNKNOWN;
   *intern = 0;
 
 #ifdef Q931
@@ -728,7 +731,7 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
       auto char s[BUFSIZ];
 
       if (*provider < 100)
-      sprintf(s, "Via provider \"010%02d\", %s", *provider, Providername(*provider));
+        sprintf(s, "Via provider \"010%02d\", %s", *provider, Providername(*provider));
       else
 	sprintf(s, "Via provider \"010%03d\", %s", *provider - 100, Providername(*provider));
 
@@ -738,13 +741,22 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
   } /* if */
 #endif
 
-  if (!dir && (who == CALLED))
+  if (!dir && (who == CALLED)) {
     *sondernummer = is_sondernummer(num, DTAG); /* try with DTAG, these provider must support them all (i think) */
-    *intern = strlen(num) < interns0;
+
+    if (*sondernummer == UNKNOWN)
+      *sondernummer = is_sondernummer(num, *provider);
+
+    if (*sondernummer == UNKNOWN)
+      *sondernummer = !memcmp(num, "019", 3); /* anything like 019xx is a Sondernummer! */
+
+  } /* if */
+
+  *intern = strlen(num) < interns0;
 
 #ifdef Q931
                       if (q931dmp) {
-    if (*sondernummer != -1) {
+    if (*sondernummer != UNKNOWN) {
       auto char s[256];
 
       sprintf(s, "(Sonderrufnummer %s : %s)", num, sondernummername(num, DTAG));
@@ -756,7 +768,7 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
                       } /* if */
 #endif
 
-  if ((*sondernummer == -1) && !*intern)
+  if ((*sondernummer == UNKNOWN) && !*intern)
 
   switch (oc3 & 0x70) { /* Calling party number Information element, Octet 3 - Table 4-11/Q.931 */
     case 0x00 : if (*num) {                  /* 000 Unknown */
@@ -3458,7 +3470,7 @@ static void huptime(int chan, int bchan, int setup)
         else
           newhuptimeout = oldhuptimeout;
 
-      if (oldchargeint != newchargeint || oldhuptimeout != newhuptimeout) {
+      if (((oldchargeint != newchargeint) || (oldhuptimeout != newhuptimeout)) && (newchargeint != UNKNOWN)) {
 #if NET_DV >= NETDV_CHARGEINT
         if (net_dv >= NETDV_CHARGEINT)
           call[chan].chargeint = cfg.chargeint = newchargeint;
@@ -4672,7 +4684,7 @@ doppelt:break;
             strcat(sx, " ");
             strcat(sx, qmsg(TYPE_CAUSE, version, call[chan].cause));
 
-            if (((p = location(call[chan].loc) != ""))) {
+            if (((p = location(call[chan].loc)) != "")) {
               strcat(sx, " (");
               strcat(sx, location(call[chan].loc));
               strcat(sx, ")");

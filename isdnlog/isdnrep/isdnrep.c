@@ -24,6 +24,13 @@
  *
  *
  * $Log$
+ * Revision 1.57  1999/03/14 14:27:25  akool
+ * - isdnlog Version 3.05
+ * - new Option "-u1" (or "ignoreRR=1")
+ * - added version information to "sonderrufnummern.dat"
+ * - added debug messages if sonderrufnummern.dat or tarif.dat could not be opened
+ * - sonderrufnummern.dat V 1.01 - new 01805 rates
+ *
  * Revision 1.56  1999/03/07 18:19:56  akool
  * - new 01805 tarif of DTAG
  * - new March 1999 tarife
@@ -654,7 +661,7 @@ static sum_calls day_sum;
 static sum_calls day_com_sum;
 static sum_calls all_sum;
 static sum_calls all_com_sum;
-  
+
 /*****************************************************************************/
 
 static double *msn_sum;
@@ -829,7 +836,7 @@ int read_logfile(char *myname)
 		else
 			lineformat = DEF_FMT;
 	}
-			
+
 	if (get_format(lineformat) == NULL)
                 return(UNKNOWN);
 
@@ -967,7 +974,7 @@ int read_logfile(char *myname)
 #elif defined(ISDN_AT)
 			einheit = 1.056;
 #else
-			einheit = Tarif96 ? 0.121 : 0.23;
+			einheit = Tarif96 ? 0.12 : 0.23;
 #endif
 			else
 				einheit = cur_call.currency_factor;
@@ -1611,7 +1618,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          else
 				          	colsize[i] = append_string(&string,*fmtstring,"  ");
 				          break;
-			 	
+
 			 	case 'j': if (status == F_BODY_LINE)
 				          {
 				          	if (!numbers)
@@ -1628,7 +1635,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          	}
 				          }
                                           break;
-				
+
 				/* Link for answering machine! */
 				case 'C': if (html)
 				          {
@@ -1652,11 +1659,11 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          	print_msg(PRT_ERR, "Unknown format %%G!\n");
 				          break;
 				/* there are dummy entries */
-				case 'c': 
-				case 'd': 
+				case 'c':
+				case 'd':
 				case 's': if (status != F_BODY_LINE)
 				          	free_col = 1;
-				          	
+
 				          colsize[i] = append_string(&string,*fmtstring, " ");
 				          break;
 				default : print_msg(PRT_ERR, "Internal Error: unknown format `%c'!\n",(*fmtstring)->s_type);
@@ -1738,7 +1745,7 @@ static int append_string(char **string, prt_fmt *fmt_ptr, char* value)
 			default  : htmlfmt = H_RIGHT;
 			           break;
 		}
-			
+
 		if (!strncmp(STR_FAX,value,strlen(STR_FAX)))
 			htmlfmt = H_LEFT;
 
@@ -1754,7 +1761,7 @@ static int append_string(char **string, prt_fmt *fmt_ptr, char* value)
 		tmpfmt = tmpfmt2;
 
 	app_fmt_string(tmpstr,BUFSIZ*3-1,tmpfmt,condition,value);
-	
+
 	if (*string == NULL)
 		*string = (char*) calloc(strlen(tmpstr)+1,sizeof(char));
 	else
@@ -2189,7 +2196,7 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 
 /*****************************************************************************/
 
-static int print_header(int lday) 
+static int print_header(int lday)
 {
   sum_calls tmp_sum;
 	time_t now;
@@ -2243,7 +2250,7 @@ static char *get_time_value(time_t t, int *day, int flag)
         static int  oldday = UNKNOWN;
         static int  oldyear = UNKNOWN;
 	struct tm *tm;
-	
+
 
 	if (flag & SET_TIME)
 	{
@@ -2322,7 +2329,7 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 					if (cur_call->version[0] != '\0')
 					{
 						if (!strcmp(cur_call->version,LOG_VERSION_2) ||
-						    !strcmp(cur_call->version,LOG_VERSION_3) ||  
+						    !strcmp(cur_call->version,LOG_VERSION_3) ||
                                                     !strcmp(cur_call->version,LOG_VERSION_4) ||
 						    !strcmp(cur_call->version,LOG_VERSION) )
 							cc = ((known[i]->si == cur_call->si) || j) &&
@@ -2484,19 +2491,19 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
                               	  if (!memcmp(cur_call->num[1], "+491019", 7)) {
                                     cur_call->provider = 19;
                                     memmove(cur_call->num[1] + 3, cur_call->num[1] + 8, strlen(cur_call->num[1]) - 7);
-                              	    adapt++; 
+                              	    adapt++;
 				  }
 				  else if (!memcmp(cur_call->num[1], "+491033", 7)) {
                                     cur_call->provider = 33;
                                     memmove(cur_call->num[1] + 3, cur_call->num[1] + 8, strlen(cur_call->num[1]) - 7);
-                              	    adapt++; 
+                              	    adapt++;
 			          }
 				  else if (!memcmp(cur_call->num[1], "+491070", 7)) {
                                     cur_call->provider = 70;
                                     memmove(cur_call->num[1] + 3, cur_call->num[1] + 8, strlen(cur_call->num[1]) - 7);
-                              	    adapt++; 
+                              	    adapt++;
 			          } /* else */
-                                  
+
                                   if (adapt)
                                     strcpy(cur_call->version, LOG_VERSION_4);
 
@@ -2547,7 +2554,7 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
                         case  18: cur_call->zone = atoi(array[i]);
 			      	  break;
 
-			default : print_msg(PRT_ERR,"Unknown element found `%s'!\n",array[i]); 
+			default : print_msg(PRT_ERR,"Unknown element found `%s'!\n",array[i]);
 			          break;
 		}
 	}
@@ -2974,7 +2981,7 @@ static void strich(int type)
 	if (html)
 	{
 		switch (type) {
-			case 3 : 
+			case 3 :
 			case 1 : print_msg(PRT_NORMAL,H_LINE,get_format_size(),1);
 			         break;
 			case 2 : print_msg(PRT_NORMAL,H_LINE,get_format_size(),3);
@@ -2998,7 +3005,7 @@ static void strich(int type)
 			string[--size] = type==2?'=':'-';
 
 		print_msg(PRT_NORMAL,"%s\n",string);
-		
+
 		free(string);
   }
 } /* strich */
@@ -3344,7 +3351,7 @@ static int Compare_files(const void *e1, const void *e2)
 	else
 	if ((*(file_list**) e1)->time < (*(file_list**) e2)->time)
                 return(UNKNOWN);
-	
+
 	return 0;
 }
 
@@ -3506,7 +3513,7 @@ static char *nam2html(char *file)
 			          ptr += 3;
 			          file++;
 			          break;
-			default : *ptr++ = *file++; 
+			default : *ptr++ = *file++;
 			          break;
 		}
 	}
@@ -3667,7 +3674,7 @@ static char *create_vbox_file(char *file, int *compression)
 			return NULL;
 		}
 	}
-	
+
 	close(fdin);
 	return fileout;
 }
@@ -3843,7 +3850,7 @@ static int find_format_length(char *string)
                                                 return(UNKNOWN);
 
 					memmove(string,dest,strlen(dest)+1);
-					
+
 					return len;
 				}
 
