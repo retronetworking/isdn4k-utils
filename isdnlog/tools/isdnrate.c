@@ -19,6 +19,24 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.34  2000/02/28 19:53:56  akool
+ * isdnlog-4.14
+ *   - Patch from Roland Rosenfeld <roland@spinnaker.de> fix for isdnrep
+ *   - isdnlog/tools/rate.c ... epnum
+ *   - isdnlog/tools/rate-at.c ... new rates
+ *   - isdnlog/rate-at.dat
+ *   - isdnlog/tools/rate-files.man ... %.3f
+ *   - doc/Configure.help ... unknown cc
+ *   - isdnlog/configure.in ... unknown cc
+ *   - isdnlog/.Config.in ... unknown cc
+ *   - isdnlog/Makefile.in ... unknown cc
+ *   - isdnlog/tools/dest/Makefile.in ... LANG => DEST_LANG
+ *   - isdnlog/samples/rate.conf.pl ... NEW
+ *   - isdnlog/samples/isdn.conf.pl ... NEW
+ *   - isdnlog/rate-pl.dat ... NEW
+ *   - isdnlog/tools/isdnrate.c ... fixed -P pid_dir, restarts on HUP now
+ *   - isdnlog/tools/isdnrate.man ... SIGHUP documented
+ *
  * Revision 1.33  2000/02/12 16:40:24  akool
  * isdnlog-4.11
  *  - isdnlog/Makefile.in ... sep install-targets, installs samples, no isdnconf
@@ -1087,6 +1105,8 @@ static void purge(int n)
    0..23 Uhr
  */
 
+#define STARTHOUR 8
+
 static void printTable(char *num)
 {
   register int n, d, i, h, lasthour;
@@ -1105,41 +1125,48 @@ static void printTable(char *num)
   memset(hours, 0, sizeof(hours));
   memset(weight, 0, sizeof(weight));
 
-  for (d = 0; d < 2; d++) {
+  for (d = 0; d < 3; d++) { /* Werktag, Samstag, Sonntag */
     last[0].prefix = UNKNOWN;
     lasthour = UNKNOWN;
 
     buildtime();
     tm = localtime(&start);
 
-    if (!d) {			/* Wochenende */
-      while (tm->tm_wday) {	/* find next sunday */
+    if (!d) {			/* first time */
+      while (tm->tm_wday != 5) { /* find next Friday */
 	start += (60 * 60 * 24);
 	tm = localtime(&start);
-      }				/* while */
+      }	/* while */
     }
-    else			/* Werktag (Montag) */
-      start += (60 * 60 * 24);
+    else			/* erst Samstag, dann */
+      start += (60 * 60 * 24);	/* Sonntag */
 
     splittime();
     buildtime();
 
-    hour = 7;
+    hour = STARTHOUR;
     min = 0;
 
     first = 1;
+
     while (1) {
       destnum.nprovider = UNKNOWN;
-      if (provider2prefix(num, &prefix))	/* set provider if it
-						   is in number */
+      if (provider2prefix(num, &prefix))	/* set provider if it is in number */
 	normalizeNumber(num, &destnum, TN_PROVIDER);
       n = compute(num);
 
       if (header && first && d == 0 && firsttime)
 	print_header();
-      if (header && first)
-	printf("\n%s:\n", d ? "Werktag" : "Wochenende");
-      first = 0;
+
+      if (header && first) {
+        switch (d) {
+          case 0 : printf("\nWerktag:\n"); break;
+          case 1 : printf("\nSamstag:\n"); break;
+          case 2 : printf("\nSonntag:\n"); break;
+        } /* switch */
+
+        first = 0;
+      } /* if */
 
       if (last[0].prefix == UNKNOWN) {
 	for (i = 0; i < min(n, MAXLAST); i++) {
@@ -1147,9 +1174,9 @@ static void printTable(char *num)
 	    last[i].prefix = sort[i].prefix;
 	    last[i].rate = sort[i].rate;
 	    last[i].explain = strdup(sort[i].explain);
-	  }			/* if */
-	}			/* for */
-      }				/* if */
+	  } /* if */
+	} /* for */
+      } /* if */
 
       if (lasthour == UNKNOWN)
 	lasthour = hour;
@@ -1169,7 +1196,7 @@ static void printTable(char *num)
 		   currency,
 		   double2str(last[i].rate, 5, 3, DEB),
 		   last[i].explain);
-	}			/* for */
+	} /* for */
 
 	used[last[0].prefix]++;
 
@@ -1183,16 +1210,16 @@ static void printTable(char *num)
 	if ((lasthour > 8) && (lasthour < 21))
 	  h *= 2;
 
-	weight[last[0].prefix] += h * (d ? 5 : 2);
+	weight[last[0].prefix] += h * (d ? 1 : 5);
 
 	for (i = 0; i < min(n, MAXLAST); i++) {
 	  last[i].prefix = sort[i].prefix;
 	  last[i].rate = sort[i].rate;
 	  last[i].explain = strdup(sort[i].explain);
-	}			/* for */
+	} /* for */
 
 	lasthour = hour;
-      }				/* if */
+      }	/* if */
 
       purge(n);
 
@@ -1200,14 +1227,14 @@ static void printTable(char *num)
 
       if (hour == 24)
 	hour = 0;
-      else if (hour == 7)
+      else if (hour == STARTHOUR)
 	break;
-    }				/* while */
+    } /* while */
 
     for (i = 0; i < min(n, MAXLAST); i++) {
 
       if (!i) {
-	if ((lasthour == 7) && (hour == 7))
+	if ((lasthour == STARTHOUR) && (hour == STARTHOUR))
 	  printf("    immer          %s = %s %s%s\n",
 		 Provider(last[i].prefix),
 		 currency,
@@ -1226,7 +1253,7 @@ static void printTable(char *num)
 	       currency,
 	       double2str(last[i].rate, 5, 3, DEB),
 	       last[i].explain);
-    }				/* for */
+    } /* for */
 
     used[last[0].prefix]++;
 
@@ -1240,9 +1267,9 @@ static void printTable(char *num)
     if ((lasthour > 8) && (lasthour < 21))
       h *= 2;
 
-    weight[last[0].prefix] += h * (d ? 5 : 2);
+    weight[last[0].prefix] += h * (d ? 1 : 5);
 
-  }				/* for */
+  } /* for */
 
   if (usestat) {
     printf("\nProvider(s) used:\n");
@@ -1262,7 +1289,7 @@ static void printTable(char *num)
 
 	if (hours[i] < maxhour)
 	  maxhour = hours[i];
-      }				/* if */
+      } /* if */
 
     if ((best < MAXPROVIDER) && (best < useds)) {
       printf("Retrying with only %d provider(s), eliminating %d provider(s)\n", best, useds - best);
@@ -1278,16 +1305,17 @@ static void printTable(char *num)
 
 	if (i >= best - 1)
 	  ignore[wsort[i].index]++;
-      }				/* for */
+      }	/* for */
 
       if (firsttime)
 	printTable(num);
 
       firsttime = 0;
 
-    }				/* if */
-  }				/* if */
-}				/* printTable */
+    } /* if */
+  } /* if */
+} /* printTable */
+
 
 static void clean_up()
 {

@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1999/12/31 13:57:19  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *  - resolved *any* warnings against rate-de.dat
+ *  - Many new rates
+ *  - CREDITS file added
+ *
  * Revision 1.11  1999/12/17 22:51:55  akool
  * isdnlog-3.79
  *  - isdnlog/isdnrep/isdnrep.{c,h} ... error -handling, print_msg
@@ -187,6 +194,7 @@
  */
 
 #define  _ISDNREP_C_
+#include "dest.h"
 #include "isdnrep.h"
 
 /*****************************************************************************/

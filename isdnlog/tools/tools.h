@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.52  2000/02/11 10:41:53  akool
+ * isdnlog-4.10
+ *  - Set CHARGEINT to 11 if < 11
+ *  - new Option "-dx" controls ABC_LCR feature (see README for infos)
+ *  - new rates
+ *
  * Revision 1.51  1999/12/31 13:57:20  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -958,41 +964,6 @@ typedef struct {
   double  obytes[2];
 } KNOWN;
 
-/****************************************************************************/
-
-typedef struct {
-  int    in;
-  int    out;
-  int    eh;
-  int    err;
-  double din;
-  double dout;
-  double pay;
-  long	 ibytes;
-  long	 obytes;
-} sum_calls;
-
-/****************************************************************************/
-
-typedef struct {
-  int    eh;
-  int    cause;
-  time_t t;
-  int    dir;
-  double duration;
-  char   num[2][NUMSIZE];
-  char   who[2][NUMSIZE];
-  long	 ibytes;
-  long	 obytes;
-  char   version[10];
-  int	 si;
-  int	 si1;
-  double currency_factor;
-  char	 currency[32];
-  double pay;
-  int	 provider;
-  int	 zone; /* fixme: zones may vary over time */
-} one_call;
 
 /****************************************************************************/
 
