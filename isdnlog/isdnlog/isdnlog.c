@@ -19,6 +19,11 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.9  1997/05/04 20:19:47  luethje
+ * README completed
+ * isdnrep finished
+ * interval-bug fixed
+ *
  * Revision 1.8  1997/04/17 20:09:32  luethje
  * patch of Ingo Schneider
  *
@@ -289,7 +294,6 @@ static void init_variables(int argc, char* argv[])
   xlog = MAX_PRINTS_IN_QUEUE;
 
   sockets = NULL;
-  allflags = 0;
   known = NULL;
 
   opt_dat = NULL;
