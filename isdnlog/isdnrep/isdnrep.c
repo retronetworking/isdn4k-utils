@@ -24,6 +24,29 @@
  *
  *
  * $Log$
+ * Revision 1.43  1998/09/26 18:29:55  akool
+ *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
+ *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
+ *  - Support for tesion)) Baden-Wuerttemberg Tarif
+ *  - more Providers
+ *  - Patches from Wilfried Teiken <wteiken@terminus.cl-ki.uni-osnabrueck.de>
+ *    - better zone-info support in "tools/isdnconf.c"
+ *    - buffer-overrun in "isdntools.c" fixed
+ *  - big Austrian Patch from Michael Reinelt <reinelt@eunet.at>
+ *    - added $(DESTDIR) in any "Makefile.in"
+ *    - new Configure-Switches "ISDN_AT" and "ISDN_DE"
+ *      - splitted "takt.c" and "tools.c" into
+ *          "takt_at.c" / "takt_de.c" ...
+ *          "tools_at.c" / "takt_de.c" ...
+ *    - new feature
+ *        CALLFILE = /var/log/caller.log
+ *        CALLFMT  = %b %e %T %N7 %N3 %N4 %N5 %N6
+ *      in "isdn.conf"
+ *  - ATTENTION:
+ *      1. "isdnrep" dies with an seg-fault, if not HTML-Mode (Stefan?)
+ *      2. "isdnlog/Makefile.in" now has hardcoded "ISDN_DE" in "DEFS"
+ *      	should be fixed soon
+ *
  * Revision 1.42  1998/09/22 21:06:50  luethje
  * isdnrep: simple fix
  *
@@ -992,6 +1015,7 @@ static int print_bottom(double unit, char *start, char *stop)
 		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Zone");
 		strich(1);
 
+		/* Andreas: zones[i] ist manchmal immer NULL, warum ? */
 		for (i = 1; i < MAXZONES; i++)
 			if (zones[i]) {
 
@@ -1008,12 +1032,13 @@ static int print_bottom(double unit, char *start, char *stop)
 				print_line3(NULL,
 				          "Zone", (char) i+48, p, zones_usage[i],
 				          double2clock(zones_dur[i]), print_currency(zones_dm[i],0));
-		} /* if */
+			} /* if */
 
+/* Was soll das werden, Andreas ? */
 		if (known[knowns-1]->eh > 0)
 		{
 			print_line3(NULL,
-			          'x', S_UNKNOWN,
+			          "Zone", 'x', S_UNKNOWN,
 			          known[knowns-1]->usage[DIALOUT], double2clock(known[knowns-1]->dur[DIALOUT]),
 #ifdef ISDN_NL
 			          print_currency(known[knowns-1]->eh * unit + known[knowns-1]->usage[DIALOUT] * 0.0825,0));
@@ -1054,7 +1079,7 @@ static int print_bottom(double unit, char *start, char *stop)
 		for (k = 0; k <= mymsns; k++) {
 			if (msn_sum[k]) {
 
-				print_line3(NULL, ((k == mymsns) ? "UNKNOWN" : known[k]->who),
+				print_line3(NULL, ((k == mymsns) ? S_UNKNOWN : known[k]->who),
 				  usage_sum[k],
 				  double2clock(dur_sum[k]),
 				  print_currency(msn_sum[k], 0));
@@ -3812,15 +3837,17 @@ static int find_format_length(char *string)
 static int app_fmt_string(char *target, int targetlen, char *fmt, int condition, char *value)
 {
 	char tmpfmt[BUFSIZ];
+	char tmpvalue[BUFSIZ];
 	int len;
 
 	strcpy(tmpfmt,fmt);
+	strcpy(tmpvalue,value);
 	len = find_format_length(tmpfmt);
 
-	if (len != -1 && len > 0 && strlen(value) > len)
-		value[len] = '\0';
+	if (len != -1 && len > 0 && strlen(tmpvalue) > len)
+		tmpvalue[len] = '\0';
 
-	value = condition?html_conv(value):value;
+	value = condition?html_conv(tmpvalue):tmpvalue;
 
 	return snprintf(target,targetlen,tmpfmt,value);
 }
