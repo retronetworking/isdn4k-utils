@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.83  1999/11/27 19:24:19  akool
+ * isdnlog-3.69
+ *
  * Revision 1.82  1999/11/08 21:09:40  akool
  * isdnlog-3.65
  *   - added "B:" Tag to "rate-xx.dat"
@@ -1327,14 +1330,15 @@ static int print_bottom(double unit, char *start, char *stop)
 		strich(1);
 
 		for (i = 0; i < MAXPROVIDER; i++) {
-                  prefix2provider(i, string);
+		  int nPrefix = pnum2prefix(i, 0);
+                  prefix2provider(nPrefix, string);
 		  if (usage_provider[i]) {
                     if (duration_provider[i])
                       sprintf(sx, "%5.1f%% avail.",
                         100.0 * (usage_provider[i] - provider_failed[i]) / usage_provider[i]);
                     else
                       *sx = 0;
-    		   p = getProvider(pnum2prefix(i, 0));
+    		   p = getProvider(nPrefix);
     		   if (!p || p[strlen(p) - 1] == '?') /* UNKNOWN Provider */
                       p = "UNKNOWN";
 
