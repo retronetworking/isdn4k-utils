@@ -41,6 +41,9 @@ else
 		SUBDIRS := $(SUBDIRS) teles
 	endif
 endif
+ifeq ($(CONFIG_AVMCAPICTRL),y)
+	SUBDIRS := $(SUBDIRS) avmb1
+endif
 ifeq ($(CONFIG_IMON),y)
 	SUBDIRS := $(SUBDIRS) imon
 endif
