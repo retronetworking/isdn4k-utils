@@ -1,7 +1,3 @@
-/*
-Der SI muss auch als Eingabe (mit Hex) erlaubt sein
-MSNxx -> MSN
-*/
 /* $Id$
  *
  * ISDN accounting for isdn4linux. (Report-module)
@@ -22,6 +18,7 @@ MSNxx -> MSN
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+ * $Log$
  */
 
 #include "isdnconf.h"

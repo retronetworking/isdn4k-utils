@@ -18,13 +18,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+ * $Log$
  */
 
 #ifndef _ISDN_CONF_H_
 #define _ISDN_CONF_H_
-
-#define PRT_ERR                    1
-#define PRT_NORMAL                 4
 
 #define PUBLIC extern
 #include "tools.h"
