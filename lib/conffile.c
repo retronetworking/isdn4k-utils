@@ -495,7 +495,7 @@ entry *Set_Entry(section *Section, char *Sectionname, char *Variable, char *Valu
 
 entry* Get_Entry(entry* Entry, char *Variable)
 {
-	while (Entry != NULL && strcmp(Entry->name,Variable))
+	while (Entry != NULL && strcasecmp(Entry->name,Variable))
 		Entry = Entry->next;
 
 	return Entry;
@@ -505,7 +505,7 @@ entry* Get_Entry(entry* Entry, char *Variable)
 
 section* Get_Section(section* Section, char *Sectionname)
 {
-	while (Section != NULL && strcmp(Section->name,Sectionname))
+	while (Section != NULL && strcasecmp(Section->name,Sectionname))
 		Section = Section->next;
 
 	return Section;
