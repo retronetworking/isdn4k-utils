@@ -6,6 +6,11 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.12  1999/07/01 16:37:53  calle
+ * New command with new driver
+ *    avmcapictrl trace [contrnr] [off|short|on|full|shortnodate|nodata]
+ * to make traces of capi messages per controller.
+ *
  * Revision 1.11  1999/06/21 15:30:45  calle
  * extend error message if io port is out of range, now tell user that an
  * AVM B1 PCI card must be added by loading module b1pci.
@@ -413,6 +418,7 @@ int main(int argc, char **argv)
 			ioctl_s.data = &newcard;
 			if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
 				perror("ioctl ADDCARD");
+				fprintf(stderr, "%s: please also look at the kernel message, call command dmesg(8)\n", cmd);
 				exit(-1);
 			}
 			close(fd);
@@ -518,6 +524,7 @@ int main(int argc, char **argv)
 		ioctl_s.data = &ldef;
 		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
 			perror("\nioctl LOAD");
+			fprintf(stderr, "%s: please also look at the kernel message, call command dmesg(8)\n", cmd);
 			exit(2);
 		}
 		munmap(ldef.t4file.data, ldef.t4file.len);
@@ -536,6 +543,7 @@ int main(int argc, char **argv)
 		ioctl_s.cmd = AVMB1_RESETCARD;
 		ioctl_s.data = &rdef;
 		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
+			fprintf(stderr, "%s: please also look at the kernel message, call command dmesg(8)\n", cmd);
 			perror("\nioctl RESETCARD");
 			exit(2);
 		}
@@ -554,6 +562,7 @@ int main(int argc, char **argv)
 		ioctl_s.cmd = AVMB1_REMOVECARD;
 		ioctl_s.data = &rdef;
 		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
+			fprintf(stderr, "%s: please also look at the kernel message, call command dmesg(8)\n", cmd);
 			perror("\nioctl REMOVECARD");
 			exit(2);
 		}
@@ -601,6 +610,9 @@ int main(int argc, char **argv)
 			exit(2);
 		}
 		close(fd);
+		if (fdef.flag != KCAPI_TRACE_OFF)
+		    printf("%s: trace switched on, look at the kernel messages, check dmesg(8)\n", cmd);
+	        else printf("%s: trace switched off\n", cmd);
 		return 0;
 	}
 #endif
