@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/06/29 20:11:25  akool
+ * now compiles with ndbm
+ * (many thanks to Nima <nima_ghasseminejad@public.uni-hamburg.de>)
+ *
  * Revision 1.1  1999/06/28 19:16:33  akool
  * isdnlog Version 3.38
  *   - new utility "isdnrate" started
@@ -67,8 +71,6 @@ int print_msg(int Level, const char *fmt, ...)
 
 static void pre_init()
 {
-  myshortname = basename(myname);
-
   preselect = DTAG;      /* Telekomik */
   vbn = strdup("010"); 	 /* Germany */
 } /* pre_init */
@@ -163,7 +165,10 @@ static int opts(int argc, char *argv[])
     } /* switch */
   } /* while */
 
+  if (argc > optind)
   return(optind);
+  else
+    return(0);
 } /* opts */
 
 
@@ -376,7 +381,19 @@ static void purge(int n)
 static void table()
 {
   register int n;
+  auto 	   struct tm *tm;
 
+
+  buildtime();
+  tm = localtime(&start);
+
+  while (tm->tm_wday) { /* find next sunday */
+    start += (60 * 60 * 24);
+    tm = localtime(&start);
+  } /* while */
+
+  splittime();
+  buildtime();
 
   hour = 7;
   min = 0;
@@ -404,6 +421,7 @@ int main(int argc, char *argv[], char *envp[])
 
 
   myname = argv[0];
+  myshortname = basename(myname);
 
   time(&start);
   splittime();

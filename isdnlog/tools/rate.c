@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1999/06/29 20:11:43  akool
+ * now compiles with ndbm
+ * (many thanks to Nima <nima_ghasseminejad@public.uni-hamburg.de>)
+ *
  * Revision 1.27  1999/06/28 19:16:49  akool
  * isdnlog Version 3.38
  *   - new utility "isdnrate" started
@@ -1296,7 +1300,7 @@ int getLeastCost (RATE *Current, RATE *Cheapest, int booked, int skip)
       cheapest=i;
     }
   }
-  return (Current->prefix==Cheapest->prefix ? UNKNOWN : cheapest);
+  return (Cheapest->prefix==Current->prefix ? UNKNOWN : cheapest);
 }
 
 int guessZone (RATE *Rate, int aoc_units)
