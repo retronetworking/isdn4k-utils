@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/03/06 20:36:34  luethje
+ * Problem in create_runfie() fixed. New function paranoia_check() implemented.
+ *
  * Revision 1.2  1997/03/03 22:05:39  luethje
  * merging of the current version and my tree
  *
@@ -649,9 +652,15 @@ int read_conffiles(section **Section, char *groupfile)
 	if (!read_again)
 	{
 	  sprintf(s[0], "%s%c%s", confdir(), C_SLASH, CONFFILE);
-	  append_element(&files,s[0]);
-
 	  sprintf(s[1], "%s%c%s", confdir(), C_SLASH, CALLERIDFILE);
+
+		if (paranoia_check(s[0]))
+			return -1;
+
+		if (paranoia_check(s[1]))
+			return -1;
+
+	  append_element(&files,s[0]);
 	  append_element(&files,s[1]);
 
 	  if (groupfile != NULL)
@@ -720,7 +729,8 @@ int paranoia_check(char *cmd)
 			return -1;
 		}
 
-		if (stbuf.st_mode & (S_IWGRP | S_IWOTH))
+		if ((stbuf.st_gid != 0 && (stbuf.st_mode & S_IWGRP)) ||
+		    (stbuf.st_mode & S_IWOTH)                          )
 		{
 			print_msg("File `%s' is writable by group or world!\n", cmd);
 			return -1;
