@@ -198,7 +198,7 @@ char *vboxd_get_message(void)
 	fd_set         rmask;
 	char          *stop;
 	int            p;
-	int            c;
+	char           c;
 	int            rc;
 
 	*vboxd_message = '\0';
