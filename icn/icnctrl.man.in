@@ -1,6 +1,6 @@
 .\" $Id$
 .\"
-.\" CHECKIN $date$
+.\" CHECKIN $Date$
 .\"
 .\" Process this file with
 .\" groff -man -Tascii icnctrl.1 for ascii output, or
