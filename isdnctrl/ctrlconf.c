@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1999/11/02 20:41:21  keil
+ * make phonenumber ioctl compatible for ctrlconf too
+ *
  * Revision 1.9  1998/11/21 14:03:31  luethje
  * isdnctrl: added dialmode into the config file
  *
@@ -56,14 +59,6 @@
 #include <ctype.h>
 #include <sys/ioctl.h>
 #include <errno.h>
-#include <linux/isdn.h>
-
- /* fix version skew between 2.0 and 2.1 kernels (structs are identical) */
-#if (NET_DV == 0x04)
-# undef NET_DV
-# define NET_DV 0x05
-#endif
-#include <linux/isdnif.h>
 
 #include "isdnctrl.h"
 #include "ctrlconf.h"
@@ -167,15 +162,11 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 	if (ioctl(fd, IIOCNETGCF, &cfg) < 0)
 		return NULL;
 
-	strcpy(PHONE(inphone)->name, name);
-	do_phonenumber(inphone, "", 0);
-
+	set_isdn_net_ioctl_phone(PHONE(inphone), name, "", 0);
 	if (ioctl(fd, IIOCNETGNM, PHONE(inphone)) < 0)
 		return NULL;
 
-	strcpy(PHONE(outphone)->name, name);
-	do_phonenumber(outphone, "", 1);
-
+	set_isdn_net_ioctl_phone(PHONE(outphone), name, "", 1);
 	if (ioctl(fd, IIOCNETGNM, PHONE(outphone)) < 0)
 		return NULL;
 
@@ -200,10 +191,8 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 	if (Set_Entry(SubSec,interface,CONF_ENT_SECURE, cfg.secure?"on":"off", C_OVERWRITE | C_WARN) == NULL)
 		return NULL;
 
-#ifdef ISDN_NET_DM_OFF
 	if (Set_Entry(SubSec,interface,CONF_ENT_DIALMODE, cfg.dialmode == ISDN_NET_DM_MANUAL?"manual":cfg.dialmode == ISDN_NET_DM_AUTO?"auto":"off", C_OVERWRITE | C_WARN) == NULL)
 		return NULL;
-#endif
 
 	if (cfg.callback)
 	{
@@ -405,7 +394,6 @@ int readconfig(int fd, char *file)
 				exec_args(fd,3,argv);
 			}
 			else
-#ifdef ISDN_NET_DM_OFF
 			if (!strcmp(Entry->name,CONF_ENT_DIALMODE))
 			{
 				argv[0] = cmds[DIALMODE].cmd;
@@ -415,7 +403,6 @@ int readconfig(int fd, char *file)
 				exec_args(fd,3,argv);
 			}
 			else
-#endif
 			if (!strcmp(Entry->name,CONF_ENT_CALLBACK))
 			{
 				argv[0] = cmds[CALLBACK].cmd;
@@ -644,11 +631,7 @@ static int create_interface(int fd, char *name)
 
 static int set_all_numbers(int fd, char *name, int direction, char *numbers)
 {
-#if (NET_DV == 5)
-	isdn_net_ioctl_phone_new phone;
-#else
 	isdn_net_ioctl_phone phone;
-#endif
 	char phonestr[BUFSIZ];
 	char *ptr = phonestr;
 	char *ptr2;
@@ -658,8 +641,6 @@ static int set_all_numbers(int fd, char *name, int direction, char *numbers)
 
 	if (*phonestr != '\0')
 	{
-		strcpy(phone.name, name);
-
 		do
 		{
 			if ((ptr = strrchr(phonestr,' ')) == NULL)
@@ -670,8 +651,7 @@ static int set_all_numbers(int fd, char *name, int direction, char *numbers)
 				while (isspace(*ptr2) && ptr2 != phonestr) *ptr2-- = '\0';
 			}
 
-			do_phonenumber(&phone, ptr, direction);
-
+			set_isdn_net_ioctl_phone(&phone, name, ptr, direction);
 			if (*ptr != '\0')
 			{
 				if (ioctl(fd, IIOCNETANM, &phone) < 0)
@@ -691,11 +671,7 @@ static int set_all_numbers(int fd, char *name, int direction, char *numbers)
 
 static int del_all_numbers(int fd, char *name, int direction)
 {
-#if (NET_DV == 5)
-	isdn_net_ioctl_phone_new phone;
-#else
 	isdn_net_ioctl_phone phone;
-#endif
 	char phonestr[BUFSIZ];
 	char *ptr = phonestr;
 	char *ptr2;
@@ -704,9 +680,7 @@ static int del_all_numbers(int fd, char *name, int direction)
 	if (name == NULL)
 		return -1;
 
-	strcpy(PHONE(phonestr)->name, name);
-	do_phonenumber(phonestr, "", direction);
-
+	set_isdn_net_ioctl_phone(PHONE(phonestr), name, "", direction);
 	if (ioctl(fd, IIOCNETGNM, PHONE(phonestr)) < 0)
 	{
 		perror(name);
@@ -715,7 +689,6 @@ static int del_all_numbers(int fd, char *name, int direction)
 
 	if (*phonestr != '\0')
 	{
-		strcpy(phone.name, name);
 		do
 		{
 			if ((ptr = strrchr(phonestr,' ')) == NULL)
@@ -728,7 +701,7 @@ static int del_all_numbers(int fd, char *name, int direction)
 
 			if (*ptr != '\0')
 			{
-				do_phonenumber(&phone, ptr, direction);
+				set_isdn_net_ioctl_phone(&phone, name, ptr, direction);
 				if (ioctl(fd, IIOCNETDNM, &phone) < 0)
 				{
 					perror(name);
