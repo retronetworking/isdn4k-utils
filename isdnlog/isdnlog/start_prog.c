@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/05/28 21:22:58  luethje
+ * isdnlog option -b is working again ;-)
+ * isdnlog has new \$x variables
+ * README completed
+ *
  * Revision 1.6  1997/05/04 20:19:50  luethje
  * README completed
  * isdnrep finished
@@ -927,6 +932,8 @@ static char *ArgToChar(int type, void* Ptr)
 
 	switch(type)
 	{
+		case R_TYPE_INT    : sprintf(RetCode[Cnt],"%d",*((int*) Ptr));
+		                     break;
 		case R_TYPE_LONG   : sprintf(RetCode[Cnt],"%ld",*((long*) Ptr));
 		                     break;
 		case R_TYPE_DOUBLE : strcpy(RetCode[Cnt],double2str(*((double*) Ptr),8,2,0));
@@ -942,7 +949,7 @@ static char *ArgToChar(int type, void* Ptr)
 
 char **Get_Opts(int chan, int event, int InOut)
 {
-	static char *Opts[11];
+	static char *Opts[13];
 	static char Strings[2][30];
 
 	Opts[0] = (char*) Set_Ringer_Flags(event,InOut);
@@ -993,7 +1000,17 @@ char **Get_Opts(int chan, int event, int InOut)
 	else
 		Opts[9] = "";
 
-	Opts[10] = NULL;
+	if (call[chan].si1)
+		Opts[10] = ArgToChar(R_TYPE_INT, &(call[chan].si1));
+	else
+		Opts[10] = "";
+
+	if (call[chan].pay)
+		Opts[11] = ArgToChar(R_TYPE_DOUBLE, &(call[chan].pay));
+	else
+		Opts[11] = "";
+
+	Opts[12] = NULL;
 	
 	return Opts;
 }
