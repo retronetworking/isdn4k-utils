@@ -12,6 +12,13 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.2  2001/05/01 12:43:49  calle
+ * - new pppd 2.4.1 looks in /usr/lib/pppd/VERSION for plugins
+ * - now depends on pppd version
+ * - supports incoming and outgoing calls together with ppp option "demand"
+ * - new options: voicecallwakeup and coso (caller,local,remote)
+ * - peer samples not ready.
+ *
  * Revision 1.1  2000/05/18 14:58:35  calle
  * Plugin for pppd to support PPP over CAPI2.0.
  *
@@ -23,6 +30,8 @@
 #ifdef VERSION
 char pppd_version[] = VERSION;
 #endif
+
+static char *revision = "$Revision$";
 
 static char username[MAXNAMELEN+1];
 static char password[MAXSECRETLEN+1];
@@ -49,6 +58,7 @@ static int userpass(char *user, char *passwd)
 
 void plugin_init(void)
 {
+    info("userpass: %s", revision);
     add_options(options);
     pap_passwd_hook = userpass;
 }
