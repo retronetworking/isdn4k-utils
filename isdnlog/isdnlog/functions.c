@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.9  1998/03/08 11:42:48  luethje
+ * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
+ *
  * Revision 1.8  1997/05/29 17:07:19  akool
  * 1TR6 fix
  * suppress some noisy messages (Bearer, Channel, Progress) - can be reenabled with log-level 0x1000
@@ -46,7 +49,9 @@
 #ifdef POSTGRES
 #include "postgres.h"
 #endif
-
+#ifdef MYSQLDB
+#include "mysqldb.h"
+#endif
 
 /*****************************************************************************/
 
@@ -102,6 +107,9 @@ void _Exit(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 does _not_
 
 #ifdef POSTGRES
   dbClose();
+#endif
+#ifdef MYSQLDB
+  mysql_dbClose();
 #endif
 
   if (!replay) {
@@ -164,6 +172,9 @@ void logger(int chan)
   auto 	   char   s[BUFSIZ];
 #ifdef POSTGRES
   auto     DbStrIn db_set;
+#endif
+#ifdef MYSQLDB
+  auto     mysql_DbStrIn mysql_db_set;
 #endif
 
 
@@ -239,10 +250,31 @@ void logger(int chan)
   db_set.currency_factor = currency_factor;
   strcpy(db_set.currency, currency);
   db_set.pay = call[chan].pay;
-
   dbAdd(&db_set);
 #endif
+#ifdef MYSQLDB
+  mysql_db_set.connect = call[chan].connect;
+  strcpy(mysql_db_set.calling, call[chan].num[CALLING]);
+  strcpy(mysql_db_set.called, call[chan].num[CALLED]);
+  mysql_db_set.duration = (int)(call[chan].disconnect - call[chan].connect);
+  mysql_db_set.hduration = (int)call[chan].duration;
+  mysql_db_set.aoce = call[chan].aoce;
+  mysql_db_set.dialin = call[chan].dialin ? 'I' : 'O';
+  mysql_db_set.cause = call[chan].cause;
+  mysql_db_set.ibytes = call[chan].ibytes;
+  mysql_db_set.obytes = call[chan].obytes;
+  mysql_db_set.version = atoi(LOG_VERSION);
+  mysql_db_set.si1 = call[chan].si1;
+  mysql_db_set.si11 = call[chan].si11;
+  mysql_db_set.currency_factor = currency_factor;
+  strcpy(mysql_db_set.currency, currency);
+  mysql_db_set.pay = call[chan].pay;
+  strcpy(mysql_db_set.provider, call[chan].provider);
+  mysql_dbAdd(&mysql_db_set);
+#endif
 } /* logger */
+
+
 
 /*****************************************************************************/
 

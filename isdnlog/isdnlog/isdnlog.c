@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.16  1998/03/08 12:13:38  luethje
+ * Patches by Paul Slootman
+ *
  * Revision 1.15  1998/03/08 11:42:50  luethje
  * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
  *
@@ -73,6 +76,9 @@
 #include "isdnlog.h"
 #ifdef POSTGRES
 #include "postgres.h"
+#endif
+#ifdef MYSQLDB
+#include "mysqldb.h"
 #endif
 
 #define FD_SET_MAX(desc, set, max) { if (desc > max) max=desc; FD_SET(desc,set); }
@@ -927,6 +933,9 @@ int main(int argc, char *argv[], char *envp[])
 
 #ifdef POSTGRES
             dbOpen();
+#endif
+#ifdef MYSQLDB
+	    mysql_dbOpen();
 #endif
             loop();
 
