@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.31  1997/09/07 00:43:22  luethje
+ * create new error messages for isdnrep
+ *
  * Revision 1.30  1997/07/22 22:36:17  luethje
  * isdnrep:  Use "&nbsp;" for blanks
  * isdnctrl: Add the option "reset"
@@ -856,7 +859,7 @@ static int print_bottom(double unit, char *start, char *stop)
 		          'x', S_UNKNOWN,
 		          known[knowns-1]->usage[DIALOUT], double2clock(known[knowns-1]->dur[DIALOUT]),
 #ifdef ISDN_NL
-		          print_currency(known[knowns-1]->eh * unit + known[knowns-1]->usage * 0.0825,0));
+		          print_currency(known[knowns-1]->eh * unit + known[knowns-1]->usage[DIALOUT] * 0.0825,0));
 #else
 		          print_currency(known[knowns-1]->eh * unit, 0));
 #endif
