@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.25  1998/10/22 14:10:52  paul
+ * Check that /tmp/isdnctrl0 is not a symbolic link, which is a potential
+ * security threat (it can point to /etc/passwd or so!)
+ *
  * Revision 1.24  1998/10/18 20:13:33  luethje
  * isdnlog: Added the switch -K
  *
@@ -1010,7 +1014,7 @@ int main(int argc, char *argv[], char *envp[])
            * If tmpout is a symlink, refuse to write to it (security hole).
            * E.g. someone can create a link /tmp/isdnctrl0 -> /etc/passwd.
            */
-          if (!lstat(tmpout, &st) && S_ISLNK(st.st_rdev)) {
+          if (!lstat(tmpout, &st) && S_ISLNK(st.st_mode)) {
             print_msg(PRT_ERR, "File \"%s\" is a symlink, not writing to it!\n", tmpout);
             verbose = 0;
           }
