@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.25  2001/06/08 11:55:24  kai
+ * fix to compile with newer kernel headers. Maybe someone wants to fix isdnlog to recognize the number of channels at run time?
+ *
  * Revision 1.24  1999/12/31 13:30:02  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -366,6 +369,20 @@
 
 /****************************************************************************/
 
+#define DUALFIX_DESTNUM    0x100
+#define DUALFIX_SRCNUM     0x200
+#define DUALFIX_MULTLOG    0x400
+
+/****************************************************************************/
+
+typedef struct {
+	int     current;
+	int     shift;
+        int     locked;
+} CODESET;
+
+/****************************************************************************/
+
 typedef struct _interval {
 	int        event;
 	int        chan;
@@ -379,9 +396,11 @@ typedef struct _interval {
 #ifdef _ISDNLOG_C_
 #define _EXTERN
 socket_queue *sockets = NULL;
+_EXTERN int     ignore_unknown_IE = 0xFE;    /* codesets 7 to 1 */
 #else
 #define _EXTERN extern
 extern socket_queue *sockets;
+_EXTERN int     ignore_unknown_IE;
 #endif
 
 _EXTERN FILE   *flog;    /* /var/adm/isdn.log          */

@@ -19,6 +19,31 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.209  2003/07/25 22:18:02  tobiasb
+## isdnlog-4.65:
+##  - New values for isdnlog option -2x / dual=x with enable certain
+##    workarounds for correct logging in dualmode in case of prior
+##    errors.  See `man isdnlog' and isdnlog/processor.c for details.
+##  - New isdnlog option -U2 / ignoreCOLP=2 for displaying ignored
+##    COLP information.
+##  - Improved handling of incomplete D-channel frames.
+##  - Increased length of number aliases shown immediately by isdnlog.
+##    Now 127 instead of 32 chars are possible. (Patch by Jochen Erwied.)
+##  - The zone number for an outgoing call as defined in the rate-file
+##    is written to the logfile again and used by isdnrep
+##  - Improved zone summary of isdnrep.  Now the real zone numbers as
+##    defined in the rate-file are shown.  The zone number is taken
+##    from the logfile as mentioned before or computed from the current
+##    rate-file.  Missmatches are indicated with the chars ~,+ and *,
+##    isdnrep -v ... explains the meanings.
+##  - Fixed provider summary of isdnrep. Calls should no longer be
+##    treated wrongly as done via the default (preselected) provider.
+##  - Fixed the -pmx command line option of isdnrep, where x is the xth
+##    defined [MSN].
+##  - `make install' restarts isdnlog after installing the data files.
+##  - A new version number generates new binaries.
+##  - `make clean' removes isdnlog/isdnlog/ilp.o when called with ILP=1.
+##
 ## Revision 1.208  2002/09/09 06:56:38  akool
 ## isdnlog-4.64:
 ##   - new rates
@@ -1528,6 +1553,11 @@ export COUNTRYCODE	:= @COUNTRYCODE@
 export COUNTRYPREFIX	:= @COUNTRYPREFIX@
 export AREAPREFIX	:= @AREAPREFIX@
 
+# store I4L-Version for make commands issued in the isdnlog subdirectory.
+# In this case the export of I4L-Version by the global makefile does not take
+# place because this makefile is not evaluted.
+STORED_I4LVERSION       := @I4LVERSION@
+
 export ILABEL        := %b %e %T %ICall to tei %t from %N2 on %n2
 export OLABEL        := %b %e %T %Itei %t calling %N2 with %n2
 export CHARGEMAX     := 1000.00
@@ -1565,7 +1595,12 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.65
+VERSION     = 4.66
+
+# fallback to I4L-Version as set at configure time
+ifndef (I4LVERSION)
+I4LVERSION := $(STORED_I4LVERSION)
+endif
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -1638,7 +1673,14 @@ PCFLAGS = mode=oracle ireclen=160 lines=yes
 	MANDATE=`grep CHECKIN $< | $(AWK) '{print $$4}'`; \
 	$(SED) -e s%@MANDATE@%$$MANDATE%g $< > $@
 
+%.1: %.1.in config.status
+	./config.status $@
 
+%.5: %.5.in config.status
+	./config.status $@
+
+%.8: %.8.in config.status
+	./config.status $@
 
 ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
                 isdnlog/server.o isdnlog/start_prog.o isdnlog/messages.o  \
@@ -1857,9 +1899,11 @@ install-progs:
 		$(INSTALL_BIN) $(ISDNBILL) $(DESTDIR)$(BINDIR)
 		-@if (ps x | fgrep $(ISDNLOG) | grep -v grep) >/dev/null; then \
 			kill -HUP `cat $(RUNDIR)/isdnlog.isdnctrl0.pid 2>/dev/null`; \
-			echo "Restarting running isdnlog!" ; \
+			echo "Restarting (the first) running isdnlog!" ; \
 		fi
 
+# FIXME: "Installing /usr/local/lib/isdn/tools/dest/dest.cdb" is confusing
+# because "/tools/dest" is only right for the source location of that file.
 install-data:
 		$(INSTALL_DATA) isdnlog/isdnlog.8       $(DESTDIR)$(MAN8DIR)/isdnlog$(MAN8EXT)
 		$(INSTALL_DATA) isdnrep/isdnrep.1       $(DESTDIR)$(MAN1DIR)/isdnrep$(MAN1EXT)
@@ -1938,8 +1982,12 @@ tools/tools.h: $(LIBISDNDIR)/libisdn.h $(PREFIXDIR)/policy.h
 
 depend: .depend
 
+# sed transforms "tools.o: tools/tools.c ..." to "tools/tools.o: ..."
 .depend:
-		$(CPP) -M $(CFLAGS) $(DEFS) $(INCLUDE) */*.c >.depend
+		$(CPP) -M $(CFLAGS) $(DEFS) $(INCLUDE) */*.c >.depend.tmp
+		cat .depend.tmp | \
+		sed -e"s%^\([A-Za-z0-9_]\+\)\.o: \([A-Za-z0-9_]\+\)/\1\.c %\2/\1.o: \2/\1.c %" > .depend
+		rm -f .depend.tmp
 ifeq ($(ORACLE),1)
 		$(CPP) -M $(CFLAGS) $(DEFS) $(INCLUDE) - < isdnlog/oracle.pc | \
 		sed s/-:/oracle.o:/ >>.depend
