@@ -1,7 +1,8 @@
 /*
- * capiconnect.c - pppd plugin to implement a `minconnect' option.
+ * capiconnect.c - pppd plugin to make ISDN connections over CAPI2.0
  *
- * Copyright 2000 Carsten Paeth (calle@calle.de)
+ * Copyright 2000 Carsten Paeth (calle@calle.in-berlin.de)
+ * Copyright 2000 AVM GmbH Berlin (info@avm.de)
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
