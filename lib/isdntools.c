@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.23  1998/10/13 21:53:26  luethje
+ * isdnrep and lib: bugfixes
+ *
  * Revision 1.22  1998/09/26 18:30:30  akool
  *  - quick and dirty Call-History in "-m" Mode (press "h" for more info) added
  *    - eat's one more socket, Stefan: sockets[3] now is STDIN, FIRST_DESCR=4 !!
@@ -869,18 +872,19 @@ static char *_get_areacode(char *code, int *Len, int flag)
 	static   int    warned = 0;
 	int prefix = strlen(countryprefix);
 
-	if (!warned && (cc = GetAreaCodeInfo(&ac, code + prefix)) == acOk)
-	{
-		if (ac.AreaCodeLen > 0)
-		{
+
+        if (warned)
+          return(NULL);
+
+	if ((cc = GetAreaCodeInfo(&ac, code + prefix)) == acOk) {
+	  if (ac.AreaCodeLen > 0) {
 			if (Len != NULL)
 				*Len = ac.AreaCodeLen + prefix;
 
 			return ac.Info;
 		}
 	}
-	else
-	{
+	else {
 		switch (cc) {
 			case acFileError    : err = "Cannot open/read file";
 			                      break;
@@ -888,15 +892,23 @@ static char *_get_areacode(char *code, int *Len, int flag)
 			                      break;
 			case acWrongVersion : err = "Wrong version of data file";
 			                      break;
+            case acInvalidInput : err = "Input string is not a number or empty";
+                             	  break;
 			default             : err = "Unknown AreaCode error";
 			                      break;
     } /* switch */
 
-		if (!(flag & C_NO_ERROR))
-			print_msg("!!! Problem with AreaCode: %s - disabling AreaCode support!\n", err);
+	  if (!(flag & C_NO_ERROR)) {
+	    print_msg("!!! Problem with AreaCode: %s", err);
 
+	    if (cc != acInvalidInput) {
+	      print_msg(" - disabling AreaCode support!\n");
 		warned = 1;
 	}
+            else
+	      print_msg("\n");
+          } /* if */
+	} /* else */
 
 	return NULL;
 }
