@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.2  2000/05/18 15:20:18  calle
+ * Umount capifs on "stop".
+ *
  * Revision 1.1  2000/03/17 16:19:43  calle
  * New command capiinit, this will replace avmcapictrl in the future, if
  * called as "capiinit start" ist will load all modules, add all cards
@@ -1059,6 +1062,10 @@ int main_start(void)
 	free_contrprocinfo(&cpinfo);
 	free_config(&cards);
 	close(capifd);
+
+	if (filesystem_available("capifs")) {
+		system("mount -t capifs -omode=0666 capifs /dev/capi");
+	}
 
 	return 0;
 }
