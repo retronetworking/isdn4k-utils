@@ -148,6 +148,7 @@ int main(int argc,char **argv)
 	struct timeval timo;
 	sigset_t mask;
 	struct protent *protp;
+	char *firstdev;
 
 	if(argc > 1 && !strcmp(argv[1],"-version")) {
 #ifndef RADIUS	  
@@ -224,7 +225,12 @@ int main(int argc,char **argv)
      */
 	make_options_global(0);
 
-	if (!ppp_available()) {
+	/* Use the first configured device to check wheter ppp is enabled */
+	if ((firstdev = strrchr(lns[0].devnam, '/')))
+	  firstdev++;
+	else
+	  firstdev = lns[0].devnam;
+	if (!ppp_available(firstdev)) {
 		fprintf(stderr, no_ppp_msg);
 		exit(1);
 	}
@@ -244,7 +250,8 @@ int main(int argc,char **argv)
       sprintf(devstr,"Found %d device%s: ",numdev, numdev==1?"":"s");
       for(i=0;i<numdev;i++)
       {
-        strcat(devstr,lns[i].devnam);
+        /* strcat(devstr,lns[i].devnam); */
+        strcat(devstr,lns[i].ifname);
         if (i < numdev - 1)
           strcat(devstr,", ");
       }
