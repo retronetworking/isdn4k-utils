@@ -19,6 +19,15 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.35  1999/02/28 19:32:38  akool
+ * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+ * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ * isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ * "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+ * sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+ * Fixed a typo in callerid.conf.5
+ *
  * Revision 1.34  1999/01/24 19:01:31  akool
  *  - second version of the new chargeint database
  *  - isdnrep reanimated
@@ -248,9 +257,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:o";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:R:0:ou:";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:o";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -674,6 +683,9 @@ int set_options(int argc, char* argv[])
       case 'o' : other++;
       	       	 break;
 
+      case 'u' : ignoreRR = atoi(optarg);
+      	       	 break;
+
       case '?' : printf(usage, myshortname, myshortname, options);
 	         exit(1);
     } /* switch */
@@ -863,6 +875,9 @@ static int read_param_file(char *FileName)
                                 else
 				if (!strcmp(Ptr->name,CONF_ENT_CW))
 				  CityWeekend++;
+                                else
+                                if (!strcmp(Ptr->name,CONF_ENT_IGNORERR))
+				        ignoreRR = (int)strtol(Ptr->value, NIL, 0);
                                 else
 					print_msg(PRT_ERR,"Error: Invalid entry `%s'!\n",Ptr->name);
 
@@ -1159,16 +1174,11 @@ int main(int argc, char *argv[], char *envp[])
 #endif
     	      print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION);
 
-	    if ((i = initSondernummern()) > -1) {
+	    if ((i = initSondernummern(msg)) > -1) {
 #ifdef Q931
-      	      if (!q931dmp) {
+      	      if (!q931dmp)
 #endif
-    	        sprintf(msg, "Sonderrufnummern Version 1/99 loaded [%d entries]", i);
               	  print_msg(PRT_NORMAL, "%s\n", msg);
-
-#ifdef Q931
-       	      } /* if */
-#endif
             } /* if */
 
             if (readconfig(myshortname) < 0)

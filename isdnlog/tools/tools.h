@@ -20,6 +20,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1999/03/07 18:20:11  akool
+ * - new 01805 tarif of DTAG
+ * - new March 1999 tarife
+ * - added new provider "01051 Telecom"
+ * - fixed a buffer overrun from Michael Weber <Michael.Weber@Post.RWTH-Aachen.DE>
+ * - fixed a bug using "sondernnummern.c"
+ * - fixed chargeint change over the time
+ * - "make install" now install's "sonderrufnummern.dat", "tarif.dat",
+ *   "vorwahl.dat" and "tarif.conf"! Many thanks to
+ *   Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * - Euracom Frames would now be ignored
+ * - fixed warnings in "sondernnummern.c"
+ * - "10plus" messages no longer send to syslog
+ *
  * Revision 1.27  1999/02/28 19:33:52  akool
  * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
  * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -555,6 +569,7 @@
 #define CONF_ENT_PRESELECT "PRESELECTED"
 #define	CONF_ENT_TRIM	   "TRIM"
 #define	CONF_ENT_OTHER	   "OTHER"
+#define CONF_ENT_IGNORERR  "IGNORERR"
 
 /****************************************************************************/
 
@@ -859,6 +874,7 @@ _EXTERN char    *amtsholung;
 _EXTERN SonderNummern *SN;
 _EXTERN int	      nSN;
 _EXTERN	int     interns0;
+_EXTERN int	ignoreRR;
 #undef _EXTERN
 
 /****************************************************************************/
@@ -926,7 +942,7 @@ _EXTERN void   price(int chan, char *hint, int viarep);
 _EXTERN char  *realProvidername(int prefix);
 _EXTERN void   preparecint(int chan, char *msg, char *hint, int viarep);
 _EXTERN int    taktlaenge(int chan, char *why);
-_EXTERN int    initSondernummern(void);
+_EXTERN int    initSondernummern(char *msg);
 _EXTERN int    is_sondernummer(char *num, int provider);
 _EXTERN char  *sondernummername(char *number, int provider);
 _EXTERN	char  *zonen[MAXZONES];

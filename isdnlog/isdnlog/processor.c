@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.40  1999/03/14 12:16:08  akool
+ * - isdnlog Version 3.04
+ * - general cleanup
+ * - new layout for "rate-xx.dat" and "holiday-xx.dat" files from
+ *     Michael Reinelt <reinelt@eunet.at>
+ *     unused by now - it's a work-in-progress !
+ * - bugfix for Wolfgang Siefert <siefert@wiwi.uni-frankfurt.de>
+ *     The Agfeo AS 40 (Software release 2.1b) uses AOC_AMOUNT, not AOC_UNITS
+ * - bugfix for Ralf G. R. Bergs <rabe@RWTH-Aachen.DE> - 0800/xxx numbers
+ *     are free of charge ;-)
+ * - tarif.dat V 1.08 - new mobil-rates DTAG
+ *
  * Revision 1.39  1999/03/07 18:18:55  akool
  * - new 01805 tarif of DTAG
  * - new March 1999 tarife
@@ -4842,8 +4854,12 @@ retry:
                  !memcmp(p3, "D3<: ", 5) ||
                  !memcmp(p3, "D3>: ", 5))
           processctrl(0, p3);
-        else if (!memcmp(p3 + 3, "HEX: ", 5))
+        else if (!memcmp(p3 + 3, "HEX: ", 5)) {
+          if (ignoreRR && (strlen(p3 + 8) < 13))
+            ;
+          else
           processctrl(atoi(p3), p3 + 3);
+        }
       }
       else
         processctrl(card, p1);

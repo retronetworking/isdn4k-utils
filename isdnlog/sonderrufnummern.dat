@@ -19,6 +19,15 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 # $Log$
+# Revision 1.5  1999/02/28 19:32:24  akool
+# Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+# CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+# isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+# "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+# sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+# Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+# Fixed a typo in callerid.conf.5
+#
 # Revision 1.1  1999/01/31 17:00:07  mario
 # Initial revision
 #
@@ -29,6 +38,7 @@
 #
 # Stand: 1/99
 #
+V:1.01 [14-Mar-99]
 33|0010    |free|  |     |     |     |Operator Service
 33|0031800 |free|  |     |     |     |Plus Freephone Service (Niederl.)
 33|0041800 |free|  |     |     |     |Plus Freephone Service (Schweiz)
@@ -239,7 +249,8 @@
 33|01802   |    |  |     |   1 |     |Shared Cost Service 01802
 33|01803   |    |  |     |     |30   |Shared Cost Service 01803
 33|01804   |    |  |     |   4 |     |Shared Cost Service 01804
-33|01805   |    |  |     |     |15   |Shared Cost Service 01805
+33|01805   |    |  |     |     |24   |Shared Cost Service 01805
+# AB 1.4.99 :: 33|01805   |    |  |     |     |30   |Shared Cost Service 01805
 33|01901   |    |  |     |     | 6   |Service 0190
 33|01902   |    |  |     |     | 6   |Service 0190
 33|01903   |    |  |     |     | 6   |Service 0190

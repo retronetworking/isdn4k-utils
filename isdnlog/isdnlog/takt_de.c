@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1999/03/10 08:35:59  paul
+ * use DATADIR from "make config" phase instead of hardcoded /usr/lib/isdn
+ *
  * Revision 1.10  1999/03/07 18:19:40  akool
  * - new 01805 tarif of DTAG
  * - new March 1999 tarife
@@ -1151,7 +1154,10 @@ void initTarife(char *msg)
     fclose(fi);
     sprintf(msg, "Tarife Version %s loaded [%d Provider (%s), %d Tarife]",
       Version, nprovider, infos, nprovider * MAXZONES * MAXDAYS * MAXSTUNDEN);
-  } /* if */
+  }
+  else
+    sprintf(msg, "*** Cannot load Tarife (%s : %d)", fn, errno);
+
 } /* initTarife */
 
 
