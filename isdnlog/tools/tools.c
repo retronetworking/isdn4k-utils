@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/04/03 22:40:21  luethje
+ * some bugfixes.
+ *
  * Revision 1.3  1997/03/31 22:15:32  akool
  * added support for the new glibc 2.0.x (aka libc 6.0)
  * changed "HOWTO" to reflect the current stage of development
@@ -195,7 +198,7 @@ char *num2nam(char *num, int si)
 
 /****************************************************************************/
 
-#if defined __GLIBC__ && __GLIBC__ > 2
+#if defined __GLIBC__ && __GLIBC__ >= 2
 char *double2str(double n, int l, int d, int flags)
 {
   if (++retnum == MAXRET)
