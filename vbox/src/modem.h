@@ -19,7 +19,7 @@
 #define MODEM_MAX_S_REGISTER		22			 /* Max. available S-register	*/
 
 #define MODEM_TOGGLETIME			800
-#define MODEM_RINGTIMEOUT			5
+#define MODEM_RINGTIMEOUT			6
 #define MODEM_ECHOTIMEOUT			3
 #define MODEM_CMDTIMEOUT			3
 #define MODEM_TIMEOUT				1800
