@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/03/20 00:28:02  luethje
+ * Inserted lines into the files for the revision tool.
+ *
  */
 
 #ifndef _LIB_H_
@@ -57,6 +60,14 @@ extern char *basename __P((__const char *__name));
 
 #ifndef RUNDIR
 # define RUNDIR "/var/run"
+#endif
+
+#ifndef LOCKDIR
+# define LOCKDIR "/var/lock"
+#endif
+
+#ifndef LOCKFILE
+# define LOCKFILE "LCK.."
 #endif
 
 #ifndef CONFFILE
@@ -114,6 +125,11 @@ extern char *basename __P((__const char *__name));
 
 /****************************************************************************/
 
+#define START_PROG 1
+#define STOP_PROG  2
+
+/****************************************************************************/
+
 #ifdef _ISDNTOOLS_C_
 #define _EXTERN
 #define SET_NULL = ""
@@ -130,8 +146,7 @@ _EXTERN int num_match(char *Pattern, char *number);
 _EXTERN char *expand_number(char *s);
 _EXTERN char *expand_file(char *s);
 _EXTERN char *confdir(void);
-_EXTERN int create_runfile(const char* progname);
-_EXTERN int delete_runfile(const char* progname);
+_EXTERN int handle_runfiles(const char *_progname, char **_devices, int flag);
 _EXTERN int Set_Codes(section* Section);
 _EXTERN char *get_areacode(char *code, int *Len, int flag);
 _EXTERN int read_conffiles(section **Section, char *groupfile);

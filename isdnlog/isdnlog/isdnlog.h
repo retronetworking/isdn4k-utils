@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/04/03 22:34:50  luethje
+ * splitt the files callerid.conf and ~/.isdn.
+ *
  * Revision 1.3  1997/03/23 23:11:54  luethje
  * improved performance
  *
@@ -220,7 +223,6 @@ _EXTERN int	width;
 _EXTERN	int	watchdog;
 _EXTERN char   *isdnctrl;
 _EXTERN	char    isdnctrl2[FNSIZE];
-_EXTERN char    pidfile[SHORT_STRING_SIZE];
 
 _EXTERN IFO     ifo[ISDN_MAX_CHANNELS];
 _EXTERN IO      io[ISDN_MAX_CHANNELS];
