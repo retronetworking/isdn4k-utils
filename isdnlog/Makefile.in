@@ -19,6 +19,18 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.213  2004/07/13 21:44:19  tobiasb
+## Patch to isdnlog manpages by Matthias Klose <doko@cs.tu-berlin.de>,
+## a maintainer of Debian's isdnutils source package:
+## - add manpage for isdnbill *)
+## - fix typo in isdnrate.man
+## - isdnbill.c: add english help texts
+## --
+## *) Renamed the sourcefile isdnrep/isdnbill.man to isdnrep/isdnbill.1.in
+## because only @MANDATE@ is replaced in %.man files. Other @VARS@ have to
+## be processed by config.status and therefore noted in configure.in and
+## configure. The isdnrep manpage was used as template for those entries.
+##
 ## Revision 1.212  2004/02/12 23:52:28  tobiasb
 ## isdnlog-4.68:
 ##  - New German ratefile, rate-de.dat version 3.08 from rates4linux,
@@ -1666,7 +1678,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.68
+VERSION     = 4.69
 
 # fallback to I4L-Version as set at configure time
 ifndef (I4LVERSION)
