@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.37  1999/04/16 14:40:07  akool
+ * isdnlog Version 3.16
+ *
+ * - more syntax checks for "rate-xx.dat"
+ * - isdnrep fixed
+ *
  * Revision 1.36  1999/04/14 13:17:30  akool
  * isdnlog Version 3.14
  *
@@ -492,6 +498,8 @@
 
 /* Fixme: this is specific to Germany */
 #define	DTAG	     33
+
+#define	TESTDURATION 153 /* 181 */
 
 /****************************************************************************/
 

@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  1999/04/19 19:24:02  akool
+ * isdnlog Version 3.18
+ *
+ * - countries-at.dat added
+ * - spelling corrections in "countries-de.dat" and "countries-us.dat"
+ * - LCR-function of isdnconf now accepts a duration (isdnconf -c .,duration)
+ * - "rate-at.dat" and "rate-de.dat" extended/fixed
+ * - holiday.c and rate.c fixed (many thanks to reinelt@eunet.at)
+ *
  * Revision 1.21  1999/04/17 14:10:56  akool
  * isdnlog Version 3.17
  *
@@ -946,7 +955,7 @@ int main(int argc, char *argv[], char *envp[])
 	if (areacode[0] != '\0')
 	{
 		char *ptr;
-		int len, i, zone = UNKNOWN, duration = 181;
+		int len, i, zone = UNKNOWN, duration = TESTDURATION;
 
 
  		initHoliday(holifile, NULL);

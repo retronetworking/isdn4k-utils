@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1999/04/29 19:03:56  akool
+ * isdnlog Version 3.22
+ *
+ *  - T-Online corrected
+ *  - more online rates for rate-at.dat (Thanks to Leopold Toetsch <lt@toetsch.at>)
+ *
  * Revision 1.10  1999/04/26 22:12:34  akool
  * isdnlog Version 3.21
  *
@@ -983,7 +989,7 @@ int getLeastCost (RATE *Rate, int skip)
   Least=*Rate;
   Least.Charge=1e9;
   if (Least.start==Least.now)
-    Least.now+=181;
+    Least.now+=TESTDURATION;
   Curr=Least;
   min=UNKNOWN;
 

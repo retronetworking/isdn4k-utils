@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.58  1999/04/29 19:03:24  akool
+ * isdnlog Version 3.22
+ *
+ *  - T-Online corrected
+ *  - more online rates for rate-at.dat (Thanks to Leopold Toetsch <lt@toetsch.at>)
+ *
  * Revision 1.57  1999/04/26 22:12:00  akool
  * isdnlog Version 3.21
  *
@@ -3466,6 +3472,7 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
 {
   auto   int  zone = UNKNOWN;
   auto   RATE lcRate, ckRate;
+  auto	 char pro[BUFSIZ];
   static char message[BUFSIZ];
   static char lcrhint[BUFSIZ];
 
@@ -3540,12 +3547,18 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
     if (call[chan].tarifknown)
       showRates(message);
     else {
-      if (call[chan].zone == UNKNOWN)
-	sprintf(message, "CHARGE: Uh-oh: No zone info for provider %02d, number %s",
-		call[chan].provider, call[chan].num[CALLED]);
+
+      if (call[chan].provider < 100)
+        sprintf(pro, "010%02d", call[chan].provider);
       else
-	sprintf(message, "CHARGE: Uh-oh: No charge info for provider %02d, zone %d, number %s",
-		call[chan].provider, call[chan].zone, call[chan].num[CALLED]);
+        sprintf(pro, "010%03d", call[chan].provider - 100);
+
+      if (call[chan].zone == UNKNOWN)
+	sprintf(message, "CHARGE: Uh-oh: No zone info for provider %s, number %s",
+		pro, call[chan].num[CALLED]);
+      else
+	sprintf(message, "CHARGE: Uh-oh: No charge info for provider %s, zone %d, number %s",
+		pro, call[chan].zone, call[chan].num[CALLED]);
     } /* else */
   } /* if */
 
@@ -3554,9 +3567,9 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   if ((call[chan].hint = getLeastCost(&lcRate, UNKNOWN)) != UNKNOWN) {
     if (tip) {
 
-      /* compute charge for 181 seconds for used provider */
+      /* compute charge for TESTDURATION seconds for used provider */
       ckRate = call[chan].Rate;
-      ckRate.now = ckRate.start + 181;
+      ckRate.now = ckRate.start + TESTDURATION;
       (void)getRate(&ckRate, NULL);
 
       sprintf(lcrhint, "HINT: Better use 010%02d:%s, %s %s/%ds = %s %s/Min, saving %s %s/%lds",
@@ -3564,7 +3577,7 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
 	currency, double2str(lcRate.Price, 5, 3, DEB),
 	(int)(lcRate.Duration + 0.5),
 	currency, double2str(60 * lcRate.Price / lcRate.Duration, 5, 3, DEB),
-	      /* Fixme: rückrechnen von 181 Sekunden auf 1 Minute? */
+	      /* Fixme: rückrechnen von TESTDURATION Sekunden auf 1 Minute? */
 	currency, double2str(ckRate.Charge - lcRate.Charge, 5, 3, DEB),
 	lcRate.Time);
     } /* if */
