@@ -20,6 +20,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  2000/03/06 07:03:20  akool
+ * isdnlog-4.15
+ *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
+ *     ==> DO A 'make clean' PLEASE
+ *   - isdnlog/tools/telnum.c ... fixed a small typo
+ *   - isdnlog/isdnrep/rep_main.c ... incl. dest.h
+ *   - isdnlog/isdnrep/isdnrep.c ... fixed %l, %L
+ *   - isdnlog/isdnrep/isdnrep.h ... struct one_call, sum_calls are now here
+ *
+ *   Support for Norway added. Many thanks to Tore Ferner <torfer@pvv.org>
+ *     - isdnlog/rate-no.dat  ... NEW
+ *     - isdnlog/holiday-no.dat  ... NEW
+ *     - isdnlog/samples/isdn.conf.no ... NEW
+ *     - isdnlog/samples/rate.conf.no ... NEW
+ *
  * Revision 1.12  1999/12/31 13:57:19  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -211,7 +226,7 @@ int main(int argc, char *argv[], char *envp[])
 	auto char  fnbuff[512] = "";
 	auto char  usage[]     = "%s: usage: %s [ -%s ]\n";
 	auto char  wrongdate[] = "unknown date: %s\n";
-	auto char  options[]   = "ad:f:hinop:s:t:uvw:NVF:M:R:bE";
+	auto char  options[]   = "ad:f:hinop:s:t:uvw:NVF:M:R:bES";
 	auto char *myname      = basename(argv[0]);
 	auto char *ptr         = NULL;
 	auto char *linefmt     = "";
@@ -294,6 +309,9 @@ int main(int argc, char *argv[], char *envp[])
 
       case 'V' : print_version(myname);
                  exit(0);
+
+      case 'S' : summary++;
+      	       	 break;
 
       case '?' : printf(usage, argv[0], argv[0], options);
                  return(1);
