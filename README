@@ -42,8 +42,9 @@ This package contains the following stuff:
   isdnrate.1, rate-files.5, xisdnload.1x and xmonisdn.1x
 
 IMPORTANT:
-  This will be the last release of isdn4k-utils as is. From now (February 2000) on,
-  the package will be splitted into the following packages:
+  This will be the last release of isdn4k-utils as is. From now 
+  (February 2000) on, the package will be splitted into the 
+  following packages:
 
   base: common configuration tools and Documentation
   isdnlog: D-Channel logging, charge calculation etc.
