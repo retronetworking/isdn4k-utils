@@ -49,6 +49,9 @@ distclean: clean
 configureclean: distclean
 	rm -f configure
 
+install:
+	echo "dummy install"
+
 commit: distclean
 	$(CVS) commit .
 
