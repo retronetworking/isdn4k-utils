@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/03/16 20:59:25  luethje
+ * Added the source code isdnlog. isdnlog is not working yet.
+ * A workaround for that problem:
+ * copy lib/policy.h into the root directory of isdn4k-utils.
+ *
  * Revision 2.6.36  1997/02/10  09:30:43  akool
  * MAXCARDS implemented
  *
@@ -71,6 +76,8 @@
 #define _TOOLS_H_
 
 /****************************************************************************/
+
+#define GNU_SOURCE 1
 
 #include <stdio.h>
 #include <string.h>
