@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.24  1998/10/18 20:13:33  luethje
+ * isdnlog: Added the switch -K
+ *
  * Revision 1.23  1998/10/06 12:50:57  paul
  * As the exec is done within the signal handler, SIGHUP was blocked after the
  * first time. Now SIGHUP is unblocked so that you can send SIGHUP more than once.
@@ -996,12 +999,21 @@ int main(int argc, char *argv[], char *envp[])
 
       if ((ptty == NULL) || (fcons != (FILE *)NULL)) {
         if (verbose) {
+          struct stat st;
           if ((p = strrchr(isdnctrl, '/')))
             p++;
           else
             p = argv[lastarg];
 
           sprintf(tmpout, "%s/%s", TMPDIR, p);
+          /*
+           * If tmpout is a symlink, refuse to write to it (security hole).
+           * E.g. someone can create a link /tmp/isdnctrl0 -> /etc/passwd.
+           */
+          if (!lstat(tmpout, &st) && S_ISLNK(st.st_rdev)) {
+            print_msg(PRT_ERR, "File \"%s\" is a symlink, not writing to it!\n", tmpout);
+            verbose = 0;
+          }
         } /* if */
 
         if (!verbose || ((fprot = fopen(tmpout, "a")) != (FILE *)NULL)) {
