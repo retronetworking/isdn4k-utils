@@ -125,7 +125,7 @@ void log_line(long level, char *fmt, ...)
                         
 			if ((timel = localtime(&timec))) {
 				if (strftime(timeline, 20, "%d-%b %H:%M:%S", timel) != 15) {
-					strcpy(timeline, "??-??? ??:??:??");
+					strcpy(timeline, "??" "-??" "? ??" ":??" ":??");
 				}
 			}
 
