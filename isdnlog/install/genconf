@@ -20,6 +20,10 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.3  1997/04/15 22:37:05  luethje
+## allows the character `"' in the program argument like the shell.
+## some bugfixes.
+##
 ## Revision 1.2  1997/04/08 21:20:02  luethje
 ## primitive changes
 ##
@@ -81,9 +85,12 @@ setentry "[GLOBAL]"  "AREAPREFIX"    "$AREAPREFIX"
 setentry "[GLOBAL]"  "COUNTRYCODE"   "$COUNTRYCODE"
 setentry "[GLOBAL]"  "COUNTRYPREFIX" "$COUNTRYPREFIX"
 setentry "[ISDNLOG]" "CHARGEMAX"     "$CHARGEMAX"
+setentry "[ISDNLOG]" "REPFMT"        '\"  %X %D %15.15H %T %-15.15F %7u %U %I %O\"'
+setentry "[ISDNLOG]" "REPFMTWWW"     '\"%X %D %17.17H %T %-17.17F %-20.20l %9u %U %I %O\"'
 setentry "[ISDNLOG]" "OLABEL"        "$OLABEL"
 setentry "[ISDNLOG]" "ILABEL"        "$ILABEL"
 setentry "[ISDNLOG]" "LOGFILE"       "$LOGFILE"
+
 
 sed -e "s/\([^\]\)\$\([0-9][ 	]\)/\1\\\\$\2/g" $CONFFILE >$RESFILE
 cp $RESFILE $CONFFILE

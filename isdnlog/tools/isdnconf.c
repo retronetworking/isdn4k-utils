@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/04/20 22:52:32  luethje
+ * isdnrep has new features:
+ *   -variable format string
+ *   -can create html output (option -w1 or ln -s isdnrep isdnrep.cgi)
+ *    idea and design from Dirk Staneker (dirk.staneker@student.uni-tuebingen.de)
+ * bugfix of processor.c from akool
+ *
  * Revision 1.6  1997/04/17 20:09:57  luethje
  * patch of Ingo Schneider
  *
@@ -67,6 +74,7 @@ static int GetNextEnv(char ***EnvPtr, char **name, char **value);
 static int ClearEnv(char ****EnvPtr);
 static int Set_ILabel(char *value);
 static int Set_OLabel(char *value);
+static char *Get_FmtStr(char *Ptr, char *name);
 
 /****************************************************************************/
 
@@ -945,21 +953,76 @@ static int _readconfig(char *_myname)
 
 /****************************************************************************/
 
+static char *Get_FmtStr(char *Ptr, char *name)
+{
+	static char *RetCode = NULL;
+	char *ptr2;
+
+	if (*Ptr++ != '\"')
+		return Ptr;
+
+	free(RetCode);
+	ptr2 = RetCode = strdup(Ptr);
+
+	while(*Ptr != '\"')
+	{
+		if (*Ptr == '\0')
+		{
+   		_print_msg("Warning: Missing character `\"' at the end of entry `%s'!\n",name);
+   		break;
+   	}
+
+		if (*Ptr == '\\' && Ptr[1] == '\"')
+			Ptr++;
+
+		*ptr2++ = *Ptr++;
+	}
+
+	*ptr2 = '\0';
+
+	if (*Ptr == '\"')
+		Ptr++;
+
+	while(isspace(*Ptr)) Ptr++;
+
+	if (*Ptr != '\0')
+   		_print_msg("Warning: Invalid token at the end of entry `%s'!\n",name);
+
+  return RetCode;
+}
+
+/****************************************************************************/
+
 static int Set_Globals(section *SPtr)
 {
+	auto int      cnt = 0;
+	auto char  ***sPtr = lineformats;
 	auto section *Ptr;
   auto entry   *CEPtr;
 
+	if (sPtr != NULL)
+	{
+		while (sPtr != NULL)
+		{
+			free(sPtr[0]);
+			free(sPtr[1]);
+			free(sPtr);
+
+			sPtr++;
+		}
+
+		free(lineformats);
+	}
 
 	if ((Ptr = Get_Section(SPtr,CONF_SEC_ISDNLOG)) != NULL)
 	{
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_ILABEL)) != NULL)
-			Set_ILabel(CEPtr->value);
+			Set_ILabel(Get_FmtStr(CEPtr->value,CEPtr->name));
 		else
 			Set_ILabel(NULL);
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_OLABEL)) != NULL)
-			Set_OLabel(CEPtr->value);
+			Set_OLabel(Get_FmtStr(CEPtr->value,CEPtr->name));
 		else
 			Set_OLabel(NULL);
 
@@ -1001,6 +1064,43 @@ static int Set_Globals(section *SPtr)
 	      _print_msg("%s: WARNING: Syntax error in `%s' in Line %d, ignored\n", Myname, CONF_ENT_CURR, ln);
 	    else
 	    	currency++;
+	  }
+
+		CEPtr = Ptr->entries;
+		cnt = 0;
+
+	  while (CEPtr != NULL)
+	  {
+	  	if (!strncmp(CEPtr->name,CONF_ENT_REPFMT,strlen(CONF_ENT_REPFMT)))
+	  	{
+	  		if ((lineformats = (char ***) realloc(lineformats,sizeof(char**)*(cnt+2))) == NULL)
+	  		{
+					_print_msg("%s: ERROR: Can not allocate memory!\n", Myname);
+					return 0;
+				}
+
+	  		if ((lineformats[cnt] = (char **) calloc(2,sizeof(char*))) == NULL)
+	  		{
+					_print_msg("%s: ERROR: Can not allocate memory!\n", Myname);
+					return 0;
+				}
+
+	  		if ((lineformats[cnt][0] = strdup(CEPtr->name+strlen(CONF_ENT_REPFMT))) == NULL)
+	  		{
+					_print_msg("%s: ERROR: Can not allocate memory!\n", Myname);
+					return 0;
+				}
+
+	  		if ((lineformats[cnt][1] = strdup(Get_FmtStr(CEPtr->value,CEPtr->name))) == NULL)
+	  		{
+					_print_msg("%s: ERROR: Can not allocate memory!\n", Myname);
+					return 0;
+				}
+				
+				lineformats[++cnt] = NULL;
+	  	}
+
+	  	CEPtr = CEPtr->next;
 	  }
 	}
 	else

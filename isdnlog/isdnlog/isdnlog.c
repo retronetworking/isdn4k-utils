@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.8  1997/04/17 20:09:32  luethje
+ * patch of Ingo Schneider
+ *
  * Revision 1.7  1997/04/08 21:56:48  luethje
  * Create the file isdn.conf
  * some bug fixes for pid and lock file
@@ -141,7 +144,7 @@ static void loop(void)
         /* Damit sich der neue Client anmelden kann, ohne
            das was anderes dazwischen funkt ... */
         if (sockets[NewClient].descriptor >= 0)
-	        FD_SET_MAX(sockets[Cnt].descriptor, &readmask, maxdesc);
+	        FD_SET_MAX(sockets[NewClient].descriptor, &readmask, maxdesc);
 
       	NewClient = 0;
       }

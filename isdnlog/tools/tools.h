@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1997/04/20 22:52:36  luethje
+ * isdnrep has new features:
+ *   -variable format string
+ *   -can create html output (option -w1 or ln -s isdnrep isdnrep.cgi)
+ *    idea and design from Dirk Staneker (dirk.staneker@student.uni-tuebingen.de)
+ * bugfix of processor.c from akool
+ *
  * Revision 1.10  1997/04/15 22:37:13  luethje
  * allows the character `"' in the program argument like the shell.
  * some bugfixes.
@@ -383,6 +390,8 @@
 #define CONF_ENT_INTVAL  "INTERVAL"
 #define CONF_ENT_TIME    "TIME"
 
+#define CONF_ENT_REPFMT  "REPFMT"
+
 /****************************************************************************/
 
 #define PRT_ERR                1
@@ -617,6 +626,7 @@ _EXTERN char* rebootcmd = REBOOTCMD;
 _EXTERN char* logfile   = LOGFILE;
 _EXTERN int  (*_print_msg)(const char *, ...) = printf;
 _EXTERN int   use_new_config = 1;
+_EXTERN char ***lineformats = NULL;
 
 #else
 #define _EXTERN extern
@@ -627,6 +637,7 @@ _EXTERN char* rebootcmd;
 _EXTERN char* logfile;
 _EXTERN int  (*_print_msg)(const char *, ...);
 _EXTERN int   use_new_config;
+_EXTERN char ***lineformats;
 
 #endif
 

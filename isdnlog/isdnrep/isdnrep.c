@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1997/04/20 23:44:49  luethje
+ * some primitve changes
+ *
  * Revision 1.12  1997/04/20 22:52:25  luethje
  * isdnrep has new features:
  *   -variable format string
@@ -164,7 +167,7 @@
 /*****************************************************************************/
 
 #define DEF_FMT "  %X %D %15.15H %T %-15.15F %7u %U %I %O"
-#define WWW_FMT "%X %D%17.17H %T %-17.17F%-20.20l%9u%U%-14I%-14O"
+#define WWW_FMT "%X %D %17.17H %T %-17.17F %-20.20l %9u %U %I %O"
 
 /*****************************************************************************/
 
@@ -178,7 +181,7 @@
 
 /*****************************************************************************/
 
-#define H_HEADER_COLOR "#FFFFFF"
+#define H_BG_COLOR     "#FFFFFF"
 #define H_TABLE_COLOR1 "#CCCCFF"
 #define H_TABLE_COLOR2 "#FFCCCC"
 #define H_TABLE_COLOR3 "#CCFFCC"
@@ -192,11 +195,11 @@
 #define H_BODY_BOTTOM1 "<TD align=left colspan=%d>%s</TD>%s\n"
 #define H_BODY_BOTTOM2 "</TABLE><P>\n"
 
-#define H_LEFT         "<TD align=left>%s</TD>"
-#define H_CENTER       "<TD align=center>%s</TD>"
-#define H_RIGHT        "<TD align=right>%s</TD>"
+#define H_LEFT         "<TD align=left><TT>%s</TT></TD>"
+#define H_CENTER       "<TD align=center><TT>%s</TT></TD>"
+#define H_RIGHT        "<TD align=right><TT>%s</TT></TD>"
 
-#define H_EMPTY        "&nbsp"
+#define H_EMPTY        "&nbsp;"
 
 /*****************************************************************************/
 
@@ -319,7 +322,7 @@ int read_logfile(char *myname)
   clear_sum(&all_sum);
   clear_sum(&all_com_sum);
 
-	if (strcmp(known[knowns-1]->who,S_UNKNOWN))
+	if (knowns == 0 || strcmp(known[knowns-1]->who,S_UNKNOWN))
 	{
 		if ((known = (KNOWN**) realloc(known, sizeof(KNOWN *) * (knowns+1))) == NULL)
     {
@@ -556,7 +559,7 @@ static int print_bottom(double unit, char *start, char *stop)
 			for (i = mymsns; i < knowns; i++) {
 				if (known[i]->usage[j]) {
 					print_line3(NULL,
-					          !numbers?known[i]->who:known[i]->num,
+					          /*!numbers?*/known[i]->who/*:known[i]->num*/,
 					          known[i]->usage[j],
 					          double2clock(known[i]->dur[j]),
 					          j==DIALOUT?print_currency(known[i]->dm,0):
@@ -785,7 +788,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          }
 				          break;
 				/* date (without year): */
-				case 'd': if (status == F_BODY_LINE)
+				case 'y': if (status == F_BODY_LINE)
 				            colsize[i] = append_string(&string,*fmtstring, get_time_value(0,NULL,GET_DATE));
 				          else
 				          {
@@ -949,17 +952,18 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				case 'I': if (cur_call->ibytes)
 				          	colsize[i] = append_string(&string,*fmtstring,set_byte_string('I',(double)cur_call->ibytes));
 				          else
-				          	colsize[i] = append_string(&string,*fmtstring, "");
+				          	colsize[i] = append_string(&string,*fmtstring, "            ");
 				          break;
 				/* Out-Bytes: */
 				/* Benoetigt Range! */
 				case 'O': if (cur_call->obytes)
 				          	colsize[i] = append_string(&string,*fmtstring,set_byte_string('O',(double)cur_call->obytes));
 				          else
-				          	colsize[i] = append_string(&string,*fmtstring, "");
+				          	colsize[i] = append_string(&string,*fmtstring, "            ");
 				          break;
 				/* there are dummy entries */
 				case 'c': 
+				case 'd': 
 				case 's': if (status != F_BODY_LINE)
 				          	free_col = 1;
 				          	
@@ -992,13 +996,13 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 		char *help2 = NULL;
 
 
-		if ((help2 = (char*) calloc(strlen(H_BODY_BOTTOM1)+strlen(string)+strlen(overlap)+1,sizeof(char))) == NULL)
+		if ((help2 = (char*) calloc(strlen(H_BODY_BOTTOM1)+(string?strlen(string):0)+strlen(overlap)+1,sizeof(char))) == NULL)
 		{
 			print_msg(PRT_ERR, nomemory);
 			return -1;
 		}
 
-		sprintf(help2,H_BODY_BOTTOM1,last_free_col+1,overlap,string);
+		sprintf(help2,H_BODY_BOTTOM1,last_free_col+1,overlap,string?string:"");
 
 		free(string);
 		string = help2;
@@ -1144,7 +1148,7 @@ static char *set_byte_string(char Direction, double Bytes)
 static int set_col_size(void)
 {
 	one_call *tmp_call;
-	int size;
+	int size = 0;
 	int i = 0;
 
 	if ((tmp_call = (one_call*) calloc(1,sizeof(one_call))) == NULL)
@@ -1153,13 +1157,16 @@ static int set_col_size(void)
 		return -1;
 	}
 
-	size = print_line(F_COUNT_ONLY,tmp_call,0,NULL);
+	print_line(F_COUNT_ONLY,tmp_call,0,NULL);
 
 	while(colsize[i] != -1)
-		print_msg(PRT_NORMAL,H_BODY_HEADER2,colsize[i++]);
+		if (html)
+			print_msg(PRT_NORMAL,H_BODY_HEADER2,colsize[i++]);
+		else
+			size += colsize[i++];
 
 	free(tmp_call);
-	return 0;
+	return size;
 }
 
 /*****************************************************************************/
@@ -1292,6 +1299,9 @@ static prt_fmt** get_format(const char *format)
 				if ((num = sscanf(Ptr+1,"%[^a-zA-Z]%c%[^\n]",Range,&Type,End)) > 1 ||
 				    (num = sscanf(Ptr+1,"%c%[^\n]",&Type,End))                 > 0   )
 				{
+					if (!isalpha(Type))
+    				print_msg(PRT_ERR, "Warning: Invalid token in format type `%c'!\n",Type);
+
 					if ((fmt = (prt_fmt*) calloc(1,sizeof(prt_fmt))) == NULL)
 					{
 						print_msg(PRT_ERR, nomemory);
@@ -1590,7 +1600,7 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 		hit = 0;
 
 		if (!*(cur_call->num[n])) {
-			if (!numbers)
+//			if (!numbers)
 			{
 				cur_call->num[n][0] = C_UNKNOWN;
 				cur_call->num[n][1] = '\0';
@@ -1630,7 +1640,7 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 
 					if (cc) {
 
-						strcpy(cur_call->who[n], known[i]->who);
+						strncpy(cur_call->who[n], known[i]->who,NUMSIZE);
 
  						nx[n] = i;
 						hit++;
@@ -2145,6 +2155,20 @@ static void strich(int type)
   }
   else
 	{
+		char *string;
+		int size = set_col_size();
+
+		if ((string = (char*) calloc(size+1,sizeof(char))) == NULL)
+    {
+      print_msg(PRT_ERR, nomemory);
+      return;
+    }
+
+		while (size>0)
+			string[--size] = type==2?'=':'-';
+
+		print_msg(PRT_NORMAL,"%s\n",string);
+		/*
 		switch (type) {
 			case 1 : print_msg(PRT_NORMAL,"----------------------------------------------------------------------------------------\n");
 			         break;
@@ -2152,7 +2176,10 @@ static void strich(int type)
 			         break;
 			case 3 : print_msg(PRT_NORMAL,"------------------------------------------------------------\n");
 			         break;
-		} /* switch */
+		}
+		*/
+		
+		free(string);
   }
 } /* strich */
 
@@ -2195,7 +2222,7 @@ static int html_header(void)
 {
 	print_msg(PRT_NORMAL,"Content-Type: text/html\n\n");
 	print_msg(PRT_NORMAL,"<HTML>\n");
-	print_msg(PRT_NORMAL,"<BODY bgcolor=%s>\n",H_HEADER_COLOR);
+	print_msg(PRT_NORMAL,"<BODY bgcolor=%s>\n",H_BG_COLOR);
 
 	return 0;
 }
