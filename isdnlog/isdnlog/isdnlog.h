@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1998/12/09 20:39:30  akool
+ *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
+ *  - new option "-o" to suppress causes of other ISDN-Equipment
+ *  - more support for the internal S0-bus
+ *  - Patches from Jochen Erwied <mack@Joker.E.Ruhr.DE>, fixes TelDaFax Tarif
+ *  - workaround from Sebastian Kanthak <sebastian.kanthak@muehlheim.de>
+ *  - new CHARGEINT chapter in the README from
+ *    "Georg v.Zezschwitz" <gvz@popocate.hamburg.pop.de>
+ *
  * Revision 1.13  1998/11/24 20:51:35  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -192,6 +201,7 @@
 /****************************************************************************/
 
 #define BROADCAST   0x7f
+#define OUTGOING    !call[chan].dialin
 
 /****************************************************************************/
 
@@ -336,7 +346,6 @@ _EXTERN	char   *outfile;
 _EXTERN	char    tmpout[PATH_MAX];
 _EXTERN int     readkeyboard;
 _EXTERN	int     interns0;
-_EXTERN	int	preselect;
 _EXTERN	int	other;
 _EXTERN IFO     ifo[ISDN_MAX_CHANNELS];
 _EXTERN IO      io[ISDN_MAX_CHANNELS];
@@ -380,7 +389,12 @@ _EXTERN void logger(int chan);
 _EXTERN int  ringer(int chan, int event);
 _EXTERN void initSondernummern(void);
 _EXTERN int  is_sondernummer(char *num);
-
+_EXTERN void initTarife(char *msg);
+_EXTERN void exitTarife(void);
+_EXTERN void price(int chan, char *hint);
+_EXTERN char *realProvidername(int prefix);
+_EXTERN void preparecint(int chan, char *msg, char *hint);
+_EXTERN int  taktlaenge(int chan, char *why);
 #undef _EXTERN
 
 /****************************************************************************/

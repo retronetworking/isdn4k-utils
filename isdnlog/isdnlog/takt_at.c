@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (log-module)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1998/11/24 20:51:52  akool
+ *  - changed my email-adress
+ *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
+ *  - made Provider-Prefix 6 digits long
+ *  - full support for internal S0-bus implemented (-A, -i Options)
+ *  - isdnlog now ignores unknown frames
+ *  - added 36 allocated, but up to now unused "Auskunft" Numbers
+ *  - added _all_ 122 Providers
+ *  - Patch from Jochen Erwied <mack@Joker.E.Ruhr.DE> for Quante-TK-Anlagen
+ *    (first dialed digit comes with SETUP-Frame)
+ *
  * Revision 1.2  1998/10/03 18:06:03  akool
  *  - processor.c, takt_at.c : Patch from Michael Reinelt <reinelt@eunet.at>
  *    try to guess the zone of the calling/called party
@@ -84,7 +95,7 @@ static char tab_tage[2][12] = {{ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 
 
 static struct w_ftag t_ftag[A_FEI] = {
   {  1,  1, 1, "Neujahr" },
-  {  6,  1, 0, "Hl. Drei Könige" },
+  {  6,  1, 1, "Hl. Drei Könige" },
   {  1,  5, 1, "1. Mai" },
   {  0,  0, 1, "Muttertag" },
   {  0,  0, 1, "Karfreitag" },
@@ -94,9 +105,10 @@ static struct w_ftag t_ftag[A_FEI] = {
   {  0,  0, 1, "Pfingstsonntag" },
   {  0,  0, 1, "Pfingstmontag" },
   {  0,  0, 0, "Fronleichnam" },
-  { 26, 10, 1, "Nationalfeiertag" },
   { 15,  8, 0, "Maria Himmelfahrt" },
-  {  1, 11, 0, "Allerheiligen" },
+  { 26, 10, 1, "Nationalfeiertag" },
+  {  1, 11, 1, "Allerheiligen" },
+  {  8, 12, 1, "Maria Empfängnis" },
   { 25, 12, 1, "Christtag" },
   { 26, 12, 1, "2. Weihnachtstag" }};
 

@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.24  1998/12/09 20:40:27  akool
+ *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
+ *  - new option "-o" to suppress causes of other ISDN-Equipment
+ *  - more support for the internal S0-bus
+ *  - Patches from Jochen Erwied <mack@Joker.E.Ruhr.DE>, fixes TelDaFax Tarif
+ *  - workaround from Sebastian Kanthak <sebastian.kanthak@muehlheim.de>
+ *  - new CHARGEINT chapter in the README from
+ *    "Georg v.Zezschwitz" <gvz@popocate.hamburg.pop.de>
+ *
  * Revision 1.23  1998/11/24 20:53:10  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -623,6 +632,8 @@ typedef struct {
   int	  ctakt;
   int	  zone;
   int	  uid;
+  int	  tip;
+  int	  tz;
 } CALL;
 
 /****************************************************************************/
@@ -770,6 +781,7 @@ _EXTERN CALL    	call[MAXCHAN];
 _EXTERN int     	q931dmp;
 #endif
 _EXTERN int     	CityWeekend;
+_EXTERN	int	 preselect;
 _EXTERN int	dual;
 _EXTERN char    	mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;

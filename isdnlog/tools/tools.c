@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Utilities)
  *
- * Copyright 1995, 1998 by Andreas Kool (akool@isdn4linux.de)
+ * Copyright 1995, 1999 by Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1998/12/09 20:40:19  akool
+ *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
+ *  - new option "-o" to suppress causes of other ISDN-Equipment
+ *  - more support for the internal S0-bus
+ *  - Patches from Jochen Erwied <mack@Joker.E.Ruhr.DE>, fixes TelDaFax Tarif
+ *  - workaround from Sebastian Kanthak <sebastian.kanthak@muehlheim.de>
+ *  - new CHARGEINT chapter in the README from
+ *    "Georg v.Zezschwitz" <gvz@popocate.hamburg.pop.de>
+ *
  * Revision 1.15  1998/11/24 20:53:07  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -381,6 +390,8 @@ char *double2str(double n, int l, int d, int flags)
     while (d-- > 0)
       *pd++ = *ps++;
   } /* if */
+
+  retstr[retnum][l + 1] = 0;
 
   if (flags & DEB) {
     p = retstr[retnum] + 1;
@@ -922,7 +933,7 @@ go:   	         if (!ndigit)
 
 int print_version(char *myname)
 {
-	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997, 1998\n",myname,VERSION);
+	_print_msg("%s Version %s, Copyright (C) 1995, 1996, 1997, 1998, 1999\n",myname,VERSION);
 	/*
 	_print_msg("                                   Andreas Kool (akool@isdn4linux.de)\n");
 	_print_msg("                               and Stefan Luethje (luethje@sl-gw.lake.de)\n\n");
