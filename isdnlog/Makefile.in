@@ -19,6 +19,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.215  2004/10/28 01:53:29  tobiasb
+## Enabled text substitution by configure for isdnlog sample config files
+## The pointer to isdnlog documentation required a new config option.
+## Added another config option and data for Chinese area codes.
+##
 ## Revision 1.214  2004/07/24 12:03:36  tobiasb
 ## Increased version number from 4.68 to 4.69.  It is planned to collect
 ## changes with this odd version number for a longer period of time.
@@ -1778,8 +1783,8 @@ PCFLAGS = mode=oracle ireclen=160 lines=yes
 samples/isdn.conf.%: samples/isdn.conf.%.in config.status
 	./config.status $@
 
-samples/isdn.conf: samples/isdn.conf.in config.status
-	./config.status $@
+# samples/isdn.conf is not matched by the rule rule above,
+# a regular rule for it can be found further below after all
 
 ISDNLOG_OBJS =  isdnlog/isdnlog.o isdnlog/processor.o isdnlog/functions.o \
                 isdnlog/server.o isdnlog/start_prog.o isdnlog/messages.o  \
@@ -1870,6 +1875,9 @@ Makefile: Makefile.in config.status
 
 config.status: configure
 	./config.status --recheck
+
+samples/isdn.conf: samples/isdn.conf.in config.status
+	./config.status $@
 
 # recompile when VERSION in Makefile changes for binaries with new version:
 FILES_USING_VERSION = isdnlog/isdnlog.o isdnlog/processor.o isdnlog/user_access.o isdnrep/isdnrep.o isdnconf/isdnconf.o tools/isdnconf.o tools/tools.o
