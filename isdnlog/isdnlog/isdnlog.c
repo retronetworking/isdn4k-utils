@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.63  2000/06/29 17:38:27  akool
+ *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
+ *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
+ *
  * Revision 1.62  2000/06/20 17:09:59  akool
  * isdnlog-4.29
  *  - better ASN.1 display
@@ -1285,6 +1289,15 @@ void raw_mode(int state)
     tcsetattr(fileno(stdin), TCSANOW, &oldterminfo);
 } /* raw_mode */
 
+static int checkconfig(void) {
+  if (callfile && (!callfmt || !*callfmt)) {
+    print_msg(PRT_ERR, "No CALLFMT given.");
+    return -1;
+  }
+  /* there shold propably be more checks here */
+
+  return 0;
+}
 /*****************************************************************************/
 
 int main(int argc, char *argv[], char *envp[])
@@ -1476,6 +1489,8 @@ int main(int argc, char *argv[], char *envp[])
 
             if (readconfig(myshortname) < 0)
               Exit(30);
+	    if (checkconfig() < 0)
+	      Exit(30);
 
             restoreCharge();
           } /* if */
@@ -1503,7 +1518,7 @@ int main(int argc, char *argv[], char *envp[])
 	    if (sockets[ISDNINFO].descriptor<0)
 	      sockets[ISDNINFO].descriptor = open("/dev/isdninfo", O_RDONLY | O_NONBLOCK);
 	  }
-	  
+
           if (replay || (sockets[ISDNINFO].descriptor >= 0)) {
 
             if (readkeyboard) {

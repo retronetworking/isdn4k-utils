@@ -21,6 +21,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.79  2000/07/17 16:34:23  akool
+ * isdnlog-4.32
+ *  - added new Prefixes 0160 (D1) and 0162 (D2) to "country-de.dat"
+ *  - corrected all german mobil phone numbers (many thank's to
+ *    Tobias Becker <i4l-projects@talypso.de> for the tool "fix_rates.pl")
+ *  - isdnlog/tools/rate.c ... New R:-tag
+ *  - isdnlog/tools/isdnrate.c ... print warnings from getRate if verbose
+ *  - isdnlog/tools/rate-files.man ... New R:-tag
+ *  - isdnlog/tools/NEWS ... New R:-tag
+ *  - isdnlog/README ... New R:-tag
+ *  - isdnlog/samples/rtest.dat ... example rate-file for testing R:
+ *
  * Revision 1.78  2000/06/02 12:14:28  akool
  * isdnlog-4.28
  *  - isdnlog/tools/rate.c ... patch by Hans Klein, unknown provider
@@ -2292,10 +2304,8 @@ static int get_area(int *prefix, RATE *Rate, char *number,
   if (Rate->_area==UNKNOWN) {
     if (*Rate->dst[0]) {
       if(getDest(number, &onum))
-        Rate->_area=-2;
+        *onum.keys = '\0';
     }
-    else
-      Rate->_area=-2;
   }
   num = onum;
   ret = get_area1(oprefix, Rate, number, &num, 0, &rz);
