@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.52  1999/04/14 13:16:27  akool
+ * isdnlog Version 3.14
+ *
+ * - "make install" now install's "rate-xx.dat", "rate.conf" and "ausland.dat"
+ * - "holiday-xx.dat" Version 1.1
+ * - many rate fixes (Thanks again to Michael Reinelt <reinelt@eunet.at>)
+ *
  * Revision 1.51  1999/04/10 17:19:51  akool
  * fix a typo
  *
@@ -4145,11 +4152,12 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
     return;
 
   if (call[chan].tarifknown) {
+
     if (msg)
       if (call[chan].Rate.Basic > 0)
         sprintf(message, "CHARGE: %s %s + %s/%ds = %s %s + %s/Min (%s)",
 	  currency, double2str(call[chan].Rate.Basic, 5, 3, DEB),
-	  double2str(call[chan].Rate.Price, 5, 3, DEB),
+	  double2str(call[chan].Rate.Price - call[chan].Rate.Basic, 5, 3, DEB),
 	  (int)(call[chan].Rate.Duration + 0.5),
 	  currency, double2str(call[chan].Rate.Basic, 5, 3, DEB),
 	  double2str(60 * call[chan].Rate.Price / call[chan].Rate.Duration, 5, 3, DEB),
@@ -4218,7 +4226,7 @@ static void processctrl(int card, char *s)
   register int         wegchan; /* fuer gemakelte */
   auto     int         dialin, type = 0, cref = -1, creflen, version;
   static   int         tei = BROADCAST, sapi = 0, net = 1, firsttime = 1;
-  auto     char        sx[BUFSIZ], s1[BUFSIZ], s2[BUFSIZ];
+  auto     char        sx[BUFSIZ], s1[BUFSIZ], s2[BUFSIZ], s3[BUFSIZ], s4[BUFSIZ];
   auto	   char       *why, *hint;
   auto	   char	       hints[BUFSIZ];
   static   char        last[BUFSIZ];
@@ -4727,9 +4735,20 @@ static void processctrl(int card, char *s)
 
  	    call[chan].cint = call[chan].Rate.Duration;
 
- 	    snprintf(sx, BUFSIZ, "NEXT CI AFTER %s (%s, %s, %s, %s)",
+            if (call[chan].Rate.Day && *call[chan].Rate.Day)
+              sprintf(s3, ", %s", call[chan].Rate.Day);
+            else
+              *s3 = 0;
+
+            if (call[chan].Rate.Hour && *call[chan].Rate.Hour)
+              sprintf(s4, ", %s", call[chan].Rate.Hour);
+            else
+              *s4 = 0;
+
+ 	    snprintf(sx, BUFSIZ, "NEXT CI AFTER %s (%s, %s%s%s)",
  		     double2clock(call[chan].cint) + 3,
- 		     call[chan].Rate.Provider, call[chan].Rate.Zone, call[chan].Rate.Day, call[chan].Rate.Hour);
+ 		     call[chan].Rate.Provider, call[chan].Rate.Zone,
+ 		     s3, s4);
             info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
 
 	    huptime(chan, 1);
@@ -5312,7 +5331,7 @@ static void teardown(int chan)
 void processcint()
 {
   auto int    chan, c;
-  auto char   sx[BUFSIZ], s1[BUFSIZ];
+  auto char   sx[BUFSIZ], s1[BUFSIZ], s2[BUFSIZ], s3[BUFSIZ];
   auto double dur;
 
 
@@ -5357,9 +5376,20 @@ void processcint()
       if (call[chan].cint != call[chan].Rate.Duration) { /* Taktwechsel */
  	call[chan].cint = call[chan].Rate.Duration;
 
- 	snprintf(sx, BUFSIZ, "NEXT CI AFTER %s (%s, %s, %s, %s)",
+ 	if (call[chan].Rate.Day && *call[chan].Rate.Day)
+          sprintf(s2, ", %s", call[chan].Rate.Day);
+        else
+          *s2 = 0;
+
+        if (call[chan].Rate.Hour && *call[chan].Rate.Hour)
+          sprintf(s3, ", %s", call[chan].Rate.Hour);
+        else
+          *s3 = 0;
+
+ 	snprintf(sx, BUFSIZ, "NEXT CI AFTER %s (%s, %s%s%s)",
  	  double2clock(call[chan].cint) + 3,
- 	  call[chan].Rate.Provider, call[chan].Rate.Zone, call[chan].Rate.Day, call[chan].Rate.Hour);
+ 	  call[chan].Rate.Provider, call[chan].Rate.Zone,
+ 	  s2, s3);
 
  	info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
 

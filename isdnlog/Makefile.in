@@ -19,6 +19,13 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.67  1999/04/14 13:16:01  akool
+## isdnlog Version 3.14
+##
+## - "make install" now install's "rate-xx.dat", "rate.conf" and "ausland.dat"
+## - "holiday-xx.dat" Version 1.1
+## - many rate fixes (Thanks again to Michael Reinelt <reinelt@eunet.at>)
+##
 ## Revision 1.66  1999/04/10 16:34:57  akool
 ## isdnlog Version 3.13
 ##
@@ -535,7 +542,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.14
+VERSION     = 3.15
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
