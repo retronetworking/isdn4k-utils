@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.86  1999/10/30 13:42:36  akool
+ * isdnlog-3.60
+ *   - many new rates
+ *   - compiler warnings resolved
+ *   - fixed "Sonderrufnummer" Handling
+ *
  * Revision 1.85  1999/10/29 19:46:00  akool
  * isdnlog-3.60
  *  - sucessfully ported/tested to/with:
@@ -3973,7 +3979,7 @@ static void processctrl(int card, char *s)
 
           fprintf(stdout, "%02x  %s\n", k, s1);
         } /* else */
-      }	
+      } /* if */
     } /* if */
 #if 0 /* wird so ins syslog eingetragen :-( */
     if (!replay)
