@@ -20,6 +20,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  2000/08/17 21:34:44  akool
+ * isdnlog-4.40
+ *  - README: explain possibility to open the "outfile=" in Append-Mode with "+"
+ *  - Fixed 2 typos in isdnlog/tools/zone/de - many thanks to
+ *      Tobias Becker <tobias@talypso.de>
+ *  - detect interface (via IIOCNETGPN) _before_ setting CHARGEINT/HUPTIMEOUT
+ *  - isdnlog/isdnlog/processor.c ... fixed wrong init of IIOCNETGPNavailable
+ *  - isdnlog/isdnrep/isdnrep.c ... new option -S summary
+ *  - isdnlog/isdnrep/rep_main.c
+ *  - isdnlog/isdnrep/isdnrep.1.in
+ *  - isdnlog/tools/NEWS
+ *  - isdnlog/tools/cdb/debian ... (NEW dir) copyright and such from orig
+ *  - new "rate-de.dat" from sourceforge (hi and welcome: Who is "roro"?)
+ *
  * Revision 1.19  2000/03/06 07:03:20  akool
  * isdnlog-4.15
  *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
@@ -240,8 +254,8 @@ typedef struct {
   double din;
   double dout;
   double pay;
-  long	 ibytes;
-  long	 obytes;
+  double ibytes;
+  double obytes;
 } sum_calls;
 
 /****************************************************************************/
@@ -255,8 +269,8 @@ typedef struct {
   char   num[2][NUMSIZE];
   char   who[2][NUMSIZE];
   char	 sarea[2][TN_MAX_SAREA_LEN]; /* lt */
-  long	 ibytes;
-  long	 obytes;
+  double ibytes;
+  double obytes;
   char   version[10];
   int	 si;
   int	 si1;
