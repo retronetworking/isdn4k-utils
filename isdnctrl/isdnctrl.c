@@ -21,6 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.50  2002/01/31 19:53:41  paul
+ * Fixed error messages when opening /dev/isdnctrl - /dev/isdn/isdnctrl etc.,
+ * only /dev/isdnctrl was mentioned and people assumed that isdnctrl wasn't
+ * devfs-compliant yet when the open failed due to other reasons.
+ * Zero the phone struct before use.
+ *
  * Revision 1.49  2001/06/11 17:55:58  paul
  * Added 'break' statement after handling data version 5 (otherwise fallthrough
  * into data version 6 handling!!)
@@ -440,7 +446,8 @@ int reset_interfaces(int fd, char *option)
 	}
 
 	while (!feof(iflst)) {
-		fgets(s, sizeof(s), iflst);
+		if (fgets(s, sizeof(s), iflst)==NULL)
+			break;
 		if ((p = strchr(s, ':'))) {
 			*p = 0;
 
@@ -1644,6 +1651,25 @@ int main(int argc, char **argv)
 {
 	int fd;
 	int rc;
+
+	/* 
+	 * Security check. Mere mortals mustn't do anything except
+	 * isdnctrl dial <devicename>. --okir
+	 * hangup addlink removelink and status are also needed --kkeil
+	 */
+	if (getuid()) {
+		if (argc != 3 ||
+		  (strcmp(argv[1], "dial")
+		  && strcmp(argv[1], "hangup")
+		  && strcmp(argv[1], "addlink")
+		  && strcmp(argv[1], "removelink")
+		  && strcmp(argv[1], "status"))) {  
+		 	fprintf(stderr, 
+				"Only the dial,hangup,addlink,removelink and status\n"
+				"commands are allowed for none root users\n");
+			return 1;
+		}
+	}
 
 	if ((cmd = strrchr(argv[0], '/')) != NULL)
 		*cmd++ = '\0';
