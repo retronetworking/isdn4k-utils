@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1999/06/16 19:13:03  akool
+ * isdnlog Version 3.34
+ *   fixed some memory faults
+ *
  * Revision 1.29  1999/06/15 20:05:20  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -702,12 +706,7 @@ char *vnum(int chan, int who)
       } /* if */
     } /* if */
 
-    /* Fixme: raus damit */
-    if (!memcmp(call[chan].num[who], "+49173", 5)) {
-      strcpy(call[chan].area[who], "D2 Mobilfunknetz");
-      l = 6;
-    }
-    else if ((ptr = get_areacode(call[chan].num[who], &ll, flag)) != 0) {
+    if ((ptr = get_areacode(call[chan].num[who], &ll, flag)) != 0) {
       strcpy(call[chan].area[who], ptr);
       l = ll;
       got++;

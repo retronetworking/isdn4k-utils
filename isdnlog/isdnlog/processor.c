@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.69  1999/06/21 19:33:53  akool
+ * isdnlog Version 3.35
+ *   zone data for .nl (many thanks to Paul!)
+ *
+ *   WARNING: This version of isdnlog dont even compile! *EXPERIMENTAL*!!
+ *
  * Revision 1.68  1999/06/16 23:37:35  akool
  * fixed zone-processing
  *
@@ -954,7 +960,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
       Q931dump(TYPE_STRING, -1, s, version);
     } /* if */
   } /* if */
-
+  
   if (!*intern) {
     if (*provider == UNKNOWN)
       *provider = preselect;
@@ -3469,7 +3475,7 @@ void processRate(int chan)
 {
   call[chan].Rate.start  = call[chan].connect;
   call[chan].Rate.now    = call[chan].disconnect = cur_time;
-
+  
   if (getRate(&call[chan].Rate, NULL) == UNKNOWN) {
     call[chan].tarifknown = 0;
   } else {
@@ -3551,7 +3557,7 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
 
   if (msg)
     *(*msg = message) = '\0';
-
+  
   if (tip)
     *(*tip = lcrhint) = '\0';
 
@@ -3605,10 +3611,7 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   if (getRate(&call[chan].Rate, msg)==UNKNOWN)
     return;
 
-  if (msg)
-    *(*msg = message) = '\0';
-
-  if (call[chan].Rate.zone == FREECALL) { /* FreeCall */
+  if (call[chan].Rate.zone==FREECALL) { /* FreeCall */
     call[chan].tarifknown = 0;
 
     if (msg)
@@ -3625,9 +3628,10 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   if (viarep)
     return;
 
-  if (msg && call[chan].tarifknown)
+  if (msg && call[chan].tarifknown) {
     showRates(message);
-
+  } /* if */
+  
   lcRate = call[chan].Rate;
 
   if ((call[chan].hint = getLeastCost(&lcRate, UNKNOWN)) != UNKNOWN) {

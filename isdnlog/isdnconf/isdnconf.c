@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.33  1999/06/16 19:12:21  akool
+ * isdnlog Version 3.34
+ *   fixed some memory faults
+ *
  * Revision 1.32  1999/06/15 20:03:46  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -939,7 +943,7 @@ retry:
       	else if (hour == 7)
           break;
       } /* for */
-
+ 
       if (lastprovider == UNKNOWN)
         px = "";
       else

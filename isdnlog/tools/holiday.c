@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1999/06/15 20:05:04  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.12  1999/05/22 10:19:21  akool
  * isdnlog Version 3.29
  *
@@ -160,7 +166,9 @@
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
+#ifndef __GLIBC__
 extern const char *basename (const char *name);
+#endif
 #else
 #include "isdnlog.h"
 #include "tools.h"
