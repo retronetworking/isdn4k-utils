@@ -51,6 +51,10 @@
 #define VBOXSAVE_CAID				64
 #define VBOXSAVE_VBOX				 6
 
+/** Variables ************************************************************/
+
+extern unsigned char voice_touchtone_sequence[VBOXVOICE_SEQUENCE + 1];
+
 /** Prototypes ***********************************************************/
 
 extern int voice_init(struct vboxuser *, struct vboxcall *);

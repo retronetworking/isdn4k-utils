@@ -15,6 +15,7 @@
 
 extern unsigned char *xstrtoupper(unsigned char *);
 extern void xstrncpy(unsigned char *, unsigned char *, int);
+extern void xstrncat(unsigned char *, unsigned char *, int);
 extern long xstrtol(unsigned char *, long);
 extern long xstrtoo(unsigned char *, long);
 

@@ -2,15 +2,19 @@
 ## $Id$
 ##
 
-## GNU automake options ##################################################
+## gnu automake options ###################################################
 
 AUTOMAKE_OPTIONS	= foreign
 
-## Other directories #####################################################
+## other directories to process ###########################################
 
 SUBDIRS			= vboxgetty
 
-## Clean & Maintenance ###################################################
+## extra files to distribute ##############################################
+
+EXTRA_DIST		= AUTHORS CHANGES COPYING INSTALL 
+
+## cleanup ################################################################
 
 CLEANFILES              = *~
 MAINTAINERCLEANFILES    = configure aclocal.m4 Makefile.in config.h.in \

@@ -73,7 +73,11 @@ void modem_set_timeout(int timeout)
 		timeoutstatus = 0;
 
 		signal(SIGALRM, modem_timeout_function);
+
+#ifdef HAVE_SIGINTERRUPT 
 		siginterrupt(SIGALRM, 1);
+#endif
+
 		alarm(timeout);
 	}
 	else

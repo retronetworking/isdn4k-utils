@@ -16,6 +16,7 @@
 
 #include "lock.h"
 #include "log.h"
+#include "stringutils.h"
 
 /*************************************************************************/
 /** lock_create():	Erzeugt einen Lock.											**/
@@ -84,7 +85,7 @@ int lock_create(unsigned char *name)
 	{
 		if ((lptr = fopen(name, "w")))
 		{
-			fprintf(lptr, "%010ld\n", getpid());
+			fprintf(lptr, "%010d\n", getpid());
 			fclose(lptr);
 			return(0);
 		}

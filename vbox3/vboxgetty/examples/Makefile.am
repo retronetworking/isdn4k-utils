@@ -4,15 +4,20 @@
 
 ## Other directories #####################################################
 
-SUBDIRS = scripts
+SUBDIRS			= scripts
 
 ## Configuration to install ##############################################
 
-sysconf_DATA	= vboxgetty.conf
-
-EXTRA_DIST	= $(sysconf_DATA)
+EXTRA_DIST		= vboxgetty.conf vboxcallerid.conf
 
 ## Clean & Maintenance ###################################################
 
-CLEANFILES = *~
-MAINTAINERCLEANFILES = Makefile.in
+CLEANFILES		= *~
+MAINTAINERCLEANFILES	= Makefile.in
+
+## Local install routines ################################################
+
+install-data-local:
+			  $(mkinstalldirs) $(sysconfdir)
+			  $(INSTALL) -m 664 vboxgetty.conf $(sysconfdir)
+			  $(INSTALL) -m 664 callerid.conf  $(sysconfdir)
