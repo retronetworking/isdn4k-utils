@@ -499,7 +499,9 @@ static void plugin_check_options(void)
 		if (tmp == sl->s || *tmp) goto illcontr;
 		if (sl->next) {
 			sl = sl->next;
-			cinfo.ddi = sl->s;
+			cinfo.ddi = strdup(sl->s);
+			if (cinfo.ddi == 0)
+			   goto illcontr;
 			if (sl->next && sl->next->s) {
 			        sl = sl->next;
 				cinfo.ndigits = strtol(sl->s, &tmp, 10);
