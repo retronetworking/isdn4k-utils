@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.18  2000/06/08 20:56:42  armin
+ * added checking for card id.
+ *
  * Revision 1.17  2000/06/08 08:31:03  armin
  * corrected tei parameter option
  *
@@ -150,6 +153,8 @@ char *no_of_tables;
 #else
 /* new driver Release >= 2.0 */
 
+extern char DrvID[];
+
 extern int Divaload_main(int, char **); 
 #include <divas.h>
 
@@ -157,8 +162,6 @@ extern int Divaload_main(int, char **);
 
 int fd;
 isdn_ioctl_struct ioctl_s;
-
-extern char DrvID[];
 
 char protoname[1024];
 char Man_Path[160];
@@ -1377,7 +1380,9 @@ int main(int argc, char **argv) {
 	} else
 		eiconctrl_usage();
 
+#ifndef HAVE_NPCI
 	strcpy(DrvID, ioctl_s.drvid);
+#endif
 
 	ac = argc - (arg_ofs - 1);
 	if (arg_ofs >= argc)
@@ -1571,6 +1576,8 @@ int main(int argc, char **argv) {
                 char filename[1024];
                 u_char protobuf[0x100000];
                 eicon_codebuf *cb = NULL;
+
+		card_id = -1;
 
 		if (argc <= (arg_ofs + 1))
                        	strcpy(protoname,"etsi");
