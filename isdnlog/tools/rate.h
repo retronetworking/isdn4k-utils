@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  2000/01/16 12:36:59  akool
+ * isdnlog-4.03
+ *  - Patch from Gerrit Pape <pape@innominate.de>
+ *    fixes html-output if "-t" option of isdnrep is omitted
+ *  - Patch from Roland Rosenfeld <roland@spinnaker.de>
+ *    fixes "%p" in ILABEL and OLABEL
+ *
  * Revision 1.19  1999/12/31 13:57:20  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -260,4 +267,7 @@ inline int getNProvider( void );
 char   *prefix2provider_variant(int prefix, char *s);
 int isProviderValid(int prefix, time_t when);
 inline int isProviderBooked( int i);
+int getPrsel(char *telnum, int *provider, int *zone, int *area);
+
+
 #endif
