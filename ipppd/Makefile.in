@@ -42,7 +42,7 @@ PPPDOBJS = main.o magic.o fsm.o lcp.o ipcp.o upap.o chap.o md5.o ccp.o \
 
 all: ipppd
 
-%.man: %.8
+%.8: %.man
 	cp $< $@
 
 install-man: $(MANPAGES)

@@ -63,6 +63,9 @@ endif
 ifeq ($(CONFIG_LOOPCTRL),y)
 	SUBDIRS := $(SUBDIRS) loop
 endif
+ifeq ($(CONFIG_DIEHLCTRL),y)
+	SUBDIRS := $(SUBDIRS) diehl
+endif
 ifeq ($(CONFIG_IMON),y)
 	SUBDIRS := $(SUBDIRS) imon
 endif
