@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.81  1999/08/21 12:59:51  akool
+ * small fixes
+ *
  * Revision 1.80  1999/08/20 19:28:18  akool
  * isdnlog-3.45
  *  - removed about 1 Mb of (now unused) data files
@@ -2972,7 +2975,7 @@ static void huptime(int chan, int setup)
         /* der erste Versuch, dem einmaligen Verbindungsentgelt
            (DM 0,06/Anwahl) zu entkommen ... */
         if (call[chan].Rate.Basic) /* wenn es eine Grundgebuehr gibt (z.b. T-Online eco) */
-          newhuptimeout = 240;
+          newhuptimeout = hup3;
       }
       else
 #endif

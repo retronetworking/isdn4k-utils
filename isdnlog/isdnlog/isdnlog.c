@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.48  1999/08/20 19:28:12  akool
+ * isdnlog-3.45
+ *  - removed about 1 Mb of (now unused) data files
+ *  - replaced areacodes and "vorwahl.dat" support by zone databases
+ *  - fixed "Sonderrufnummern"
+ *  - rate-de.dat :: V:1.10-Germany [20-Aug-1999 21:23:27]
+ *
  * Revision 1.47  1999/06/28 19:16:03  akool
  * isdnlog Version 3.38
  *   - new utility "isdnrate" started
@@ -628,6 +635,8 @@ static void init_variables(int argc, char* argv[])
   preselect = DTAG;      /* Telekomik */
   vbn = strdup("010"); 	 /* Germany */
 
+  hup3 = 240;
+
   myname = argv[0];
   myshortname = basename(myname);
 } /* init_variables */
@@ -733,11 +742,15 @@ int set_options(int argc, char* argv[])
 
       	       	 if ((p = strchr(optarg, ':'))) {
                    *p = 0;
+
                    hup1 = atoi(optarg);
                    hup2 = atoi(p + 1);
+
+                   if ((p = strchr(p + 1, ':')))
+                     hup3 = atoi(p + 1);
       	       	 }
                  else
-                   printf("%s: WARNING: \"-h\" Option requires two Arguments\n", myshortname);
+                   printf("%s: WARNING: \"-h\" Option requires 2 .. 3 arguments\n", myshortname);
       	       	 break;
 
       case 'b' : bilingual++;
