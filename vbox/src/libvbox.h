@@ -17,6 +17,8 @@
 #define CTRL_MODE_REMOVE		(0)
 #define CTRL_MODE_CREATE		(1)
 
+#define KERNEL_SAMPLE_FREQ		(8000)
+
 #define VAH_MAGIC					"VBOX"							/* Magic id	*/
 #define VAH_MAX_MAGIC			(4)
 #define VAH_MAX_NAME				(32)
@@ -69,5 +71,8 @@ extern long xstrtol(char *, long);
 
 extern int header_put(int, vaheader_t *);
 extern int header_get(int, vaheader_t *);
+
+extern int get_nr_messages(char *, int);
+extern int get_message_ptime(int, int);
 
 #endif /* _VBOX_LIBVBOX_H */

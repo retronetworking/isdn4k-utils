@@ -66,9 +66,13 @@ libvbox.o:	$(HEADERS) libvbox.c
 vboxctrl.o:	$(HEADERS) vboxctrl.c
 		$(CC) $(CFLAGS) -c vboxctrl.c
 
+vboxbeep.o:	$(HEADERS) vboxbeep.c
+		$(CC) $(CFLAGS) -c vboxbeep.c
+
+
 #----------------------------------------------------------------------------#
 
-all:		  vboxlib vboxgetty vboxconvert vboxctrl vbox
+all:		  vboxlib vboxgetty vboxconvert vboxctrl vboxbeep vbox
 
 #----------------------------------------------------------------------------#
 # Compiling vboxlib                                                          #
@@ -127,6 +131,15 @@ VBOXCTRLOBJS	= vboxctrl.o
 
 vboxctrl:	  $(VBOXCTRLOBJS)
 		  $(CC) $(VBOXCTRLOBJS) -L. -lvbox -o vboxctrl
+
+#----------------------------------------------------------------------------#
+# Compiling vboxleds                                                         #
+#----------------------------------------------------------------------------#
+
+VBOXBEEPOBJS	= vboxbeep.o
+
+vboxbeep:	  $(VBOXBEEPOBJS)
+		  $(CC) $(VBOXBEEPOBJS) -L. -lvbox -o vboxbeep
 
 #----------------------------------------------------------------------------#
 # Misc                                                                       #

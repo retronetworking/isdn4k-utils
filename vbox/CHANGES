@@ -3,6 +3,24 @@
 # To describe the news & fixes better (my english is not the best :-) the
 # changelog is only available in german.
 
+08-Mär-97
+=========
+
+o [Neu]	Neues Programm vboxbeep: überwacht ein oder mehrere Spoolverzeich-
+	nisse und gibt einen Signalton aus, wenn sich in einem davon neue
+	Nachrichten befinden.
+
+
+07-Mär-97
+=========
+
+o [Neu] Funktionen vbox_get_nr_new_messages() & vbox_get_nr_all_messages()
+	in Tcl implementiert.
+
+o [Fix] Funktion parse_cmp() hat die Kompression zwar ganz toll ausgewert-
+	et, aber nicht gesetzt.
+
+
 03-Mär-97
 =========
 

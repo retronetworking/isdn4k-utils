@@ -230,6 +230,8 @@ static char *parse_cmp(char *cmd, char *arg, void *ptr, int min, int max)
 
 	if (cmp == 5) return("alaw not longer supported");
 
+	(*(int *)ptr) = cmp;
+
 	return(NULL);
 }
 
