@@ -1,3 +1,7 @@
+/* $Id$
+ * $Log$
+ */
+
 /*****************************************************************************/
 /*                                                                           */
 /*                                AREACODE.C                                 */
@@ -288,7 +292,7 @@ static unsigned LoadFileHeader (AreaCodeDesc* Desc)
     } else if (feof (Desc->F) || Desc->Count == 0) {
         /* This should not happen on a valid file */
         return acInvalidFile;
-    } else if (Desc->Version != acVersion) {
+    } else if ((Desc->Version & 0xFF00) != acVersion) {
         return acWrongVersion;
     } else {
         /* Data is sane */
