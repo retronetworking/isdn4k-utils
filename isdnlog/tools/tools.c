@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.44  2000/01/01 15:05:24  akool
+ * isdnlog-4.01
+ *  - first Y2K-Bug fixed
+ *
  * Revision 1.43  1999/12/31 13:57:20  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -736,24 +740,28 @@ char *vnum(int chan, int who)
     return(retstr[retnum]);
   } /* if */
 
-  if (!memcmp(call[chan].num[who], "#*", 2)) { /* Eurocom Befehl ... */
+  if (*call[chan].num[who] == '#') { /* Eurocom Befehl ... */
     auto char arg1[BUFSIZ], arg2[BUFSIZ], arg3[BUFSIZ];
 
-    if (!memcmp(call[chan].num[who] + 2, "421", 3)) {
-      strncpy(arg1, call[chan].num[who] + 5, 4);
-      strncpy(arg2, call[chan].num[who] + 9, 2);
+    if (!memcmp(call[chan].num[who] + 1, "*421", 4)) {
+      Strncpy(arg1, call[chan].num[who] + 5, 4 + 1);
+      Strncpy(arg2, call[chan].num[who] + 9, 2 + 1);
 
       strcpy(arg3, num2nam(arg2, 1));
 
-      sprintf(retstr[retnum], "[Morgen Terminruf um %c%c:%c%c Uhr an %s]",
+      sprintf(retstr[retnum], "[TK:Morgen Terminruf um %c%c:%c%c Uhr an %s]",
         arg1[0], arg1[1], arg1[2], arg1[3], (cnf != UNKNOWN) ? arg3 : arg2);
 
       return(retstr[retnum]);
     }
-    else if (!memcmp(call[chan].num[who] + 2, "9999", 4)) {
-      sprintf(retstr[retnum], "[Reset]");
+    else if (!memcmp(call[chan].num[who] + 1, "*9999", 5)) {
+      sprintf(retstr[retnum], "[TK:Reset]");
       return(retstr[retnum]);
-    } /* else */
+    }
+    else if (!memcmp(call[chan].num[who] + 1, "4", 1)) {
+      sprintf(retstr[retnum], "[TK:Pickup]");
+      return(retstr[retnum]);
+    }
   } /* if */
 
   strcpy(call[chan].alias[who], num2nam(call[chan].num[who], call[chan].si1));

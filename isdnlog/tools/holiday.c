@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1999/12/31 13:57:19  akool
+ * isdnlog-4.00 (Millenium-Edition)
+ *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
+ *  - resolved *any* warnings against rate-de.dat
+ *  - Many new rates
+ *  - CREDITS file added
+ *
  * Revision 1.16  1999/09/09 11:21:05  akool
  * isdnlog-3.49
  *
@@ -493,7 +500,7 @@ int isDay(struct tm *tm, bitfield mask, char **name)
 
   if (mask & (1<<EVERYDAY)) {
     if (name) *name=staticString("%s", Weekday[EVERYDAY]);
-    return day;
+    return EVERYDAY;
   }
 
   return 0;
