@@ -19,6 +19,25 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.101  2000/02/12 16:40:22  akool
+ * isdnlog-4.11
+ *  - isdnlog/Makefile.in ... sep install-targets, installs samples, no isdnconf
+ *  - isdnlog/samples/rate.conf.{lu,nl} ... NEW
+ *  - isdnlog/samples/isdn.conf.lu ... chg provider
+ *  - isdnlog/samples/stop ... chg \d,\d => \d.\d
+ *  - isdnlog/samples/isdnlog.isdnctrl0.options ... NEW
+ *  - isdnlog/samples/isdnlog.users ... NEW
+ *  - isdnlog/country-de.dat ... _DEMF again
+ *  - isdnlog/isdnlog/processor.c ... LCR
+ *  - isdnlog/tools/isdnrate.c ... fmt of s
+ *
+ *    Old config is not installed anymore, to acomplish this do
+ *
+ *    make install-old-conf
+ *    make install
+ *
+ *    A running isdnlog is now HUP-ed not KILL-ed
+ *
  * Revision 1.100  2000/02/11 15:16:33  akool
  * zred.dtag.bz2 added binary
  * 01040:GTS Weekend 0,039/Min
@@ -1196,7 +1215,12 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     switch (oc3 & 0x70) { /* Calling party number Information element, Octet 3 - Table 4-11/Q.931 */
       case 0x00 : if (*num) {                  /* 000 Unknown */
                     if (*num != '0') {
-                      strcpy(result, mynum);
+		      /* in NL the MSN contains myarea w/o leading zero
+		         so myarea get's prepended again */
+		      if (memcmp(myarea, num, strlen(myarea)) == 0)
+		        strcpy(result, mycountry);
+		      else
+                        strcpy(result, mynum);
                       *local = 1;
                     }
                     else {
@@ -4914,12 +4938,6 @@ static void processlcr(char *p)
   sprintf(s, "ABC_LCR: Request for number %s = %s", dst + trimo, formatNumber("%l via %p", &destnum));
   info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
 
-  if (!abclcr) {
-    sprintf(s, "ABC_LCR: *Disabled* -- no action --");
-    abort = 1;
-    goto action;
-  } /* if */
-
   if (!*destnum.msn /* && ((abclcr & 1) == 1) */) { /* Future expansion, Sonderrufnummer? */
     sprintf(s, "ABC_LCR: \"%s\" is a Sonderrufnummer -- no action --", destnum.area);
     abort = 1;
@@ -4968,7 +4986,7 @@ static void processlcr(char *p)
 
 #ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
     if (strlen(res) < sizeof(i.lcr_ioctl_nr)) {
-      sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s)\n",
+      sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s)",
         res, prov, getProvider(prefix));
     }
     else {
@@ -4991,6 +5009,11 @@ action:
 
   i.lcr_ioctl_sizeof = sizeof(i);
   i.lcr_ioctl_callid = atol(cid);
+
+  if (!abclcr) {
+    strcat(s, " (ABC_LCR *disabled*, no action)");
+    abort = 1;
+  } /* if */
 
   if (abort) { /* tell ABC_LCR to dial the *original* number (and _dont_ wait 3 seconds) */
     i.lcr_ioctl_flags = 0;

@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.149  2000/02/12 23:50:12  keil
+## Fix some syntax error in install
+##
 ## Revision 1.148  2000/02/12 16:40:21  akool
 ## isdnlog-4.11
 ##  - isdnlog/Makefile.in ... sep install-targets, installs samples, no isdnconf
@@ -1083,7 +1086,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.11
+VERSION     = 4.12
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -1131,6 +1134,7 @@ DEFS       += \
                -DVERSION=\"$(VERSION)\"   \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
 	       -D@NATION_MACRO@=1		\
+ 	       -DNATION=\"$(NATION)\"		\
 	       -DBIG_PHONE_NUMBERS=1		\
                 $(INCLUDE)
 
