@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/03/20 22:42:41  akool
+ * Some minor enhancements.
+ *
  * Revision 1.3  1997/03/20 00:19:18  luethje
  * inserted the line #include <errno.h> in avmb1/avmcapictrl.c and imon/imon.c,
  * some bugfixes, new structure in isdnlog/isdnrep/isdnrep.c.
@@ -85,7 +88,7 @@
 
 /****************************************************************************/
 
-#define GNU_SOURCE
+#define _GNU_SOURCE 1
 
 #include <stdio.h>
 #include <string.h>
@@ -349,6 +352,15 @@
 #define CONF_ENT_GROUP   "GROUP"
 #define CONF_ENT_INTVAL  "INTERVAL"
 #define CONF_ENT_TIME    "TIME"
+
+/****************************************************************************/
+
+#define PRT_ERR                1
+#define PRT_WARN               2
+#define PRT_INFO               4
+#define PRT_PROG_OUT           4
+#define PRT_NORMAL             4
+#define PRT_LOG                8
 
 /****************************************************************************/
 
