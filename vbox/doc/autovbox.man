@@ -1,6 +1,6 @@
 .\" $Id$
 .\" CHECKIN $Date$
-.TH autovbox 1 "ISDN 4 Linux" @MANDATE@
+.TH autovbox 1 "@MANDATE@" "ISDN 4 Linux @I4LVERSION@" "Linux System Administration"
 .SH NAME
 autovbox \- isdn voice box (sound converter)
 .SH SYNOPSIS

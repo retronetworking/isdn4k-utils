@@ -1,6 +1,6 @@
 .\" $Id$
 .\" CHECKIN $Date$
-.TH vboxplay 1 "@MANDATE@" "ISDN 4 Linux @I4LVERSION@"
+.TH vboxplay 1 "@MANDATE@" "ISDN 4 Linux @I4LVERSION@" "Linux System Administration"
 
 .SH NAME
 vboxplay \- play vbox sound files

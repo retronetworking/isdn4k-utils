@@ -1,6 +1,6 @@
 .\" $Id$
 .\" CHECKIN $Date$
-.TH vboxctrl 1 "@MANDATE@" "ISDN 4 Linux @I4LVERSION@"
+.TH vboxctrl 1 "@MANDATE@" "ISDN 4 Linux @I4LVERSION@" "Linux System Administration"
 
 .SH NAME
 vboxctrl \- control vbox functions
