@@ -14,6 +14,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  2002/07/11 09:29:53  armin
+ * sync with new cvs server.
+ *
  * Revision 1.5  2001/01/15 10:22:50  calle
  * - error reasons now also as strings using function capi_info2str().
  *
@@ -152,10 +155,11 @@ int main(int argc, char **argv)
        vbuf = (unsigned long *)buf;
        printf("CAPI Version: %lu.%lu\n",vbuf[0], vbuf[1]);
        if (isAVM) {
-          printf("Manufacturer Version: %lu.%02lu-%02lu  (%lu.%lu)\n",
+          printf("Manufacturer Version: %lu.%01lx%01lx-%02lu  (%lu.%lu)\n",
                   (vbuf[2]>>4) & 0x0f,
-                  (((vbuf[2]<<4) & 0xf0) | ((vbuf[3]>>4) & 0x0f)),
-                  vbuf[3] & 0x0f,
+                  ((vbuf[2]<<4) & 0xf0),
+		  ((vbuf[3]>>4) & 0x0f),
+                  (vbuf[3] & 0x0f),
                   vbuf[2], vbuf[3] );
        } else {
           printf("Manufacturer Version: %lu.%lu\n",vbuf[2], vbuf[3]);
