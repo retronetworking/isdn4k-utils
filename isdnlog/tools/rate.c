@@ -21,6 +21,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.84  2002/04/22 19:07:50  akool
+ * isdnlog-4.58:
+ *   - Patches from Enrico Scholz <enrico.scholz@informatik.tu-chemnitz.de>
+ *     - uninitialized variables in
+ *     	- isdn4k-utils/isdnlog/connect/connect.c
+ *       - isdn4k-utils/isdnlog/tools/rate.c
+ *     - return() of a auto-variable in
+ *       - isdn4k-utils/isdnlog/isdnlog/user_access.c
+ *
+ *     *Many* thanks to Enrico!!
+ *
+ *   - New rates as of April, 23. 2002 (EUR 0,014 / minute long distance call ;-)
+ *
  * Revision 1.83  2000/12/07 16:26:12  leo
  * Fixed isdnrate -X50
  *
@@ -2456,18 +2469,18 @@ static int _getRate(RATE *Rate, char **msg, int clear)
      with "known" _area and _zone, from other prefix, which gives nice
      SIGSEGVs
   */
-        
+
   if (clear && prefix != oprefix) {
     oprefix = prefix;
     Rate->_area = Rate->_zone = UNKNOWN;
   }
-  
+
   if (Rate->_area==UNKNOWN || Rate->_zone == UNKNOWN)
     if(get_area(&prefix, Rate, number, msg, message) == UNKNOWN)
       return UNKNOWN;
 
   oprefix = prefix;
-  
+
   Rate->Country  = Provider[prefix].Area[Rate->_area].Name;
   if (Rate->dst[0] && *Rate->dst[0])
     Rate->Zone     = Provider[prefix].Zone[Rate->_zone].Name;
@@ -2807,7 +2820,12 @@ char *printRate (double value)
   static int  index=0;
 
   if (++index>=STRINGS) index=0;
-  snprintf (buffer[index], STRINGL, Format, value);
+
+  if (*Format == '^')
+    snprintf (buffer[index], STRINGL, Format + 1, value * 100.0);
+  else
+    snprintf (buffer[index], STRINGL, Format, value);
+
   return buffer[index];
 }
 
