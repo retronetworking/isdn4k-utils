@@ -10,6 +10,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.7  2002/05/03 11:57:49  calle
+ * Bugfix of Bugfix.
+ *
  * Revision 1.6  2002/05/03 11:55:05  calle
  * Bugfix: some PBX send INFO_IND even when callednumber was complete.
  *
@@ -32,6 +35,7 @@
  *
  */
 
+#include <stdio.h> /* snprintf */
 #include <stdlib.h>
 #include <string.h>
 #include "capiconn.h"
@@ -1116,6 +1120,28 @@ static int handle_callednumber_info(capi_connection *plcip, _cmsg *cmsg)
 	return 0;
 }
 
+static int handle_cause_info(capi_connection *plcip, _cmsg *cmsg)
+{
+	capiconn_context *ctx = plcip->ctx;
+	capiconn_callbacks *cb = ctx->cb;
+
+	unsigned char *p = cmsg->InfoElement;
+	if (cmsg->InfoNumber == 0x0008) {
+           char buf[128];
+	   char *s, *end;
+	   int i;
+	   s = buf; end = s + sizeof(buf)-1;
+	   *end = 0;
+	   for (i=0; i < p[0]; i++) {
+	      snprintf(s, end-s, " %02x", p[i+1]);
+	      s += strlen(s);
+	   }
+           (*cb->debugmsg)("cause bytes for plci 0x%x:%s", cmsg->adr.adrPLCI, buf);
+	   return 1;
+	}
+	return 0;
+}
+
 static void handle_plci(capiconn_context *ctx, _cmsg * cmsg)
 {
 	capi_contr *card = findcontrbynumber(ctx, cmsg->adr.adrController&0x7f);
@@ -1234,6 +1260,9 @@ static void handle_plci(capiconn_context *ctx, _cmsg * cmsg)
 			capi_cmsg_answer(cmsg);
 			send_message(card, cmsg);
 		} else if (handle_callednumber_info(plcip, cmsg)) {
+			capi_cmsg_answer(cmsg);
+			send_message(card, cmsg);
+		} else if (handle_cause_info(plcip, cmsg)) {
 			capi_cmsg_answer(cmsg);
 			send_message(card, cmsg);
 		} else {
@@ -1784,6 +1813,7 @@ static void send_listen(capi_contr *card)
 	capiconn_context *ctx = card->ctx;
 
 	card->infomask = 0;
+	card->infomask |= (1<<0); /* cause information */
 	card->infomask |= (1<<2); /* Display */
 	card->infomask |= (1<<6); /* Charge Info */
 	if (card->ddilen) card->infomask |= (1<<7); /* Called Party Number */

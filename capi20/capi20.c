@@ -2,6 +2,11 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.19  2001/03/01 14:59:11  paul
+ * Various patches to fix errors when using the newest glibc,
+ * replaced use of insecure tempnam() function
+ * and to remove warnings etc.
+ *
  * Revision 1.18  2000/11/12 16:06:41  kai
  * fix backwards compatibility in capi20 library, small other changes
  *
@@ -73,6 +78,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <stdio.h>
+#define _LINUX_LIST_H
 #include <linux/capi.h>
 #include "capi20.h"
 

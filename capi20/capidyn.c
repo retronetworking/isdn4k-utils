@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.3  2004/01/16 14:57:22  calle
+ * gcc warning removed.
+ *
  * Revision 1.2  2001/03/01 14:59:11  paul
  * Various patches to fix errors when using the newest glibc,
  * replaced use of insecure tempnam() function
@@ -13,6 +16,7 @@
  */
 
 #include <sys/types.h>
+#define _LINUX_LIST_H
 #include <linux/capi.h>
 #include <string.h>
 #include "capi20.h"

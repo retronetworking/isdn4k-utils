@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.14  2004/01/16 12:33:16  calle
+ * Modifications to let ist run with patched 2.6 kernel.
+ * Pure 2.6.0/2.6.1 is not working.
+ *
  * Revision 1.13  2003/03/31 09:50:52  calle
  * Bugfix: fixed problems with activate and deactivate subcommands, when
  *         AVM B1 PCI V4 is used.
@@ -53,6 +57,8 @@
  *
  */
 
+#include <sys/types.h>
+#include <sys/signal.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -66,7 +72,7 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#include <signal.h>
+#define _LINUX_LIST_H
 #include <linux/b1lli.h>
 #include <linux/capi.h>
 #include <linux/kernelcapi.h>

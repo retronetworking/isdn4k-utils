@@ -17,6 +17,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  2003/08/16 16:56:02  keil
+ * fix some typos
+ *
  * Revision 1.9  2003/08/02 14:50:21  keil
  * fix wrong b3support bits
  *
@@ -51,6 +54,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#define _LINUX_LIST_H
 #include <capi20.h>
 #include <linux/capi.h>
 

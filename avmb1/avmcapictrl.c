@@ -6,6 +6,11 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.16  2001/03/01 14:59:11  paul
+ * Various patches to fix errors when using the newest glibc,
+ * replaced use of insecure tempnam() function
+ * and to remove warnings etc.
+ *
  * Revision 1.15  2000/03/08 13:40:33  calle
  * check for /dev/isdn/capi20 if /dev/capi20 doesn't exist.
  *
@@ -75,7 +80,7 @@
 #include <sys/types.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-#include <linux/isdn.h>
+#define _LINUX_LIST_H
 #include <linux/b1lli.h>
 #include <linux/capi.h>
 /* new ioctls */
@@ -359,8 +364,11 @@ int main(int argc, char **argv)
 	char *dn2 = 0;
 	char *spid2 = 0;
 
-	cmd = strrchr(argv[0], '/');
-	cmd = (cmd == NULL) ? argv[0] : ++cmd;
+	if ((cmd = strrchr(argv[0], '/')) == 0) {
+	   cmd = argv[0];
+	} else {
+	   ++cmd;
+	}
 	if (argc > 1) {
 		arg_ofs = 1;
 	} else
