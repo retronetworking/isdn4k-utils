@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.45  1998/10/03 18:06:35  akool
+ *  - processor.c, takt_at.c : Patch from Michael Reinelt <reinelt@eunet.at>
+ *    try to guess the zone of the calling/called party
+ *
+ *  - isdnrep.c : cosmetics (i hope, you like it, Stefan!)
+ *
  * Revision 1.44  1998/10/03 15:21:48  luethje
  * isdnrep: some bugfixes in output functions
  *
@@ -833,7 +839,7 @@ int read_logfile(char *myname)
 				                       get_time_value(0,NULL,GET_YEAR));
 		} /* if */
 
-		if (!currency_factor)
+		if (!cur_call.currency_factor)
 #ifdef ISDN_NL
 			einheit = 0.0011; /* cost of one second local tariff during office hours */
 #elif defined(ISDN_CH)
@@ -844,7 +850,7 @@ int read_logfile(char *myname)
 			einheit = Tarif96 ? 0.121 : 0.23;
 #endif
 			else
-				einheit = currency_factor;
+				einheit = cur_call.currency_factor;
 
 		print_entries(&cur_call,einheit,nx,myname);
 
