@@ -70,7 +70,7 @@ if [ "$CONFIG_ICNCTRL" = "y" ]; then
 	bool 'Enable icnctrl debug-option' CONFIG_ICNCTRL_DEBUG
 fi
 bool 'pcbitctl' CONFIG_PCBITCTL
-bool 'avmcapictrl' CONFIG_AVMCAPICTRL
+bool 'avmcapictrl / capiinit' CONFIG_AVMCAPICTRL
 if [ -f $CONFIG_KERNELDIR/drivers/isdn/act2000/act2000.h ] ; then
 	bool 'actctrl' CONFIG_ACTCTRL
 fi
