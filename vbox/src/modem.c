@@ -755,6 +755,7 @@ void modem_set_timeout(int timeout)
 		timeoutstatus = FALSE;
 
 		signal(SIGALRM, modem_timeout_function);
+		siginterrupt(SIGALRM, 1);
 		alarm(timeout);
 	}
 	else
