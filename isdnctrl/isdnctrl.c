@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.40  2000/01/27 15:08:09  paul
+ * Error messages from addlink/removelink are now userfriendly.
+ *
  * Revision 1.39  1999/11/23 10:17:27  paul
  * Made error message for 'status' command clearer if IIOCNETGPN
  * is not implemented in kernel (e.g. 2.0.x kernels).
@@ -791,12 +794,18 @@ int exec_args(int fd, int argc, char **argv)
 		switch (i) {
 #ifdef I4L_DWABC_UDPINFO
 			case ABCCLEAR:
+#ifdef IIOCNETDWRSET
 			        if ((result = ioctl(fd, IIOCNETDWRSET, id)) < 0) {
 			        	perror(id);
 			        	return -1;
 			        }
 			        printf("ABC secure-counter for %s now clear\n", id);
 					break;
+#else
+					fprintf(stderr,
+			"OOPS: IOCTL IIOCNETDWRSET not in kernel ! (Please install)\n");
+					return -1;
+#endif
 #endif
 			case ADDIF:
 			        strcpy(s, args?id:"");
