@@ -12,6 +12,6 @@ CFLAGS = -Wall -O2
 LDFLAGS = -L../capi20/.libs -L../capi20 $(all_libraries)
 LDADD = -lcapi20
 
-bin_PROGRAMS = rcapid
+sbin_PROGRAMS = rcapid
 
 rcapid_SOURCES = rcapid.c
