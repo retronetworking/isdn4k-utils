@@ -101,28 +101,32 @@ uninstall: rootperm
 
 #
 # targets clean and distclean go through ALL directories
-# regardless of cofigured options.
+# regardless of configured options.
 #
 clean:
 	-set -e; \
-	for i in `echo ${wildcard */Makefile}`; do \
-		$(MAKE) -i -C `dirname $$i` clean; \
-    done; \
 	for i in `echo ${wildcard */GNUmakefile}`; do \
 		$(MAKE) -i -C `dirname $$i` clean; \
-	done; \
-	rm -f *~ *.o
+	done;
+	-set -e; \
+	for i in `echo ${wildcard */Makefile}`; do \
+		$(MAKE) -i -C `dirname $$i` clean; \
+    done;
+	-rm -f *~ *.o
 
 distclean: clean
 	-$(MAKE) -C scripts/lxdialog clean
 	-set -e; \
-	for i in `echo ${wildcard */Makefile}`; do \
-		$(MAKE) -i -C `dirname $$i` distclean; \
-	done; \
 	for i in `echo ${wildcard */GNUmakefile}`; do \
 		$(MAKE) -i -C `dirname $$i` distclean; \
-	done; \
-	rm -f *~ .config .config.old scripts/autoconf.h .menuconfig \
+	done;
+	-set -e; \
+	for i in `echo ${wildcard */Makefile}`; do \
+		if [ -f $$i ] ; then \
+			$(MAKE) -i -C `dirname $$i` distclean; \
+		fi ; \
+	done;
+	-rm -f *~ .config .config.old scripts/autoconf.h .menuconfig \
 		Makefile.tmp .menuconfig.log scripts/defconfig.old .#* scripts/.#*
 
 scripts/lxdialog/lxdialog:
