@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.53  2005/01/02 16:37:21  tobiasb
+ * Improved utilization of special number information from ratefile.
+ *
  * Revision 1.52  2003/07/25 22:18:03  tobiasb
  * isdnlog-4.65:
  *  - New values for isdnlog option -2x / dual=x with enable certain
@@ -921,14 +924,16 @@ char *vnum(int chan, int who)
   }
   else {
     if (!q931dmp) {
-      normalizeNumber(call[chan].num[who], &number, TN_ALL);
+      if (normalizeNumber(call[chan].num[who], &number, TN_ALL) == UNKNOWN)
+	/* getDest failed in normalizeNumber, number is almost empty */
+	Strncpy(s, call[chan].num[who], BUFSIZ);
+      else
+        Strncpy(s, formatNumber("%F", &number), BUFSIZ);
 
       strcpy(call[chan].areacode[who], number.country);
       strcpy(call[chan].vorwahl[who], number.area);
       strcpy(call[chan].area[who], number.sarea);
       strcpy(call[chan].rufnummer[who], number.msn);
-
-      strcpy(s, formatNumber("%F", &number));
     } /* if */
 
     if (cnf > UNKNOWN)
