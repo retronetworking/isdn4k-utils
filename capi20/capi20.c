@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.14  2000/04/07 16:06:09  calle
+ * Bugfix: without devfs open where without NONBLOCK, ahhh.
+ *
  * Revision 1.13  2000/04/03 14:27:15  calle
  * non CAPI2.0 standard functions now named capi20ext not capi20.
  * Extentionfunctions will work with actual driver version.
@@ -397,7 +400,6 @@ capi20_waitformessage(unsigned ApplID, struct timeval *TimeOut)
 {
   int fd;
   fd_set rfds;
-  int retval;
 
   FD_ZERO(&rfds);
 
@@ -411,7 +413,8 @@ capi20_waitformessage(unsigned ApplID, struct timeval *TimeOut)
 
   FD_SET(fd, &rfds);
   
-  retval = select(fd + 1, &rfds, NULL, NULL, TimeOut);
+  if (select(fd + 1, &rfds, NULL, NULL, TimeOut) < 1)
+	return CapiReceiveQueueEmpty;
   
   return CapiNoError;
 }
