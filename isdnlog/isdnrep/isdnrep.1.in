@@ -242,6 +242,12 @@ Like b but allow all providers, not only the booked.
 .RE
 
 .TP
+\fB\-m\fR[\fB*\fR|\fB/\fR]\fInumber\fB  modify call costs\fR
+Multiply (*) or divide (/) the stored or recalculated call costs
+by number before displaying them.  If neither * nor / is given,
+multiply.
+
+.TP
 .B \-wX	WWW
 isdnrep can give its output in HTML format; this is switched on with
 this option. Two modes are possible:

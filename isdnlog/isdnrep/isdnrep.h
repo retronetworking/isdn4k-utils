@@ -20,6 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.23  2004/07/24 17:58:06  tobiasb
+ * New isdnrep options: `-L:' controls the displayed call summaries in the
+ * report footer.  `-x' displays only call selected or not deselected by
+ * hour or type of day -- may be useful in conjunction with `-r'.
+ *
+ * Activated new configuration file entry `REPOPTIONS' for isdnrep default
+ * options.  This options can be disabled by `-c' on the command line.
+ *
  * Revision 1.22  2003/10/29 17:41:35  tobiasb
  * isdnlog-4.67:
  *  - Enhancements for isdnrep:
@@ -211,6 +219,14 @@ typedef struct {
 } RECALC;
 
 /*****************************************************************************/
+
+typedef struct {
+  int    mode;    /* 0 no action, 1 multiply, 2 divide */
+  char  *numstr;  /* number as string, part of given option */
+  double number;  /* number for multiplication or division */
+} MODCOST;
+
+/*****************************************************************************/
 /* isdnrep.c defines _REP_FUNC_C_, rep_main.c defines _ISDNREP_C_, ... */
 #ifdef _REP_FUNC_C_
 #define _EXTERN
@@ -262,6 +278,7 @@ _EXTERN int     preselect	_SET_33;
 #endif
 _EXTERN int     summary		_SET_0;
 _EXTERN RECALC  recalc; /* initiation done in main */
+_EXTERN MODCOST modcost;        /* initiation done in main */
 _EXTERN int     sel_sums[3]     _SET_ARRAY_0;
 _EXTERN bitfield days[2]        _SET_ARRAY_0;
 _EXTERN bitfield hours[2]       _SET_ARRAY_0;

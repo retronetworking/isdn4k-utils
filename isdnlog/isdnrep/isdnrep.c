@@ -24,6 +24,14 @@
  *
  *
  * $Log$
+ * Revision 1.100  2004/07/24 17:58:06  tobiasb
+ * New isdnrep options: `-L:' controls the displayed call summaries in the
+ * report footer.  `-x' displays only call selected or not deselected by
+ * hour or type of day -- may be useful in conjunction with `-r'.
+ *
+ * Activated new configuration file entry `REPOPTIONS' for isdnrep default
+ * options.  This options can be disabled by `-c' on the command line.
+ *
  * Revision 1.99  2004/02/25 12:09:08  paul
  * There was no bounds checking on unknownzones, which is only useds
  * if DEBUG is defined. This caused a SIGSEGV with many unknown numbers
@@ -2192,6 +2200,11 @@ static int print_header(int lday)
 			}
 			print_line2(F_TEXT_LINE, "%s", s);
 		}
+
+		/* TODO: consistent terminology. fees vs. costs (tobiasb|200407) */
+		if (modcost.mode)
+			print_line2(F_TEXT_LINE, "All displayed costs have been %s by %s.",
+			            modcost.mode == 2 ? "divided" : "multiplied", modcost.numstr);
 		
 	}
 	else
@@ -2715,6 +2728,14 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
    * the current rate-file.  The -r option is also handled there.
    */
   repair(cur_call);
+
+	if (cur_call->pay != 0.0 && modcost.mode)
+	{
+		if (modcost.mode == 1)
+			cur_call->pay *= modcost.number;
+		else if (modcost.mode == 2)
+			cur_call->pay /= modcost.number;
+	}
 
   return(rc);
 }
