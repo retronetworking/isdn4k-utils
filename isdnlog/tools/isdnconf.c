@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+ * $Log$
  */
 
 /****************************************************************************/
@@ -995,6 +996,8 @@ static int Set_Globals(section *SPtr)
 
 	    if ((currency = strchr(CEPtr->value, ',')) == NULL)
 	      _print_msg("%s: WARNING: Syntax error in `%s' in Line %d, ignored\n", Myname, CONF_ENT_CURR, ln);
+	    else
+	    	currency++;
 	  }
 	}
 	else
@@ -1210,9 +1213,6 @@ static int Set_Numbers(section *SPtr, char *Section, int msn)
 			_print_msg("%s: ERROR: Can not allocate memory!\n", Myname);
 			return -1;
 		}
-
-		if (msn >= 0)
-			known[Index]->zone = 1;
 	}
 
 	return 0;
