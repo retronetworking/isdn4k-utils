@@ -20,17 +20,20 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.2  1997/04/08 21:20:02  luethje
+## primitive changes
+##
 ## Revision 1.1  1997/04/08 21:18:50  luethje
 ## File to generate the config file `isdn.conf'
 ##
 
 CONFFILE=$1
+RESFILE=/tmp/`basename $0`.res.$$
 
 setentry() {
 	SECTION=$1
 	ENTRY=$2
 	VALUE=$3
-	RESFILE=/tmp/`basename $0`.res.$$
 	AWKFILE=/tmp/`basename $0`.$$
 
 	grep $ENTRY $CONFFILE >/dev/null 2>&1
@@ -81,5 +84,9 @@ setentry "[ISDNLOG]" "CHARGEMAX"     "$CHARGEMAX"
 setentry "[ISDNLOG]" "OLABEL"        "$OLABEL"
 setentry "[ISDNLOG]" "ILABEL"        "$ILABEL"
 setentry "[ISDNLOG]" "LOGFILE"       "$LOGFILE"
+
+sed -e "s/\([^\]\)\$\([0-9][ 	]\)/\1\\\\$\2/g" $CONFFILE >$RESFILE
+cp $RESFILE $CONFFILE
+rm -f $RESFILE
 
 echo "  Ready."

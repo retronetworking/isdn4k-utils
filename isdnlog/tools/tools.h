@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1997/04/03 22:40:21  luethje
+ * some bugfixes.
+ *
  * Revision 1.8  1997/03/31 22:43:18  luethje
  * Improved performance of the isdnrep, made some changes of README
  *
@@ -528,6 +531,7 @@ typedef struct {
   double duration;
   double dm;
   char   num[2][NUMSIZE];
+  char   who[2][NUMSIZE];
   long	 ibytes;
   long	 obytes;
   char   version[10];
