@@ -19,6 +19,14 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.41  1999/05/04 19:32:37  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.40  1999/04/10 16:35:27  akool
  * isdnlog Version 3.13
  *
@@ -1057,7 +1065,7 @@ int main(int argc, char *argv[], char *envp[])
   register int    i, res = 0;
   auto     int    lastarg;
   auto     char   rlogfile[PATH_MAX];
-  auto	   char	  *version;
+  auto	   char	  *version, *cversion;
   auto     char **devices = NULL;
   sigset_t        unblock_set;
 #ifdef TESTCENTER
@@ -1277,7 +1285,11 @@ int main(int argc, char *argv[], char *envp[])
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
-	    initRate(rateconf, ratefile, &version);
+	    initRate(rateconf, ratefile, countryfile, &version, &cversion);
+
+	    if (!Q931dmp && *cversion)
+	      print_msg(PRT_NORMAL, "%s\n", cversion);
+
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 

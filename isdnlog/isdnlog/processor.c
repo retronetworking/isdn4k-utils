@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.61  1999/05/10 20:37:27  akool
+ * isdnlog Version 3.26
+ *
+ *  - fixed the "0800" -> free of charge problem
+ *  - *many* additions to "ausland.dat"
+ *  - first relase of "rate-de.dat" from the CVS-Server of the I4L-Tarif-Crew
+ *
  * Revision 1.60  1999/05/04 19:32:45  akool
  * isdnlog Version 3.24
  *
@@ -4629,15 +4636,15 @@ retry:
                  !memcmp(p3, "D3<: ", 5) ||
                  !memcmp(p3, "D3>: ", 5))
           processctrl(0, p3);
-        else if (!memcmp(p3 + 3, "HEX: ", 5)) {
-          if (ignoreRR && (strlen(p3 + 8) < 13))
-            ;
-          else
-            processctrl(atoi(p3), p3 + 3);
-        } /* else */
+        else if (!memcmp(p3 + 3, "HEX: ", 5))
+          processctrl(atoi(p3), p3 + 3);
       }
-      else
-        processctrl(card, p1);
+      else {
+        if (ignoreRR && (strlen(p1) < 17))
+          ;
+        else
+          processctrl(card, p1);
+      } /* else */
 
       p1 = p2 + 1;
     } /* while */

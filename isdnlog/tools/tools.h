@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.40  1999/05/09 18:24:31  akool
+ * isdnlog Version 3.25
+ *
+ *  - README: isdnconf: new features explained
+ *  - rate-de.dat: many new rates from the I4L-Tarifdatenbank-Crew
+ *  - added the ability to directly enter a country-name into "rate-xx.dat"
+ *
  * Revision 1.39  1999/05/04 19:33:50  akool
  * isdnlog Version 3.24
  *
@@ -508,6 +515,9 @@
 #define WELT_2       15
 #define WELT_3       16
 #define WELT_4       17
+#define INTERNET     20
+#define	AUKUNFT_IN   21
+#define AUSKUNFT_AUS 22
 
 /* Fixme: this is specific to Germany */
 #define	DTAG	     33
@@ -703,12 +713,11 @@
 #define CONF_ENT_CALLFILE "CALLFILE"
 #define CONF_ENT_CALLFMT  "CALLFMT"
 
-#define CONF_ENT_SNFILE   "SPECIALNUMBERS"
-#define CONF_ENT_HOLIFILE "HOLIDAYS"
-#define CONF_ENT_RATECONF "RATECONF"
-#define CONF_ENT_RATEFILE "RATEFILE"
-
-#define CONF_ENT_LCDFILE  "LCDFILE"
+#define CONF_ENT_HOLIFILE    "HOLIDAYS"
+#define CONF_ENT_RATECONF    "RATECONF"
+#define CONF_ENT_RATEFILE    "RATEFILE"
+#define CONF_ENT_COUNTRYFILE "COUNTRYFILE"
+#define CONF_ENT_LCDFILE     "LCDFILE"
 
 #define CONF_ENT_VBOXVER  "VBOXVERSION"
 #define CONF_ENT_VBOXPATH "VBOXPATH"
@@ -981,6 +990,7 @@ _EXTERN char* logfile   = LOGFILE;
 _EXTERN char* callfile  = NULL;
 _EXTERN char* callfmt   = NULL;
 _EXTERN char* holifile  = NULL;
+_EXTERN char* countryfile = NULL;
 _EXTERN char* rateconf  = NULL;
 _EXTERN char* ratefile  = NULL;
 _EXTERN char* lcdfile   = NULL;
@@ -1002,6 +1012,7 @@ _EXTERN char* rebootcmd;
 _EXTERN char* logfile;
 _EXTERN char* callfile;
 _EXTERN char* callfmt;
+_EXTERN char* countryfile;
 _EXTERN char* holifile;
 _EXTERN char* rateconf;
 _EXTERN char* ratefile;

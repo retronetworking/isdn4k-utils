@@ -1,4 +1,4 @@
-V:1.02-Germany [09-May-1999]
+V:1.02-Germany [13-May-1999 12:26:24]
 
 # Diese Tariftabelle ist ein Service der I4L-Tarifdatenbank-Crew.
 # Alle Angaben erfolgen ohne Gew‰hr
@@ -2578,6 +2578,7 @@ A:Usbekistan
 T:*/*=2.72/60
 Z:20 Internet
 A:0192070 # (Benutzername: arcor; Passwort: internet; Proxy: proxy.arcor-ip.de:80; Startseite: http://www.call.arcor.net)
+A:0192020 # (Benutzername: yahoo; Passwort: yahoo) -> "Yahoo! Online"
 T:*/*=0.06/60
 Z:21 Telefonauskunft
 A:11870
@@ -2603,9 +2604,6 @@ Z:37 Serviceruf 01805
 A:01805
 T:*/*=0.12/30
 #####################################################################
-#
-# $Id$
-#
 P:70,2 Arcor Town to Town
 G:01.04.99
 C:Mannesmann Arcor
@@ -2632,9 +2630,6 @@ T:W/21-06=0.06(60)/30 Nebenzeit
 T:E,H/06-21=0.095(60)/30 Freizeit
 T:E,H/21-06=0.06(60)/30 Nebenzeit
 #####################################################################
-#
-# $Id$
-#
 P:70,3 Arcor Town to Town Sekunde
 G:01.04.99
 C:Mannesmann Arcor
@@ -3589,9 +3584,6 @@ P:98 STAR
 C:Telecommunications Deutschland GmbH, Voltastraﬂe 1a, 60486 Frankfurt 01098
 C:Reseller von STAR : C@llas, Mox, Nikoma
 #####################################################################
-#
-# $Id$
-#
 P:98,1 Mox
 G:01.05.1999
 C:Mox Telecom AG

@@ -20,6 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.27  1999/05/04 19:33:37  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.26  1999/04/15 19:14:58  akool
  * isdnlog Version 3.15
  *
@@ -1052,6 +1060,7 @@ static int _readconfig(char *_myname)
   callfmt        = NULL;
   holifile       = NULL;
   rateconf       = NULL;
+  countryfile	 = NULL;
   ratefile       = NULL;
   lcdfile        = NULL;
   start_procs.infoargs = NULL;
@@ -1192,6 +1201,9 @@ static int Set_Globals(section *SPtr)
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CALLFMT)) != NULL)
 			callfmt = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_COUNTRYFILE)) != NULL)
+			countryfile = CEPtr->value;
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_HOLIFILE)) != NULL)
 			holifile = CEPtr->value;
