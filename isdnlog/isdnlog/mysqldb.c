@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  2000/04/02 17:35:07  akool
+ * isdnlog-4.18
+ *  - isdnlog/isdnlog/isdnlog.8.in  ... documented hup3
+ *  - isdnlog/tools/dest.c ... _DEMD1 not recogniced as key
+ *  - mySQL Server version 3.22.27 support
+ *  - new rates
+ *
  * Revision 1.1  1998/04/06 15:45:18  keil
  * Added missing files
  *
@@ -81,6 +88,22 @@ int mysql_dbOpen(void)
 
   /* make a connection to the database daemon */
 
+#if MYSQL_VERSION_ID > 40000
+  if (!(mysql_init(&mysql)))
+    {
+      syslog( LOG_ERR, "%s", "Init of mySQL failed.");
+      syslog( LOG_ERR, "%s", mysql_error( &mysql ));
+      return -1;
+    }
+  if (!(mysql_real_connect(&mysql, mysql_db_Host, mysql_db_User,
+               mysql_db_Passwd, mysql_db_Name, 0, NULL, 0)))
+    {
+      syslog( LOG_ERR, "%s", "Connection to mySQL failed.");
+      syslog( LOG_ERR, "%s", mysql_error( &mysql ));
+      return -1;
+    }
+
+#else
   if (!(mysql_connect(&mysql, mysql_db_Host, mysql_db_User, mysql_db_Passwd)))
     {
       syslog( LOG_ERR, "%s", "Connection to mySQL failed.");
@@ -96,6 +119,7 @@ int mysql_dbOpen(void)
       syslog( LOG_ERR, "%s", mysql_error( &mysql ));
       return( -1);
     }
+#endif
 
   return( 0);
 }
