@@ -2,6 +2,7 @@
 ## $Id$
 ##
 
+CONFIG_KERNELDIR	= /usr/src/linux
 AUTOMAKE_OPTIONS	= foreign
 CLEANFILES              = *~
 MAINTAINERCLEANFILES    = configure aclocal.m4 Makefile.in config.h.in \
