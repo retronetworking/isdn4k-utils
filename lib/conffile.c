@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  1998/05/20 09:56:14  paul
+ * Oops, the temp string _was_ necessary. Made it static so that returning a
+ * pointer to it is not a problem.
+ *
  * Revision 1.17  1998/05/20 09:25:01  paul
  * function Find_Section returned pointer to local automatic variable. Local
  * variable removed, as it was not necessary; now return parameter.
@@ -626,8 +630,14 @@ static void free_entry(entry *Ptr)
 
 	free_entry(Ptr->next);
 	free_section(Ptr->subsection);
-	free(Ptr->name);
-	free(Ptr->value);
+	if (Ptr->name) {
+		free(Ptr->name);
+		Ptr->name = NULL;
+	}
+	if (Ptr->value) {
+		free(Ptr->value);
+		Ptr->value = NULL;
+	}
 	free(Ptr);
 }
 
@@ -640,7 +650,10 @@ void free_section(section *Ptr)
 
 	free_section(Ptr->next);
 	free_entry(Ptr->entries);
-	free(Ptr->name);
+	if (Ptr->name) {
+		free(Ptr->name);
+		Ptr->name = NULL;
+	}
 	free(Ptr);
 }
 
@@ -830,26 +843,26 @@ static char** Compare_Section_Get_Path(char **array, int *retsize, int *retdepth
 
 		if ((indexptr = (int*) calloc(index,sizeof(int))) == NULL)
 		{
-			print_msg("%s","Can not allocate memory!\n");
+			print_msg("%s","Can't allocate memory!\n");
 			return NULL;
 		}
 
 		if ((retptr = (char**) calloc(index+1,sizeof(char*))) == NULL)
 		{
-			print_msg("%s","Can not allocate memory!\n");
+			print_msg("%s","Can't allocate memory!\n");
 			return NULL;
 		}
 
 		if ((arrayptr = (char***) calloc(index,sizeof(char**))) == NULL)
 		{
-			print_msg("%s","Can not allocate memory!\n");
+			print_msg("%s","Can't allocate memory!\n");
 			return NULL;
 		}
 
 		for (i=0; array[i] != NULL; i++)
 			if ((arrayptr[i] = String_to_Array(array[i],C_OR)) == NULL)
 			{
-				print_msg("%s","Can not allocate memory!\n");
+				print_msg("%s","Can't allocate memory!\n");
 				return NULL;
 			}
 
@@ -971,12 +984,12 @@ static void free_cfile(cfile **cfiles)
 		cptr = cfiles;
 		while (*cptr != NULL)
 		{
-			free((*cptr)->name);
+			if ((*cptr)->name)
+				free((*cptr)->name);
 			free(*cptr);
 			cptr++;
 		}
 		free(cfiles);
-		cfiles = NULL;
 	}
 
 	return;
@@ -1009,13 +1022,13 @@ int read_files(section **main_sec, char** files, int *fileflag, char **variables
 		{
 			if ((cfiles = (cfile**) realloc(cfiles,sizeof(cfile*)*(i+2))) == NULL)
 			{
-				print_msg("%s","Can not allocate memory!\n");
+				print_msg("%s","Can't allocate memory!\n");
 				return -1;
 			}
 
 			if ((cfiles[i] = (cfile*) calloc(1,sizeof(cfile))) == NULL)
 			{
-				print_msg("%s","Can not allocate memory!\n");
+				print_msg("%s","Can't allocate memory!\n");
 				return -1;
 			}
 
@@ -1023,7 +1036,7 @@ int read_files(section **main_sec, char** files, int *fileflag, char **variables
 
 			if (stat(files[i],&FileStat) != 0 && !(flags & C_NO_WARN_FILE))
 			{
-				print_msg("Can not open file `%s': %s!\n",files[i],strerror(errno));
+				print_msg("Can't open file `%s': %s!\n",files[i],strerror(errno));
 				return -1;
 			}
 
@@ -1048,7 +1061,7 @@ int read_files(section **main_sec, char** files, int *fileflag, char **variables
 				{
 					if (!(flags & C_NO_WARN_FILE))
 					{
-						print_msg("Can not open file `%s': %s!\n",cfiles[i]->name,strerror(errno));
+						print_msg("Can't open file `%s': %s!\n",cfiles[i]->name,strerror(errno));
 						return -1;
 					}
 				}
@@ -1574,7 +1587,7 @@ int Replace_Variables(section *Section)
 				{
 					if ((Ptr = strdup(Ptr)) == NULL)
 					{
-						print_msg("%s","Can not allocate memory!\n");
+						print_msg("%s","Can't allocate memory!\n");
 						return -1;
 					}
 
