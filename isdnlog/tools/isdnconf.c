@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.34  2002/07/04 10:29:18  paul
+ * "DEM" -> "EUR"
+ *
  * Revision 1.33  2000/09/01 06:30:20  paul
  * Now install country-de.dat as country.dat; renaming the source can be done by
  * someone who is more experienced with CVS.
@@ -1821,7 +1824,7 @@ static int readoldconfig(char *myname)
   }
 
   return 0;
-} /* readconfig */
+} /* readoldconfig */
 
 /****************************************************************************/
 
