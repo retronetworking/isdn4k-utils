@@ -16,6 +16,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  2001/03/01 14:59:15  paul
+ * Various patches to fix errors when using the newest glibc,
+ * replaced use of insecure tempnam() function
+ * and to remove warnings etc.
+ *
  * Revision 1.1  1999/11/07 22:04:05  detabc
  * add dwabc-udpinfo-utilitys in isdnctrl
  *
@@ -71,8 +76,7 @@ err:;
 		if(sock > -1)
 			close(sock);
 
-		if(errno < sys_nerr)
-			sprintf(em + strlen(em)," (%s)",sys_errlist[errno]);
+                    sprintf(em + strlen(em)," (%s)",strerror(errno));
 
 		return(-errno);
 	}
