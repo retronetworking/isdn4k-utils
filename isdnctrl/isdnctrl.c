@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.49  2001/06/11 17:55:58  paul
+ * Added 'break' statement after handling data version 5 (otherwise fallthrough
+ * into data version 6 handling!!)
+ *
  * Revision 1.48  2001/05/23 14:59:23  kai
  * removed traces of TIMRU. I hope it's been dead for a long enough time now.
  *
@@ -306,6 +310,10 @@ int set_isdn_net_ioctl_phone(isdn_net_ioctl_phone *ph, char *name,
 			fprintf(stderr, "phone-number must not exceed %d characters\n", 19);
 			return -1;
 		}
+		/*
+		 * null termination happens automatically because
+		 * we clear the entire struct first
+		 */
 		strncpy(ph->phone_5.name, name, sizeof(ph->phone_5.name)-1);
 		strncpy(ph->phone_5.phone, phone, sizeof(ph->phone_5.phone)-1);
 		ph->phone_5.outgoing = outflag;
@@ -577,11 +585,12 @@ static void statusif(int isdnctrl, char *name, int errexit)
 		if (isdninfo < 0)
 		        isdninfo = open("/dev/isdninfo", O_RDONLY);
 		if (isdninfo < 0) {
-			perror("Can't open /dev/isdninfo");
+			perror("Can't open /dev/isdninfo or /dev/isdn/isdninfo");
 			exit(-1);
 		}
 	}
 
+	memset(&phone, 0, sizeof phone);
 	set_isdn_net_ioctl_phone(&phone, name, "", 0);
 	rc = ioctl(isdninfo, IIOCNETGPN, &phone);
 	if (rc < 0) {
@@ -1598,7 +1607,7 @@ void check_version(int report) {
 	if (fd < 0)
 	        fd = open("/dev/isdninfo", O_RDONLY);
 	if (fd < 0) {
-		perror("/dev/isdninfo");
+                perror("Can't open /dev/isdninfo or /dev/isdn/isdninfo");
 		exit(-1);
 	}
 	data_version = ioctl(fd, IIOCGETDVR, 0);
@@ -1746,7 +1755,7 @@ int main(int argc, char **argv)
 	if (fd < 0)
 	        fd = open("/dev/isdnctrl", O_RDWR);
 	if (fd < 0) {
-		perror("/dev/isdnctrl");
+		perror("Can't open /dev/isdnctrl or /dev/isdn/isdnctrl");
 		exit(-1);
 	}
 
