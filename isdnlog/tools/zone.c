@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1999/07/07 19:44:20  akool
+ * patches from Michael and Leo
+ *
  * Revision 1.11  1999/07/01 20:44:07  akool
  * zone-1.12
  *
@@ -69,6 +72,14 @@
  *  returns len of areacode in num and in text a malloced string
  *  UNKNOWN on not found
  *
+ * Changes:
+ *
+ * 1.20 1999.07.08 lt added support for NL
+ *
+ *      in NL areacode may be shorter than actual aeracodenumber
+ *      in this case \tLEN is appended to text
+ *	this version reads also datafiles V1.1
+ *
  */
 
 #define _ZONE_C_
@@ -116,7 +127,7 @@ struct sth {
 
 static struct sth *sthp;
 static int count;
-static char version[] = "1.13";
+static char version[] = "1.20";
 static bool area_read = false;
 
 #define LINK 127
@@ -272,7 +283,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 	int ocount;
 	int csize=0, tsize=0, n;
 	datum key, value;
-	char *message;
+	char *message=0;
 
 	if (msg)
 		message = *msg;
@@ -376,7 +387,7 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 				for (p++,n=0,q=dversion; n<6 && *p != ' '; n++)
 					*q++ = *p++;
 				*q = '\0';
-				if (memcmp(dversion, version, 3)) {
+				if (memcmp(dversion, version, 3) > 0) {
 					if (msg)
 						snprintf (message, LENGTH,
 							"Zone V%s: Error: Provider %d File '%s': incompatible Dataversion %s",
@@ -612,10 +623,19 @@ static int _getAreacode(struct sth *sthp, char *from, char **text) {
 					free(value.dptr);
 				return UNKNOWN;
 			}
-			if (*dbv == 'G') 	/* GDBM has a malloced string in dptr */
-				*text = value.dptr;
-			else
+			if ((p = strchr(value.dptr, '\t')) != 0) { /* NL */
+				*p = '\0';
+				len = p[1] - '0'; /* gcc2.7.2.3 segfaults here if strtoul ?? */
 				*text = strdup(value.dptr);
+				if (*dbv == 'G')
+					free(value.dptr);
+			}
+			else {
+				if (*dbv == 'G')
+					*text = value.dptr;
+				else
+					*text = strdup(value.dptr);
+			}		
 			return len;
 		} /* if dptr */
 		newfrom[--len] = '\0';
@@ -777,12 +797,20 @@ static int checkAllArea(char *df, char *cf, int cc, int verbose) {
 			*q++ = *p++;
 		}
 		*q = '\0';
-		/* append some randoms */
-		olen = strlen(from);
 		p++;
+		/* NL */
+		if ((q = strchr(p, '\t'))) {
+			*q = '\0';
+			olen = strtoul(q+1,0, 10);
+		}	
+		else
+			olen = strlen(from);
 		ifrom=atol(from);
+		/* append some randoms - this doesn't in NL !!! */
+#ifdef APPEND_RANDS		
 		for (i=0; i< 20; i++) {
 			sprintf(from, "%d%d%d", ifrom, i, rand() % 999999);
+#endif			
 			if((++n % 1000) == 0 && verbose) {
 				fprintf(stderr,"%d\r",n);
 				fflush(stderr);
@@ -795,7 +823,9 @@ static int checkAllArea(char *df, char *cf, int cc, int verbose) {
 				break;
 			}
 			free(ort);
+#ifdef APPEND_RANDS		
 		}
+#endif		
 	}
 	fclose(fp);
 	exitZone(1);
