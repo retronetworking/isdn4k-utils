@@ -188,8 +188,8 @@ static void lcp_init(int unit)
 
     if(first_call)
     {
-      *(long *) (&our_discr_addr[0]) = magic();
-      *(long *) (&our_discr_addr[4]) = magic();
+      *(u_int32_t *) (&our_discr_addr[0]) = magic();
+      *(u_int32_t *) (&our_discr_addr[4]) = magic();
       first_call = 0;
     }
 
