@@ -1079,7 +1079,12 @@ int auth_ip_addr(int unit,u_int32_t addr)
 		if (strcmp(ptr_word, "-") == 0)
 			break;
 
+		/* "*" means any addresses authorized */
+		if (strcmp(ptr_word, "*") == 0)
+			return 1;
+
 		accept = 1;
+
 		if (*ptr_word == '!') {
 			accept = 0;
 			++ptr_word;
