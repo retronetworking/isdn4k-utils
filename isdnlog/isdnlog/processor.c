@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.128  2004/08/25 21:22:06  tobiasb
+ * Minor fixes, required by gcc-3.4: Label at end of block, double function
+ * declaration.  Revealed by Andreas Jochens as Debian bug #266523.
+ *
  * Revision 1.127  2003/10/29 17:41:34  tobiasb
  * isdnlog-4.67:
  *  - Enhancements for isdnrep:
@@ -4790,8 +4794,10 @@ static void processctrl(int card, char *s)
 		  return;
 
       default   : version = VERSION_UNKNOWN;
-		  sprintf(sx, "Unexpected discriminator 0x%02x -- ignored!", i);
-		  info(chan, PRT_SHOWNUMBERS, STATE_RING, sx);
+		  if (!ignore_unknown_PD) {
+		    sprintf(sx, "Unexpected discriminator 0x%02x -- ignored!", i);
+		    info(chan, PRT_SHOWNUMBERS, STATE_RING, sx);
+		  }
 		  return;
     } /* switch */
 

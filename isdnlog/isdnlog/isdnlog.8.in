@@ -120,6 +120,14 @@ number that was dialled, and then the cost calculation would be wrong.
 With value 2 the ignored COLP number is displayed.
 
 .TP
+.B	 ignoreUPD={yes|no}
+(There is no commandline option for this.)
+A PABX may cause numerous messages
+like "Unexpected discriminator 0x47 -- ignored!" resulting from
+protocol discriminator values in layer 3 not known to isdnlog.
+Set ignoreUPD to yes to suppress this messages.
+
+.TP
 .B \-2\fIx\fB	dual="value"
 Enable dual mode. You need this if you have a second isdn card attached with
 crossed lines so it can listen to what other isdn devices like telephones

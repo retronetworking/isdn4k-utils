@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.72  2004/01/28 14:27:46  tobiasb
+ * Second step in restricting fds at isdnlog restart and script starting.
+ * The fd limit is now taken from getrlimit() instead of NR_OPEN.
+ * Close_Fds(first) which tries to close all possible fds is generally
+ * built in but the execution must be requested with "closefds=yes" in
+ * the parameterfile otherwise the isdnlog behaviour remains unchanged.
+ *
  * Revision 1.71  2004/01/26 15:20:08  tobiasb
  * First step to close all unnecessary open file descriptors before
  * starting a start script as reaction to a call.  The same applies to the
@@ -1270,6 +1277,9 @@ static int read_param_file(char *FileName)
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_CLOSEFDS))
 					param_closefds = toupper(*(Ptr->value)) == 'Y'?1:0;
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_IGNOREUPD))
+					ignore_unknown_PD = toupper(*(Ptr->value)) == 'Y'?1:0;
 				else
 					print_msg(PRT_ERR,"Error: Invalid entry `%s'!\n",Ptr->name);
 

@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  2004/01/28 14:27:46  tobiasb
+ * Second step in restricting fds at isdnlog restart and script starting.
+ * The fd limit is now taken from getrlimit() instead of NR_OPEN.
+ * Close_Fds(first) which tries to close all possible fds is generally
+ * built in but the execution must be requested with "closefds=yes" in
+ * the parameterfile otherwise the isdnlog behaviour remains unchanged.
+ *
  * Revision 1.27  2004/01/26 15:20:08  tobiasb
  * First step to close all unnecessary open file descriptors before
  * starting a start script as reaction to a call.  The same applies to the
@@ -436,11 +443,13 @@ typedef struct _interval {
 #define _EXTERN
 socket_queue *sockets = NULL;
 _EXTERN int     ignore_unknown_IE = 0xFE;    /* codesets 7 to 1 */
+_EXTERN int     ignore_unknown_PD = 0;
 _EXTERN int     param_closefds = 0;
 #else
 #define _EXTERN extern
 extern socket_queue *sockets;
 _EXTERN int     ignore_unknown_IE;
+_EXTERN int     ignore_unknown_PD;
 _EXTERN int     param_closefds;
 #endif
 

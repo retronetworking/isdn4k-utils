@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.61  2004/07/24 16:16:56  tobiasb
+ * New entry `REPOPTIONS' in section [ISDNLOG] of the isdn configuration
+ * file.  This will be used for commandline options defaults of isdnrep.
+ *
  * Revision 1.60  2004/01/28 14:27:47  tobiasb
  * Second step in restricting fds at isdnlog restart and script starting.
  * The fd limit is now taken from getrlimit() instead of NR_OPEN.
@@ -892,6 +896,7 @@
 #define CONF_ENT_ABCLCR	"ABCLCR"
 #define CONF_ENT_PROVIDERCHANGE "PROVIDERCHANGE"
 #define CONF_ENT_CLOSEFDS  "CLOSEFDS"
+#define CONF_ENT_IGNOREUPD "IGNOREUPD"
 /****************************************************************************/
 
 /* Keywords for isdn.conf */
