@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1999/06/15 20:04:58  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.2  1999/06/03 18:51:11  akool
  * isdnlog Version 3.30
  *  - rate-de.dat V:1.02-Germany [03-Jun-1999 19:49:22]
@@ -383,7 +389,7 @@ int getCountry (char *name, COUNTRY **country)
     }
     return UNKNOWN;
   }
-  
+
   xname=xlat(name);
 
   for (i=0; i<nCountry; i++) {
@@ -404,7 +410,7 @@ int getCountry (char *name, COUNTRY **country)
       }
     }
   }
-  return m;
+  return((m == 666) ? UNKNOWN : m);
 }
 
 int getCountrycode(char *number, char **name)
@@ -413,7 +419,7 @@ int getCountrycode(char *number, char **name)
 
   if (name)
     *name="";
-    
+
   m=UNKNOWN;
   for (i=0; i<nCountry; i++) {
     for (j=0; j<Country[i].nCode; j++) {
@@ -447,7 +453,7 @@ void main (int argc, char *argv[])
       printf ("<%s>=<%s> d=%d\n", argv[i], country->Name, d);
 #else
     d=getCountrycode (argv[i], &msg);
-    printf ("<%s>=<%s> d=%d\n", argv[i], msg, d);  
+    printf ("<%s>=<%s> d=%d\n", argv[i], msg, d);
 #endif
   }
 }

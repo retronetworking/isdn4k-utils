@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.68  1999/06/15 20:04:31  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.67  1999/06/09 19:58:44  akool
  * isdnlog Version 3.31
  *  - Release 0.91 of zone-Database (aka "Verzonungstabelle")
@@ -910,7 +916,7 @@ int read_logfile(char *myname)
 
   /* FIXME: */
   initHoliday(holifile, NULL);
-  initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/rate-de-%s.gdbm", NULL);
+  initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/zone-de-%s.gdbm", NULL);
   currency = strdup("DM");
   vbn = strdup("010");
   interns0 = 3;

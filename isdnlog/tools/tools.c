@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.29  1999/06/15 20:05:20  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.28  1999/06/03 18:51:22  akool
  * isdnlog Version 3.30
  *  - rate-de.dat V:1.02-Germany [03-Jun-1999 19:49:22]
@@ -681,9 +687,7 @@ char *vnum(int chan, int who)
       auto     char *s;
 
 
-      i = getCountrycode(call[chan].num[who], &s);
-
-      if (i) {
+      if ((i = getCountrycode(call[chan].num[who], &s)) != UNKNOWN) {
         Strncpy(call[chan].areacode[who], call[chan].num[who], i + 1);
 	strcpy(call[chan].rufnummer[who], call[chan].num[who] + i);
 	*call[chan].vorwahl[who] = 0;

@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.32  1999/06/15 20:03:46  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.31  1999/06/13 14:07:28  akool
  * isdnlog Version 3.32
  *
@@ -1267,7 +1273,7 @@ int main(int argc, char *argv[], char *envp[])
                                 }
 				else {
                                   if (isalpha(*areacode)) {
-				    if (getCountry(areacode, &Country))
+				    if (getCountry(areacode, &Country) != UNKNOWN)
 				      strcpy(areacode, Country->Code[0]);
                                   } /* if */
 
@@ -1296,7 +1302,7 @@ int main(int argc, char *argv[], char *envp[])
 #endif
 
                                 if (zone2 == UNKNOWN) {
-				  if (getCountrycode(areacode, &country))
+				  if (getCountrycode(areacode, &country) != UNKNOWN)
                                     print_msg(PRT_NORMAL, "Ein %d Sekunden langes Gespraech nach %s (%s) kostet am %s",
                                       duration, country, areacode, ctime(&Rate.start));
                                   else

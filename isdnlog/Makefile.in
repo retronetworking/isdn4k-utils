@@ -19,6 +19,12 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.86  1999/06/15 20:02:54  akool
+## isdnlog Version 3.33
+##   - big step in using the new zone files
+##   - *This*is*not*a*production*ready*isdnlog*!!
+##   - Maybe the last release before the I4L meeting in Nuernberg
+##
 ## Revision 1.85  1999/06/13 14:06:53  akool
 ## isdnlog Version 3.32
 ##
@@ -676,7 +682,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.33
+VERSION     = 3.34
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
