@@ -1,0 +1,6 @@
+$Id$
+
+For previewing man pages (i.e. efthosts.5), use
+
+nroff -man efthosts.5 | less
+
