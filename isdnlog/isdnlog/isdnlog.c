@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.21  1998/06/21 11:52:46  akool
+ * First step to let isdnlog generate his own AOCD messages
+ *
  * Revision 1.20  1998/06/07 21:08:31  akool
  * - Accounting for the following new providers implemented:
  *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
@@ -118,6 +121,7 @@
 #define _ISDNLOG_C_
 
 #include <linux/limits.h>
+#include <termio.h>
 
 #include "isdnlog.h"
 #ifdef POSTGRES
@@ -314,6 +318,9 @@ static void loop(void)
         (void)morectrl(0);
       else if (X_FD_ISSET(sockets[ISDNCTRL2].descriptor, &readmask))
         (void)morectrl(1);
+      else if (X_FD_ISSET(sockets[STDIN].descriptor, &readmask))
+        (void)morekbd();
+
     } /* else */
   } /* while */
 } /* loop */
@@ -793,6 +800,28 @@ static void restoreCharge()
 
 /*****************************************************************************/
 
+void raw_mode(int state)
+{
+  static struct termio newterminfo, oldterminfo;
+
+
+  if (state) {
+    ioctl(fileno(stdin), TCGETA, &oldterminfo);
+    newterminfo = oldterminfo;
+
+    newterminfo.c_iflag &= ~(INLCR | ICRNL | IUCLC | ISTRIP);
+    newterminfo.c_lflag &= ~(ICANON | ECHO);
+    newterminfo.c_cc[VMIN] = 1;
+    newterminfo.c_cc[VTIME] = 1;
+
+    ioctl(fileno(stdin), TCSETAF, &newterminfo);
+  }
+  else
+    ioctl(fileno(stdin), TCSETA, &oldterminfo);
+} /* raw_mode */
+
+/*****************************************************************************/
+
 int main(int argc, char *argv[], char *envp[])
 {
   register char  *p;
@@ -859,7 +888,8 @@ int main(int argc, char *argv[], char *envp[])
 
     if (add_socket(&sockets, -1) ||  /* reserviert fuer isdnctrl */
         add_socket(&sockets, -1) ||  /* reserviert fuer isdnctrl2 */
-        add_socket(&sockets, -1)   ) /* reserviert fuer isdninfo */
+        add_socket(&sockets, -1) ||  /* reserviert fuer isdninfo */
+        add_socket(&sockets, -1) )   /* reserviert fuer stdin */
       Exit(19);
 
     if (replay) {
@@ -979,6 +1009,11 @@ int main(int argc, char *argv[], char *envp[])
 
           if (replay || ((sockets[ISDNINFO].descriptor = open(INFO, O_RDONLY | O_NONBLOCK)) >= 0)) {
 
+            if (!isdaemon) {
+              raw_mode(1);
+	      sockets[STDIN].descriptor = dup(fileno(stdin));
+            } /* if */
+
             now();
 
 #ifdef Q931
@@ -1025,6 +1060,11 @@ int main(int argc, char *argv[], char *envp[])
         close(sockets[ISDNCTRL].descriptor);
       if (*isdnctrl2)
         close(sockets[ISDNCTRL2].descriptor);
+
+      if (!isdaemon) {
+        raw_mode(0);
+      	close(sockets[STDIN].descriptor);
+      } /* if */
     }
     else {
       print_msg(PRT_ERR, msg1, myshortname, isdnctrl, strerror(errno));

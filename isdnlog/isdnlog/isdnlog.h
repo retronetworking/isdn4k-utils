@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1998/06/21 11:52:47  akool
+ * First step to let isdnlog generate his own AOCD messages
+ *
  * Revision 1.8  1998/06/07 21:08:34  akool
  * - Accounting for the following new providers implemented:
  *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
@@ -148,9 +151,10 @@
 #define ISDNCTRL    0
 #define ISDNCTRL2   1
 #define ISDNINFO    2
-#define IN_PORT     3
+#define	STDIN	    3
+#define IN_PORT     4
 
-#define FIRST_DESCR 3
+#define FIRST_DESCR 4
 
 /****************************************************************************/
 
@@ -297,6 +301,7 @@ _EXTERN IO      io[ISDN_MAX_CHANNELS];
 _EXTERN void dotrace(void);
 _EXTERN int  morectrl(int card);
 _EXTERN void moreinfo(void);
+_EXTERN void morekbd(void);
 _EXTERN void processcint(void);
 _EXTERN void processrate(void);
 _EXTERN void clearchan(int chan, int total);

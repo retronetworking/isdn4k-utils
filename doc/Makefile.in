@@ -38,7 +38,7 @@ config.status: configure
 install: $(MANPAGES) Makefile
 	@for i in $(MANPAGES) ; do \
 		MANSECT=`echo $$i | cut -d. -f2` ;\
-		DEST=$(MANDIR)/man$$MANSECT ;\
+		DEST=$(DESTDIR)$(MANDIR)/man$$MANSECT ;\
 		mkdir -p $$DEST ;\
 		$(INSTALL_MAN) $$i $$DEST/$$i ;\
 	done
@@ -46,7 +46,7 @@ install: $(MANPAGES) Makefile
 uninstall: Makefile
 	for i in $(MANPAGES) ; do \
 		MANSECT=`echo $$i | cut -d. -f2` ;\
-		DEST=$(MANDIR)/man$$MANSECT ;\
+		DEST=$(DESTDIR)$(MANDIR)/man$$MANSECT ;\
 		rm -f $$DEST/$$i ;\
 	done
 

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  1998/06/07 21:03:26  akool
+ * Renamed old to new zone-names (CityCall, RegioCall, GermanCall, GlobalCall)
+ *
  * Revision 1.20  1998/05/11 19:43:49  luethje
  * Some changes for "vorwahlen.dat"
  *
@@ -1035,8 +1038,8 @@ const char* area_diff_string(char* number1, char* number2)
 int area_diff(char* _code, char *_diffcode)
 {
 	FILE *fp = NULL;
-	char code[15];
-	char diffcode[15];
+       char code[40];
+       char diffcode[40];
 	char value[15];
 	int index;
 	int number;

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  1998/06/21 11:53:27  akool
+ * First step to let isdnlog generate his own AOCD messages
+ *
  * Revision 1.18  1998/06/07 21:10:02  akool
  * - Accounting for the following new providers implemented:
  *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
@@ -458,6 +461,9 @@
 
 #define CONF_ENT_REPFMT   "REPFMT"
 
+#define CONF_ENT_CALLFILE "CALLFILE"
+#define CONF_ENT_CALLFMT  "CALLFMT"
+
 #define CONF_ENT_VBOXVER  "VBOXVERSION"
 #define CONF_ENT_VBOXPATH "VBOXPATH"
 #define CONF_ENT_VBOXCMD1 "VBOXCMD1"
@@ -561,6 +567,7 @@ typedef struct {
   int     cinth;
   int	  ctakt;
   int	  zone;
+  int	  uid;
 } CALL;
 
 /****************************************************************************/
@@ -729,6 +736,8 @@ _EXTERN char* reloadcmd = RELOADCMD;
 _EXTERN char* stopcmd   = STOPCMD;
 _EXTERN char* rebootcmd = REBOOTCMD;
 _EXTERN char* logfile   = LOGFILE;
+_EXTERN char* callfile  = NULL;
+_EXTERN char* callfmt   = NULL;
 _EXTERN int  (*_print_msg)(const char *, ...) = printf;
 _EXTERN int   use_new_config = 1;
 _EXTERN char ***lineformats = NULL;
@@ -745,6 +754,8 @@ _EXTERN char* reloadcmd;
 _EXTERN char* stopcmd;
 _EXTERN char* rebootcmd;
 _EXTERN char* logfile;
+_EXTERN char* callfile;
+_EXTERN char* callfmt;
 _EXTERN int  (*_print_msg)(const char *, ...);
 _EXTERN int   use_new_config;
 _EXTERN char ***lineformats;

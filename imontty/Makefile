@@ -38,10 +38,10 @@ rootperm:
 	fi
 
 install: $(PROGS) rootperm
-	install -s -o 0 -g 0 -m 0755 $(PROGS) $(CONFIG_SBINDIR)
+	install -s -o 0 -g 0 -m 0755 $(PROGS) $(DESTDIR)$(CONFIG_SBINDIR)
 
 uninstall: rootperm
-	for i in $(PROGS) ; do rm -f $(CONFIG_SBINDIR)/$$i; done
+	for i in $(PROGS) ; do rm -f $(DESTDIR)$(CONFIG_SBINDIR)/$$i; done
 
 clean:
 	rm -f *.o $(PROGS) *~

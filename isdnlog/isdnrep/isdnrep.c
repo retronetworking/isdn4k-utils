@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.42  1998/09/22 21:06:50  luethje
+ * isdnrep: simple fix
+ *
  * Revision 1.41  1998/09/22 20:59:53  luethje
  * isdnrep:  -fixed wrong provider report
  *           -fixed wrong html output for provider report
@@ -809,6 +812,8 @@ int read_logfile(char *myname)
 			einheit = 0.0011; /* cost of one second local tariff during office hours */
 #elif defined(ISDN_CH)
 			einheit = 0.01;
+#elif defined(ISDN_AT)
+			einheit = 1.056;
 #else
 			einheit = Tarif96 ? 0.121 : 0.23;
 #endif

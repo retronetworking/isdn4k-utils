@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  1998/06/14 15:34:35  akool
+ * AVM B1 support (Layer 3)
+ * Telekom's new currency DEM 0,121 supported
+ * Disable holiday rates #ifdef ISDN_NL
+ * memory leak in "isdnrep" repaired
+ *
  * Revision 1.17  1998/05/20 12:34:38  paul
  * More paranoid about freeing pointers.
  *
@@ -820,6 +826,8 @@ void setDefaults()
     currency = "NLG";
 #elif defined(ISDN_CH)
     currency = "SFR";
+#elif defined(ISDN_AT)
+    currency = "ATS";
 #else
     currency = "DM";
 #endif
@@ -832,6 +840,8 @@ void setDefaults()
     currency_factor = 0.15;
 #elif defined(ISDN_CH)
     currency_factor = 0.01;
+#elif defined(ISDN_AT)
+    currency_factor = 1.056;
 #else
     currency_factor = 0.121;
 #endif
@@ -963,6 +973,8 @@ static int _readconfig(char *_myname)
   stopcmd        = STOPCMD;
   rebootcmd      = REBOOTCMD;
   logfile        = LOGFILE;
+  callfile       = NULL;
+  callfmt        = NULL;
   start_procs.infoargs = NULL;
   start_procs.flags    = 0;
   conf_dat       = NULL;
@@ -1096,6 +1108,12 @@ static int Set_Globals(section *SPtr)
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_LOGFILE)) != NULL)
 			logfile = CEPtr->value;
 
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CALLFILE)) != NULL)
+			callfile = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CALLFMT)) != NULL)
+			callfmt = CEPtr->value;
+
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CW)) != NULL)
 			CityWeekend = toupper(*(CEPtr->value)) == 'Y'?1:0;
 
@@ -1189,12 +1207,12 @@ static int Set_Globals(section *SPtr)
 		_print_msg("%s: WARNING: Variable `%s' is not set!\n", Myname, CONF_ENT_AREA);
 		myarea = "";
 	}
-
+#if 0
   if (chargemax == 0)
   {
   	_print_msg("%s: WARNING: Variable `%s' is not set, \nperforming no action when chargemax-overflow\n", Myname, CONF_ENT_CHARGE);
   }
-
+#endif
 	return 0;
 }
 
@@ -1367,8 +1385,11 @@ static int Set_Numbers(section *SPtr, char *Section, int msn)
 			{
 				if (msn < 0)
 				{
+                                       if((known[Index]->zone=area_diff(NULL, num))<1)
+                                       {
 					_print_msg("%s: WARNING: There is no variable `%s' for number `%s'!\n", Myname, CONF_ENT_ZONE, num);
 					known[Index]->zone = 4;
+                                       }
 				}
 				else
 					known[Index]->zone = 1;
