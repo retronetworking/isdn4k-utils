@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.42  2004/09/07 23:48:48  tobiasb
+ * Improved isdnrate -T ..., see ChangeLog for details.
+ *
  * Revision 1.41  2004/01/10 16:43:24  tobiasb
  * New options -c and -i for overriding the RATECONF and RATEFILE setting
  * in isdn.conf.  May be useful for rate-file testing.
@@ -1303,7 +1306,8 @@ static void printTable(char *num)
       /* compare current result against stored */
       print_last = 0;
       for (i = 0; i < min(n, MAXLAST); i++)
-	if (sort[i].prefix != last[i].prefix) {
+	if (sort[i].prefix != last[i].prefix ||
+	    sort[i].rate   != last[i].rate      ) {
 	  print_last = 1;
 	  break;
 	} /* if */
