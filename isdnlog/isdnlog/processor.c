@@ -19,6 +19,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.96  2000/01/20 07:30:09  kai
+ * rewrote the ASN.1 parsing stuff. No known problems so far, apart from the
+ * following:
+ *
+ * I don't use buildnumber() anymore to translate the numbers to aliases, because
+ * it apparently did never work quite right. If someone knows how to handle
+ * buildnumber(), we can go ahead and fix this.
+ *
  * Revision 1.95  2000/01/12 23:22:52  akool
  * - isdnlog/tools/holiday.c ... returns ERVERYDAY for '*'
  * - FAQ/configure{,.in} ...  test '==' => '='
@@ -3872,6 +3880,14 @@ static void processctrl(int card, char *s)
     if (firsttime) {
       firsttime = 0;
       print_msg (PRT_NORMAL, "(AVM B1 driver detected (D2))\n");
+    } /* if */
+    memcpy(ps, "HEX: ", 5);
+  } /* if */
+
+  if (!memcmp(ps, "DTRC:", 5)) { /* Eicon Driver */
+    if (firsttime) {
+      firsttime = 0;
+      print_msg (PRT_NORMAL, "(Eicon active driver detected)\n");
     } /* if */
     memcpy(ps, "HEX: ", 5);
   } /* if */

@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/03/16 20:58:45  luethje
+ * Added the source code isdnlog. isdnlog is not working yet.
+ * A workaround for that problem:
+ * copy lib/policy.h into the root directory of isdn4k-utils.
+ *
  * Revision 1.2  1996/12/05 10:20:04  admin
  * first version auf Postgres95-Interface seems to be ok
  *
@@ -34,8 +39,12 @@
 
 #include "postgres.h"
 
-
-
+void _PQfinish(void)
+{
+  if ( db_Conn )
+    PQfinish( db_Conn);
+  db_Conn = NULL;
+}
 
 
 int dbOpen(void)
@@ -95,7 +104,7 @@ int dbOpen(void)
     {
     syslog( LOG_ERR, "%s", "Connection to ISDN-database failed.");
     syslog( LOG_ERR, "%s", PQerrorMessage( db_Conn));
-    PQfinish( db_Conn);
+    _PQfinish();
     return( -1);
     }
 
@@ -104,7 +113,7 @@ int dbOpen(void)
 
 int dbClose(void)
 {
-  PQfinish( db_Conn);
+  _PQfinish();
 
   if ( db_Host)
     free( db_Host);
@@ -145,7 +154,7 @@ int dbAdd( DbStrIn *in)
     {
       syslog( LOG_ERR, "%s", "Connection to ISDN-database failed.");
       syslog( LOG_ERR, "%s", PQerrorMessage( db_Conn));
-      PQfinish( db_Conn);
+      _PQfinish();
       return( -1);
     }
 
@@ -182,7 +191,7 @@ int dbAdd( DbStrIn *in)
     {
       syslog( LOG_ERR, "%s", "Connection to ISDN-database failed.");
       syslog( LOG_ERR, "%s", PQerrorMessage( db_Conn));
-      PQfinish( db_Conn);
+      _PQfinish();
       return( -1);
     }
 
@@ -196,7 +205,7 @@ int dbAdd( DbStrIn *in)
     {
       syslog( LOG_ERR, "%s", "Connection to ISDN-database failed.");
       syslog( LOG_ERR, "%s", PQerrorMessage( db_Conn));
-      PQfinish( db_Conn);
+      _PQfinish();
       return( -1);
     }
 
