@@ -52,9 +52,6 @@ telesctrl:	$(MODULES)
 hisaxctrl:	$(MODULES)
 	$(CC) $(CFLAGS) $? $(LDFLAGS) -o $@
 
-hisaxctrl.8: telesctrl.8
-	cp $< $@
-
 install: $(PROGRAMS) $(MANPAGES)
 	mkdir -p $(SBINDIR)
 	$(INSTALL_PROGRAM) $(PROGRAMS) $(SBINDIR)
@@ -76,7 +73,7 @@ uninstall:
 	done
 
 clean:
-	rm -f *.o *~ $(PROGRAMS) *.8
+	rm -f *.o *~ $(PROGRAMS) *.8 *.man
 
 distclean: clean
 	rm -f config.status config.cache config.log Makefile
