@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/07/30 20:09:26  luethje
+ * the call "isdnctrl pppbind ipppX" will be bound the interface to X
+ *
  * Revision 1.4  1997/07/23 20:39:16  luethje
  * added the option "force" for the commands delif and reset
  *
@@ -156,6 +159,8 @@ _EXTERN int   pencapval[];
 _EXTERN char *num2callb[];
 
 #endif
+
+_EXTERN int data_version;
 
 _EXTERN char *cmd;
 

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/07/23 20:39:14  luethje
+ * added the option "force" for the commands delif and reset
+ *
  * Revision 1.3  1997/07/22 22:36:08  luethje
  * isdnrep:  Use "&nbsp;" for blanks
  * isdnctrl: Add the option "reset"
@@ -209,7 +212,7 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 
 	if (cfg.chargeint)
 	{
-		sprintf(string,"%d",cfg.chargeint);
+		sprintf(string,"%d",(data_version < 2)?0:cfg.chargeint);
 		if (Set_Entry(SubSec,interface,CONF_ENT_CHARGEINT, string, C_OVERWRITE | C_WARN) == NULL)
 			return NULL;
 	}
@@ -232,7 +235,7 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 		if (Set_Entry(SubSec,interface,CONF_ENT_SDELAY, string, C_OVERWRITE | C_WARN) == NULL)
 			return NULL;
 		
-		sprintf(string,"%d",cfg.triggercps);
+		sprintf(string,"%d",(data_version < 3)?6000:cfg.triggercps);
 		if (Set_Entry(SubSec,interface,CONF_ENT_TRIGGERCPS, string, C_OVERWRITE | C_WARN) == NULL)
 			return NULL;
 		
