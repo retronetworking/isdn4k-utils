@@ -409,6 +409,7 @@ void ppp_recv_config (int unit,int mru,u_int32_t asyncmap,int pcomp,int accomp)
  */
 int ccp_test (int ccp_unit, u_char *opt_ptr, int opt_len, int for_transmit)
 {
+#ifdef NEW_VERS
 	struct isdn_ppp_comp_data data;
 	int linkunit = ccp_fsm[ccp_unit].unit;
 
@@ -429,8 +430,11 @@ int ccp_test (int ccp_unit, u_char *opt_ptr, int opt_len, int for_transmit)
 
 	if (ioctl(lns[linkunit].fd, PPPIOCSCOMPRESSOR, (caddr_t) &data) >= 0)
 		return 1;
-
 	return (errno == ENOBUFS)? 0: -1;
+#else
+	return -1;
+#endif
+
 }
 
 int ccp_get_compressors(int ccp_unit,unsigned long *protos)

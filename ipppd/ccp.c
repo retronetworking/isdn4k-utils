@@ -31,14 +31,12 @@ char ccp_rcsid[] = "$Id$";
 #include <syslog.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#if 0
-#include </usr/include/net/ppp_defs.h>
-#endif
-#include <linux/ppp-comp.h>
 
 #include "fsm.h"
 #include "ipppd.h"
 #include "ccp.h"
+
+#include <linux/ppp-comp.h>
 
 #include "compressions.h"
 

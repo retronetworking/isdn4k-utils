@@ -2463,6 +2463,7 @@ static int resetipxproto(int slot)
 static int setforcedriver(int dummy)
 {
   force_driver = 1;
+  return 1;
 }
 
 
