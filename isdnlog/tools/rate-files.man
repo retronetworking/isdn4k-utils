@@ -214,7 +214,7 @@ Z:1-2,4 Interior
 .I area
 may be a telefonnumber (including +countrycode for numbers which may
 be reached from everywhere, a telefonnumber without +countrycode for numbers only reachable
-in the own country) or an area name or alias as defined in country-de.dat.
+in the own country) or an area name or alias as defined in country.dat.
 Country names have to be translated to their code by the rate-preprocessor
 .IR pp_rate .
 .IP

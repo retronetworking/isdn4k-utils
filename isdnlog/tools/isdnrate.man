@@ -43,7 +43,7 @@ a town
 .IP
 .B US
 a code as defined in
-.IR country-de.dat .
+.IR country.dat .
 .IP
 .B Internet
 a Service name (if option
