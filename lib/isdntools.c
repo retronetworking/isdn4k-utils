@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.25  1999/06/11 15:46:54  akool
+ * not required references to libndbm removed
+ *
  * Revision 1.24  1998/12/16 20:57:30  akool
  *  - first try to add the 1999 tarif of the German Telekom
  *  - fix the areacode 2.0 support
@@ -204,18 +207,23 @@ typedef struct {
 /****************************************************************************/
 
 static int (*print_msg)(const char *, ...) = printf;
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #ifdef LIBAREA
 static char *_get_areacode(char *code, int *Len, int flag);
 #else
 static char *_get_avon(char *code, int *Len, int flag);
 #endif
+#endif
 static int create_runfile(const char *file, const char *format);
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 static long int area_read_value(FILE *fp, int size);
 static int area_read_file(void);
 static int area_get_index(char *code);
+#endif
 
 /****************************************************************************/
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 static char areacodes[][2][30] = {
 	{"+49130", "Toll-free"},
 	{"+491802", "Service 180-2 (0,12/Anruf)"},
@@ -262,6 +270,7 @@ static char *avonlib = NULL;
 static char *codelib = NULL;
 static s_areacode *codes = NULL;
 static int codes_number = 0;
+#endif
 
 /****************************************************************************/
 
@@ -270,7 +279,9 @@ void set_print_fct_for_lib(int (*new_print_msg)(const char *, ...))
 	print_msg = new_print_msg;
 	set_print_fct_for_conffile(new_print_msg);
 	set_print_fct_for_libtools(new_print_msg);
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 	set_print_fct_for_avon(new_print_msg);
+#endif
 }
 
 /****************************************************************************/
@@ -635,7 +646,7 @@ int Set_Codes(section* Section)
 
 	if ((SPtr = Get_Section(Section,CONF_SEC_GLOBAL)) == NULL)
 		return -1;
-
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_AREALIB)) != NULL &&
 	    Entry->value != NULL                                             )
 		ptr[0] = acFileName = strdup(Entry->value);
@@ -648,7 +659,7 @@ int Set_Codes(section* Section)
 		sprintf(s, "%s%c%s", confdir(), C_SLASH, AVON);
 		ptr[1] = avonlib = strdup(s);
 	}
-
+#endif
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_COUNTRY_PREFIX)) != NULL &&
 	    Entry->value != NULL                                             )
 		ptr[2] = countryprefix = strdup(Entry->value);
@@ -656,11 +667,11 @@ int Set_Codes(section* Section)
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_AREA_PREFIX)) != NULL &&
 	    Entry->value != NULL                                             )
 		ptr[3] = areaprefix = strdup(Entry->value);
-
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_CODELIB)) != NULL &&
 	    Entry->value != NULL                                             )
 		ptr[4] = codelib = strdup(Entry->value);
-
+#endif
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_AREA)) != NULL &&
 	    Entry->value != NULL                                          )
 	{
@@ -695,6 +706,7 @@ int Set_Codes(section* Section)
 			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_COUNTRY);
 	}
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 	if ((Entry = Get_Entry(SPtr->entries,CONF_ENT_AREADIFF)) != NULL &&
 	    Entry->value != NULL                                             )
 		ptr[7] = areadifffile = strdup(Entry->value);
@@ -715,7 +727,7 @@ int Set_Codes(section* Section)
 				ptr[7] = areadifffile;
 		}
 	}
-
+#endif
 	SPtr = Section;
 
 	while ((SPtr = Get_Section(SPtr,CONF_SEC_VAR)) != NULL)
@@ -738,6 +750,7 @@ int Set_Codes(section* Section)
 
 /****************************************************************************/
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 char *get_areacode(char *code, int *Len, int flag)
 {
 	auto     char  *Ptr;
@@ -774,6 +787,7 @@ char *get_areacode(char *code, int *Len, int flag)
 		i++;
 	}
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #ifdef LIBAREA
 	if (codelib != NULL && !strcasecmp(codelib,"AREACODE"))
 		Ptr = _get_areacode(code,Len,flag);
@@ -786,6 +800,7 @@ char *get_areacode(char *code, int *Len, int flag)
 		Ptr = _get_areacode(code,Len,flag);
 #else
 		Ptr = _get_avon(code,Len,flag);
+#endif
 #endif
 
 	if (Ptr != NULL)
@@ -813,7 +828,9 @@ char *get_areacode(char *code, int *Len, int flag)
 }
 
 /****************************************************************************/
+#endif
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #ifndef LIBAREA
 static char *_get_avon(char *code, int *Len, int flag)
 {
@@ -872,9 +889,11 @@ static char *_get_avon(char *code, int *Len, int flag)
 	return (s[0]?s:NULL);
 }
 #endif
+#endif
 
 /****************************************************************************/
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 static char *_get_areacode(char *code, int *Len, int flag)
 {
 	auto     int    cc = 0;
@@ -923,6 +942,7 @@ static char *_get_areacode(char *code, int *Len, int flag)
 
 	return NULL;
 }
+#endif
 
 /****************************************************************************/
 
@@ -1031,6 +1051,7 @@ int paranoia_check(char *cmd)
 
 /****************************************************************************/
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 static long int area_read_value(FILE *fp, int size)
 {
 	long value = 0;
@@ -1261,3 +1282,4 @@ static int area_read_file(void)
 }
 
 /****************************************************************************/
+#endif

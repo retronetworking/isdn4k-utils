@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1998/10/13 21:53:33  luethje
+ * isdnrep and lib: bugfixes
+ *
  * Revision 1.9  1998/05/11 19:43:51  luethje
  * Some changes for "vorwahlen.dat"
  *
@@ -57,8 +60,10 @@
 #include "policy.h"
 #include "conffile.h"
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #include "areacode/areacode.h"
 #include "avon/createDB.h"
+#endif
 
 /****************************************************************************/
 
@@ -117,12 +122,14 @@ extern char *basename __P((__const char *__name));
 # define S_AREA_PREFIX  "0"
 #endif
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #ifndef S_AREA_DIFF_FILE
 # define S_AREA_DIFF_FILE  "vorwahlen.dat"
 #endif
 
 #ifndef AVON
 # define AVON  "avon"
+#endif
 #endif
 
 /****************************************************************************/
@@ -132,10 +139,12 @@ extern char *basename __P((__const char *__name));
 #define CONF_ENT_AREA_PREFIX    "AREAPREFIX"
 #define CONF_ENT_COUNTRY        "COUNTRYCODE"
 #define CONF_ENT_AREA           "AREACODE"
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #define CONF_ENT_AREALIB        "AREALIB"
 #define CONF_ENT_AVONLIB        "AVON"
 #define CONF_ENT_CODELIB        "CODELIB"
 #define CONF_ENT_AREADIFF       "AREADIFF"
+#endif
 
 #define CONF_SEC_VAR    "VARIABLES"
 
@@ -165,12 +174,14 @@ extern char *basename __P((__const char *__name));
 
 /****************************************************************************/
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 #define AREA_ERROR   -1
 #define AREA_UNKNOWN  0
 #define AREA_LOCAL    1
 #define AREA_R50      2
 #define AREA_FAR      3
 #define AREA_ABROAD   4
+#endif
 
 /****************************************************************************/
 
@@ -192,7 +203,9 @@ _EXTERN char    *mycountry     SET_NULL;
 _EXTERN char    *myarea        SET_NULL;
 _EXTERN char    *areaprefix    SET_AREA_PREFIX;
 _EXTERN char    *countryprefix SET_COUNTRY_PREFIX;
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 _EXTERN char    *areadifffile  SET_NULL2;
+#endif
 
 _EXTERN void set_print_fct_for_lib(int (*new_print_msg)(const char *, ...));
 _EXTERN int num_match(char *Pattern, char *number);
@@ -201,11 +214,15 @@ _EXTERN char *expand_file(char *s);
 _EXTERN char *confdir(void);
 _EXTERN int handle_runfiles(const char *_progname, char **_devices, int flag);
 _EXTERN int Set_Codes(section* Section);
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 _EXTERN char *get_areacode(char *code, int *Len, int flag);
+#endif
 _EXTERN int read_conffiles(section **Section, char *groupfile);
 _EXTERN int paranoia_check(char *cmd);
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 _EXTERN int area_diff(char* _code, char *_diffcode);
 _EXTERN const char* area_diff_string(char* number1, char* number2);
+#endif
 
 #undef SET_NULL
 #undef SET_NULL2
