@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.16  2000/05/18 15:02:26  calle
+ * Updated _cmsg handling added new functions need by "capiconn".
+ *
  * Revision 1.15  2000/04/10 09:08:06  calle
  * capi20_wait_for_message will now return CapiReceiveQueueEmpty on
  * timeout and error.
@@ -66,6 +69,22 @@
 #include <stdio.h>
 #include <linux/capi.h>
 #include "capi20.h"
+
+#ifndef CAPI_GET_FLAGS
+#define CAPI_GET_FLAGS		_IOR('C',0x23, unsigned)
+#endif
+#ifndef CAPI_SET_FLAGS
+#define CAPI_SET_FLAGS		_IOR('C',0x24, unsigned)
+#endif
+#ifndef CAPI_CLR_FLAGS
+#define CAPI_CLR_FLAGS		_IOR('C',0x25, unsigned)
+#endif
+#ifndef CAPI_NCCI_OPENCOUNT
+#define CAPI_NCCI_OPENCOUNT	_IOR('C',0x26, unsigned)
+#endif
+#ifndef CAPI_NCCI_GETUNIT
+#define CAPI_NCCI_GETUNIT	_IOR('C',0x27, unsigned)
+#endif
 
 static char capidevname[] = "/dev/capi20";
 static char capidevnamenew[] = "/dev/isdn/capi20";
