@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1999/07/02 19:18:00  akool
+ * rate-de.dat V:1.02-Germany [02-Jul-1999 21:27:20]
+ *
  * Revision 1.6  1999/07/02 18:20:50  akool
  * rate-de.dat V:1.02-Germany [02-Jul-1999 20:29:21]
  * country-de.dat V:1.02-Germany [02-Jul-1999 19:13:54]
@@ -43,15 +46,18 @@
  */
 
 #include "isdnlog.h"
+#include "tools/zone.h"
 
 #define WIDTH   19
 #define MAXLAST	 5
+#define ZAUNPFAHL  1 /* FIXME: Michi: Offset */
 
 static char *myname, *myshortname;
-static char  options[] = "Vvd:hb:s:tx";
+static char  options[] = "Vvd:hb:s:txu";
 static char  usage[]   = "%s: usage: %s [ -%s ] Destination ...\n";
 
 static int    verbose = 0, header = 0, best = MAXPROVIDER, table = 0, explain = 0;
+static int    usestat = 0;
 static int    duration = LCR_DURATION;
 static time_t start;
 static int    day, month, year, hour, min;
@@ -179,6 +185,9 @@ static int opts(int argc, char *argv[])
       	       	 break;
 
       case 'x' : explain++;
+      	       	 break;
+
+      case 'u' : usestat++;
       	       	 break;
 
       case '?' : print_msg(PRT_ERR, usage, myshortname, myshortname, options);
@@ -351,7 +360,7 @@ static int compute()
     buildtime();
 
     Rate.start = start;
-    Rate.now   = start + duration;
+    Rate.now   = start + duration - ZAUNPFAHL;
 
     if (!getRate(&Rate, NULL) && (Rate.Price != 99.99)) {
       sort[n].prefix = Rate.prefix;
@@ -448,7 +457,10 @@ static void printTable()
   auto	   SORT	      last[MAXLAST];
   auto 	   int        used[MAXPROVIDER];
   auto 	   int        hours[MAXPROVIDER];
+  auto 	   int        useds = 0, maxhour;
 
+
+  memset(used, 0, sizeof(used));
 
   if (header)
     print_msg(PRT_NORMAL, "Eine %d Sekunden lange Verbindung von %s %s nach %s %s %s kostet\n",
@@ -477,7 +489,7 @@ static void printTable()
     min = 0;
 
     if (header)
-      print_msg(PRT_NORMAL, "\n%s:\n", d ? "Werktag" : "Wochende");
+      print_msg(PRT_NORMAL, "\n%s:\n", d ? "Werktag" : "Wochenende");
 
     while (1) {
 
@@ -570,6 +582,22 @@ static void printTable()
     else
       hours[last[0].prefix] += hour - lasthour;
   } /* for */
+
+  if (usestat) {
+    print_msg(PRT_NORMAL, "\nProvider(s) used:\n");
+
+    maxhour = 9999999;
+    useds = 0;
+
+    for (i = 0; i < MAXPROVIDER; i++)
+      if (used[i]) {
+        print_msg(PRT_NORMAL, "%s (%d hours)\n", Provider(i), hours[i]);
+      	useds++;
+
+      	if (hours[i] < maxhour)
+          maxhour = hours[i];
+      } /* if */
+  } /* if */
 } /* printTable */
 
 
@@ -613,6 +641,8 @@ int main(int argc, char *argv[], char *envp[])
     print_msg(PRT_NORMAL, "\t-t\t\tshow a table\n");
     print_msg(PRT_NORMAL, "\t-b best\tshow only the first <best> provider(s) (default %d)\n", MAXPROVIDER);
     print_msg(PRT_NORMAL, "\t-s d/m/y/h/m\tstart of call (default now)\n");
+    print_msg(PRT_NORMAL, "\t-x\texplain each rate\n");
+    print_msg(PRT_NORMAL, "\t-u\tshow usage stats\n");
   } /* else */
 
   return(0);
