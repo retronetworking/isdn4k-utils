@@ -32,4 +32,7 @@ ttyId:			$(MAINOBJS)
 clean:			ignore	
 			@find . -name '*.o' -exec $(RM) {} ';'
 
+distclean:		clean
+			rm -f ttyId
+
 ignore:
