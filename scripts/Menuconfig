@@ -1120,7 +1120,7 @@ then
 
 The isdn4k-utils package is now hopefully configured for your setup.
 You may build the package with "make". After that you may install
-the package with "make install" (Installation requires root pivileges).
+the package with "make install" (Installation requires root privileges).
 
 EOM
 else
