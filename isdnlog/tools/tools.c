@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.34  1999/08/29 10:29:15  akool
+ * isdnlog-3.48
+ *   cosmetics
+ *
  * Revision 1.33  1999/08/20 19:29:12  akool
  * isdnlog-3.45
  *  - removed about 1 Mb of (now unused) data files
@@ -1109,7 +1113,7 @@ go:   	         if (!ndigit)
                  break;
 
       case 'P' : s = sx;
-      	         if (call[chan].provider != -1)
+      	         if (call[chan].provider != UNKNOWN)
       	       	   sprintf(sx, " via %s", getProvider(call[chan].provider));
       		 else
                    *sx = 0;

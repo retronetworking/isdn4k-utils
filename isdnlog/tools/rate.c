@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.42  1999/09/09 11:21:05  akool
+ * isdnlog-3.49
+ *
  * Revision 1.41  1999/08/29 10:29:06  akool
  * isdnlog-3.48
  *   cosmetics
@@ -280,7 +283,7 @@
  *   initialisiert die Tarifdatenbank
  *
  * char* getProvider (int prefix)
- *   liefert den Namen des Providers oder NULL wenn unbekannt
+ *   liefert den Namen des Providers oder dessen Prefix wenn unbekannt
  *
  * char* getComment(int prefix, char *key)
  *   liefert einen C:-Eintrag
@@ -1197,8 +1200,16 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 
 char *getProvider (int prefix)
 {
+  static char s[BUFSIZ];
+
+
   if (prefix<0 || prefix>=nProvider || !Provider[prefix].used) {
-    return NULL;
+    if (prefix < 100)
+      sprintf(s, "%s%02d ???", vbn, prefix);
+    else
+      sprintf(s, "%s%03d ???", vbn, prefix - 100);
+
+    return(s);
   }
   return Provider[prefix].Name;
 }

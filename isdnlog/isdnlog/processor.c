@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.82  1999/09/11 22:28:24  akool
+ * isdnlog-3.50
+ *   added 3. parameter to "-h" Option: Controls CHARGEHUP for providers like
+ *   DTAG (T-Online) or AOL.
+ *   Many thanks to Martin Lesser <m-lesser@lesser-com.de>
+ *
  * Revision 1.81  1999/08/21 12:59:51  akool
  * small fixes
  *
@@ -3641,9 +3647,9 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   call[chan].Rate.prefix = call[chan].provider;
 
   if (call[chan].intern[CALLING]) {
-    call[chan].Rate.src[0] = "";
-    call[chan].Rate.src[1] = "";
-    call[chan].Rate.src[2] = mynum;
+    call[chan].Rate.src[0] = mycountry;
+    call[chan].Rate.src[1] = myarea;
+    call[chan].Rate.src[2] = "";
   }
   else {
     call[chan].Rate.src[0] = call[chan].areacode[CALLING];
