@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1999/03/15 15:53:06  cpetig
+ * added v110 and modem to the level2 encapsulations
+ *
  * Revision 1.12  1998/10/21 16:18:48  paul
  * Implementation of "dialmode" (successor of "status")
  *
@@ -110,6 +113,7 @@ enum {
 #ifdef I4L_CTRL_CONF
         WRITECONF, READCONF,
 #endif /* I4L_CTRL_CONF */
+	STATUS,
 		IFDEFAULTS
 };
 
@@ -179,6 +183,7 @@ cmd_struct cmds[] =
         {"writeconf", "01"},
         {"readconf", "01"},
 #endif /* I4L_CTRL_CONF */
+        {"status", "1"},
         {"ifdefaults", "01"},
         {NULL,}
 };

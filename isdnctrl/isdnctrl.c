@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.32  1998/12/23 12:51:44  paul
+ * didn't compile with old kernel source
+ *
  * Revision 1.31  1998/11/24 18:18:57  paul
  * detect kernel < 2.0.36; warn if dialmode is accessed with older kernels
  *
@@ -210,8 +213,14 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <errno.h>
 
 #include <linux/isdn.h>
+ /* fix version skew between 2.0 and 2.1 kernels (structs are identical) */
+#if (NET_DV == 0x04)
+# undef NET_DV
+# define NET_DV 0x05
+#endif
 #include <linux/isdnif.h>
 
 #include "config.h"
@@ -317,6 +326,7 @@ void usage(void)
         fprintf(stderr, "    writeconf [file]           write the settings to file\n");
         fprintf(stderr, "    readconf [file]            read the settings from file\n");
 #endif /* I4L_CTRL_CONF */
+        fprintf(stderr, "    status name                show interface status (connected or not)\n");
 #ifdef I4L_CTRL_TIMRU
 		fprintf(stderr,"Note: TIMRU Ctrl   Extension-Support enabled\n");
 #else
@@ -509,6 +519,49 @@ static void listif(int isdnctrl, char *name, int errexit)
         else
                 nextslaveif[0] = 0;
 }
+
+
+#ifdef IIOCNETGPN
+static void statusif(int isdnctrl, char *name, int errexit)
+{
+	isdn_net_ioctl_phone phone;
+	int rc;
+	static int isdninfo = -1;
+
+	if (isdninfo < 0) {
+		isdninfo = open("/dev/isdninfo", O_RDONLY);
+		if (isdninfo < 0) {
+			perror("Can't open /dev/isdninfo");
+			exit(-1);
+		}
+	}
+	memset(&phone, 0, sizeof phone);
+	strncpy(phone.name, name, sizeof phone.name);
+	rc = ioctl(isdninfo, IIOCNETGPN, &phone);
+	if (rc == 0) {
+		printf("%s connected %s %s\n",
+			name, phone.outgoing?"to":"from", phone.phone);
+		return;
+	}
+	if (errno == ENOTCONN) {
+		printf("%s is not connected\n", name);
+		if (errexit) {
+			exit(1); /* exit 1 if interface specified & not conn. */
+		}
+		return;
+	}
+	if (errno == EINVAL) {
+		puts("Sorry, not configured in your kernel");
+		exit(-1);
+	}
+	if (errexit) {
+		perror(name);
+		exit(-1);
+	}
+}
+#else
+#warning IIOCNETGPN not defined? Old isdn4kernel? Or 2.0.x kernel...
+#endif
 
 int findcmd(char *str)
 {
@@ -908,6 +961,32 @@ int exec_args(int fd, int argc, char **argv)
 			        	fclose(iflst);
 			        } else
 			        	listif(fd, id, 1);
+			        break;
+
+			case STATUS:
+#ifdef IIOCNETGPN
+			        if (!strcmp(id, "all")) {
+			        	char name[10];
+			        	if ((iflst = fopen(FILE_PROC, "r")) == NULL) {
+			        		perror(FILE_PROC);
+			        		return -1;
+			        	}
+			        	while (!feof(iflst)) {
+			        		fgets(s, sizeof(s), iflst);
+			        		if ((p = strchr(s, ':'))) {
+			        			*p = 0;
+			        			sscanf(s, "%s", name);
+			        			statusif(fd, name, 0);
+			        			while (*nextslaveif)
+			        				statusif(fd, nextslaveif, 0);
+			        		}
+			        	}
+			        	fclose(iflst);
+			        } else
+			        	statusif(fd, id, 1);
+#else
+				puts("Sorry, not configured into isdnctrl");
+#endif /* defined IIOCNETGPN */
 			        break;
 
 			case EAZ:
@@ -1565,6 +1644,9 @@ void check_version(int report) {
 		return;
 	}
 	data_version = (data_version >> 8) & 0xff;
+	/* consider NET_DV 0x04 and 0x05 to be the same */
+	if (data_version == 0x04)
+		data_version = 0x05;
 	if (data_version != NET_DV) {
 		fprintf(stderr, "Version of kernel ioctl structs (%d) does NOT match\n",
 			data_version);
