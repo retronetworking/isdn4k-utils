@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.16  2000/06/07 21:08:35  armin
+ * Fixed OAD, OSA and SPID parameter setting.
+ *
  * Revision 1.15  2000/04/24 07:53:03  armin
  * Extended interface to divaload.
  *
@@ -1700,13 +1703,9 @@ int main(int argc, char **argv) {
                         if (!strncmp(argv[arg_ofs], "-t", 2)) {
 				if (isabus) {
                                 	cb->isa.tei = atoi(argv[arg_ofs] + 2);
-	                                cb->isa.tei <<= 1;
-        	                        cb->isa.tei |= 0x01;
 				} else {
 #ifdef HAVE_NPCI
                                 	cb->pci.tei = atoi(argv[arg_ofs] + 2);
-	                                cb->pci.tei <<= 1;
-        	                        cb->pci.tei |= 0x01;
 #endif
 				}
                                 continue;

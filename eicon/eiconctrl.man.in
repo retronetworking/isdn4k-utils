@@ -154,7 +154,7 @@ When using PRI-PtP set -n -S2
 .BI eiconctrl " load etsi"
 loads and starts S0 type adapter with protocol E-DSS1.
 .TP
-.BI eiconctrl " load etsi -t0 -s1 -n"
+.BI eiconctrl " load etsi -t1 -s1 -n"
 loads and starts S0 type adapter with protocol E-DSS1 PtP.
 .TP
 .BI eiconctrl " load etsi -s2 -n"
