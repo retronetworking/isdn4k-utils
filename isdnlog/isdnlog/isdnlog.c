@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.28  1998/11/07 17:12:56  akool
+ * Final cleanup. This _is_ isdnlog-3.00
+ *
  * Revision 1.27  1998/11/01 08:49:43  akool
  *  - fixed "configure.in" problem with NATION_*
  *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
@@ -200,9 +203,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NqFA:2:O:Ki:";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;

@@ -24,6 +24,16 @@
  *
  *
  * $Log$
+ * Revision 1.49  1998/11/01 08:50:11  akool
+ *  - fixed "configure.in" problem with NATION_*
+ *  - DESTDIR fixes (many thanks to Michael Reinelt <reinelt@eunet.at>)
+ *  - isdnrep: Outgoing calls ordered by Zone/Provider/MSN corrected
+ *  - new Switch "-i" -> running on internal S0-Bus
+ *  - more providers
+ *  - "sonderrufnummern.dat" extended (Frag Fred, Telegate ...)
+ *  - added AVM-B1 to the documentation
+ *  - removed the word "Teles" from the whole documentation ;-)
+ *
  * Revision 1.48  1998/10/22 18:22:49  luethje
  * isdnrep: suppress some messages
  * isdnlog: remove function Pathfind()
@@ -355,6 +365,7 @@
 
 #include "isdnrep.h"
 #include "../../vbox/src/libvbox.h"
+#include "libisdn.h"
 
 /*****************************************************************************/
 
@@ -1048,12 +1059,13 @@ static int print_bottom(double unit, char *start, char *stop)
 		strich(1);
 
 		/* Andreas: zones[i] ist manchmal immer NULL, warum ? */
-		for (i = 1; i < MAXZONES; i++)
+		for (i = 0; i < MAXZONES; i++)
 			if (zones[i]) {
 
 				p = "";
 
 				switch (i) {
+                                        case 0 : p = S_UNKNOWN;    break;
 					case 1 : p = "CityCall";   break;
 					case 2 : p = "RegioCall";  break;
 					case 3 :
@@ -2201,6 +2213,9 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 #if 1 /* AK:07-Oct-98 */
 		if ((cur_call->dir == DIALOUT) && (nx[CALLED] == -1)) {
       		  zone = area_diff(NULL, cur_call->num[CALLED]);
+
+                  if (zone == AREA_ERROR)
+                    zone = AREA_UNKNOWN;
 
 		  zones[zone] += cur_call->eh;
 		  zones_dm[zone] += cur_call->dm;
