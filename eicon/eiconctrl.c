@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.2  1999/01/20 21:16:45  armin
+ * Added some debugging features.
+ *
  * Revision 1.1  1999/01/01 17:27:57  armin
  * First checkin of new created control utility for Eicon.Diehl driver.
  * diehlctrl is obsolete.
@@ -40,6 +43,7 @@
 #include <ncurses.h>
 
 
+#include <linux/types.h>
 #include <linux/isdn.h>
 #include <eicon.h>
 
