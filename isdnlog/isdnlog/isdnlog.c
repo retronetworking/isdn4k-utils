@@ -19,6 +19,9 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.46  1999/06/16 23:37:31  akool
+ * fixed zone-processing
+ *
  * Revision 1.45  1999/06/15 20:04:03  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -1341,6 +1344,7 @@ int main(int argc, char *argv[], char *envp[])
 
 	    sprintf(s, "%s%s", mycountry, myarea);
             mynum = strdup(s);
+            myicountry = atoi(mycountry + strlen(countryprefix));
 
 	    initHoliday(holifile, &version);
 

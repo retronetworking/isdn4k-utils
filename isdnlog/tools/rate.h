@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.9  1999/06/15 20:05:16  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.8  1999/05/22 10:19:30  akool
  * isdnlog Version 3.29
  *
@@ -117,8 +123,8 @@
 typedef struct {
   int        prefix;   /* Providerkennung */
   int        zone;     /* Zonennummer */
-  char      *src;      /* eigene Telefonnummer */
-  char      *dst;      /* gerufene Nummer */
+  char      *src[3];   /* eigene Telefonnummer [Land, Vorwahl, Nummer]*/
+  char      *dst[3];   /* gerufene Nummer */
   time_t     start;    /* Verbindungsaufbau */
   time_t     now;      /* momentane Zeit */
   int        domestic; /* Inlandsverbindung */
@@ -148,7 +154,7 @@ char *getProvider(int prefix);
 int   getArea(int prefix, char *number);
 void  clearRate (RATE *Rate);
 int   getRate(RATE *Rate, char **msg);
-int   getLeastCost(RATE *Rate, int skip);
+int   getLeastCost(RATE *Current, RATE *Cheapest, int booked, int skip);
 int   guessZone (RATE *Rate, int aoc_units);
 char *explainRate (RATE *Rate);
 char *printRate (double value);

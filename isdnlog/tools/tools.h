@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.46  1999/06/16 23:38:09  akool
+ * fixed zone-processing
+ *
  * Revision 1.45  1999/06/15 20:05:22  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -559,7 +562,7 @@
 /* Fixme: this is specific to Germany */
 #define	DTAG	     33
 
-#define	TESTDURATION 153 /* 181 */
+#define	LCR_DURATION 153
 
 /****************************************************************************/
 
@@ -1014,6 +1017,7 @@ _EXTERN int	ignoreCOLP;
 _EXTERN int 	interns0;
 _EXTERN	char    *vbn;
 _EXTERN char	*mynum;
+_EXTERN int	myicountry;
 #undef _EXTERN
 
 /****************************************************************************/
