@@ -126,6 +126,12 @@ rootperm:
 
 install: rootperm
 	set -e; for i in `echo $(SUBDIRS)`; do $(MAKE) -C $$i install; done
+	@if [ -c /dev/isdnctrl0 ] && ls -l /dev/isdnctrl0 | egrep "[[:space:]]45,[[:space:]]+64[[:space:]]" > /dev/null; \
+	then \
+		echo -e '(some) ISDN devices already exist, not creating them.\nUse scripts/makedev.sh manually if necessary.'; \
+	else \
+		sh scripts/makedev.sh; \
+	fi
 
 uninstall: rootperm
 	set -e; for i in `echo $(SUBDIRS)`; do $(MAKE) -C $$i uninstall; done
