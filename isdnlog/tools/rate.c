@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.34  1999/07/12 18:50:06  akool
+ * replace "0" by "+49"
+ *
  * Revision 1.33  1999/07/03 10:24:18  akool
  * fixed Makefile
  *
@@ -803,7 +806,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 
 	  if (*c == '0' && (*(c + 1) != '0')) {
 	    sprintf(sx, "%s%s", mycountry, c + 1);
-	    print_msg(PRT_NORMAL, "WARNING: Replacing %s by %s\n", c, sx);
+	    warning(dat, "Replacing %s by %s\n", c, sx);
 	    c = sx;
 	  } /* if */
 

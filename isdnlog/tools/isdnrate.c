@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1999/07/07 19:44:07  akool
+ * patches from Michael and Leo
+ *
  * Revision 1.9  1999/07/04 20:47:05  akool
  * rate-de.dat V:1.02-Germany [04-Jul-1999 22:56:37]
  *
@@ -59,7 +62,7 @@
 #define ZAUNPFAHL  1 /* FIXME: Michi: Offset */
 
 static char *myname, *myshortname;
-static char  options[] = "Vvd:hb:s:txu";
+static char  options[] = "Vvd:h:l:Hb:s:tx::u";
 static char  usage[]   = "%s: usage: %s [ -%s ] Destination ...\n";
 
 static int    verbose = 0, header = 0, best = MAXPROVIDER, table = 0, explain = 0;
@@ -164,39 +167,43 @@ static int opts(int argc, char *argv[])
       case 'v' : verbose++;
       	       	 break;
 
-      case 'd' : duration = strtol(optarg, NIL, 0);
+      case 'l' : duration = strtol(optarg, NIL, 0); /* l wie lt */
       	       	 break;
 
-      case 'h' : header++;
+      case 'H' : header++;
       	       	 break;
 
       case 'b' : best = strtol(optarg, NIL, 0);
       	       	 break;
 
-      case 's' : day = atoi(optarg);
+      case 'd' : day = atoi(optarg);
       	       	 if ((p = strchr(optarg, '/'))) {
                    month = atoi(p + 1);
 
                    if ((p = strchr(p + 1, '/'))) {
                      year = atoi(p + 1);
 
-           	     if (year < 100)
-                       year += 1900; /* JA, JA!! */
-
-                     if ((p = strchr(p + 1, '/'))) {
-                       hour = atoi(p + 1);
-
-                       if ((p = strchr(p + 1, '/')))
-                         min = atoi(p + 1);
-                     }
+           	     if (year < 50)
+                       year += 2000;
+		     else if (year < 100)  
+                       year += 1900;
                    }
       	       	 }
+                 break;
+      case 'h': hour = atoi(optarg);		  
+                   if ((p = strchr(p + 1, ':')))
+                         min = atoi(p + 1);
                  break;
 
       case 't' : table++;
       	       	 break;
 
       case 'x' : explain++;
+                 {
+		   int x;
+                   if (optarg && (x=atoi(optarg)))
+		     explain=x;
+		 }     
       	       	 break;
 
       case 'u' : usestat++;
@@ -225,6 +232,27 @@ static int compare2(const void *s1, const void *s2)
   return(((SORT2 *)s1)->weight < ((SORT2 *)s2)->weight);
 } /* compare2 */
 
+char *short_explainRate (RATE *Rate)
+{
+  static char buffer[BUFSIZ];
+  char       *p=buffer;
+
+  if (Rate->Zone && *Rate->Zone)
+    p+=sprintf (p, "%s", Rate->Zone);
+  else
+    p+=sprintf (p, "Zone %d", Rate->zone);
+
+  if (!Rate->domestic && Rate->Country && *Rate->Country)
+    p+=sprintf (p, " (%s)", Rate->Country);
+
+  if (Rate->Day && *Rate->Day)
+    p+=sprintf (p, ", %s", Rate->Day);
+
+  if (Rate->Hour && *Rate->Hour)
+    p+=sprintf (p, ", %s", Rate->Hour);
+
+  return buffer;
+}
 
 static char *printrate(RATE *Rate)
 {
@@ -232,19 +260,19 @@ static char *printrate(RATE *Rate)
 
 
   if (Rate->Basic > 0)
-    sprintf(message, "%s + %s/%3.1fs = %s + %s/Min (%s)",
+    sprintf(message, "%s + %s/%.4fs = %s + %s/Min (%s)",
       printRate(Rate->Basic),
       printRate(Rate->Price),
       Rate->Duration,
       printRate(Rate->Basic),
       printRate(60 * Rate->Price / Rate->Duration),
-      explainRate(Rate));
+      short_explainRate(Rate));
   else
-    sprintf(message, "%s/%3.1fs = %s/Min (%s)",
+    sprintf(message, "%s/%.4fs = %s/Min (%s)",
       printRate(Rate->Price),
       Rate->Duration,
       printRate(60 * Rate->Price / Rate->Duration),
-      explainRate(Rate));
+      short_explainRate(Rate));
 
   return(message);
 } /* printrate */
@@ -347,6 +375,7 @@ static void numsplit(char *num)
 
     if (1 /* l3 != UNKNOWN */) {
       print_msg(PRT_NORMAL, "getAreacode(%d, %s, %s)=%d\n", atoi(p), num + l1, s, l3);
+      if (l3 != UNKNOWN)
       free(s);
       zone = getZone(DTAG, myarea, num + l1);
       print_msg(PRT_NORMAL, "getZone(%d,%s,%s)=%d\n", DTAG, myarea, num + l1, zone);
@@ -474,10 +503,14 @@ static int compute()
       sort[n].prefix = Rate.prefix;
       sort[n].rate = Rate.Charge;
 
-      if (explain) {
+      if (explain == 2) {
         sprintf(s, " (%s)", printrate(&Rate));
         sort[n].explain = strdup(s);
       }
+      else if (explain == 1) {
+        sprintf(s, " (%s)", Rate.Zone);
+        sort[n].explain = strdup(s);
+      }	
       else
         sort[n].explain = strdup("");
 
@@ -770,12 +803,14 @@ int main(int argc, char *argv[], char *envp[])
     print_msg(PRT_NORMAL, "\n");
     print_msg(PRT_NORMAL, "\t-V\t\tshow version infos\n");
     print_msg(PRT_NORMAL, "\t-v\t\tverbose\n");
-    print_msg(PRT_NORMAL, "\t-d duration\t duration of call in seconds (default %d seconds)\n", LCR_DURATION);
-    print_msg(PRT_NORMAL, "\t-h\t\tshow a header\n");
+    print_msg(PRT_NORMAL, "\t-l duration\t duration of call in seconds (default %d seconds)\n", LCR_DURATION);
+    print_msg(PRT_NORMAL, "\t-H\t\tshow a header\n");
     print_msg(PRT_NORMAL, "\t-t\t\tshow a table\n");
     print_msg(PRT_NORMAL, "\t-b best\tshow only the first <best> provider(s) (default %d)\n", MAXPROVIDER);
-    print_msg(PRT_NORMAL, "\t-s d/m/y/h/m\tstart of call (default now)\n");
+    print_msg(PRT_NORMAL, "\t-d d/m/y\tstart date of call (default now)\n");
+    print_msg(PRT_NORMAL, "\t-h h:/m\tstart time of call (default now)\n");
     print_msg(PRT_NORMAL, "\t-x\texplain each rate\n");
+    print_msg(PRT_NORMAL, "\t-x2\texplain more\n");
     print_msg(PRT_NORMAL, "\t-u\tshow usage stats\n");
   } /* else */
 
