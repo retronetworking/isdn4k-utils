@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  1999/03/14 12:16:44  akool
+ * - isdnlog Version 3.04
+ * - general cleanup
+ * - new layout for "rate-xx.dat" and "holiday-xx.dat" files from
+ *     Michael Reinelt <reinelt@eunet.at>
+ *     unused by now - it's a work-in-progress !
+ * - bugfix for Wolfgang Siefert <siefert@wiwi.uni-frankfurt.de>
+ *     The Agfeo AS 40 (Software release 2.1b) uses AOC_AMOUNT, not AOC_UNITS
+ * - bugfix for Ralf G. R. Bergs <rabe@RWTH-Aachen.DE> - 0800/xxx numbers
+ *     are free of charge ;-)
+ * - tarif.dat V 1.08 - new mobil-rates DTAG
+ *
  * Revision 1.18  1999/02/28 19:33:48  akool
  * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
  * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -551,10 +563,10 @@ char *vnum(int chan, int who)
     if (cnf > -1)
       strcpy(retstr[retnum], call[chan].alias[who]);
     else if (call[chan].sondernummer[who] != -1) {
-      if ((l1 = strlen(SN[call[chan].sondernummer[who]].number)) < l)
-        sprintf(retstr[retnum], "%s - %s", SN[call[chan].sondernummer[who]].info, call[chan].num[who] + l1);
+      if ((l1 = strlen(sondernum(call[chan].sondernummer[who]))) < l)
+        sprintf(retstr[retnum], "%s - %s", sondernummername(call[chan].sondernummer[who]), call[chan].num[who] + l1);
       else
-      strcpy(retstr[retnum], SN[call[chan].sondernummer[who]].info);
+      strcpy(retstr[retnum], sondernummername(call[chan].sondernummer[who]));
     }
     else
       sprintf(retstr[retnum], "TN %s", call[chan].num[who]);

@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.44  1999/03/16 17:37:18  akool
+ * - isdnlog Version 3.07
+ * - Michael Reinelt's patch as of 16Mar99 06:58:58
+ * - fix a fix from yesterday with sondernummern
+ * - ignore "" COLP/CLIP messages
+ * - dont show a LCR-Hint, if same price
+ *
  * Revision 1.43  1999/03/15 21:27:58  akool
  * - isdnlog Version 3.06
  * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
@@ -751,15 +758,20 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
 #endif
 
   if (!dir && (who == CALLED)) {
-    *sondernummer = is_sondernummer(num, DTAG); /* try with DTAG, these provider must support them all (i think) */
+    *sondernummer = is_sondernummer(num, *provider);
 
     if (*sondernummer == UNKNOWN)
-      *sondernummer = is_sondernummer(num, *provider);
+      *sondernummer = is_sondernummer(num, DTAG); /* try with DTAG, these provider must support them all (i think) */
 
+#ifdef 0
+    /* Das ist doch totaler Bloedsinn, oder?
+     * Schliesslich ist in *sondernummer doch der Index des Tabelleneintrags
+     * gespeichert. Den kann man doch nicht einfach auf 1 setzten. */
     if (*sondernummer == UNKNOWN) {
       if (!memcmp(num, "019", 3)) /* anything like 019xx is a Sondernummer! */
         *sondernummer = 1;
     } /* if */
+#endif
 
   } /* if */
 
@@ -770,7 +782,8 @@ static void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     if (*sondernummer != UNKNOWN) {
       auto char s[256];
 
-      sprintf(s, "(Sonderrufnummer %s : %s)", num, sondernummername(num, DTAG));
+      sprintf(s, "(Sonderrufnummer %s : %s)", num,
+              sondernummername(*sondernummer));
       Q931dump(TYPE_STRING, -1, s, version);
     } /* if */
 
@@ -4705,9 +4718,22 @@ doppelt:break;
               strcat(sx, location(call[chan].loc));
               strcat(sx, ")");
             } /* if */
+
           } /* if */
 
           info(chan, PRT_SHOWHANGUP, STATE_HANGUP, sx);
+
+          if ((call[chan].cause == 0x22) && /* No circuit/channel available */
+	      ((call[chan].loc == 2) ||     /* Public network serving local user */
+               (call[chan].loc == 3))) {    /* Transit network */
+            auto char s[BUFSIZ], s1[BUFSIZ];
+
+            showcheapest(call[chan].zone, 181, call[chan].provider, s1);
+
+            sprintf(s, "OVERLOAD %s", s1);
+
+            info(chan, PRT_SHOWHANGUP, STATE_HANGUP, s);
+          } /* if */
 
           if (OUTGOING && ((c = call[chan].confentry[OTHER]) > -1)) {
 	    if (chargemax != 0.0) {

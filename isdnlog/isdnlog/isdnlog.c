@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.36  1999/03/14 14:26:28  akool
+ * - isdnlog Version 3.05
+ * - new Option "-u1" (or "ignoreRR=1")
+ * - added version information to "sonderrufnummern.dat"
+ * - added debug messages if sonderrufnummern.dat or tarif.dat could not be opened
+ * - sonderrufnummern.dat V 1.01 - new 01805 rates
+ *
  * Revision 1.35  1999/02/28 19:32:38  akool
  * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
  * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -1174,12 +1181,12 @@ int main(int argc, char *argv[], char *envp[])
 #endif
     	      print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION);
 
-	    if ((i = initSondernummern(msg)) > -1) {
+	    initSondernummern(msg);
+
 #ifdef Q931
       	      if (!q931dmp)
 #endif
               	  print_msg(PRT_NORMAL, "%s\n", msg);
-            } /* if */
 
             if (readconfig(myshortname) < 0)
               Exit(30);

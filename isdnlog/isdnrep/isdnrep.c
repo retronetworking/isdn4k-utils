@@ -24,6 +24,15 @@
  *
  *
  * $Log$
+ * Revision 1.58  1999/03/15 21:28:32  akool
+ * - isdnlog Version 3.06
+ * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
+ * - isdnconf: added a small LCR-feature - simply try "isdnconf -c 069"
+ * - isdnlog: dont change CHARGEINT, if rate is't known!
+ * - sonderrufnummern 1.02 [15-Mar-99] :: added WorldCom
+ * - tarif.dat 1.09 [15-Mar-99] :: added WorldCom
+ * - isdnlog now correctly handles the new "Ortstarif-Zugang" of UUnet
+ *
  * Revision 1.57  1999/03/14 14:27:25  akool
  * - isdnlog Version 3.05
  * - new Option "-u1" (or "ignoreRR=1")
@@ -815,7 +824,7 @@ int read_logfile(char *myname)
 
 
   initTarife(msg);
-  (void)initSondernummern(msg);
+  initSondernummern(msg);
   interns0 = 3; /* FIXME */
 
   msn_sum = calloc(mymsns + 1, sizeof(double));

@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1999/03/15 21:27:48  akool
+ * - isdnlog Version 3.06
+ * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
+ * - isdnconf: added a small LCR-feature - simply try "isdnconf -c 069"
+ * - isdnlog: dont change CHARGEINT, if rate is't known!
+ * - sonderrufnummern 1.02 [15-Mar-99] :: added WorldCom
+ * - tarif.dat 1.09 [15-Mar-99] :: added WorldCom
+ * - isdnlog now correctly handles the new "Ortstarif-Zugang" of UUnet
+ *
  * Revision 1.13  1999/03/07 18:18:42  akool
  * - new 01805 tarif of DTAG
  * - new March 1999 tarife
@@ -672,7 +681,7 @@ int main(int argc, char *argv[], char *envp[])
 		int len, i, zone;
 
 
-	    	(void)initSondernummern(msg);
+	    	initSondernummern(msg);
 	    	/* print_msg(PRT_NORMAL, "%s\n", msg); */
             	initTarife(msg);
 	    	/* print_msg(PRT_NORMAL, "%s\n", msg); */
@@ -682,10 +691,11 @@ int main(int argc, char *argv[], char *envp[])
 			if (!isdnmon)
 			{
 				const char *area;
+                                auto  char  info[BUFSIZ];
 
 
 				if ((i = is_sondernummer(areacode, DTAG)) > -1) {
-				  print_msg(PRT_NORMAL, "%s\n", SN[i].info);
+				  print_msg(PRT_NORMAL, "%s\n", sondernummername(i));
 
   				  if (!memcmp(areacode, "01610", 5) ||
            			      !memcmp(areacode, "01617", 5) ||
@@ -715,7 +725,7 @@ int main(int argc, char *argv[], char *envp[])
 				  print_msg(PRT_NORMAL,"%s%s%s\n",ptr,area[0] != '\0'?" / ":"", area[0] != '\0'?area:"");
                                 } /* else */
 
-                                showcheapest(zone, 181);
+                                showcheapest(zone, 181, -1, info);
 
 				exit(0);
 			}

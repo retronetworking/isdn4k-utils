@@ -20,6 +20,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.7  1997/05/28 21:22:47  luethje
+## isdnlog option -b is working again ;-)
+## isdnlog has new \$x variables
+## README completed
+##
 ## Revision 1.6  1997/05/19 22:58:13  luethje
 ## - bugfix: it is possible to install isdnlog now
 ## - improved performance for read files for vbox files and mgetty files.
@@ -96,6 +101,7 @@ else
 	echo -n "Adding some entries to the config file \"$CONFFILE\"..."
 fi
 
+setentry "[GLOBAL]"  "AREADIFF"      "$AREADIFF"
 setentry "[GLOBAL]"  "AREACODE"      "$AREACODE"
 setentry "[GLOBAL]"  "AREAPREFIX"    "$AREAPREFIX"
 setentry "[GLOBAL]"  "COUNTRYCODE"   "$COUNTRYCODE"

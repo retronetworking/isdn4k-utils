@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/02/28 19:33:11  akool
+ * Fixed a typo in isdnconf.c from Andreas Jaeger <aj@arthur.rhein-neckar.de>
+ * CHARGEMAX fix from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ * isdnrep fix from reinhard.karcher@dpk.berlin.fido.de (Reinhard Karcher)
+ * "takt_at.c" fixes from Ulrich Leodolter <u.leodolter@xpoint.at>
+ * sondernummern.c from Mario Joussen <mario.joussen@post.rwth-aachen.de>
+ * Reenable usage of the ZONE entry from Schlottmann-Goedde@t-online.de
+ * Fixed a typo in callerid.conf.5
+ *
  * Revision 1.4  1999/01/10 15:23:30  akool
  *  - "message = 0" bug fixed (many thanks to
  *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
@@ -497,7 +506,7 @@ void exitTarife()
 {
 } /* exitTarife */
 
-void initSondernummern()
+void initSondernummern(char *msg)
 {
 } /* initSondernummern */
 

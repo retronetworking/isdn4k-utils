@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1999/03/16 17:37:27  akool
+ * - isdnlog Version 3.07
+ * - Michael Reinelt's patch as of 16Mar99 06:58:58
+ * - fix a fix from yesterday with sondernummern
+ * - ignore "" COLP/CLIP messages
+ * - dont show a LCR-Hint, if same price
+ *
  * Revision 1.13  1999/03/15 21:28:04  akool
  * - isdnlog Version 3.06
  * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
@@ -542,9 +549,8 @@ int taktlaenge(int chan, char *why)
 
 
   if ((call[chan].sondernummer[CALLED] != UNKNOWN) &&
-      (call[chan].provider == DTAG) &&
       ((call[chan].zone < C_NETZ) || (call[chan].zone > E2_NETZ)) &&
-       SN[call[chan].sondernummer[CALLED]].tarif == SO_FREE) {
+       sondertarif(call[chan].sondernummer[CALLED]) == SO_FREE) {
     strcpy(why, "FreeCall");
     return(60 * 60 * 24);              /* one day should be enough ;-) */
   } /* if */
@@ -604,12 +610,18 @@ void preparecint(int chan, char *msg, char *hint, int viarep)
 
   provider = ((call[chan].provider == UNKNOWN) ? preselect : call[chan].provider);
 
+  if ((call[chan].sondernummer[CALLED] != UNKNOWN) &&
+      (is_sondernummer(call[chan].num[CALLED], provider) == UNKNOWN)) {
+    sprintf(s, "Unknown Sonderrufnummer for provider %s. Using chargeinfos from provider DTAG.",
+            Providername(provider));
+    info(chan, PRT_SHOWCONNECT, STATE_CONNECT, s);
+  }
+
   if ((call[chan].sondernummer[CALLED] != UNKNOWN) &&      /* Sonderrufnummer, Abrechnung zum CityCall-Tarif */
-      (SN[call[chan].sondernummer[CALLED]].tarif == SO_CITYCALL))
+      (sondertarif(call[chan].sondernummer[CALLED]) == SO_CITYCALL))
     zone = CITYCALL;
   else if ((call[chan].sondernummer[CALLED] != UNKNOWN) && /* Sonderrufnummer, kostenlos */
-      (SN[call[chan].sondernummer[CALLED]].tarif == SO_FREE) &&
-      (provider == DTAG)) {
+      (sondertarif(call[chan].sondernummer[CALLED]) == SO_FREE)) {
     call[chan].zone = CITYCALL;
     call[chan].tarifknown = 0;
     sprintf(msg, "CHARGE: free of charge - FreeCall");
@@ -677,7 +689,7 @@ void preparecint(int chan, char *msg, char *hint, int viarep)
   else {
     sprintf(msg, "CHARGE: Oppps: No charge infos for provider %d, Zone %d %s",
       provider, zone,
-      ((call[chan].sondernummer[CALLED] != UNKNOWN) ? SN[call[chan].sondernummer[CALLED]].info : ""));
+      ((call[chan].sondernummer[CALLED] != UNKNOWN) ? sondernummername(call[chan].sondernummer[CALLED]) : ""));
 
     call[chan].tarifknown = 0;
   } /* else */
@@ -748,14 +760,14 @@ void price(int chan, char *hint, int viarep)
     tm = localtime(&call[chan].connect);
 
     if ((call[chan].sondernummer[CALLED] != UNKNOWN) &&
-        (call[chan].provider == DTAG) &&
         ((call[chan].zone < C_NETZ) || (call[chan].zone > E2_NETZ))) {
-      switch (SN[call[chan].sondernummer[CALLED]].tarif) {
+      switch (sondertarif(call[chan].sondernummer[CALLED])) {
         case SO_UNKNOWN  : if (!strcmp(call[chan].num[CALLED] + 3, "11833")) { /* Sonderbedingung Auskunft Inland */
                     duration -= 30;
 
-                  pay2 = SN[call[chan].sondernummer[CALLED]].grund * currency_factor;
-                  pay2 += (duration / SN[call[chan].sondernummer[CALLED]].takt) * currency_factor;
+                  pay2 = sonderpreis(call[chan].connect, duration,
+                                     call[chan].sondernummer[CALLED]);
+
                            } /* if */
                            break;
 
@@ -1197,7 +1209,7 @@ static int compare(const SORT *s1, const SORT *s2)
 } /* compare */
 
 
-void showcheapest(int zone, int duration)
+void showcheapest(int zone, int duration, int ignoreprovider, char *info)
 {
   register int        prefix, n = 0, n1, tz, cheapest = UNKNOWN;
   auto     char       why[BUFSIZ], s[BUFSIZ];
@@ -1209,6 +1221,8 @@ void showcheapest(int zone, int duration)
   time(&cur_time);
   tm = localtime(&cur_time);
   tz = tarifzeit(tm, why, 0);
+
+  if (ignoreprovider == UNKNOWN)
   print_msg(PRT_NORMAL, "%s\n", why);
 
 
@@ -1224,7 +1238,7 @@ void showcheapest(int zone, int duration)
     duration = TEST;
 
   for (prefix = 0; prefix < MAXPROVIDER; prefix++) {
-    if (t[prefix].used) {
+    if (t[prefix].used && (prefix != ignoreprovider)) {
 
       tz = tarifzeit(tm, why, ((prefix == DTAG) && CityWeekend));
       tarif = tpreis(prefix, zone, tz, tm->tm_hour, duration);
@@ -1243,6 +1257,11 @@ void showcheapest(int zone, int duration)
 
     } /* if */
   } /* for */
+
+  if ((cheapest != UNKNOWN) && (ignoreprovider != UNKNOWN)) {
+    sprintf(info, "Try 010%02d:%s", cheapest, t[cheapest].Provider);
+    return;
+  } /* if */
 
   if (cheapest != UNKNOWN) {
     tarif = t[cheapest].tarif[zone][tz][tm->tm_hour];

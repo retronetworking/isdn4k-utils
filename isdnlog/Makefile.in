@@ -19,6 +19,13 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.60  1999/03/16 17:37:08  akool
+## - isdnlog Version 3.07
+## - Michael Reinelt's patch as of 16Mar99 06:58:58
+## - fix a fix from yesterday with sondernummern
+## - ignore "" COLP/CLIP messages
+## - dont show a LCR-Hint, if same price
+##
 ## Revision 1.59  1999/03/15 21:27:30  akool
 ## - isdnlog Version 3.06
 ## - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
@@ -396,7 +403,7 @@ INSTALL_BIN		:= $(INSTALL) -m 0755 -o 0 -g 0
 INSTALL_DATA		:= $(INSTALL) -m 0644 -o 0 -g 0
 
 BZIP2                   := @BZIP2@
-BUNZIP2                 := $(BZIP2) -d
+BUNZIP2                 := $(BZIP2) -f -d
 
 LIBISDNDIR		:= @LIBISDNDIR@
 I4LCONFDIR		:= @I4LCONFDIR@
@@ -423,6 +430,7 @@ export COUNTRYCODE	:= @COUNTRYCODE@
 export COUNTRYPREFIX	:= @COUNTRYPREFIX@
 export AREACODE		:= @AREACODE@
 export AREAPREFIX	:= @AREAPREFIX@
+export AREADIFF		:= @DATADIR@/vorwahl.dat
 
 export ILABEL        := %b %e %T %ICall to tei %t from %N2 on %n2
 export OLABEL        := %b %e %T %Itei %t calling %N2 with %n2
@@ -464,7 +472,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.07
+VERSION     = 3.08
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 isdnlog/isdnlog.users.5 isdnrep/isdnrep.1 isdnconf/isdnconf.1
 
@@ -489,7 +497,6 @@ DEFS       += \
                -DVERSION=\"$(VERSION)\"   \
                -DI4LVERSION=\"$(I4LVERSION)\"   \
 	       -D@NATION_MACRO@=1		\
-               -DDATADIR=\"$(DATADIR)\"		\
                 $(INCLUDE)
 
 %.o: %.c

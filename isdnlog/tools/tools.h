@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1999/03/15 21:28:54  akool
+ * - isdnlog Version 3.06
+ * - README: explain some terms about LCR, corrected "-c" Option of "isdnconf"
+ * - isdnconf: added a small LCR-feature - simply try "isdnconf -c 069"
+ * - isdnlog: dont change CHARGEINT, if rate is't known!
+ * - sonderrufnummern 1.02 [15-Mar-99] :: added WorldCom
+ * - tarif.dat 1.09 [15-Mar-99] :: added WorldCom
+ * - isdnlog now correctly handles the new "Ortstarif-Zugang" of UUnet
+ *
  * Revision 1.29  1999/03/14 14:27:37  akool
  * - isdnlog Version 3.05
  * - new Option "-u1" (or "ignoreRR=1")
@@ -945,14 +954,19 @@ _EXTERN char  *qmsg(int type, int version, int val);
 _EXTERN char  *Myname;
 _EXTERN void   initTarife(char *msg);
 _EXTERN void   exitTarife(void);
-_EXTERN void   showcheapest(int zone, int duration);
+_EXTERN void   showcheapest(int zone, int duration, int ignoreprovider, char *info);
 _EXTERN void   price(int chan, char *hint, int viarep);
 _EXTERN char  *realProvidername(int prefix);
 _EXTERN void   preparecint(int chan, char *msg, char *hint, int viarep);
 _EXTERN int    taktlaenge(int chan, char *why);
-_EXTERN int    initSondernummern(char *msg);
-_EXTERN int    is_sondernummer(char *num, int provider);
-_EXTERN char  *sondernummername(char *number, int provider);
+_EXTERN void   initSondernummern(char *msg);
+_EXTERN int    is_sondernummer(char *number, int provider);
+_EXTERN char  *sondernummername(int index);
+_EXTERN char  *sondernum(int index);
+_EXTERN int    sondertarif(int index);
+_EXTERN double sonderpreis(time_t connect, int duration, int index);
+_EXTERN double sondertaktlaenge(time_t connect, int index, int *next);
+_EXTERN void   exitSondernummern();
 _EXTERN	char  *zonen[MAXZONES];
 #undef _EXTERN
 

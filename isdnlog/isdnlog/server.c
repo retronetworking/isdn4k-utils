@@ -2,7 +2,8 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1996 by Stefan Luethje (luethje@sl-gw.lake.de)
+ * Copyright 1996, 1999 by Stefan Luethje (luethje@sl-gw.lake.de)
+ * 	     	       and Andreas Kool (akool@isdn4linux.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1998/09/22 20:59:22  luethje
+ * isdnrep:  -fixed wrong provider report
+ *           -fixed wrong html output for provider report
+ *           -fixed strange html output
+ * kisdnlog: -fixed "1001 message window" bug ;-)
+ *
  * Revision 1.3  1998/03/08 11:42:58  luethje
  * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
  *
@@ -358,7 +365,7 @@ int print_from_server(char *String)
 	tm_time->tm_isdst = 0;
 
 	strftime(NewString,LONG_STRING_SIZE,"%b %d %X ",tm_time);
-	strcat(NewString,String);
+	strncat(NewString, String, sizeof(NewString) - strlen(NewString) - 1);
 
 	if ((RetCode = String_For_Output(NewString)) < 0)
 		return RetCode;
