@@ -75,6 +75,8 @@ pppd.tar.gz: pppd.tar
 clean:
 	rm -f $(PPPDOBJS) ipppd *~ #* core
 
+distclean: clean
+
 depend:
 	$(CPP) -M $(CFLAGS) $(PPPDSRCS) >.depend
 #

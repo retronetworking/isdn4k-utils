@@ -27,6 +27,8 @@ ipppstats: $(PPPSTATSRCS)
 clean:
 	rm -f ipppstats *~ #* core
 
+distclean: clean
+
 depend:
 	cpp -M $(CFLAGS) $(PPPSTATSRCS) >.depend
 #	makedepend $(CFLAGS) $(PPPSTATSRCS)
