@@ -205,7 +205,10 @@ int voice_put_message(char *message)
 	{
 		if ((byte_i = read(fd, line_i, MODEM_BUFFER_LEN)) <= 0)
 		{
-			log(L_DEBUG, "End of audio data (%s).\n", strerror(errno));
+			if (byte_i == 0)
+                            log(L_DEBUG, "End of audio data\n");
+                        else
+                            log(L_DEBUG, "End of audio data with error (%s)\n", strerror(errno));
 
 			break;
 		}
