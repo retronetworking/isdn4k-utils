@@ -17,6 +17,10 @@
 #   endif
 #endif
 
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <netinet/in.h>
 #include <ncurses.h>
 #include <panel.h>
 #include <stdlib.h>
@@ -30,10 +34,6 @@
 #include <pwd.h>
 #include <errno.h>
 #include <getopt.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <netinet/in.h>
 
 #include "libvbox.h"
 #include "vbox.h"
