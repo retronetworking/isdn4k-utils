@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/04/17 23:29:51  luethje
+ * new structure of isdnrep completed.
+ *
  */
 
 #ifndef _CREATEDB_H_
@@ -46,9 +49,9 @@
 _EXTERN datum    key, data;
 _EXTERN DBM     *dbm SET_NULL;
 
-_EXTERN void set_print_fkt_for_avon(int (*new_print_msg)(const char *, ...));
+_EXTERN void set_print_fct_for_avon(int (*new_print_msg)(const char *, ...));
 _EXTERN int createDB(char *fn, int force);
-_EXTERN int openDB(char *fn);
+_EXTERN int openDB(char *fn, int flag);
 _EXTERN void closeDB();
 _EXTERN void insertDB(char *num, char *area);
 _EXTERN void readAVON(char *fn);

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/04/17 23:29:50  luethje
+ * new structure of isdnrep completed.
+ *
  */
 
 /****************************************************************************/
@@ -33,8 +36,13 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
 
 #include "createDB.h"
+
+/****************************************************************************/
+
+#define FILEMODE 0664
 
 /****************************************************************************/
 
@@ -46,7 +54,7 @@ static int  (*print_msg)(const char *, ...) = printf;
 
 /****************************************************************************/
 
-void set_print_fkt_for_avon(int (*new_print_msg)(const char *, ...))
+void set_print_fct_for_avon(int (*new_print_msg)(const char *, ...))
 {
 	print_msg = new_print_msg;
 }
@@ -63,27 +71,37 @@ int createDB(char *fn, int force)
   sprintf(s, "%s.dir", fn);
 
   if (force || stat(s, &statbuf)) {
-    if ((f = open(s, O_CREAT | O_TRUNC | O_RDWR, 0666)) >= 0) {
+    if ((f = open(s, O_CREAT | O_TRUNC | O_RDWR, FILEMODE)) >= 0) {
       close(f);
 
       sprintf(s, "%s.pag", fn);
 
-      if ((f = open(s, O_CREAT | O_TRUNC | O_RDWR, 0666)) >= 0) {
+      if ((f = open(s, O_CREAT | O_TRUNC | O_RDWR, FILEMODE)) >= 0) {
         close(f);
 
-      	return(1);
+				if(!openDB(fn, O_RDWR | O_CREAT))
+				{
+					readAVON(fn);
+					closeDB();
+					return 0;
+				}
       } /* if */
+    	else
+    		print_msg("Can not open file `%s': %s!\n",s,strerror(errno));
     } /* if */
+    else
+    	print_msg("Can not open file `%s': %s!\n",s,strerror(errno));
+
   } /* if */
 
-  return(0);
+  return(-1);
 } /* createDB */
 
 /******************************************************************************/
 
-int openDB(char *fn)
+int openDB(char *fn, int flag)
 {
-  dbm = dbm_open(fn, O_RDWR | O_CREAT, 0666);
+  dbm = dbm_open(fn, flag, FILEMODE);
   return((dbm == (DBM *)NULL) ? -1 : 0);
 } /* dbminit */
 

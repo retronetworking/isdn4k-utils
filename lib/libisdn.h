@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/04/08 21:57:07  luethje
+ * Create the file isdn.conf
+ * some bug fixes for pid and lock file
+ * make the prefix of the code in `isdn.conf' variable
+ *
  * Revision 1.5  1997/04/08 00:02:25  luethje
  * Bugfix: isdnlog is running again ;-)
  * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
@@ -40,11 +45,8 @@
 #include "policy.h"
 #include "conffile.h"
 
-#ifdef LIBAREA
-# include "areacode/areacode.h"
-#else
-# include "avon/createDB.h"
-#endif
+#include "areacode/areacode.h"
+#include "avon/createDB.h"
 
 /****************************************************************************/
 
@@ -110,6 +112,7 @@ extern char *basename __P((__const char *__name));
 #define CONF_ENT_AREA           "AREACODE"
 #define CONF_ENT_AREALIB        "AREALIB"
 #define CONF_ENT_AVONLIB        "AVON"
+#define CONF_ENT_CODELIB        "CODELIB"
 
 #define CONF_SEC_VAR    "VARIABLES"
 
