@@ -24,6 +24,15 @@
  *
  *
  * $Log$
+ * Revision 1.91  2000/05/27 14:55:30  akool
+ * isdnlog-4.25
+ *  - isdnlog/isdnrep/isdnrep.c ... bugfix for wrong providers and duration
+ *                                  by Hans Klein on d.a.c.i
+ *
+ *  - isdnlog/tools/rate-at.c ... 1046 Neu, 1002 ab 1.6., 1024
+ *  - isdnlog/rate-at.dat ... 1046 Neu, 1002 ab 1.6., 1024
+ *  - new rates 01078:3U and 01024:Super_24
+ *
  * Revision 1.90  2000/03/06 07:03:20  akool
  * isdnlog-4.15
  *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
@@ -932,7 +941,7 @@ static int print_line3(const char *fmt, ...)
 			{
 				case 's' : append_string(&string,*fmtstring,va_arg(ap,char*));
 				           break;
-				case 'c' : sprintf(tmpstr,"%c",va_arg(ap,char));
+				case 'c' : sprintf(tmpstr,"%c",va_arg(ap,int));
 				           append_string(&string,*fmtstring,tmpstr);
 				           break;
 				case 'd' : sprintf(tmpstr,"%d",va_arg(ap,int));
