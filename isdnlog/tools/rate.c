@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.38  1999/07/31 09:25:45  akool
+ * getRate() speedup
+ *
  * Revision 1.37  1999/07/26 16:28:49  akool
  * getRate() speedup from Leo
  *
@@ -813,13 +816,13 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       s+=2;
       while(1) {
 	if (*(c=strip(str2list(&s)))) {
-
+#if 0
 	  if (*c == '0' && (*(c + 1) != '0')) {
 	    sprintf(sx, "%s%s", mycountry, c + 1);
 	    warning(dat, "Replacing %s by %s\n", c, sx);
 	    c = sx;
 	  } /* if */
-
+#endif
 	  if (!isdigit(*c) && (d=getCountry(c, &Country)) != UNKNOWN) {
 	    if (*c=='+') {
 	      Areas += appendArea (prefix, c, Country->Name, zone, &domestic, dat);

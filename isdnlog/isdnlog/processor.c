@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.79  1999/07/25 15:57:21  akool
+ * isdnlog-3.43
+ *   added "telnum" module
+ *
  * Revision 1.78  1999/07/24 08:44:19  akool
  * isdnlog-3.42
  *   rate-de.dat 1.02-Germany [18-Jul-1999 10:44:21]
@@ -850,7 +854,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
   auto int  partner = ((dir && (who == CALLING)) || (!dir && (who == CALLED)));
 
 
-  *sondernummer = UNKNOWN;
+//  *sondernummer = UNKNOWN;
   *intern = 0;
   *local = 0;
 
@@ -1001,7 +1005,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     if (*provider == UNKNOWN)
       *provider = preselect;
 
-    if (*num && !dir && (who == CALLED) && getArea(*provider, num))
+    if (*num && !dir && (who == CALLED) && getArea(*provider, num) && (*sondernummer == UNKNOWN))
       *sondernummer = strlen(num);
   } /* if */
 
@@ -3511,9 +3515,9 @@ void processRate(int chan)
   call[chan].Rate.start  = call[chan].connect;
   call[chan].Rate.now    = call[chan].disconnect = cur_time;
 
-  if (getRate(&call[chan].Rate, NULL) == UNKNOWN) {
+  if (getRate(&call[chan].Rate, NULL) == UNKNOWN)
     call[chan].tarifknown = 0;
-  } else {
+  else {
     call[chan].tarifknown = 1;
     call[chan].pay = call[chan].Rate.Charge;
   } /* else */
@@ -3630,11 +3634,13 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
     call[chan].Rate.src[0] = "";
     call[chan].Rate.src[1] = "";
     call[chan].Rate.src[2] = mynum;
-  } else {
+  }
+  else {
     call[chan].Rate.src[0] = call[chan].areacode[CALLING];
     call[chan].Rate.src[1] = call[chan].vorwahl[CALLING];
     call[chan].Rate.src[2] = call[chan].rufnummer[CALLING];
-  }
+  } /* else */
+
   call[chan].Rate.dst[0] = call[chan].areacode[CALLED];
   call[chan].Rate.dst[1] = call[chan].vorwahl[CALLED];
   call[chan].Rate.dst[2] = call[chan].rufnummer[CALLED];
@@ -3681,6 +3687,7 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
 } /* prepareRate */
 
 
+#if 0
 static void LCR(int chan, char *s)
 {
   auto char      *why, *hint;
@@ -3723,6 +3730,7 @@ static void LCR(int chan, char *s)
   else
     print_msg(PRT_NORMAL, ">> LCR: NO ACTION: Internal call\n");
 } /* LCR */
+#endif
 
 
 static void processctrl(int card, char *s)

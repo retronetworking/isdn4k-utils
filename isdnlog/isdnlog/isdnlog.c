@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.47  1999/06/28 19:16:03  akool
+ * isdnlog Version 3.38
+ *   - new utility "isdnrate" started
+ *
  * Revision 1.46  1999/06/16 23:37:31  akool
  * fixed zone-processing
  *
@@ -331,6 +335,7 @@
 #include <termios.h>
 
 #include "isdnlog.h"
+#include "telnum.h"
 #ifdef POSTGRES
 #include "postgres.h"
 #endif
@@ -1361,6 +1366,7 @@ int main(int argc, char *argv[], char *envp[])
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
+            initTelNum();
             loop();
 
             if (sockets[ISDNINFO].descriptor >= 0)

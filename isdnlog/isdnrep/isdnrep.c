@@ -24,6 +24,13 @@
  *
  *
  * $Log$
+ * Revision 1.73  1999/07/24 08:44:44  akool
+ * isdnlog-3.42
+ *   rate-de.dat 1.02-Germany [18-Jul-1999 10:44:21]
+ *   better Support for Ackermann Euracom
+ *   WEB-Interface for isdnrate
+ *   many small fixes
+ *
  * Revision 1.72  1999/07/23 09:09:38  calle
  * Bugfix: getProvider sometimes returns NULL and isdnrep crashed ...
  *
@@ -560,6 +567,7 @@
 #include "isdnrep.h"
 #include "../../vbox/src/libvbox.h"
 #include "libisdn.h"
+#include "telnum.h"
 
 
 #define END_TIME    1
@@ -930,6 +938,7 @@ int read_logfile(char *myname)
   initHoliday(holifile, NULL);
   initCountry(countryfile, NULL);
   initRate(rateconf, ratefile, zonefile, NULL);
+  initTelNum();
   currency = strdup("DM");
   vbn = strdup("010");
   interns0 = 3;
@@ -1240,6 +1249,7 @@ static int print_bottom(double unit, char *start, char *stop)
 
 	if (!incomingonly)
 	{
+#if 0
 		h_percent = 60.0;
 		h_table_color = H_TABLE_COLOR3;
 		get_format("%-21.21s %4d call(s) %10.10s  %12s");
@@ -1289,6 +1299,7 @@ static int print_bottom(double unit, char *start, char *stop)
 #endif
 
 		print_line2(F_BODY_BOTTOM2,"");
+#endif
 
 		h_percent = 60.0;
 		h_table_color = H_TABLE_COLOR4;
@@ -1364,12 +1375,13 @@ static int print_bottom(double unit, char *start, char *stop)
                   if ((unknown[i].cause != 1) &&  /* Unallocated (unassigned) number */
                       (unknown[i].cause != 3) &&  /* No route to destination */
                       (unknown[i].cause != 28)) { /* Invalid number format (address incomplete) */
+#if 0 /* DELETE_ME AK:18-Aug-99 */
                         auto     char *p;
                         auto     int   l;
                        register int   flag = C_NO_WARN | C_NO_EXPAND;
                        auto     int   prefix = strlen(countryprefix);
                         auto    char  areacode[64], vorwahl[64], rufnummer[64], iam[64];
-
+#endif
 
                        print_msg(PRT_NORMAL,"%s ", unknown[i].called ? "Called by" : "  Calling");
 
@@ -1378,6 +1390,7 @@ static int print_bottom(double unit, char *start, char *stop)
                          ;
 		       else
 #endif
+#if 0 /* DELETE_ME AK:18-Aug-99 */
                        if ((p = get_areacode(unknown[i].num, &l, flag)) != 0) {
                          if (l > 1) {
                            /* Sehr gefaehrlich, was ist mit Laendern, die einen dreistelligen Code haben??? */
@@ -1401,8 +1414,11 @@ static int print_bottom(double unit, char *start, char *stop)
                             print_msg(PRT_NORMAL,"??? %s\n\t\t\t ", unknown[i].num);
                         }
                         else {
+#endif
                           print_msg(PRT_NORMAL,"??? %s\n\t\t\t ", unknown[i].num);
+#if 0 /* DELETE_ME AK:18-Aug-99 */
                         }
+#endif
                   } /* if */
 #endif
 			for (k = 0; k < unknown[i].connects; k++) {
@@ -1530,7 +1546,9 @@ static int print_line2(int status, const char *fmt, ...)
 static int print_line(int status, one_call *cur_call, int computed, char *overlap)
 {
 	char *string = NULL;
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 	char *Ptr;
+#endif
 	char  help[32];
 	prt_fmt **fmtstring = get_format(NULL);
 	int dir;
@@ -1661,11 +1679,13 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				case 'L': if (status == F_BODY_LINE)
 				          {
 				            dir = cur_call->dir?CALLED:CALLING;
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 				          	if (cur_call->num[dir][0] != C_UNKNOWN &&
 				          	    cur_call->num[dir][0] != '\0'      &&
 				          	    (Ptr = get_areacode(cur_call->num[dir],NULL,C_NO_WARN | C_NO_ERROR)) != NULL)
 				          		colsize[i] = append_string(&string,*fmtstring, Ptr);
 				          	else
+#endif
 				          		colsize[i] = append_string(&string,*fmtstring, "");
 				          }
 				          else
@@ -1680,11 +1700,13 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				case 'l': if (status == F_BODY_LINE)
 				          {
 				            dir = cur_call->dir?CALLING:CALLED;
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 				          	if (cur_call->num[dir][0] != C_UNKNOWN &&
 				          	    cur_call->num[dir][0] != '\0'      &&
 				          	    (Ptr = get_areacode(cur_call->num[dir],NULL,C_NO_WARN | C_NO_ERROR)) != NULL)
 				          		colsize[i] = append_string(&string,*fmtstring, Ptr);
 				          	else
+#endif
 				          		colsize[i] = append_string(&string,*fmtstring, "");
 				          }
 				          else
@@ -1865,80 +1887,11 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 
 /*****************************************************************************/
 
-static void numsplit(char *num)
-{
-  register int   l1, l3, l4, zone;
-  auto	   int	 l2;
-  register char *p;
-  auto	   char *s;
-  char     country[BUFSIZ], area[BUFSIZ], msn[BUFSIZ];
-
-
-  if (!*num)
-    return;
-
-  if ((l1 = getCountrycode(num, &s)) != UNKNOWN) {
-    Strncpy(country, num, l1 + 1);
-
-    if (strcmp(mycountry, country))
-      print_msg(PRT_NORMAL, "%s, ", s);
-
-    if ((p = get_areacode(num, &l2, C_NO_WARN | C_NO_EXPAND | C_NO_ERROR)) && (l2 > 0)) {
-      l4 = l2 + 1 - l1;
-
-      if (l4 > 0)
-      Strncpy(area, num + l1, l2 + 1 - l1);
-
-      print_msg(PRT_NORMAL, "%s", p);
-
-      strcpy(msn, num + l2);
-
-    } /* if */
-#if 0
-    p = country;
-
-    while (*p && !isdigit(*p))
-      p++;
-
-    l3 = getAreacode(atoi(p), num + l1, &s);
-
-    if (1 /* l3 != UNKNOWN */) {
-      print_msg(PRT_NORMAL, "getAreacode(%d, %s, %s)=%d", atoi(p), num + l1, s, l3);
-      if (l3 != UNKNOWN)
-        free(s);
-      zone = getZone(DTAG, myarea, num + l1);
-      print_msg(PRT_NORMAL, "getZone(%d,%s,%s)=%d", DTAG, myarea, num + l1, zone);
-
-      switch (zone) {
-         case 1 : print_msg(PRT_NORMAL, "Ortszone\n");     break;
-         case 2 : print_msg(PRT_NORMAL, "Cityzone\n");     break;
-         case 3 : print_msg(PRT_NORMAL, "Regionalzone\n"); break;
-         case 4 : print_msg(PRT_NORMAL, "Fernzone\n");    break;
-        default : print_msg(PRT_NORMAL, "*** BUG ***\n");  break;
-      } /* switch */
-    } /* if */
-#endif
-  }
-#if 0
-  else {
-    l3 = getAreacode(49, num, &s);
-
-    if (l3 != UNKNOWN) {
-      print_msg(PRT_NORMAL, "getAreacode(%d, %s, %s)=%d\n", atoi(p), num + l1, s, l3);
-      free(s);
-
-      zone = getZone(DTAG, mynum, num);
-      print_msg(PRT_NORMAL, "getZone=%d\n", zone);
-    } /* if */
-  } /* else */
-#endif
-} /* numsplit */
-
-
 static void bprint(one_call *call)
 {
   register char *p = call->num[CALLED];
-  auto	   char	 target[BUFSIZ];
+  auto	   char	  target[BUFSIZ], s[BUFSIZ];
+  auto	   TELNUM number;
 
 
   if (call->duration) {
@@ -1963,31 +1916,19 @@ static void bprint(one_call *call)
       print_currency(call->pay * 100.0 / 116.0, 0),
         getProvider(call->provider));
 
-    numsplit(call->num[CALLED]);
-    print_msg(PRT_NORMAL, "\n");
+    strcpy(s, call->num[CALLED]);
+
+    if (!memcmp(s, "+491", 4)) {
+      sprintf(s, "0%s", call->num[CALLED] + 3);
+      print_msg(PRT_NORMAL, "\nREPAIR: %s -> %s\n", call->num[CALLED], s);
+    } /* if */
+
+    normalizeNumber(s, &number, TN_ALL);
+    print_msg(PRT_NORMAL, "%s\n", formatNumber("%A", &number));
   }
   else
     print_msg(PRT_NORMAL, "%*s** %s\n", 30, "", qmsg(TYPE_CAUSE, VERSION_EDSS1, call->cause));
   } /* if */
-/*
-  int    eh;
-  int    cause;
-  time_t t;
-  int    dir;
-  double duration;
-  char   num[2][NUMSIZE];
-  char   who[2][NUMSIZE];
-  long	 ibytes;
-  long	 obytes;
-  char   version[10];
-  int	 si;
-  int	 si1;
-  double currency_factor;
-  char	 currency[32];
-  double pay;
-  int	 provider;
-  int	 zone;
-*/
 } /* bprint */
 
 /*****************************************************************************/
@@ -2361,7 +2302,7 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
   register int i, zone, computed = 0;
 
 
-  if (cur_call->dir == DIALOUT) {
+  if (1 /* cur_call->dir == DIALOUT */) {
 
     zone = (cur_call->zone >= 0) ? cur_call->zone : UNKNOWNZONE;
 
@@ -2384,9 +2325,9 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 
 		if (cur_call->dir) {
       if (nx[CALLING] == UNKNOWN) {
-				known[knowns-1]->usage[DIALIN]++;
-				known[knowns-1]->ibytes[DIALIN] += cur_call->ibytes;
-				known[knowns-1]->obytes[DIALIN] += cur_call->obytes;
+	known[knowns - 1]->usage[DIALIN]++;
+	known[knowns - 1]->ibytes[DIALIN] += cur_call->ibytes;
+	known[knowns - 1]->obytes[DIALIN] += cur_call->obytes;
 
 				if (cur_call->duration > 0)
 					known[knowns-1]->dur[DIALIN] += cur_call->duration;
@@ -2428,9 +2369,8 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 			} /* if */
 		} /* else */
 	}
-	else {
+  else
     add_one_call(computed ? &day_com_sum : &day_sum, cur_call, unit);
-	} /* else */
 
       	 	      		if (cur_call->dir == DIALOUT) {
     int first_found = UNKNOWN;
@@ -2461,8 +2401,10 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 
       	 	      		} /* if */
 
-  if (bill)
+  if (bill) {
+    if (cur_call->dir == DIALOUT)
     bprint(cur_call);
+  }
   else
     print_line(F_BODY_LINE,cur_call,computed,NULL);
 

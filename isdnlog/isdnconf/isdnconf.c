@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.36  1999/07/03 10:24:02  akool
+ * fixed Makefile
+ *
  * Revision 1.35  1999/06/28 19:15:53  akool
  * isdnlog Version 3.38
  *   - new utility "isdnrate" started
@@ -460,15 +463,21 @@ int find_data(char *_alias, char *_number, section *conf_dat)
 		print_msg(PRT_NORMAL,"%s:\t\t%s\n",make_word(CONF_ENT_ALIAS),_alias?_alias:S_UNKNOWN);
 		print_msg(PRT_NORMAL,"%s:\t\t%s\n",make_word(CONF_ENT_NUM),_number?_number:S_UNKNOWN);
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 		if (_number != NULL && (ptr = get_areacode(_number,NULL,C_NO_ERROR)) != NULL)
 			print_msg(PRT_NORMAL,"Location:\t%s\n",ptr);
+#endif
 
 		if (!short_out)
 		{
 			ptr = (CEPtr = Get_Entry(conf_dat->entries,CONF_ENT_SI))?(CEPtr->value?CEPtr->value:"0"):"0";
 			print_msg(PRT_NORMAL,"%s:\t\t%s\n",CONF_ENT_SI,ptr);
 
+#if 0 /* DELETE_ME AK:18-Aug-99 */
 			area = area_diff_string(NULL,_number);
+#else
+			area = "";
+#endif
 			ptr = (char*)(const char*) (area[0] != '\0'?area:(CEPtr = Get_Entry(conf_dat->entries,CONF_ENT_ZONE))?(CEPtr->value?CEPtr->value:""):"");
 			print_msg(PRT_NORMAL,"%s:\t\t%s\n",make_word(CONF_ENT_ZONE),ptr);
 
