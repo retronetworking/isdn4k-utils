@@ -20,6 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.63  2004/09/29 21:02:02  tobiasb
+ * Changed handling of multiple "calling party number" information elements.
+ * The network provided number is now preferred in any case.  The other
+ * number (typical set by originating user) can be ignored using the
+ * ignoreCOLP or -U setting, which allows different values for COLP and CLIP
+ * now.  (The old behaviour was to use the first number if ignoreCOLP was set
+ * and the network provided number regardless of order otherwise.)
+ *
  * Revision 1.62  2004/09/05 22:04:57  tobiasb
  * New parameter file entry "ignoreUPD" for suppressing "Unexpected
  * discrimator (...)" messages, demanded by Günther J. Niederwimmer
@@ -902,6 +910,8 @@
 #define CONF_ENT_PROVIDERCHANGE "PROVIDERCHANGE"
 #define CONF_ENT_CLOSEFDS  "CLOSEFDS"
 #define CONF_ENT_IGNOREUPD "IGNOREUPD"
+#define CONF_ENT_SKIPPROV  "SKIPPROV"
+
 /****************************************************************************/
 
 /* Keywords for isdn.conf */
