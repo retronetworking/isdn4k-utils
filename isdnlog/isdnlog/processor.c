@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.103  2000/02/22 20:04:10  akool
+ * isdnlog-4.13
+ *  - isdnlog/tools/rate-at.c ... chg. 1003
+ *  - isdnlog/tools/country.c ... no dupl. area warning
+ *  - isdnlog/rate-at.dat ... chg. 1003
+ *  - isdnlog/tools/dest/pp_rate ... added 'q'
+ *  - isdnlog/country-de.dat ... splitted _INM*
+ *
+ *  - isdnlog/tools/rate.c ... getSpecial, vbn2prefix fixed, include
+ *  - isdnlog/tools/dest/pp_rate ... include
+ *  - isdnlog/tools/rate-files.man ... include
+ *
+ *  - new rates, Services (S:, N:) reenabled
+ *
  * Revision 1.102  2000/02/20 19:03:07  akool
  * isdnlog-4.12
  *  - ABC_LCR enhanced
@@ -1890,19 +1904,23 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                         if (n < 0) {
                           tx = cur_time - call[chan].connect;
 
-                          if (tx)
-                            sprintf(s, "%d.EH %s %s (%s)",
-                              abs(call[chan].aoce),
-                              currency,
-                              double2str(call[chan].aocpay, 6, 3, DEB),
-                              double2clock(tx));
-                          else
-                            sprintf(s, "%d.EH %s %s",
-                              abs(call[chan].aoce),
-                              currency,
-                              double2str(call[chan].aocpay, 6, 3, DEB));
+            		  if (!ehInterval || !call[chan].lasteh ||
+	    	 	      (cur_time - call[chan].lasteh) >= ehInterval) {
+			    call[chan].lasteh=cur_time;
+                            if (tx)
+                              sprintf(s, "%d.EH %s %s (%s)",
+                                abs(call[chan].aoce),
+                                currency,
+                                double2str(call[chan].aocpay, 6, 3, DEB),
+                                double2clock(tx));
+                            else
+                              sprintf(s, "%d.EH %s %s",
+                                abs(call[chan].aoce),
+                                currency,
+                                double2str(call[chan].aocpay, 6, 3, DEB));
 
-                          info(chan, PRT_SHOWAOCD, STATE_AOCD, s);
+                            info(chan, PRT_SHOWAOCD, STATE_AOCD, s);
+			  }
                         } /* if */
 #endif
 
@@ -4471,7 +4489,7 @@ static void processctrl(int card, char *s)
             info(chan, PRT_SHOWCONNECT, STATE_CONNECT, sx);
 
  	    call[chan].cint = call[chan].Rate.Duration;
-
+            call[chan].lastcint = cur_time;
  	    snprintf(sx, BUFSIZ, "NEXT CI AFTER %s (%s)",
  		     double2clock(call[chan].cint) + 3,
 		     explainRate(&call[chan].Rate));
@@ -4947,12 +4965,6 @@ static void processlcr(char *p)
   sprintf(s, "ABC_LCR: Request for number %s = %s", dst + trimo, formatNumber("%l via %p", &destnum));
   info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
 
-  if (!*destnum.msn /* && ((abclcr & 1) == 1) */) { /* Future expansion, Sonderrufnummer? */
-    sprintf(s, "ABC_LCR: \"%s\" is a special number, no action", destnum.area);
-    abort = 1;
-    goto action;
-  } /* if */
-
   clearRate(&Rate);
   time(&Rate.start);
   Rate.now = Rate.start + LCR_DURATION;
@@ -4976,22 +4988,46 @@ static void processlcr(char *p)
 
     pres += sprintf(pres, "%s", prov);
 
-    if (strcmp(mycountry, destnum.country))
-      pres += sprintf(pres, "00%s", destnum.country + 1); /* skip "+" */
-    else {
-      pres += sprintf(pres, "0");
-      own_country = 1;
-    } /* else */
+    if (*destnum.country) {
+      if (strcmp(mycountry, destnum.country))
+        pres += sprintf(pres, "00%s", destnum.country + 1); /* skip "+" */
+      else {
+        pres += sprintf(pres, "0");
+        own_country = 1;
+      } /* else */
+    }
+    /* always append area */
+    pres += sprintf(pres, "%s", Cheap.dst[1]);
+    pres += sprintf(pres, "%s", destnum.msn);
 
-    if ((strcmp(myarea, destnum.area) == 0) && own_country && ((abclcr & 2) == 2)) {
+    if (!*destnum.msn) {
+      char arg[160];
+      if((abclcr & 0x4) != 0x4) {
+        sprintf(s, "ABC_LCR: \"%s\" is a special number, no action", destnum.area);
+        abort = 1;
+        goto action;
+      }
+      /* call external programm for changing route etc. */
+      if (providerchange && *providerchange) {
+        if(!paranoia_check(providerchange)) {
+	  int nok;
+          sprintf(arg, "%s %d %s '%s'", providerchange, prefix2pnum(prefix),
+	  	res, getSpecialName(Cheap.dst[1]));
+          nok=system(arg);
+	  if(nok) {
+	    sprintf(s, "ABC_LCR: '%s' returned %d, no action", providerchange, nok);
+	    abort=1;
+	    goto action;
+	  }
+        }
+      } /* if */
+    } /* sondernummer */
+
+    if ((strcmp(myarea, destnum.area) == 0) && own_country && ((abclcr & 0x2) != 0x2)) {
       sprintf(s, "ABC_LCR: \"%s\" is a local number, no action", destnum.msn);
       abort = 1;
       goto action;
     } /* if */
-
-    /* always append area */
-    pres += sprintf(pres, "%s", destnum.area);
-    pres += sprintf(pres, "%s", destnum.msn);
 
 #ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
     if (strlen(res) < sizeof(i.lcr_ioctl_nr)) {
@@ -5003,7 +5039,7 @@ static void processlcr(char *p)
       abort = 1;
     } /* else */
 #else
-    sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s)\n",
+    sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s)",
       res, prov, getProvider(prefix));
 #endif
   }
@@ -5292,11 +5328,15 @@ void processcint()
 
       if (call[chan].ctakt != call[chan].Rate.Units) { /* naechste Einheit */
  	call[chan].ctakt = call[chan].Rate.Units;
-        sprintf(sx, "%d.CI %s (after %s) ",
- 	  call[chan].ctakt,
-          printRate(call[chan].pay),
- 	  double2clock(call[chan].Rate.Time));
-        info(chan, PRT_SHOWCONNECT, (call[chan].Rate.Duration < 30) ? STATE_BYTE : STATE_CONNECT, sx);
+	if (!ciInterval || !call[chan].lastcint ||
+	    (cur_time - call[chan].lastcint) >= ciInterval) {
+          call[chan].lastcint = cur_time;
+          sprintf(sx, "%d.CI %s (after %s) ",
+ 	    call[chan].ctakt,
+            printRate(call[chan].pay),
+ 	    double2clock(call[chan].Rate.Time));
+          info(chan, PRT_SHOWCONNECT, (call[chan].Rate.Duration < 30) ? STATE_BYTE : STATE_CONNECT, sx);
+	}
 
         if ((c = call[chan].confentry[OTHER]) > -1) {
           if (!replay && (chargemax != 0.0)) {

@@ -19,6 +19,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.35  2000/03/06 07:03:21  akool
+ * isdnlog-4.15
+ *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
+ *     ==> DO A 'make clean' PLEASE
+ *   - isdnlog/tools/telnum.c ... fixed a small typo
+ *   - isdnlog/isdnrep/rep_main.c ... incl. dest.h
+ *   - isdnlog/isdnrep/isdnrep.c ... fixed %l, %L
+ *   - isdnlog/isdnrep/isdnrep.h ... struct one_call, sum_calls are now here
+ *
+ *   Support for Norway added. Many thanks to Tore Ferner <torfer@pvv.org>
+ *     - isdnlog/rate-no.dat  ... NEW
+ *     - isdnlog/holiday-no.dat  ... NEW
+ *     - isdnlog/samples/isdn.conf.no ... NEW
+ *     - isdnlog/samples/rate.conf.no ... NEW
+ *
  * Revision 1.34  2000/02/28 19:53:56  akool
  * isdnlog-4.14
  *   - Patch from Roland Rosenfeld <roland@spinnaker.de> fix for isdnrep
@@ -360,12 +375,14 @@ static void init()
 
 }				/* init */
 
+#if 0
 static void deinit(void)
 {
   exitRate();
   exitDest();
   exitHoliday();
 }
+#endif
 
 /* calc a day/time W | E | H */
 static void get_day(char d)

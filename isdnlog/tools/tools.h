@@ -20,6 +20,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.53  2000/03/06 07:03:21  akool
+ * isdnlog-4.15
+ *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
+ *     ==> DO A 'make clean' PLEASE
+ *   - isdnlog/tools/telnum.c ... fixed a small typo
+ *   - isdnlog/isdnrep/rep_main.c ... incl. dest.h
+ *   - isdnlog/isdnrep/isdnrep.c ... fixed %l, %L
+ *   - isdnlog/isdnrep/isdnrep.h ... struct one_call, sum_calls are now here
+ *
+ *   Support for Norway added. Many thanks to Tore Ferner <torfer@pvv.org>
+ *     - isdnlog/rate-no.dat  ... NEW
+ *     - isdnlog/holiday-no.dat  ... NEW
+ *     - isdnlog/samples/isdn.conf.no ... NEW
+ *     - isdnlog/samples/rate.conf.no ... NEW
+ *
  * Revision 1.52  2000/02/11 10:41:53  akool
  * isdnlog-4.10
  *  - Set CHARGEINT to 11 if < 11
@@ -758,7 +773,6 @@
 #define CONF_ENT_NL			 "NEWLINE"
 #define CONF_ENT_WIDTH	 "WIDTH"
 #define CONF_ENT_WD			 "WATCHDOG"
-#define CONF_ENT_CW			 "CITYWEEKEND"
 #define CONF_ENT_AMT		 "AMT"
 #define CONF_ENT_DUAL		 "DUAL"
 #define CONF_ENT_Q931		 "Q931DUMP"
@@ -772,7 +786,9 @@
 #define CONF_ENT_IGNORECOLP "IGNORECOLP"
 #define	CONF_ENT_VBN	   "VBN"
 #define	CONF_ENT_VBNLEN	   "VBNLEN"
-
+#define CONF_ENT_CIINTERVAL "CIINTERVAL"
+#define CONF_ENT_ABCLCR	"ABCLCR"
+#define CONF_ENT_PROVIDERCHANGE "PROVIDERCHANGE"
 /****************************************************************************/
 
 /* Keywords for isdn.conf */
@@ -912,7 +928,8 @@ typedef struct {
   int	  takteChargeInt;
   int 	  card;
   int	  knock;
-  time_t  nextcint;
+  time_t  lastcint;
+  time_t  lasteh;
   float	  cint;
   int     cinth;
   int	  ctakt;
@@ -1030,6 +1047,9 @@ _EXTERN	int	 preselect;
 _EXTERN int	dual;
 _EXTERN int	hfcdual;
 _EXTERN int	abclcr;
+_EXTERN char  * providerchange;
+_EXTERN int	ciInterval;
+_EXTERN int	ehInterval;
 _EXTERN char    mlabel[BUFSIZ];
 _EXTERN char    *amtsholung;
 _EXTERN int	ignoreRR;

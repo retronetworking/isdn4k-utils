@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.59  2000/02/11 10:41:52  akool
+ * isdnlog-4.10
+ *  - Set CHARGEINT to 11 if < 11
+ *  - new Option "-dx" controls ABC_LCR feature (see README for infos)
+ *  - new rates
+ *
  * Revision 1.58  2000/02/03 18:24:50  akool
  * isdnlog-4.08
  *   isdnlog/tools/rate.c ... LCR patch again
@@ -439,9 +445,9 @@ static int read_param_file(char *FileName);
 
 static char     usage[]   = "%s: usage: %s [ -%s ] file\n";
 #ifdef Q931
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1d:q";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1d:qI:";
 #else
-static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1d:";
+static char     options[] = "av:sp:x:m:l:rt:c:C:w:SVTDPMh:nW:H:f:bL:NFA:2:O:Ki:R:0:ou:B:U:1d:I:";
 #endif
 static char     msg1[]    = "%s: Can't open %s (%s)\n";
 static char    *ptty = NULL;
@@ -697,6 +703,8 @@ static void init_variables(int argc, char* argv[])
   hfcdual = 0;
   hup3 = 240;
   abclcr = 0;
+  ciInterval = 0;
+  ehInterval = 0;
 
   myname = argv[0];
   myshortname = basename(myname);
@@ -708,7 +716,7 @@ static void init_variables(int argc, char* argv[])
 static void traceoptions()
 {
   q931dmp++;
-  use_new_config = 0;
+//  use_new_config = 0;
   replay++;
   port = 20012;
 } /* traceoptions */
@@ -895,6 +903,16 @@ int set_options(int argc, char* argv[])
       case 'd' : abclcr = atoi(optarg);
       	       	 break;
 
+      case 'I' :
+      	       	 if ((p = strchr(optarg, ':'))) {
+                   *p = 0;
+                   ciInterval = atoi(optarg);
+                   ehInterval = atoi(p + 1);
+      	       	 }
+                 else
+                   ciInterval = ehInterval = atoi(optarg);
+      	       	 break;
+
       case '?' : printf(usage, myshortname, myshortname, options);
 	         exit(1);
     } /* switch */
@@ -1028,6 +1046,22 @@ static int read_param_file(char *FileName)
 				  else
 				    printf("%s: WARNING: \"-h\" Option requires 2 .. 3 arguments\n", myshortname);
 				}
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_PROVIDERCHANGE))
+				  providerchange = strdup(Ptr->value);
+				else
+				if (!strcmp(Ptr->name,CONF_ENT_ABCLCR))
+				  abclcr = atoi(Ptr->value);
+				else
+                                if (!strcmp(Ptr->name, CONF_ENT_CIINTERVAL)) {
+                                  if ((p = strchr(Ptr->value, ':'))) {
+                                    *p = 0;
+                                    ciInterval = atoi(Ptr->value);
+                                    ehInterval = atoi(p + 1);
+                                  }
+                                  else
+                                    ciInterval = ehInterval = atoi(Ptr->value);
+                                }
 				else
                                 if (!strcmp(Ptr->name, CONF_ENT_TRIM)) {
                                   trim++;
@@ -1376,7 +1410,7 @@ int main(int argc, char *argv[], char *envp[])
           for (i = 0; i < MAXCHAN; i++)
 	    clearchan(i, 1);
 
-#ifdef Q931
+#ifdef Q931AK
           if (q931dmp) {
   	    mymsns         = 3;
   	    mycountry      = "+49";
