@@ -4,6 +4,9 @@
 ** Copyright 1997-1998 by Michael Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.1  1998/06/10 13:31:53  michael
+** Source added.
+**
 */
 
 #if TIME_WITH_SYS_TIME
@@ -35,6 +38,7 @@ static struct modemsetup modemsetup =
 {
 	4,						/* Echo timeout (sec)	*/
 	4,						/* Command timeout (sec)	*/
+	6,						/* Ring timeout (sec)	*/
 	1800,					/* Alive timeout (sec)	*/
 	400					/* Toggle DTR (ms)	*/
 };
@@ -45,7 +49,6 @@ static int timeoutstatus = 0;
 
 static void modem_timeout_function(int);
 static int modem_write(struct vboxmodem *, char *);
-static int modem_read(struct vboxmodem *, char *, int);
 static int modem_get_echo(struct vboxmodem *, char *);
 static int modem_get_rawsequence(struct vboxmodem *, char *, int);
 static int modem_check_result(char *, char *);
@@ -268,6 +271,62 @@ int modem_command(struct vboxmodem *vbm, char *command, char *result)
 }
 
 /*************************************************************************/
+/** modem_read():		Reads a terminated string from the modem.				**/
+/*************************************************************************/
+/** => vbm				Pointer to modem structure									**/
+/** => line				Pointer to write buffer										**/
+/** => readtimeout	Timeout in seconds											**/
+/*************************************************************************/
+
+int modem_read(struct vboxmodem *vbm, char *line, int readtimeout)
+{
+	char	c;
+	int	r;
+	int	timeout;
+	int	linelen = 0;
+	int	havetxt = 0;
+
+	log_line(LOG_D, "Reading modem answer (%ds timeout)...\n", readtimeout);
+
+	modem_set_timeout(readtimeout);
+
+	while (((r = vboxmodem_raw_read(vbm, &c, 1)) == 1) && (linelen < (VBOXMODEM_BUFFER_SIZE - 1)))
+	{
+		if (c >= 32) havetxt = 1;
+
+		if (havetxt)
+		{
+			if (c == '\n') break;
+			
+			if ((c != '\r') && (c != '\n'))
+			{
+				*line++ = c;
+				
+				linelen++;
+			}
+		}
+
+		if (modem_get_timeout()) break;
+	}
+
+	timeout = modem_get_timeout();
+	
+	modem_set_timeout(0);
+
+	*line = 0;
+
+	if ((r != 1) || (timeout) || (linelen >= (VBOXMODEM_BUFFER_SIZE - 1)))
+	{
+		log_line(LOG_W, "Can't read from modem [%d]%s.\n", r, (timeout ? " (timeout)" : ""));
+
+		return(-1);
+	}
+
+	return(0);
+}
+
+
+/*************************************************************************/
 /** **/
 /*************************************************************************/
 
@@ -363,60 +422,6 @@ static int modem_write(struct vboxmodem *vbm, char *s)
 	return(-1);
 }
 
-/*************************************************************************/
-/** modem_read():		Reads a terminated string from the modem.				**/
-/*************************************************************************/
-/** => vbm				Pointer to modem structure									**/
-/** => line				Pointer to write buffer										**/
-/** => readtimeout	Timeout in seconds											**/
-/*************************************************************************/
-
-static int modem_read(struct vboxmodem *vbm, char *line, int readtimeout)
-{
-	char	c;
-	int	r;
-	int	timeout;
-	int	linelen = 0;
-	int	havetxt = 0;
-
-	log_line(LOG_D, "Reading modem answer (%ds timeout)...\n", readtimeout);
-
-	modem_set_timeout(readtimeout);
-
-	while (((r = vboxmodem_raw_read(vbm, &c, 1)) == 1) && (linelen < (VBOXMODEM_BUFFER_SIZE - 1)))
-	{
-		if (c >= 32) havetxt = 1;
-
-		if (havetxt)
-		{
-			if (c == '\n') break;
-			
-			if ((c != '\r') && (c != '\n'))
-			{
-				*line++ = c;
-				
-				linelen++;
-			}
-		}
-
-		if (modem_get_timeout()) break;
-	}
-
-	timeout = modem_get_timeout();
-	
-	modem_set_timeout(0);
-
-	*line = 0;
-
-	if ((r != 1) || (timeout) || (linelen >= (VBOXMODEM_BUFFER_SIZE - 1)))
-	{
-		log_line(LOG_W, "Can't read from modem [%d]%s.\n", r, (timeout ? " (timeout)" : ""));
-
-		return(-1);
-	}
-
-	return(0);
-}
 
 /*************************************************************************/
 /** modem_get_echo():	Reads modem echo.											**/

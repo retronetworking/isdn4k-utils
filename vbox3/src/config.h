@@ -12,6 +12,6 @@
 #define VBOX_ETCDIR		"/usr/local/etc"
 #define VBOX_LIBDIR		"/usr/local/lib"
 
-#define VERSION "2.99.1"
+#define VERSION "2.1.1"
 
 #endif /* VBOX_CONFIG_H */

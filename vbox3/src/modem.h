@@ -23,6 +23,7 @@ struct modemsetup
 {
 	int echotimeout;
 	int commandtimeout;
+	int ringtimeout;
 	int alivetimeout;
 	int toggle_dtr_time;
 
@@ -44,5 +45,6 @@ extern int	modem_hangup(struct vboxmodem *);
 extern int	modem_wait(struct vboxmodem *);
 extern void modem_set_nocarrier(struct vboxmodem *, int);
 extern int	modem_get_nocarrier(struct vboxmodem *);
+extern int	modem_read(struct vboxmodem *, char *, int);
 
 #endif /* _VBOX_MODEM_H */
