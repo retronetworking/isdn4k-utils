@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/03/10 09:51:24  fritz
+ * Bugfix: mapping was broken.
+ *
  * Revision 1.1  1997/02/17 00:09:21  fritz
  * New CVS tree
  *
@@ -157,6 +160,7 @@ void usage(void)
         fprintf(stderr, "    mapping drvId [MSN,MSN...] set MSN<->EAZ-Mapping\n");
         fprintf(stderr, "    addslave name slavename    add slave-interface\n");
         fprintf(stderr, "    sdelay mastername delay    set slave-activation delay\n");
+        fprintf(stderr, "    trigger mastername cps     set slave trigger level\n");
         fprintf(stderr, "    dial name                  force dialing of interface\n");
         fprintf(stderr, "    system on|off              switch isdn-system on or off\n");
         fprintf(stderr, "    addlink name               MPPP, increase number of links\n");
@@ -257,6 +261,7 @@ static void listif(int isdnctrl, char *name, int errexit)
         printf("Encapsulation:          %s\n", num2key(cfg.p_encap, pencapstr, pencapval));
         printf("Slave Interface:        %s\n", strlen(cfg.slave) ? cfg.slave : "None");
         printf("Slave delay:            %d\n", cfg.slavedelay);
+        printf("Slave trigger:          %d cps\n", cfg.triggercps);
         printf("Master Interface:       %s\n", strlen(cfg.master) ? cfg.master : "None");
         printf("Pre-Bound to:           ");
         listbind(cfg.drvid, cfg.exclusive);
@@ -306,6 +311,7 @@ static void get_setup(int isdnctrl, char *name)
                 fprintf(f, "    encap=%d\n", cfg.p_encap);
                 fprintf(f, "    chargeint=%d\n", cfg.chargeint);
                 fprintf(f, "    slavedelay=%d\n", cfg.slavedelay);
+                fprintf(f, "    triggercps=%d\n", cfg.triggercps);
                 fprintf(f, "    exclusive=%d\n", cfg.exclusive);
                 fprintf(f, "    binddev=\"%s\"\n", cfg.drvid);
                 p += sizeof(cfg);
@@ -327,7 +333,7 @@ enum {
         CHARGEINT, DIALMAX, SDELAY, CHARGEHUP,
         CBHUP, IHUP, SECURE, CALLBACK,
         L2_PROT, L3_PROT, ADDLINK, REMOVELINK,
-        ENCAP
+        ENCAP, TRIGGER
 };
 
 typedef struct {
@@ -370,6 +376,7 @@ static cmd_struct cmds[] =
         {"addlink", "0"},
         {"removelink", "0"},
         {"encap", "01"},
+        {"trigger", "01"},
         {NULL,}
 };
 
@@ -813,6 +820,29 @@ void main(int argc, char **argv)
                         }
                         printf("Slave-activation delay for %s is %d sec.\n", cfg.name,
                                cfg.slavedelay);
+                        break;
+
+                case TRIGGER:
+                        strcpy(cfg.name, id);
+                        if ((result = ioctl(fd, IIOCNETGCF, &cfg)) < 0) {
+                                perror(id);
+                                exit(-1);
+                        }
+                        if (args) {
+                                i = -1;
+                                sscanf(arg1, "%d", &i);
+                                if (i < 0) {
+                                        fprintf(stderr, "Slave triggerlevel must be >= 0\n");
+                                        exit(-1);
+                                }
+                                cfg.triggercps = i;
+                                if ((result = ioctl(fd, IIOCNETSCF, &cfg)) < 0) {
+                                        perror(id);
+                                        exit(-1);
+                                }
+                        }
+                        printf("Slave triggerlevel for %s is %d cps.\n", cfg.name,
+                               cfg.triggercps);
                         break;
 
                 case CHARGEHUP:
