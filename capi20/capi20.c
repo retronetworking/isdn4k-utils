@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.3  1998/08/30 09:57:14  calle
+ * I hope it is know readable for everybody.
+ *
  * Revision 1.1  1998/08/25 16:33:16  calle
  * Added CAPI2.0 library. First Version.
  *
@@ -41,7 +44,7 @@ unsigned capi20_isinstalled (void)
 static struct capi_applidmap {
     int used;
     int fd;
-} capi_applidmap[CAPI_MAXAPPL] = {0};
+} capi_applidmap[CAPI_MAXAPPL] = {{0,0}};
 
 static inline _cword allocapplid(int fd)
 {
