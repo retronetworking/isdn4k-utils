@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  2004/01/28 14:27:46  tobiasb
+ * Second step in restricting fds at isdnlog restart and script starting.
+ * The fd limit is now taken from getrlimit() instead of NR_OPEN.
+ * Close_Fds(first) which tries to close all possible fds is generally
+ * built in but the execution must be requested with "closefds=yes" in
+ * the parameterfile otherwise the isdnlog behaviour remains unchanged.
+ *
  * Revision 1.17  2004/01/26 15:20:07  tobiasb
  * First step to close all unnecessary open file descriptors before
  * starting a start script as reaction to a call.  The same applies to the
@@ -1042,10 +1049,15 @@ char **Get_Opts(int chan, int event, int InOut)
 	else
 		Opts[3] = "";
 
+	/* .connect is time of SETUP before CONNECT */
 	if (call[chan].connect)
 	{
-		long Help = (long) (time(NULL) - call[chan].connect);
-		Opts[4] = ArgToChar(R_TYPE_LONG, &Help);
+		if (call[chan].dialog) {
+			long Help = (long) (time(NULL) - call[chan].connect);
+			Opts[4] = ArgToChar(R_TYPE_LONG, &Help);
+		}
+		else
+			Opts[4] = "0";
 	}
 	else
 		Opts[4] = "";
