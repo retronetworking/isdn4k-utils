@@ -6,6 +6,9 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.14  2000/01/28 16:36:19  calle
+ * generic addcard (call add_card function of named driver)
+ *
  * Revision 1.13  1999/12/06 17:01:51  calle
  * more documentation and possible errors explained.
  *
@@ -74,6 +77,9 @@
 #include <linux/capi.h>
 /* new ioctls */
 #include <linux/kernelcapi.h>
+
+static char capidevname[] = "/dev/capi20";
+static char capidevnamenew[] = "/dev/isdn/capi20";
 
 char *cmd;
 char *ctrldev;
@@ -357,11 +363,12 @@ int main(int argc, char **argv)
 	} else
 		usage();
 	ac = argc - (arg_ofs - 1);
-	fd = open("/dev/capi20", O_RDWR);
+	if ((fd = open(capidevname, O_RDWR)) < 0 && errno == ENOENT)
+  	   fd = open(capidevnamenew, O_RDWR);
 	if (fd < 0) {
 		switch (errno) {
 		   case ENOENT:
-		      perror("Device file /dev/capi20 missing, use instdev");
+		      perror("Device file /dev/capi20 and /dev/isdn/capi20 missing, use instdev");
 		      exit(2);
 		   case ENODEV:
 		      perror("device capi20 not registered");
