@@ -19,12 +19,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/09/06 08:03:23  fritz
+ * Changed my mail-address.
+ *
  * Revision 1.1  1997/09/25 21:41:37  fritz
  * Added actctrl.
  *
  *
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>

@@ -22,6 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1999/09/06 08:03:24  fritz
+ * Changed my mail-address.
+ *
  * Revision 1.3  1997/06/21 14:38:22  fritz
  * Added option for enabling only one channel in leased mode.
  *
@@ -56,6 +59,7 @@
  *
  */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
