@@ -3,6 +3,7 @@
  * ISDN accounting for isdn4linux. (log-module)
  *
  * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +28,7 @@
 
 /*****************************************************************************/
 
- /* Letzte Exit-Nummer: 42 */
+ /* Letzte Exit-Nummer: 43 */
 
 /*****************************************************************************/
 
@@ -739,10 +740,21 @@ int main(int argc, char *argv[], char *envp[])
 
     } /* else */
 
-    strcpy((char *)logname, LOGFILE);
-
     if (replay)
-      strcat((char *)logname, ".rep");
+      strcat((char *)logfile, ".rep");
+		else
+			if (access(logfile,W_OK) && errno == ENOENT)
+			{
+				if ((flog = fopen(logfile, "w")) == NULL)
+				{
+			    print_msg(PRT_ERR,"Can not write file `%s' (%s)!\n", logfile, strerror(errno));
+			    Exit(43);
+				}
+				else
+					fclose(flog);
+
+				flog = NULL;
+			}
 
     openlog(myshortname, LOG_NDELAY, LOG_DAEMON);
 

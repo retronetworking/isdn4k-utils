@@ -3,6 +3,7 @@
  * ISDN accounting for isdn4linux.
  *
  * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/03/23 23:11:54  luethje
+ * improved performance
+ *
  * Revision 1.2  1997/03/23 20:55:41  luethje
  * some bugfixes
  *
@@ -216,7 +220,6 @@ _EXTERN int	width;
 _EXTERN	int	watchdog;
 _EXTERN char   *isdnctrl;
 _EXTERN	char    isdnctrl2[FNSIZE];
-_EXTERN char    logname[FNSIZE];
 _EXTERN char    pidfile[SHORT_STRING_SIZE];
 
 _EXTERN IFO     ifo[ISDN_MAX_CHANNELS];
