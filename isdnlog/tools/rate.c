@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.40  1999/08/25 17:07:16  akool
+ * isdnlog-3.46
+ *
  * Revision 1.39  1999/08/20 19:29:02  akool
  * isdnlog-3.45
  *  - removed about 1 Mb of (now unused) data files
@@ -540,9 +543,10 @@ void exitRate(void)
 	if (Provider[i].Zone[j].Hour) free (Provider[i].Zone[j].Hour);
       }
       if(Provider[i].Zone) free (Provider[i].Zone);
-      for (j=0; j<Provider[i].nArea; j++)
+      for (j=0; j<Provider[i].nArea; j++) {
 	if (Provider[i].Area[j].Code) free (Provider[i].Area[j].Code);
-      if (Provider[i].Area[j].Name) free (Provider[i].Area[j].Name);
+        if (Provider[i].Area[j].Name) free (Provider[i].Area[j].Name);
+      } /* for */
       if(Provider[i].Area) free (Provider[i].Area);
       for (j=0; j<Provider[i].nService; j++)
 	if (Provider[i].Service[j].Name) free (Provider[i].Service[j].Name);
@@ -734,7 +738,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 
     case 'G':
       if (ignore) continue;
-      warning (dat, "Legacy tag '%s'", s);
+//    warning (dat, "Legacy tag '%s'", s);
       break;
 
     case 'C':  /* C:Comment */

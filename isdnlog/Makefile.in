@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.101  1999/08/27 20:56:28  akool
+## Patch from Kai
+##
 ## Revision 1.100  1999/08/25 17:05:57  akool
 ## isdnlog-3.46
 ##
@@ -742,7 +745,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.47
+VERSION     = 3.48
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
