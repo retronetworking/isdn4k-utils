@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.32  2000/02/20 19:03:08  akool
+ * isdnlog-4.12
+ *  - ABC_LCR enhanced
+ *  - country-de.dat more aliases
+ *  - new rates
+ *  - isdnlog/Makefile.in ... defined NATION
+ *  - isdnlog/isdnlog/processor.c ... msn patch for NL
+ *  - isdnlog/tools/isdnconf.c ... default config
+ *
  * Revision 1.31  1999/12/31 13:57:19  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -1092,11 +1101,11 @@ static int _readconfig(char *_myname)
   callfile       = NULL;
   callfmt        = NULL;
   holifile       = CONFIG_DATADIR"/holiday-"NATION".dat";
-  countryfile	 = CONFIG_DATADIR"/country-de.dat";
+  countryfile	 = CONFIG_DATADIR"/country.dat";
   rateconf       = CONFIG_I4LCONFDIR"/rate.conf";
   ratefile       = CONFIG_DATADIR"/rate-"NATION".dat";
-  zonefile	 = CONFIG_DATADIR"/zone-"NATION"-%s.gdbm";
-  destfile	 = CONFIG_DATADIR"/dest.gdbm";
+  zonefile	 = CONFIG_DATADIR"/zone-"NATION"-%s.cdb";
+  destfile	 = CONFIG_DATADIR"/dest.cdb";
   lcdfile        = NULL;
   start_procs.infoargs = NULL;
   start_procs.flags    = 0;

@@ -19,6 +19,20 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.180  2000/08/27 15:18:19  akool
+## isdnlog-4.41
+##  - fix a fix within Change_Channel()
+##
+##  - isdnlog/tools/dest/CDB_File_Dump.pm ... fixed bug with duplicates like _DEMD2
+##
+##    After installing this, please rebuild dest.cdb by:
+##    $ cd isdnlog/tools/dest
+##    $ rm dest.cdb
+##    $ make alldata
+##    $ su -c "cp ./dest.cdb /usr/lib/isdn"
+##
+##  - isdnlog/isdnlog/processor.c ... fixed warning
+##
 ## Revision 1.179  2000/08/17 21:34:42  akool
 ## isdnlog-4.40
 ##  - README: explain possibility to open the "outfile=" in Append-Mode with "+"
@@ -1647,7 +1661,7 @@ install-data:
 		$(INSTALL_DATA) isdnlog/isdnformat.5 $(DESTDIR)$(MAN5DIR)/isdnformat$(MAN5EXT)
 		$(INSTALL_DATA) tools/isdnrate.1     $(DESTDIR)$(MAN1DIR)/isdnrate$(MAN1EXT)
 		$(INSTALL_DATA) tools/rate-files.5     $(DESTDIR)$(MAN5DIR)/rate-files$(MAN5EXT)
-		$(INSTALL_DATA) country-de.dat	$(DESTDIR)$(DATADIR)
+		$(INSTALL_DATA) country-de.dat	$(DESTDIR)$(DATADIR)/country.dat
 		$(INSTALL_DATA) rate-$(NATION).dat      $(DESTDIR)$(DATADIR)
 		$(INSTALL_DATA) holiday-$(NATION).dat   $(DESTDIR)$(DATADIR)
 		@for f in `ls zone-$(NATION)-*.{gdbm,db,cdb} tools/dest/dest.{gdbm,db,cdb} 2>/dev/null` ; do \
