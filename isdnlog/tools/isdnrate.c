@@ -19,6 +19,25 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.33  2000/02/12 16:40:24  akool
+ * isdnlog-4.11
+ *  - isdnlog/Makefile.in ... sep install-targets, installs samples, no isdnconf
+ *  - isdnlog/samples/rate.conf.{lu,nl} ... NEW
+ *  - isdnlog/samples/isdn.conf.lu ... chg provider
+ *  - isdnlog/samples/stop ... chg \d,\d => \d.\d
+ *  - isdnlog/samples/isdnlog.isdnctrl0.options ... NEW
+ *  - isdnlog/samples/isdnlog.users ... NEW
+ *  - isdnlog/country-de.dat ... _DEMF again
+ *  - isdnlog/isdnlog/processor.c ... LCR
+ *  - isdnlog/tools/isdnrate.c ... fmt of s
+ *
+ *    Old config is not installed anymore, to acomplish this do
+ *
+ *    make install-old-conf
+ *    make install
+ *
+ *    A running isdnlog is now HUP-ed not KILL-ed
+ *
  * Revision 1.32  2000/02/03 18:24:51  akool
  * isdnlog-4.08
  *   isdnlog/tools/rate.c ... LCR patch again
@@ -256,6 +275,7 @@ static TELNUM srcnum, destnum;
 static char *pid_dir = 0;
 static char *pid_file = 0;
 static char *socket_file = 0;
+static char	**hup_argv;	/* args to restart with */
 
 typedef struct {
   int     prefix;
@@ -1290,9 +1310,16 @@ static void clean_up()
 static char * sub_sp(char *p)
 {
   char *o = p;
+  int allupper=1;
   for (; *p; p++)
-    if(*p == '_')
-      *p = ' ';
+    if(!isupper(*p) && *p != '_') {
+      allupper = 0;
+      break;
+  }
+  if (!allupper)
+    for (p = o; *p; p++)
+      if(*p == '_')
+        *p = ' ';
   return o;
 }
 static void doit(int i, int argc, char *argv[])
@@ -1423,7 +1450,9 @@ static void del_sock(void)
       unlink(pid_file);
   }
 }
-static volatile sig_atomic_t stopped = 0, reinit = 0;
+
+static volatile sig_atomic_t stopped = 0;
+static volatile sig_atomic_t reinit = 0;
 
 static void catch_term(int sig)
 {
@@ -1432,14 +1461,16 @@ static void catch_term(int sig)
 
 static void catch_hup(int sig)
 {
-  reinit = 1;
+  print_msg(PRT_A, "Signal %d restarting %s\n", sig, myname);
+  del_sock();
+  execvp(myname, hup_argv);
+  print_msg(PRT_A, "- failed\n");
 }
 
 static void do_reinit(void)
 {
-  deinit();
-  init();
-  reinit = 0;
+  /* deinit(), init() doesn't */
+  reinit=0;
 }
 
 /* thank's to Jochen Erwied for this: */
@@ -1505,7 +1536,7 @@ static void setup_daemon()
     if (pid_file[strlen(pid_file) - 1] != '/')
       strcat(pid_file, "/");
     strcat(pid_file, pidname);
-    if ((fp = fopen(pidname, "w")) == 0)
+    if ((fp = fopen(pid_file, "w")) == 0)
       fprintf(stderr, "Can't write %s\n", pid_file);
     else {
       fprintf(fp, "%d\n", getpid());
@@ -1620,6 +1651,7 @@ static int connect_2_daemon(int argc, char *argv[])
 int     main(int argc, char *argv[], char *envp[])
 {
   register int i;
+  sigset_t        unblock_set;
 
   myname = argv[0];
   myshortname = basename(myname);
@@ -1627,6 +1659,11 @@ int     main(int argc, char *argv[], char *envp[])
   time(&start);
   splittime();
   socket_file = strdup(SOCKNAME);
+  /* borrowed from isdnlog.c, thanks */
+  hup_argv = argv;
+  sigemptyset(&unblock_set);
+  sigaddset(&unblock_set, SIGHUP);
+  sigprocmask(SIG_UNBLOCK, &unblock_set, NULL);
 
   if ((i = opts(argc, argv)) || need_dest == 0) {
     if (is_client)

@@ -24,6 +24,14 @@
  *
  *
  * $Log$
+ * Revision 1.88  2000/02/07 20:32:41  akool
+ * isdnlog-4.09
+ *   - NEW: 01078:3U and 010050:Drillisch foreign countries
+ *   - isdnlog/isdnrep/isdnrep.c ... moved hist, provider ok again
+ *   - isdnlog/isdnrep/CHANGES.isdnrep ... NEW (old changes)
+ *   - isdnlog/isdnlog/isdnlog.8.in ... addded signals
+ *   - isdnlog/README ... upd. core (SIGSEGV), files
+ *
  * Revision 1.87  2000/01/16 12:36:58  akool
  * isdnlog-4.03
  *  - Patch from Gerrit Pape <pape@innominate.de>
@@ -1150,7 +1158,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          	colsize[i] = append_string(&string,*fmtstring, "");
 				          break;
 				/* The money or/and a message: */
-				case 'U': if (cur_call->duration || cur_call->eh > 0)
+				case 'U': if (cur_call->duration || cur_call->eh > 0 || cur_call->pay > 0)
 				          {
 				          	if (cur_call->dir)
 				          		colsize[i] = append_string(&string,NULL,"            ");

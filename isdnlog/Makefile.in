@@ -19,6 +19,20 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.151  2000/02/22 20:04:09  akool
+## isdnlog-4.13
+##  - isdnlog/tools/rate-at.c ... chg. 1003
+##  - isdnlog/tools/country.c ... no dupl. area warning
+##  - isdnlog/rate-at.dat ... chg. 1003
+##  - isdnlog/tools/dest/pp_rate ... added 'q'
+##  - isdnlog/country-de.dat ... splitted _INM*
+##
+##  - isdnlog/tools/rate.c ... getSpecial, vbn2prefix fixed, include
+##  - isdnlog/tools/dest/pp_rate ... include
+##  - isdnlog/tools/rate-files.man ... include
+##
+##  - new rates, Services (S:, N:) reenabled
+##
 ## Revision 1.150  2000/02/20 19:03:07  akool
 ## isdnlog-4.12
 ##  - ABC_LCR enhanced
@@ -1095,7 +1109,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.13
+VERSION     = 4.14
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -1315,7 +1329,14 @@ install-old-conf:
 
 install-conf:
 		@for f in rate isdn ; do \
-			if [ ! -f "$(DESTDIR)$(I4LCONFDIR)/$$f.conf" ]; then \
+		        if [ ! -f "samples/$$f.conf.$(NATION)" ] ; then \
+				echo ; \
+				echo It looks like isdnlog doesn\'t know your countries config ; \
+				echo Please read README.Internationalization. ; \
+				echo ; \
+				echo ; \
+				sleep 3 ; \
+			elif [ ! -f "$(DESTDIR)$(I4LCONFDIR)/$$f.conf" ]; then \
 				$(INSTALL_DATA) samples/$$f.conf.$(NATION) $(DESTDIR)$(I4LCONFDIR)/$$f.conf ; \
 				echo Please edit $(DESTDIR)$(I4LCONFDIR)/$$f.conf ; \
 				sleep 2 ; \

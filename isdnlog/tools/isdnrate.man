@@ -284,6 +284,9 @@ Show rates and the best provider for this (service-)number.
 .I isdnrate -CD3
 .br
 Stop the running isdnrate daemon.
+.SH SIGNALS
+A isdnrate daemon restarts (and therefore rereads its configuration) on
+getting a SIGHUP signal.
 .SH "SEE ALSO"
 .BR rate-files(5) ", " isdnlog(8) ", " isdn.conf(5)
 .SH BUGS

@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.74  2000/02/22 20:04:11  akool
+ * isdnlog-4.13
+ *  - isdnlog/tools/rate-at.c ... chg. 1003
+ *  - isdnlog/tools/country.c ... no dupl. area warning
+ *  - isdnlog/rate-at.dat ... chg. 1003
+ *  - isdnlog/tools/dest/pp_rate ... added 'q'
+ *  - isdnlog/country-de.dat ... splitted _INM*
+ *
+ *  - isdnlog/tools/rate.c ... getSpecial, vbn2prefix fixed, include
+ *  - isdnlog/tools/dest/pp_rate ... include
+ *  - isdnlog/tools/rate-files.man ... include
+ *
+ *  - new rates, Services (S:, N:) reenabled
+ *
  * Revision 1.73  2000/02/03 18:24:51  akool
  * isdnlog-4.08
  *   isdnlog/tools/rate.c ... LCR patch again
@@ -1035,8 +1049,8 @@ static char * epnum(int prefix) {
   static char s[20];
 
   if ((prefix < 0) || (prefix > nProvider))
-    sprintf(s, "???");
-  else if (Provider[prefix]._provider._variant)
+    sprintf(s, "??? (%d)", prefix);
+  else if (Provider[prefix]._provider._variant == UNKNOWN)
     sprintf(s,"%d (%d)", Provider[prefix]._provider._prefix, prefix);
   else
     sprintf(s,"%d_%d (%d)", Provider[prefix]._provider._prefix,

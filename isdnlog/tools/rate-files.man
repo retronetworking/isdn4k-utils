@@ -75,7 +75,7 @@ N:19440
 .B U:currencyfmt currency
 .IP
 e.g.
-U:%.3 DEM
+U:%.3f DEM
 .SS Provider entries
 A new provider starts always with a
 .B P:
