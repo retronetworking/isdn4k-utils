@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.12  2003/03/11 13:39:07  paul
+ * Also search for firmware in /usr/share/isdn, which is more in line with LSB
+ *
  * Revision 1.11  2003/01/14 13:47:15  calle
  * New Commands to only load modules, only initialize cards,
  * only reset cards, inititialize a single card or reset a single card.
@@ -1216,6 +1219,18 @@ static int prestopcheck(void)
 
 /* ------------------------------------------------------------------- */
 
+static int is_card_of_driver(char *cardname, struct contrprocinfo *p)
+{
+	if (strcmp(cardname, p->driver) == 0)
+		return 1;
+	if (   strcmp(cardname, "b1pci") == 0
+	    && strcmp(p->driver, "b1pciv4") == 0)
+		return 1;
+	if (strcmp(cardname, p->name) == 0)
+	   return 1;
+	return 0;
+}
+
 static int card_exists(const char * driver, int ioaddr)
 {
 	static char buf[64];
@@ -1277,7 +1292,7 @@ int main_start(int activate, char *cardname, int number)
 						free_contrprocinfo(&cpinfo);
 						continue;
 				   	}
-				} else if (strcmp(cardname, p->driver) == 0) {
+				} else if (is_card_of_driver(cardname, p)) {
 					if (++act != number) {
 			        		free_contrprocinfo(&cpinfo);
 			           		continue;
@@ -1370,7 +1385,7 @@ int main_stop(int unload, char *cardname, int number)
 					free_contrprocinfo(&cpinfo);
 					continue;
 				}
-			} else if (strcmp(cardname, p->driver) == 0) {
+			} else if (is_card_of_driver(cardname, p)) {
 				if (++act != number) {
 					free_contrprocinfo(&cpinfo);
 					continue;
