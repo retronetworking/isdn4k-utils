@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.82  2000/11/19 14:33:05  leo
+ * Work around a SIGSEGV with R:Tags - V4.44
+ *
  * Revision 1.81  2000/08/01 20:31:31  akool
  * isdnlog-4.37
  * - removed "09978 Schoenthal Oberpfalz" from "zone-de.dtag.cdb". Entry was
@@ -2383,7 +2386,16 @@ static int get_area(int *prefix, RATE *Rate, char *number,
   return ret;
 }
 
+/* This is a hack to let getZoneRate work again */
+
+static int _getRate(RATE *Rate, char **msg, int clear);
+
 int getRate(RATE *Rate, char **msg)
+{
+  return _getRate(Rate, msg, 1);
+}
+
+static int _getRate(RATE *Rate, char **msg, int clear)
 {
   static char message[LENGTH];
   bitfield hourBits;
@@ -2441,7 +2453,7 @@ int getRate(RATE *Rate, char **msg)
      SIGSEGVs
   */
         
-  if (prefix != oprefix) {
+  if (clear && prefix != oprefix) {
     oprefix = prefix;
     Rate->_area = Rate->_zone = UNKNOWN;
   }
@@ -2715,7 +2727,7 @@ int getZoneRate(RATE* Rate, int domestic, int first)
   Rate->_area=a;
   Rate->_zone=(*zp);
   Rate->prefix=prefix;
-  if (getRate(Rate, 0) == UNKNOWN) {
+  if (_getRate(Rate, 0, 0) == UNKNOWN) {
     Rate->prefix=oprefix;
     return UNKNOWN;
   }
@@ -2735,7 +2747,7 @@ int getZoneRate(RATE* Rate, int domestic, int first)
       area=Provider[prefix].Area[i].Code;
       res=getDest(area, &Num);
       if(res!=UNKNOWN)
-        area=Num.scountry;
+        area=*Num.sarea?Num.sarea:Num.scountry;
       if (res!=UNKNOWN && zone==*zp && area && *area) {
 	countries = realloc(countries,strlen(countries)+strlen(area)+2);
 	if(*countries)
