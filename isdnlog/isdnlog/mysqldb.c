@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1998/04/06 15:45:18  keil
+ * Added missing files
+ *
  * Revision 0.2  1998/02/25 12:10.00  matzke
  * Fixed date bug
  *
@@ -125,7 +128,7 @@ int mysql_dbAdd( mysql_DbStrIn *in)
   char         out_txt[400];
   struct tm   *tm;
 
-  assert( (int)in);
+  /* assert( (int)in); */
 
   if ( mysql_dbStatus() )   /* returns -1 when not open */
     if ( mysql_dbOpen() )   /* returns -1 when error appears */

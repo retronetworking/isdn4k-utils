@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.47  2000/03/19 20:26:57  akool
+ * isdnlog-4.17
+ *  - new rates
+ *  - Provider 01080:Telegate aus "samples/rate.conf.de" entfernt, Dienst wurde
+ *    eingestellt
+ *  - isdnlog/tools/tools.c  ... fixed sarea ($17, $18)
+ *
  * Revision 1.46  2000/01/16 12:36:59  akool
  * isdnlog-4.03
  *  - Patch from Gerrit Pape <pape@innominate.de>
@@ -783,6 +790,21 @@ char *vnum(int chan, int who)
       sprintf(retstr[retnum], "[TK:Pickup]");
       return(retstr[retnum]);
     }
+    else if (!memcmp(call[chan].num[who] + 1, "*481", 1)) {
+      switch (call[chan].num[who][5]) {
+        case '0' : sprintf(retstr[retnum], "[TK:LCR-Zeitprofil Automatik]"); break;
+        case '1' : sprintf(retstr[retnum], "[TK:LCR-Zeitprofil Werktag]");   break;
+        case '4' : sprintf(retstr[retnum], "[TK:LCR-Zeitprofil Feiertag]");  break;
+        default	 : sprintf(retstr[retnum], "[TK:LCR-Zeitprofil ???]");       break;
+      } /* switch */
+      return(retstr[retnum]);
+    }
+    else if (!memcmp(call[chan].num[who] + 1, "*002", 5)) {
+      register char *p = call[chan].num[who] + 5;
+
+      sprintf(retstr[retnum], "[TK:Uhrzeit:%c%c:%c%c]", *p, *(p + 1), *(p + 2), *(p + 3));
+      return(retstr[retnum]);
+    } /* else */
   } /* if */
 
   strcpy(call[chan].alias[who], num2nam(call[chan].num[who], call[chan].si1));

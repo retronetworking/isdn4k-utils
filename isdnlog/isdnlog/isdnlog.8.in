@@ -414,6 +414,12 @@ isdnctrl, but this would have the same effect).
 You should run isdnlog with -t1 or better with -t2, so isdnlog sets the
 local time in sync with telephone switching office.
 
+If there is a third number in value, this is the minimum connection time for providers
+charging a basic rate per connection.
+.br
+e.g. hangup 3:5:60
+
+
 .SH "START MODULE"
 
 isdnlog can react on any event and start programs. This feature is

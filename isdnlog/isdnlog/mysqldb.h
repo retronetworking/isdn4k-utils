@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1998/04/06 15:45:19  keil
+ * Added missing files
+ *
  * Revision 0.1  1998/02/25 11:50:56  admin
  * Initial revision
  *
@@ -49,7 +52,7 @@
 #include <math.h>
 #include <syslog.h>
 #include <assert.h>
-#include <mysql.h>           /* functions for mysql */
+#include <mysql/mysql.h>           /* functions for mysql */
 
 
 /*   */
@@ -59,7 +62,7 @@
 #define DB_NAME       "isdn"               /* name of database */
 #define DB_TABLE      "isdnlog"            /* name of table in database */
 
-#define NUMSIZE      20
+#define NUMSIZE    32
 
 
 struct _DbStrIn
@@ -70,7 +73,7 @@ struct _DbStrIn
   int     duration;           /* Dauer der Verbindung in Sekunden */
   int     hduration;          /* Dauer der Verbindung in 1/100 Sekunden */
   int     aoce;               /* Anzahl zu zahlender Gebuehreneinheiten (AOC-D) */
-  int     dialin;             /* "I" fuer incoming call, "O" fuer outgoing call */
+  char    dialin;             /* "I" fuer incoming call, "O" fuer outgoing call */
   int     cause;              /* Kam eine Verbindung nicht zustande ist hier der Grund */
   long    ibytes;             /* Summe der uebertragenen Byte _von_ draussen (incoming) */
   long    obytes;             /* Summe der uebertragenen Byte _nach_ draussen (outgoing) */

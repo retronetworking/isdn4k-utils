@@ -19,6 +19,23 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.60  2000/03/09 18:50:02  akool
+ * isdnlog-4.16
+ *  - isdnlog/samples/isdn.conf.no ... changed VBN
+ *  - isdnlog/isdnlog/isdnlog.c .. ciInterval
+ *  - isdnlog/isdnlog/processor.c .. ciInterval
+ *  - isdnlog/tools/tools.h .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnconf.c .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnrate.c .. removed a warning
+ *  - isdnlog/NEWS ... updated
+ *  - isdnlog/README ... updated
+ *  - isdnlog/isdnlog/isdnlog.8.in ... updated
+ *  - isdnlog/isdnlog/isdnlog.5.in ... updated
+ *  - isdnlog/samples/provider ... NEW
+ *
+ *    ==> Please run a make clean, and be sure to read isdnlog/NEWS for changes
+ *    ==> and new features.
+ *
  * Revision 1.59  2000/02/11 10:41:52  akool
  * isdnlog-4.10
  *  - Set CHARGEINT to 11 if < 11
@@ -1501,6 +1518,37 @@ int main(int argc, char *argv[], char *envp[])
 	    if (*version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 	    } /* if */
+
+#if 0 /* AK: Ausgabe der gesamten "/etc/isdn/isdn.conf" als SQL-Import-File */
+      	    {
+	      auto     FILE *fo = fopen("/tmp/isdn.conf.sql", "w");
+              register int   i;
+	      register char *p1, *p2;
+
+
+              if (fo != (FILE *)NULL) {
+                fprintf(fo, "USE isdn;\n");
+
+      	        for (i = 0; i < knowns; i++) {
+                  p1 = known[i]->num;
+                  while (p2 = strchr(p1, ',')) {
+                    *p2 = 0;
+              	    fprintf(fo, "INSERT INTO conf VALUES('%s',%d,'%s');\n",
+  		      p1, known[i]->si, known[i]->who);
+              	    *p2 = ',';
+              	    p1 = p2 + 1;
+                    while (*p1 == ' ')
+                      p1++;
+                  } /* while */
+                  fprintf(fo, "INSERT INTO conf VALUES('%s',%d,'%s');\n",
+                    p1, known[i]->si, known[i]->who);
+		} /* for */
+              } /* if */
+
+              fclose(fo);
+              exit(0);
+      	    }
+#endif
 
             loop();
 
