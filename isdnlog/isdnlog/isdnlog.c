@@ -276,7 +276,7 @@ static void init_variables(int argc, char* argv[])
   CityWeekend = 0;
 
   sprintf(mlabel, "%%s%s  %%s%%s", "%e.%b %T %I");
-  *amtsholung = 0;
+  amtsholung = NULL;
   dual = 0;
 
   myname = argv[0];
@@ -422,7 +422,7 @@ int set_options(int argc, char* argv[])
       case 'F' : CityWeekend++;
       	       	 break;
 
-      case 'A' : strcpy(amtsholung, optarg);
+      case 'A' : amtsholung = strdup(optarg);
       	       	 break;
 
       case '2' : dual = strtol(optarg, NIL, 0);
@@ -574,7 +574,7 @@ static int read_param_file(char *FileName)
 					dual = (int)strtol(Ptr->value, NIL, 0);
 				else
 				if (!strcmp(Ptr->name,CONF_ENT_AMT))
-					strcpy(amtsholung,Ptr->value);
+                                       amtsholung = strdup(Ptr->value);
 				else
 #ifdef Q931
 				if (!strcmp(Ptr->name,CONF_ENT_Q931))

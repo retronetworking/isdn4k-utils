@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/03/20 00:19:18  luethje
+ * inserted the line #include <errno.h> in avmb1/avmcapictrl.c and imon/imon.c,
+ * some bugfixes, new structure in isdnlog/isdnrep/isdnrep.c.
+ *
  * Revision 1.2  1997/03/17 23:21:08  luethje
  * README completed, new funktion Compare_Sections() written, "GNU_SOURCE 1"
  * added to tools.h and a sample file added.
@@ -424,6 +428,7 @@ typedef struct {
   int	  takteChargeInt;
   int	  aoc;
   int 	  card;
+  int	  knock; 
 } CALL;
 
 /****************************************************************************/
@@ -549,7 +554,7 @@ PUBLIC int     	q931dmp;
 PUBLIC int     	CityWeekend;
 PUBLIC int	dual;
 PUBLIC char    	mlabel[BUFSIZ];
-PUBLIC char    	amtsholung[NUMSIZE];
+PUBLIC char    *amtsholung;
 
 /****************************************************************************/
 
