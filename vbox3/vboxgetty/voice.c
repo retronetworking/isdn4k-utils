@@ -4,6 +4,21 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.5  1998/08/28 13:06:18  michael
+** - Removed audio full duplex mode. Sorry, my soundcard doesn't support
+**   this :-)
+** - Added Fritz's /dev/audio setup. Pipe to /dev/audio now works great
+**   (little echo but a clear sound :-)
+** - Added better control support. The control now has the ttyname appended
+**   (but there are some global controls without this) for controlling
+**   more than one vboxgetty for a user.
+** - Added support for "vboxcall" in the user spool directory. The file
+**   stores information about the current answered call (needed by vbox,
+**   vboxctrl or some other programs to create the right controls).
+** - Added support for Karsten's suspend mode (support for giving a line
+**   number is included also, but currently not used since hisax don't use
+**   it).
+**
 ** Revision 1.4  1998/07/29 11:02:38  michael
 ** - Added missing ATA to answer call (oh god, im so stupid).
 ** - Some junk removed.
@@ -76,7 +91,10 @@ static void voice_create_vboxcall(void);
 static void voice_remove_vboxcall(void);
 
 /************************************************************************* 
- **
+ ** voice_init():	Beantwortet den Anruf und startet das Tcl-Skript.		**
+ *************************************************************************
+ ** => vboxuser	Zeiger auf die vboxuser-Struktur								**
+ ** => vboxcall	Zeiger auf die vboxcall-Struktur								**
  *************************************************************************/
 
 int voice_init(struct vboxuser *vboxuser, struct vboxcall *vboxcall)
@@ -129,10 +147,10 @@ int voice_init(struct vboxuser *vboxuser, struct vboxcall *vboxcall)
 
 	voicevbox = 0;
 
+	log_line(LOG_D, "Answering call...\n");
+
 	if (scr_init_variables(vars) == 0)
 	{
-		log_line(LOG_D, "Answering call...\n");
-
 		if (modem_command(&vboxmodem, "ATA", "VCON") > 0)
 		{
 			log_line(LOG_D, "Setting voice compression to \"ulaw\"...\n");
@@ -256,7 +274,7 @@ int voice_wait(int timeout)
 
 		if (modem_byte_o > 0)
 		{
-			log_line(LOG_D, "Voice: incoming %03d; outgoing %03d...\n", modem_byte_i, modem_byte_o);
+			log_line(LOG_D, "Wait: incoming %03d; outgoing %03d...\n", modem_byte_i, modem_byte_o);
 
 			if (voicedesc != -1) write(voicedesc, modem_line_o, modem_byte_o);
 			if (audiodesc != -1) write(audiodesc, modem_line_o, modem_byte_o);
@@ -316,6 +334,197 @@ int voice_wait(int timeout)
 	
 	return(result);
 }
+
+
+
+
+
+/************************************************************************* 
+ **
+ *************************************************************************/
+
+int voice_play(char *name)
+{
+	unsigned char  modem_line_i[1];
+	unsigned char  modem_line_o[VBOXVOICE_BUFSIZE + 1];
+	int				total_byte_i;
+	int				total_byte_o;
+	int            modem_byte_i;
+	int            modem_byte_o;
+	int            result;
+	int            gotdle;
+	int	         desc;
+	char          *stop;
+	int	         i;
+
+	if ((!name) || (!*name))
+	{
+		log(LOG_W, "No message to play selected (ignored).\n");
+
+		return(0);
+	}
+
+	if ((stop = rindex(name, '/'))) name = ++stop;
+
+	log(LOG_D, "Playing \"%s\"...\n", name);
+
+
+	printstring(temppathname, "%s/msg/%s", voicevboxuser->home, name);
+
+   errno = 0;
+	desc  = open(temppathname, O_RDONLY);
+
+	if (desc == -1)
+	{
+		printstring(temppathname, "%s/msg/%s", PKGDATADIR, name);
+
+      errno = 0;
+		desc  = open(temppathname, O_RDONLY);
+	}
+
+	if (desc == -1)
+	{
+		log(LOG_W, "Can't open \"%s\" (%s).\n", name, strerror(errno));
+
+		return(0);
+	}
+
+
+	voicestat		= VBOXVOICE_STAT_OK;
+	gotdle			= 0;
+	total_byte_i	= 0;
+	total_byte_o	= 0;
+
+	while (voicestat == VBOXVOICE_STAT_OK)
+	{
+		modem_byte_i = 0;
+		modem_byte_o = 0;
+		result       = 0;
+
+		modem_set_timeout(5);
+
+		while ((modem_byte_o < VBOXVOICE_BUFSIZE) && (voicestat == VBOXVOICE_STAT_OK))
+		{
+			if ((i = read(desc, modem_line_i, 1)) != 1)
+			{
+				if (i != 0) log(LOG_W, "Can't read \"%s\" [%d] (%s).\n", name, i, strerror(errno));
+
+				voicestat |= VBOXVOICE_STAT_DONE;
+			}
+			else vboxmodem_raw_write(&vboxmodem, modem_line_i, 1);
+
+			if ((result = vboxmodem_raw_read(&vboxmodem, modem_line_i, 1)) == 1)
+			{
+				modem_byte_i++;
+
+				if (gotdle)
+				{
+					switch (*modem_line_i)
+					{
+						case ETX:
+							voicestat |= VBOXVOICE_STAT_HANGUP;
+							break;
+							
+						default:
+							break;
+					}
+					
+					gotdle = 0;
+				}
+				else
+				{
+					if (*modem_line_i == DLE)
+					{
+						modem_line_o[modem_byte_o++] = DLE;
+
+						gotdle = 1;
+					}
+
+					modem_line_o[modem_byte_o++] = *modem_line_i;
+				}
+			}
+			else break;
+		}
+
+		modem_set_timeout(0);
+
+		total_byte_o += modem_byte_o;
+		total_byte_i += modem_byte_i;
+
+		if (modem_byte_o > 0)
+		{
+			if ((total_byte_o > 1024) || (voicestat != VBOXVOICE_STAT_OK))
+			{
+				log_line(LOG_D, "Play: incoming %04d; outgoing %04d...\n", total_byte_i, total_byte_o);
+
+				total_byte_i = 0;
+				total_byte_o = 0;
+			}
+
+			if (voicedesc != -1) write(voicedesc, modem_line_o, modem_byte_o);
+			if (audiodesc != -1) write(audiodesc, modem_line_o, modem_byte_o);
+		}
+
+		if ((stop = ctrl_exists(voicevboxuser->home, "suspend", savettydname)))
+		{
+			log(LOG_D, "Control \"vboxctrl-suspend-%s\" detected: %s.\n", savettydname, stop);
+
+			voicestat |= VBOXVOICE_STAT_SUSPEND;
+		}
+
+		if ((stop = ctrl_exists(voicevboxuser->home, "audio", savettydname)))
+		{
+			log(LOG_D, "Control \"vboxctrl-audio-%s\" detected: %s.\n", savettydname, stop);
+
+			if (strcasecmp(stop, "HEAR") == 0) voice_hear(1);
+			if (strcasecmp(stop, "STOP") == 0) voice_hear(0);
+		}
+
+		if ((result != 1) || (modem_get_timeout()))
+		{
+			if (!modem_get_timeout())
+			{
+				log_line(LOG_W, "Can't read voice data (%s).\n", strerror(errno));
+
+				voicestat |= VBOXVOICE_STAT_TIMEOUT;
+			}
+			else voicestat |= VBOXVOICE_STAT_TIMEOUT;
+		}
+	}	
+
+	modem_set_timeout(0);
+
+	if (desc != -1) close(desc);
+
+	result = 0;
+
+	if (voicestat & VBOXVOICE_STAT_TOUCHTONE)
+	{
+		log_line(LOG_D, "Full touchtone sequence found!\n");
+
+		result = 1;
+	}
+
+	if (voicestat & VBOXVOICE_STAT_SUSPEND) result = 2;
+
+	if ((voicestat & VBOXVOICE_STAT_HANGUP) || (vboxmodem.nocarrier))
+	{
+		log_line(LOG_D, "Remote caller quit the call!\n");
+
+		voice_save(0);
+		voice_hear(0);		
+
+		modem_command(&vboxmodem, "", "NO CARRIER");
+
+		result = -1;
+	}
+	
+	return(result);
+}
+
+
+
+
 
 /*************************************************************************/
 /** voice_save():	Schaltet das mitspeichern der eingehenden Audiodaten	**/
@@ -419,7 +628,7 @@ int voice_hear(int mode)
 
 				return(voice_hear(-1));
 			}
-
+/*
 			i = ((VBOXVOICE_NUMFRAGS * VBOXVOICE_FRAGFACT) << 16) | VBOXVOICE_BUFEXP;
 
 			if (ioctl(audiodesc, SNDCTL_DSP_SETFRAGMENT, &i) == -1)
@@ -438,7 +647,7 @@ int voice_hear(int mode)
 				return(voice_hear(-1));
 			}
 
-			i = 0; /* Mono */
+			i = 0;
 
 			if (ioctl(audiodesc, SNDCTL_DSP_STEREO, &i) == -1)
 			{
@@ -447,7 +656,7 @@ int voice_hear(int mode)
 				return(voice_hear(-1));
 			}
 
-			i = 8000; /* Sampling rate */
+			i = 8000;
 
 			if (ioctl(audiodesc, SNDCTL_DSP_SPEED, &i) == -1)
 			{
@@ -455,6 +664,7 @@ int voice_hear(int mode)
 
 				return(voice_hear(-1));
 			}
+*/
 		}
 
 		return(0);

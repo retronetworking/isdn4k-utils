@@ -4,6 +4,21 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.5  1998/08/28 13:06:15  michael
+** - Removed audio full duplex mode. Sorry, my soundcard doesn't support
+**   this :-)
+** - Added Fritz's /dev/audio setup. Pipe to /dev/audio now works great
+**   (little echo but a clear sound :-)
+** - Added better control support. The control now has the ttyname appended
+**   (but there are some global controls without this) for controlling
+**   more than one vboxgetty for a user.
+** - Added support for "vboxcall" in the user spool directory. The file
+**   stores information about the current answered call (needed by vbox,
+**   vboxctrl or some other programs to create the right controls).
+** - Added support for Karsten's suspend mode (support for giving a line
+**   number is included also, but currently not used since hisax don't use
+**   it).
+**
 ** Revision 1.4  1998/07/06 09:05:31  michael
 ** - New control file code added. The controls are not longer only empty
 **   files - they can contain additional informations.
@@ -111,7 +126,7 @@ int scr_execute(char *name, struct vboxuser *user)
 
 	if (user)
 	{
-		printstring(temppathname, "%s/%s/scripts/%s", user->home, user->name, name);
+		printstring(temppathname, "%s/tcl/%s", user->home, name);
 
 		if (access(temppathname, F_OK|R_OK) == 0) canrun = 1;
 	}
@@ -299,7 +314,7 @@ int vbox_voice(VBOX_TCLFUNC)
 	int	rc;
 	int	i;
 
-	if (objc == 3)
+	if (objc >= 3)
 	{
 		cmd = Tcl_GetStringFromObj(objv[1], NULL);
 		arg = Tcl_GetStringFromObj(objv[2], NULL);
@@ -341,6 +356,36 @@ int vbox_voice(VBOX_TCLFUNC)
 						/* Nachricht(en) abspielen und dabei auch eingeh-	*/
 						/* ende Daten vom Modem bearbeiten.						*/
 
+ 					rc = 0;
+					i  = 2;
+
+					while (i < objc)
+					{
+						arg = Tcl_GetStringFromObj(objv[i], NULL);
+
+						if ((rc = voice_play(arg)) != 0) break;
+
+						i++;
+					}
+
+					switch (rc)
+					{
+						case 0:
+							Tcl_SetResult(intp, "OK", NULL);
+							break;
+
+						case 1:
+							Tcl_SetResult(intp, "TOUCHTONE", NULL);
+							break;
+
+						case 2:
+							Tcl_SetResult(intp, "SUSPEND", NULL);
+							break;
+
+						default:
+							Tcl_SetResult(intp, "HANGUP", NULL);
+							break;
+					}
 				}
 				break;
 
