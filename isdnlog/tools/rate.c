@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.45  1999/09/19 14:16:27  akool
+ * isdnlog-3.53
+ *
  * Revision 1.44  1999/09/16 20:27:22  akool
  * isdnlog-3.52
  *
@@ -1560,7 +1563,8 @@ int getZoneRate(RATE* Rate, int domestic, int first)
     found=0;
     if (z >= Provider[prefix].nZone)
       return -2;
-    if (Provider[prefix].Zone[z].Domestic != domestic) {
+    if (Provider[prefix].Zone[z].Domestic != domestic ||
+	Provider[prefix].Zone[z].Number[0] == 0) {
       z++;
       continue;  
     }  
@@ -1606,6 +1610,12 @@ int getZoneRate(RATE* Rate, int domestic, int first)
         strcat(countries, area);
 	olda=area;
       }  
+      else if(strcmp(Provider[prefix].Area[i].Code,"+")==0) {
+	countries = realloc(countries,strlen(countries)+2);
+	if(*countries)
+          strcat(countries, ",");
+        strcat(countries, "+");
+      }
       else if(zone > z)
         break;
     }  
