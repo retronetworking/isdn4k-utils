@@ -44,6 +44,9 @@ endif
 ifeq ($(CONFIG_AVMCAPICTRL),y)
 	SUBDIRS := $(SUBDIRS) avmb1
 endif
+ifeq ($(CONFIG_LOOPCTRL),y)
+	SUBDIRS := $(SUBDIRS) loop
+endif
 ifeq ($(CONFIG_IMON),y)
 	SUBDIRS := $(SUBDIRS) imon
 endif
