@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1998/03/08 11:42:58  luethje
+ * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
+ *
  * Revision 1.2  1997/04/03 22:34:51  luethje
  * splitt the files callerid.conf and ~/.isdn.
  *
@@ -47,6 +50,7 @@ static int add_Cur_Info(int channel, char *String);
 static int append_Old_Info(char *String);
 static char *Get_Address(char *Number);
 static int Set_Address(char *String);
+static int Exec_Remote_Cmd(char *String);
 static int Write_Caller_Message(int sock, CALL *info);
 static char *Build_Call_Info(CALL *call, int chan);
 static int save_messages(char *String, int channel, int stat);
@@ -297,6 +301,9 @@ int eval_message (int sock)
 				default:
 					switch (Msg)
 					{
+						case MSG_ISDN_CMD:
+							Exec_Remote_Cmd(sockets[sock].msgbuf.buf);
+							break;
 						case MSG_NEW_CALLER:
 							Set_Address(sockets[sock].msgbuf.buf);
 							break;
@@ -501,6 +508,15 @@ int Set_Address(char *String)
 {
 	/* Hier sollte die Adresse zur uebergebenen Telefonummer geliefert werden */
 	print_msg(PRT_DEBUG_CS,"New Address*%s*\n",String);
+	return 0;
+}
+
+/****************************************************************************/
+
+int Exec_Remote_Cmd(char *String)
+{
+	/* Hier ein Befehl ausfuehrt */
+	print_msg(PRT_DEBUG_CS,"Exec Command *%s*\n",String);
 	return 0;
 }
 

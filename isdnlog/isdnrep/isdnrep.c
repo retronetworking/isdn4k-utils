@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.40  1998/06/14 15:34:23  akool
+ * AVM B1 support (Layer 3)
+ * Telekom's new currency DEM 0,121 supported
+ * Disable holiday rates #ifdef ISDN_NL
+ * memory leak in "isdnrep" repaired
+ *
  * Revision 1.39  1998/06/07 21:09:43  akool
  * - Accounting for the following new providers implemented:
  *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
@@ -354,6 +360,8 @@
 #define H_TABLE_COLOR1 "#CCCCFF"
 #define H_TABLE_COLOR2 "#FFCCCC"
 #define H_TABLE_COLOR3 "#CCFFCC"
+#define H_TABLE_COLOR4 "#FFFFCC"
+#define H_TABLE_COLOR5 "#CCFFFF"
 
 #define H_FORM_ON      "<FORM METHOD=\"put\" ACTION=\"%s\">"
 #define H_FORM_OFF     "</FORM>"
@@ -456,6 +464,8 @@ static char *create_vbox_file(char *file, int *compression);
 static int htoi(char *s);
 static char **get_http_args(char *str, int *index);
 static char *url_unescape(char *str);
+static int app_fmt_string(char *target, int targetlen, char *fmt, int condition, char *value);
+static int find_format_length(char *string);
 
 /*****************************************************************************/
 
@@ -884,7 +894,7 @@ int is_sondernummer(char *num)
 static int print_bottom(double unit, char *start, char *stop)
 {
   auto     char       string[BUFSIZ];
-  register int	      i, j, k, firsttime = 1;
+  register int	      i, j, k;
   register char      *p = NULL;
   sum_calls           tmp_sum;
   auto     double     s = 0.0, s2 = 0.0;
@@ -936,14 +946,14 @@ static int print_bottom(double unit, char *start, char *stop)
 	{
 		if ((j == DIALOUT && !incomingonly) || (!outgoingonly && j == DIALIN))
 		{
-			sprintf(string,"\n%s Summary for %s",j==DIALOUT?"DIALOUT":"DIALIN",
+			sprintf(string,"%s Summary for %s",j==DIALOUT?"DIALOUT":"DIALIN",
 			              print_diff_date(start,stop));
 
 			h_percent = 80.0;
 			h_table_color = H_TABLE_COLOR2;
 			print_line2(F_BODY_HEADER,"");
 			print_line2(F_BODY_HEADERL,"%s",string);
-			strich(3);
+			strich(1);
 
 			for (i = 0 /* mymsns */; i < knowns; i++) {
 				if (known[i]->usage[j]) {
@@ -962,55 +972,97 @@ static int print_bottom(double unit, char *start, char *stop)
 		}
 	}
 
-	h_percent = 60.0;
-	h_table_color = H_TABLE_COLOR3;
-	get_format("Zone %c : %-15.15s %4d call(s) %10.10s  %s");
-	print_line2(F_BODY_HEADER,"");
+	if (!incomingonly)
+	{
+		h_percent = 60.0;
+		h_table_color = H_TABLE_COLOR3;
+		get_format("%-4.4s %c : %-21.21s %4d call(s) %10.10s  %12s");
+		print_line2(F_BODY_HEADER,"");
+		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Zone");
+		strich(1);
 
-	for (i = 1; i < MAXZONES; i++)
-		if (zones[i]) {
+		for (i = 1; i < MAXZONES; i++)
+			if (zones[i]) {
 
-			p = "";
+				p = "";
 
-			switch (i) {
-				case 1 : p = "CityCall";   break;
-				case 2 : p = "RegioCall";  break;
-				case 3 :
-				case 4 : p = "GermanCall"; break;
-			       default : p = "GlobalCall"; break;
-			} /* switch */
+				switch (i) {
+					case 1 : p = "CityCall";   break;
+					case 2 : p = "RegioCall";  break;
+					case 3 :
+					case 4 : p = "GermanCall"; break;
+			    default: p = "GlobalCall"; break;
+				} /* switch */
 
-			print_line3(NULL,
-			          (char) i+48, p, zones_usage[i], double2clock(zones_dur[i]),
-			          print_currency(zones_dm[i],0));
+				print_line3(NULL,
+				          "Zone", (char) i+48, p, zones_usage[i],
+				          double2clock(zones_dur[i]), print_currency(zones_dm[i],0));
 		} /* if */
 
-	if (known[knowns-1]->eh > 0)
-	{
-		print_line3(NULL,
-		          'x', S_UNKNOWN,
-		          known[knowns-1]->usage[DIALOUT], double2clock(known[knowns-1]->dur[DIALOUT]),
+		if (known[knowns-1]->eh > 0)
+		{
+			print_line3(NULL,
+			          'x', S_UNKNOWN,
+			          known[knowns-1]->usage[DIALOUT], double2clock(known[knowns-1]->dur[DIALOUT]),
 #ifdef ISDN_NL
-		          print_currency(known[knowns-1]->eh * unit + known[knowns-1]->usage[DIALOUT] * 0.0825,0));
+			          print_currency(known[knowns-1]->eh * unit + known[knowns-1]->usage[DIALOUT] * 0.0825,0));
 #else
-		          print_currency(known[knowns-1]->eh * unit, 0));
+			          print_currency(known[knowns-1]->eh * unit, 0));
 #endif
+		}
+
+		print_line2(F_BODY_BOTTOM2,"");
+
+		h_percent = 60.0;
+		h_table_color = H_TABLE_COLOR4;
+		get_format("%-8.8s %05s %-15.15s %4d call(s) %10.10s  %12s");
+		print_line2(F_BODY_HEADER,"");
+		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by Provider");
+		strich(1);
+
+		for (i = 1; i < 100; i++) {
+			sprintf(string,"010%02d",i);
+
+		  if (usage_provider[i]) {
+		    print_line3(NULL, "Provider", string, Providername(i),
+		      usage_provider[i],
+		      double2clock(duration_provider[i]),
+		      print_currency(pay_provider[i], 0));
+       } /* if */
+    } /* for */
+
+		print_line2(F_BODY_BOTTOM2,"");
+
+		h_percent = 60.0;
+		h_table_color = H_TABLE_COLOR5;
+		get_format("%-30.30s %4d call(s) %10.10s  %12s");
+		print_line2(F_BODY_HEADER,"");
+		print_line2(F_BODY_HEADERL,"Outgoing calls ordered by MSN");
+		strich(1);
+
+		for (k = 0; k <= mymsns; k++) {
+			if (msn_sum[k]) {
+
+				print_line3(NULL, ((k == mymsns) ? "UNKNOWN" : known[k]->who),
+				  usage_sum[k],
+				  double2clock(dur_sum[k]),
+				  print_currency(msn_sum[k], 0));
+
+				s += msn_sum[k];
+				s1 += usage_sum[k];
+				s2 += dur_sum[k];
+			} /* if */
+ 		} /* for */
 	}
 
+#if 0
+  if (s) {
+		strich(2);
+		print_line3(NULL, "TOTAL", s1, double2clock(s2), print_currency(s, 0));
+  } /* if */
+#endif
+
 	print_line2(F_BODY_BOTTOM2,"");
-
-	print_msg(PRT_NORMAL,"\n");
-
-	get_format("Provider 010%02d %-15.15s %4d call(s) %10.10s  %s");
-
-	for (i = 1; i < 100; i++) {
-	  if (usage_provider[i]) {
-	    print_line3(NULL, i, Providername(i),
-	      usage_provider[i],
-	      double2clock(duration_provider[i]),
-	      print_currency(pay_provider[i], 0));
-          } /* if */
-        } /* for */
 
 	if (seeunknowns && unknowns) {
 		print_msg(PRT_NORMAL,"\n\nUnknown caller(s)\n");
@@ -1080,34 +1132,6 @@ static int print_bottom(double unit, char *start, char *stop)
 		} /* for */
 	} /* if */
 
-#if 1 /* AK:05-May-98 */
-        for (k = 0; k <= mymsns; k++) {
-          if (msn_sum[k]) {
-
-            if (firsttime) {
-              firsttime = 0;
-              print_msg(PRT_NORMAL,"\n");
-	      print_msg(PRT_NORMAL,"\n");
-            } /* if */
-
-            print_msg(PRT_NORMAL, "%s\t\t%s %6d call(s)  %s\n",
-              ((k == mymsns) ? "UNKNOWN" : known[k]->who),
-              print_currency(msn_sum[k], 0),
-              usage_sum[k],
-              double2clock(dur_sum[k]));
-
-            s += msn_sum[k];
-            s1 += usage_sum[k];
-            s2 += dur_sum[k];
-          } /* if */
-        } /* for */
-
-        if (s) {
-          print_msg(PRT_NORMAL, "-----------------------------------------------------\n");
-          print_msg(PRT_NORMAL, "%s\t\t%s %6d call(s)  %s\n",
-            "TOTAL", print_currency(s, 0), s1, double2clock(s2));
-        } /* if */
-#endif
 	return 0;
 }
 
@@ -1582,7 +1606,7 @@ static int append_string(char **string, prt_fmt *fmt_ptr, char* value)
 	else
 		tmpfmt = tmpfmt2;
 
-	sprintf(tmpstr,tmpfmt,condition?html_conv(value):value);
+	app_fmt_string(tmpstr,BUFSIZ*3-1,tmpfmt,condition,value);
 	
 	if (*string == NULL)
 		*string = (char*) calloc(strlen(tmpstr)+1,sizeof(char));
@@ -1979,11 +2003,15 @@ static void how_expensive(one_call *cur_call)
 
 static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 {
-        register int i, pro, tarifz;
-	auto time_t  t1, t2;
-	auto double  takt;
-  auto int     computed = 0, go, zone = 1, zeit = -1;
+	register int i, pro;
+  auto int     computed = 0;
 	extern double pay(time_t ts, int dauer, int tarifz, int pro);
+#if 0
+	register int tarifz;
+	auto double  takt;
+  auto int     go, zone = 1, zeit = -1;
+	auto time_t  t1, t2;
+#endif
 
 
 #if 0
@@ -1999,11 +2027,11 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
         how_expensive(cur_call);
 
 #if 0
-#if 0
+#	if 0
 	if (compute && !currency_factor &&
 	    !cur_call->dir && ((cur_call->eh == -1) ||
 	    (!cur_call->eh && cur_call->duration && cur_call->cause == -1))) { /* DIALOUT, keine AOCE Meldung */
-#else
+#	else
 	go = 0;
 
 	if ((cur_call->eh == -1) && !cur_call->dir) { /* Rauswahl, Gebuehr unbekannt */
@@ -2061,12 +2089,12 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
           go = 0;
 
           usage_provider[pro]++;
-	  duration_provider[pro] += cur_call->duration;
-	  pay_provider[pro] += cur_call->dm;
+				  duration_provider[pro] += cur_call->duration;
+				  pay_provider[pro] += cur_call->dm;
 	} /* if */
 
 	if (go) {
-#endif
+#	endif
 		t1 = cur_call->t;
 		t2 = cur_call->t + cur_call->duration;
 
@@ -2090,14 +2118,10 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 		} /* while */
 	} /* if */
 #endif
-        pro = cur_call->provider;
+	pro = cur_call->provider;
 
 	if (pro == -1)
-          pro = 33; /* Telekom */
-
-        usage_provider[pro]++;
-	duration_provider[pro] += cur_call->duration;
-	pay_provider[pro] += cur_call->dm;
+		pro = 33; /* Telekom */
 
 	if (cur_call->duration || (cur_call->eh > 0))
 	{
@@ -2121,6 +2145,10 @@ static int print_entries(one_call *cur_call, double unit, int *nx, char *myname)
 			}
 		}
 		else {
+
+			usage_provider[pro]++;
+			duration_provider[pro] += cur_call->duration;
+			pay_provider[pro] += cur_call->dm;
 
 			if (nx[CALLED] == -1) {
 				known[knowns-1]->eh += cur_call->eh;
@@ -3026,6 +3054,7 @@ static int html_bottom(char *_progname, char *start, char *stop)
 	if ((ptr = get_time_string(_begintime,endtime,0,1)) != NULL)
 		print_msg(PRT_NORMAL,H_LINK_DAY,_myname,ptr,"next month");
 
+	print_msg(PRT_NORMAL,"\n<BR><H6>%s %s  %s</H6>\n",progname,VERSION,__DATE__);
 	print_msg(PRT_NORMAL,"\n</BODY>\n");
 	print_msg(PRT_NORMAL,"<HEAD><TITLE>%s %s\n",progname,print_diff_date(start,stop));
 	print_msg(PRT_NORMAL,"</TITLE>\n");
@@ -3717,3 +3746,66 @@ static char **get_http_args(char *str, int *index)
 
 /*****************************************************************************/
 
+static int find_format_length(char *string)
+{
+	int len;
+	char type;
+	char* dest;
+
+	if (string == NULL)
+		return -1;
+
+	while (*string != '\0')
+	{
+		if (*string++ == '%')
+		{
+			while(index("0123456789-",*string)) string++;
+
+			if (*string == '\0')
+				return -1;
+
+			if (*string == '.')
+			{
+				if (sscanf(++string,"%d%c",&len,&type) == 2 && type == 's' && len >= 0)
+				{
+					if ((dest = index(--string,'s')) == NULL)
+						return -1;
+
+					memmove(string,dest,strlen(dest)+1);
+					
+					return len;
+				}
+
+				if (*string == 's')
+					return 0;
+
+				return -1;
+			}
+			else if (*string == 's')
+				return -1;
+
+		}
+	}
+
+	return -1;
+}
+
+/*****************************************************************************/
+
+static int app_fmt_string(char *target, int targetlen, char *fmt, int condition, char *value)
+{
+	char tmpfmt[BUFSIZ];
+	int len;
+
+	strcpy(tmpfmt,fmt);
+	len = find_format_length(tmpfmt);
+
+	if (len != -1 && len > 0 && strlen(value) > len)
+		value[len] = '\0';
+
+	value = condition?html_conv(value):value;
+
+	return snprintf(target,targetlen,tmpfmt,value);
+}
+
+/*****************************************************************************/
