@@ -1130,27 +1130,28 @@ free_wordlist(wp)
  */
 static void auth_script(int linkunit,char *script)
 {
-		char strspeed[32];
-		struct passwd *pw;
-		char struid[32];
-		char *user_name;
-		char *argv[8];
+	char strspeed[32];
+	struct passwd *pw;
+	char struid[32];
+	char *user_name;
+	char *argv[8];
 
-		if ((pw = getpwuid(getuid())) != NULL && pw->pw_name != NULL)
-				user_name = pw->pw_name;
-		else {
-				sprintf(struid, "%d", getuid());
-				user_name = struid;
-		}
-		sprintf(strspeed, "%d", 64000);
+	if ((pw = getpwuid(getuid())) != NULL && pw->pw_name != NULL)
+		user_name = pw->pw_name;
+	else {
+		sprintf(struid, "%d", getuid());
+		user_name = struid;
+	}
+	sprintf(strspeed, "%d", 64000);
 
-		argv[0] = script;
-		argv[1] = lns[linkunit].ifname;
-		argv[2] = lns[linkunit].peer_authname;
-		argv[3] = user_name;
-		argv[4] = lns[linkunit].devnam;
-		argv[5] = strspeed;
-		argv[6] = NULL;
+	argv[0] = script;
+	argv[1] = lns[linkunit].ifname;
+	argv[2] = lns[linkunit].peer_authname;
+	argv[3] = user_name;
+	argv[4] = lns[linkunit].devnam;
+	argv[5] = strspeed;
+	argv[6] = lns[linkunit].pci.remote_num;
+	argv[7] = NULL;
 
 	run_program(script, argv, 0,linkunit);
 }
