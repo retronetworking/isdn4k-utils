@@ -165,6 +165,11 @@ int main(int argc,char **argv)
 		exit(1);
 	}
 
+	/*
+	 * Initialize magic number package.
+	 */
+	magic_init();
+
 	for(i=0;i<NUM_PPP;i++) {
 		lns[i].openfails = 0;
 		lns[i].initfdflags = -1;
@@ -245,11 +250,6 @@ int main(int argc,char **argv)
       }
       syslog(LOG_NOTICE,devstr);
     }
-
-    /*
-     * Initialize magic number package.
-     */
-    magic_init();
 
     /*
      * Detach ourselves from the terminal, if required,

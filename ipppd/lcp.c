@@ -190,6 +190,7 @@ static void lcp_init(int unit)
     {
       *(u_int32_t *) (&our_discr_addr[0]) = magic();
       *(u_int32_t *) (&our_discr_addr[4]) = magic();
+     
       first_call = 0;
     }
 

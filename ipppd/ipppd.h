@@ -179,6 +179,7 @@ extern char sys_rcsid[];
 
 extern int maxconnect;
 extern int      usefirstip,useifip,useifmtu;
+extern int      deldefaultroute;/* delete default gw, if it exists */
 extern int      numdev;		/* number of handled devices */
 extern int	debug;		/* Debug flag */
 extern int	kdebugflag;	/* Tell kernel to print debug messages */
