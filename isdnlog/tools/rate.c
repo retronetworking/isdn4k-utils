@@ -19,6 +19,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.66  1999/12/02 19:28:03  akool
+ * isdnlog-3.73
+ *  - isdnlog/tools/telrate/telrate.cgi.in faster
+ *  - doc/isdnrate.man ... -P
+ *  - isdnlog/tools/isdnrate.c ... -P
+ *  - isdnlog/tools/NEWS ... -P
+ *  - isdnlog/tools/rate-at.c ... 194040
+ *  - isdnlog/rate-at.dat
+ *  - isdnlog/tools/rate.c ... SIGSEGV
+ *
  * Revision 1.65  1999/12/01 21:47:25  akool
  * isdnlog-3.72
  *   - new rates for 01051
@@ -603,8 +613,8 @@ static void notice (char *fmt, ...)
   va_end (ap);
 #ifdef STANDALONE
   fprintf(stderr, "%s\n", msg);
-// #else
-//   print_msg(PRT_INFO, "%s\n", msg);
+#else
+  print_msg(PRT_INFO, "%s\n", msg);
 #endif
 }
 
@@ -618,8 +628,8 @@ static void warning (char *file, char *fmt, ...)
   va_end (ap);
 #ifdef STANDALONE
   fprintf(stderr, "%s\n", msg);
-// #else
-//   print_msg(PRT_WARN, "%s @%d\n", msg, line);
+#else
+  print_msg(PRT_WARN, "%s:@%d %s\n", basename(file), line, msg);
 #endif
 }
 
@@ -633,8 +643,8 @@ static void error (char *file, char *fmt, ...)
   va_end (ap);
 #ifdef STANDALONE
   fprintf(stderr, "%s\n", msg);
-// #else
-//   print_msg(PRT_ERR, "%s\n", msg);
+#else
+  print_msg(PRT_ERR, "%s:@%d %s\n", file, line, msg);
 #endif
 }
 
@@ -919,6 +929,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   int      zone, zone1, zone2, day1, day2, hour1, hour2, freeze, delay;
   int     *number, numbers;
   int      i, n, t, u, v, z;
+  int      any;
 
   initTelNum(); /* we need defnum */
   mytld = getMynum()->tld;
@@ -952,6 +963,15 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	  continue;
 	}
 	prefix = strtol(s, &s ,10);
+	any = 0;
+	for (i=0; i<nBooked; i++)
+	  if(prefix==Booked[i]._prefix) {
+	    warning(conf, "Duplicate entry provider %d", prefix);
+	    any++;
+	    break;
+	  }
+	if(any)
+	  break;
 	Booked = realloc(Booked, (nBooked+1)*sizeof(BOOKED));
 	Booked[nBooked]._prefix=prefix;
 	Booked[nBooked]._variant=UNKNOWN;
@@ -1029,11 +1049,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	Provider[prefix].Zone[zone].Domestic = (where & DOMESTIC) == DOMESTIC;
 	line--;
 	if (Provider[prefix].Zone[zone].nHour==0)
-	  whimper (dat, "Zone has no 'T:' Entries", zone);
-#if 1 /* AK:28Oct99 - lt 6.nov 99 turn off PRT_INFO if you want see it */
+	  if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
+	    whimper (dat, "Zone %d has no 'T:' Entries", zone);
 	if (!(where & FEDERAL))
 	  whimper (dat, "Provider %d has no default domestic zone (missing 'A:%s')", prefix, mycountry);
-#endif
 	line++;
       }
       else if(nProvider) { /* silently ignore empty providers */
@@ -1124,7 +1143,8 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       s+=2; while (isblank(*s)) s++;
       snprintf (path, LENGTH, dom, s);
       if (initZone(prefix, path, &c)==0) {
-	if (msg && *c) whimper ("%s", c);
+	if (msg && *c) 
+	  print_msg(PRT_NORMAL, "%s\n", c);
       } else {
 	error (dat, c);
       }
@@ -1139,7 +1159,8 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 	Provider[prefix].Zone[zone].Domestic = (where & DOMESTIC) == DOMESTIC;
 	line--;
 	if (Provider[prefix].Zone[zone].nHour==0)
-	  whimper (dat, "Zone has no 'T:' Entries", zone);
+	  if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
+	    whimper (dat, "Zone %d has no 'T:' Entries", zone);
 	line++;
       }
       s+=2;
@@ -1547,11 +1568,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
     Provider[prefix].Zone[zone].Domestic = (where & DOMESTIC) == DOMESTIC;
     line--;
     if (Provider[prefix].Zone[zone].nHour==0)
-      whimper (dat, "Zone has no 'T:' Entries", zone);
-#if 1 /* AK:28Oct99 - lt 6.nov 99 turn off PRT_INFO if you want see it */
+      if (zone) /* AK:17Dec99 Zone=0 is per definition free of charge */
+        whimper (dat, "Zone %d has no 'T:' Entries", zone);
     if (!(where & FEDERAL))
       whimper (dat, "Provider %d has no default domestic zone (missing 'A:%s')", prefix, mycountry);
-#endif
     line++;
   }
   else if(nProvider) { /* silently ignore empty providers */

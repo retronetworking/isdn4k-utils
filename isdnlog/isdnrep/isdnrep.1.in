@@ -36,33 +36,6 @@ is also given.
 Display numbers instead of the aliases for those numbers.
 
 .TP
-.B -c zone	compute="zone"
-This option can be used to define which default zone unknown called
-numbers ("calling ?") are in, if no AOC-E (advice of charge at end of call)
-messages are received. This way isdnrep "guesses" what the cost of the
-call was.
-
-Values for "zone" may be:
-
-.RS
-.TP 4
-0
-don't calculate anything, assign zero cost to these unknown calls
-.TP
-1
-assume "city zone"
-.TP
-2
-assume "regio-50 zone"
-.TP
-3
-assume "regio-200 zone"
-.TP
-4
-assume long distance
-.RE
-
-.TP
 .B \-fFILE
 The file from which to generate the report. This is usually
 @LOGFILE@, or whatever is configured in @I4LCONFDIR@/@CONFFILE@ as
@@ -110,9 +83,13 @@ deleted from the file. Careless use can result in all entries being
 deleted, e.g. with "isdnrep -d -".
 
 .TP
-.B \-v	verbose
+.B \-E	print Errors
 Display all connections and connection attempts. Without this option,
 only successful connections are displayed.
+
+.TP
+.B \-v	verbose
+Display warnings on startup.
 
 .TP
 .B \-p [n][m]'number'[,[m]'number'...]	phonenumber

@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1999/12/16 23:08:28  akool
+ * isdnlog-3.78
+ *  - isdnlog/tools/isdnrate.c ... new sOcket option
+ *  - isdnlog/tools/NEWS ... new sOcket option
+ *  - doc/isdnrate.man ... ditto
+ *  - isdnlog/tools/telrate/config.in ... ditto
+ *  - isdnlog/tools/telrate/telrate.cgi.in ... ditto
+ *  - isdnlog/tools/telrate/README-telrate ditto
+ *
  * Revision 1.27  1999/12/02 19:28:02  akool
  * isdnlog-3.73
  *  - isdnlog/tools/telrate/telrate.cgi.in faster
@@ -226,14 +235,14 @@ int     print_msg(int Level, const char *fmt,...)
   auto va_list ap;
   auto char String[BUFSIZ * 3];
 
-  if ((Level > 1 && !verbose) || (Level > 2 && verbose < 2))
+  if ((Level > PRT_ERR && !verbose) || (Level > PRT_WARN && verbose < 2))
     return (1);
 
   va_start(ap, fmt);
   (void) vsnprintf(String, BUFSIZ * 3, fmt, ap);
   va_end(ap);
 
-  fprintf(Level == PRT_NORMAL ? stdout : stderr, "%s", String);
+  fprintf(stderr, "%s", String);
 
   return (0);
 }				/* print_msg */

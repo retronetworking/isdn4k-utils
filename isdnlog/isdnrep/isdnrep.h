@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1999/07/18 08:40:37  akool
+ * fix from Michael
+ *
  * Revision 1.15  1999/07/12 11:37:37  calle
  * Bugfix: isdnrep defined print_msg as function pointer, the object files
  *         in tools directory, declare it as external function.
@@ -143,10 +146,10 @@ _EXTERN int     print_msg(int Level, const char *, ...);
 _EXTERN int     incomingonly    _SET_0;
 _EXTERN int     outgoingonly    _SET_0;
 _EXTERN int     verbose         _SET_0;
+_EXTERN int     print_failed    _SET_0;
 _EXTERN int	bill		_SET_0;
 _EXTERN int     timearea        _SET_0;
 _EXTERN int     phonenumberonly _SET_0;
-_EXTERN int     compute         _SET_0;
 _EXTERN int     delentries      _SET_0;
 _EXTERN int     numbers         _SET_0;
 _EXTERN int     html         		_SET_0;
@@ -156,7 +159,9 @@ _EXTERN char	  timestring[256] _SET_EMPTY;
 _EXTERN char	  *lineformat     _SET_NULL;
 _EXTERN time_t  begintime       _SET_0;
 _EXTERN time_t  endtime         _SET_0;
+#if 0 /* fixme remove */
 _EXTERN int     preselect	_SET_33;
+#endif
 
 
 #undef _SET_NULL
