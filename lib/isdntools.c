@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1997/04/15 00:20:17  luethje
+ * replace variables: some bugfixes, README comleted
+ *
  * Revision 1.10  1997/04/08 21:57:04  luethje
  * Create the file isdn.conf
  * some bug fixes for pid and lock file
@@ -345,8 +348,10 @@ int handle_runfiles(const char *_progname, char **_devices, int flag)
 	static char   progname[SHORT_STRING_SIZE] = "";
   static char **devices = NULL;
   auto   char   string[PATH_MAX];
+  auto   char   string2[SHORT_STRING_SIZE];
   auto   char  *Ptr = NULL;
   auto   int    RetCode = -1;
+	auto   FILE  *fp;
 
 
 	if (progname[0] == '\0' || devices == NULL)
@@ -403,8 +408,20 @@ int handle_runfiles(const char *_progname, char **_devices, int flag)
 		while (*devices != NULL)
 		{
 			sprintf(string,"%s%c%s%s",LOCKDIR,C_SLASH,LOCKFILE,*devices);
-			if (unlink(string))
-					print_msg("Can not remove file %s (%s)!\n", *devices, strerror(errno));
+
+			if ((fp = fopen(string, "r")) != NULL)
+			{
+				if (fgets(string2,SHORT_STRING_SIZE,fp) != NULL)
+				{
+					if (atoi(string2) == (int)getpid())
+					{
+						if (unlink(string))
+							print_msg("Can not remove file %s (%s)!\n", string, strerror(errno));
+					}
+				}
+
+				fclose(fp);
+			}
 
 			devices++;
 		}

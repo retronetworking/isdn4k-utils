@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/04/08 00:02:17  luethje
+ * Bugfix: isdnlog is running again ;-)
+ * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
+ * README completed
+ * Added some values (countrycode, areacode, lock dir and lock file) to
+ * the global menu
+ *
  * Revision 1.4  1997/04/03 22:34:50  luethje
  * splitt the files callerid.conf and ~/.isdn.
  *
@@ -181,6 +188,7 @@ extern socket_queue *sockets;
 _EXTERN FILE   *flog;    /* /var/adm/isdn.log          */
 _EXTERN FILE   *fcons;   /* /dev/ttyX      (or stderr) */
 _EXTERN FILE   *fprot;   /* /tmp/isdnctrl0 	       */
+_EXTERN FILE   *fout;    /* outfile 	       */
 
 _EXTERN int     first_descr;
 _EXTERN int     chan;
@@ -223,6 +231,7 @@ _EXTERN int	width;
 _EXTERN	int	watchdog;
 _EXTERN char   *isdnctrl;
 _EXTERN	char    isdnctrl2[FNSIZE];
+_EXTERN	char   *outfile;
 
 _EXTERN IFO     ifo[ISDN_MAX_CHANNELS];
 _EXTERN IO      io[ISDN_MAX_CHANNELS];

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/04/15 00:20:19  luethje
+ * replace variables: some bugfixes, README comleted
+ *
  * Revision 1.4  1997/04/10 23:32:35  luethje
  * Added the feature, that environment variables are allowed in the config files.
  *
@@ -96,6 +99,7 @@ _EXTERN int match(register char *p, register char *s, int flags);
 _EXTERN int is_double (char *string, double *value);
 _EXTERN int is_integer (char *string, long int *value);
 _EXTERN char *Replace_Variable(char *String);
+_EXTERN char *int2str(int value, int prec);
 
 #undef _EXTERN
 

@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.6  1997/04/08 00:02:12  luethje
+ * Bugfix: isdnlog is running again ;-)
+ * isdnlog creates now a file like /var/lock/LCK..isdnctrl0
+ * README completed
+ * Added some values (countrycode, areacode, lock dir and lock file) to
+ * the global menu
+ *
  */
 
 #define _FUNCTIONS_C_
@@ -77,6 +84,9 @@ void _Exit(char *File, int Line, int RetCode) /* WARNING: RetCode==-9 does _not_
   } /* if */
 
   closelog();
+
+	if (fout)
+		fclose(fout);
 
 #ifdef POSTGRES
   dbClose();
@@ -260,14 +270,23 @@ int print_msg(int Level, const char *fmt, ...)
   } /* if */
 
   if (Level & message)
+  {
     if (fcons == NULL) {
       fputs(width ? s : String, stderr);
       fflush(stderr);
     }
-    else {
+    else 
+    if (!fout){
       fputs(width ? s : String, fcons);
       fflush(fcons);
     } /* else */
+
+    if (fout)
+    {
+      fputs(width ? s : String, fout);
+      fflush(fout);
+    }
+  }
 
   if (Level & xinfo)
     print_from_server(String);

@@ -18,6 +18,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/04/15 00:20:18  luethje
+ * replace variables: some bugfixes, README comleted
+ *
  * Revision 1.4  1997/04/10 23:32:35  luethje
  * Added the feature, that environment variables are allowed in the config files.
  *
@@ -617,6 +620,25 @@ char *Replace_Variable(char *String)
 			Ptr++;
 		}
 	}
+
+	return RetCode;
+}
+
+/****************************************************************************/
+
+#define MAX_PREC 9
+
+char *int2str(int value, int prec)
+{
+	static char RetCode[MAX_PREC+1];
+
+	if (prec < 0 || prec > MAX_PREC)
+	{
+		print_msg("Error: precision %d is out of range (0-%d)!\n",prec,MAX_PREC);
+		*RetCode = '\0';
+	}
+	else
+		sprintf(RetCode,"%*d",prec,value);
 
 	return RetCode;
 }

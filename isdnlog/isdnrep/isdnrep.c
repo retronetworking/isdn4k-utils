@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1997/05/06 22:13:31  luethje
+ * bugfixes in HTML-Code of the isdnrep
+ *
  * Revision 1.16  1997/05/05 21:04:21  luethje
  * README completed
  * some changes for the isdnmon
@@ -985,6 +988,9 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				/* Out-Bytes per second: */
 				/* Benoetigt Range! */
 				case 'p': colsize[i] = append_string(&string,*fmtstring,set_byte_string(GET_OUT|GET_BPS,cur_call->duration?cur_call->obytes/(double)cur_call->duration:0.0));
+				          break;
+				/* SI: */
+				case 'S': colsize[i] = append_string(&string,*fmtstring,int2str(cur_call->si,2));
 				          break;
 				/* there are dummy entries */
 				case 'c': 
