@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1998/10/22 18:22:43  luethje
+ * isdnrep: suppress some messages
+ * isdnlog: remove function Pathfind()
+ *
  * Revision 1.11  1998/10/13 22:17:15  luethje
  * isdnlog: evaluate the variable PATH for program starts.
  *
@@ -210,7 +214,7 @@ int Ring(info_args *Cmd, char *Opts[], int Die, int Async)
 
 		if (GetArgs(Command,Args,Opts,64) == -1)
 		{
-			print_msg(PRT_ERR, "Can't start \"%s\" with execvp().\n", Args[0]);
+			print_msg(PRT_ERR, "Can't start \"%s\": Invalid arguments\n", Args[0]);
 			return -1;
 		}
 
@@ -240,7 +244,7 @@ int Ring(info_args *Cmd, char *Opts[], int Die, int Async)
 
 /*			         execvp(Pathfind(Args[0],NULL,NULL), Args);*/
 			         execvp(Args[0], Args);
-			         print_msg(PRT_ERR, "Can't start \"%s\" with execvp().\n", Args[0]);
+			         print_msg(PRT_ERR, "Can't start \"%s\" with execvp(): %s\n", Args[0],strerror(errno));
 			         /* Alarm(); */
 			         exit(-1);
 			         break;

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1998/03/20 07:52:13  calle
+ * Allow readconf to read multilink configs with more than 2 channels.
+ *
  * Revision 1.7  1997/10/27 00:05:03  fritz
  * Fixed typo.
  *
@@ -186,6 +189,11 @@ static char* readoptions(int fd, char *name, int is_master, section *CSec, secti
 
 	if (Set_Entry(SubSec,interface,CONF_ENT_SECURE, cfg.secure?"on":"off", C_OVERWRITE | C_WARN) == NULL)
 		return NULL;
+
+#ifdef ISDN_NET_DM_OFF
+	if (Set_Entry(SubSec,interface,CONF_ENT_DIALMODE, cfg.dialmode == ISDN_NET_DM_MANUAL?"manual":cfg.dialmode == ISDN_NET_DM_AUTO?"auto":"off", C_OVERWRITE | C_WARN) == NULL)
+		return NULL;
+#endif
 
 	if (cfg.callback)
 	{
@@ -387,6 +395,17 @@ int readconfig(int fd, char *file)
 				exec_args(fd,3,argv);
 			}
 			else
+#ifdef ISDN_NET_DM_OFF
+			if (!strcmp(Entry->name,CONF_ENT_DIALMODE))
+			{
+				argv[0] = cmds[DIALMODE].cmd;
+				argv[1] = name;
+				argv[2] = Entry->value;
+				argv[3] = NULL;
+				exec_args(fd,3,argv);
+			}
+			else
+#endif
 			if (!strcmp(Entry->name,CONF_ENT_CALLBACK))
 			{
 				argv[0] = cmds[CALLBACK].cmd;
