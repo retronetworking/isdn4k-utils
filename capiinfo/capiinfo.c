@@ -14,6 +14,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  2000/06/12 08:51:04  kai
+ * show supported supplementary services
+ *
  * Revision 1.2  1999/09/10 17:20:33  calle
  * Last changes for proposed standards (CAPI 2.0):
  * - AK1-148 "Linux Extention"
@@ -201,7 +204,7 @@ int main(int argc, char **argv)
 	   continue;
        }
        if (cmsg.Info != 0x0000) {
-	   fprintf(stderr, "FAC GET - (Info)\n");
+	   fprintf(stderr, "FAC GET - (Info %#x)\n", cmsg.Info);
 	   continue;
        }
        if (cmsg.FacilityConfirmationParameter[0] != 0x09) {
@@ -218,6 +221,7 @@ int main(int argc, char **argv)
        
        printf("\nSupplementary services support: 0x%08x\n", SuppServices);
        showbitvalues(SupportedServices, SuppServices);
+       printf("\n");
    }
    return 0;
 }

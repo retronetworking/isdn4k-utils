@@ -2048,7 +2048,7 @@ int lcp_printpkt(u_char *p,int plen,void (*printer)(void*,char*,...),void *arg)
 		case CI_MPMRRU:
               p+=2;
               GETSHORT(cishort,p);
-              printer(arg,"MPmrru 0x%x",cishort);
+              printer(arg,"MPmrru %d",cishort);
               break;
             case CI_MPSHORTSEQ:
               p+=2;
