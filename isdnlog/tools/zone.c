@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.16  1999/07/31 09:25:49  akool
+ * getRate() speedup
+ *
  * Revision 1.15  1999/07/26 16:28:51  akool
  * getRate() speedup from Leo
  *
@@ -510,9 +513,13 @@ static int _initZone(int provider, char *path, char **msg, bool area_only)
 	}
 	else {
 		if (msg)
+#if 1
+			*message = 0;
+#else
 			snprintf (message, LENGTH,
 				"Zone V%s: Provider %d is open as '%s' for provider %d",
 				version, provider, path, sthp[sthp[ocount].real].provider);
+#endif
 	}
 	return 0;
 }

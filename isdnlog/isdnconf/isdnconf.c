@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.38  1999/09/26 10:55:20  akool
+ * isdnlog-3.55
+ *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *     added hup3 to option file
+ *   - changed country-de.dat to ISO 3166 Countrycode / Airportcode
+ *
  * Revision 1.37  1999/08/20 19:28:05  akool
  * isdnlog-3.45
  *  - removed about 1 Mb of (now unused) data files
@@ -708,12 +714,12 @@ int print_in_modules(const char *fmt, ...)
 
 int main(int argc, char *argv[], char *envp[])
 {
-	int c, len;
+	int c, len = 0;
 	int Cnt = 0;
 	section *conf_dat = NULL;
 	char *myname = basename(argv[0]);
 	FILE *fp;
-	char *ptr;
+	char *ptr = "";
 
 	static char usage[]   = "%s: usage: %s [ -%s ]\n";
 	static char options[] = "ADdn:a:t:f:c:wslimqgV1M:";

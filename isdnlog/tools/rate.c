@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.48  1999/09/26 10:55:20  akool
+ * isdnlog-3.55
+ *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *     added hup3 to option file
+ *   - changed country-de.dat to ISO 3166 Countrycode / Airportcode
+ *
  * Revision 1.47  1999/09/22 09:03:00  akool
  * isdnlog-3.54
  *
@@ -361,7 +367,7 @@ extern const char *basename (const char *name);
 #include "country.h"
 #include "rate.h"
 
-#define LENGTH 512             /* max length of lines in data file */
+#define LENGTH 1024            /* max length of lines in data file */
 #define STRINGS 8              /* number of buffers for printRate() */
 #define STRINGL 64             /* length of printRate() buffer */
 #define DEFAULT_FORMAT "%.2f"  /* default format for printRate() */
@@ -843,7 +849,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       s+=2; while (isblank(*s)) s++;
       snprintf (path, LENGTH, dom, s);
       if (initZone(prefix, path, &c)==0) {
-	if (msg) notice ("%s", c);
+	if (msg && *c) notice ("%s", c);
       } else {
 	warning (dat, c);
       }
