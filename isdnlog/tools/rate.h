@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1999/03/24 19:39:03  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.2  1999/03/16 17:38:10  akool
  * - isdnlog Version 3.07
  * - Michael Reinelt's patch as of 16Mar99 06:58:58
@@ -46,8 +53,8 @@
 typedef struct {
   int        prefix;
   int        zone;
-  struct tm  start;
-  struct tm  now;
+  time_t     start;
+  time_t     now;
   char      *Provider; /* Name des Providers */
   char      *Zone;     /* Name der Zone */
   char      *Day;      /* Wochen- oder Feiertag */
@@ -62,7 +69,10 @@ typedef struct {
 
 void  exitRate(void);
 int   initRate(char *conf, char *dat, char **msg);
+char *getProvidername(int prefix);
+int   getZone(int prefix, char *num);
 int   getRate(RATE *Rate, char **msg);
-int   getLeastCost(RATE *Rate, RATE *LC);
+int   getLeastCost(RATE *Rate, int skip);
+int   guessZone (RATE *Rate, int units);
 
 #endif

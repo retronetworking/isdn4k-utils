@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.20  1999/03/25 19:39:48  akool
+ * - isdnlog Version 3.11
+ * - make isdnlog compile with egcs 1.1.7 (Bug report from Christophe Zwecker <doc@zwecker.com>)
+ *
  * Revision 1.19  1999/03/07 18:18:48  akool
  * - new 01805 tarif of DTAG
  * - new March 1999 tarife
@@ -371,7 +375,8 @@ void logger(int chan)
   mysql_db_set.currency_factor = currency_factor;
   strcpy(mysql_db_set.currency, currency);
   mysql_db_set.pay = call[chan].pay;
-  strcpy(mysql_db_set.provider, Providername(call[chan].provider));
+  /* Fixme: getProvidername() should be changed to call[chan].Rate.Provider */
+  strcpy(mysql_db_set.provider, getProvidername(call[chan].provider));
   mysql_dbAdd(&mysql_db_set);
 #endif
 } /* logger */

@@ -20,6 +20,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1999/04/03 12:46:54  akool
+ * - isdnlog Version 3.12
+ * - "%B" tag in ILABEL/OLABEL corrected
+ * - isdnlog now register's incoming calls when there are no free B-channels
+ *   (idea from sergio@webmedia.es)
+ * - better "samples/rate.conf.de" (suppress provider without true call-by-call)
+ * - "tarif.dat" V:1.17 [03-Apr-99]
+ * - Added EWE-Tel rates from Reiner Klaproth <rk1@msjohan.dd.sn.schule.de>
+ * - isdnconf can now be used to generate a Least-cost-router table
+ *   (try "isdnconf -c .")
+ * - isdnlog now simulate a RELEASE COMPLETE if nothing happpens after a SETUP
+ * - CHARGEMAX Patches from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *
  * Revision 1.16  1999/03/24 19:37:38  akool
  * - isdnlog Version 3.10
  * - moved "sondernnummern.c" from isdnlog/ to tools/
@@ -547,7 +560,10 @@ static void showLCR()
 {
   auto int   tz, hour, provider, lastprovider = -1, lasthour = -1, *p;
   auto int   useds = 0, maxhour, leastprovider = UNKNOWN;
-  auto char  info[BUFSIZ], ignoreprovider[BUFSIZ], *p1;
+  auto char  ignoreprovider[BUFSIZ], *p1;
+#if 0 /* FIXME */
+  auto char  info[BUFSIZ];
+#endif
   int  probe[] = { REGIOCALL, GERMANCALL, D2_NETZ, 0 };
   int  used[100];
   int  hours[100];
@@ -580,14 +596,16 @@ retry:
       lastprovider = -1;
       lasthour = -1;
 
-      hour = 8;
+      hour = 7;
 
       while (1) {
 
+#if 0 /* Fixme: use RATE */
         provider = showcheapest(*p, 181, ignoreprovider, info, tz, hour, 0);
+#endif
 
 #if 0
-        print_msg(PRT_NORMAL, "DEBUG::tz=%d, zone=%d, Hour=%02d, P=%d, %s  lasthour=%d, lastprovider=%d\n", tz, *p, hour, provider, realProvidername(provider), lasthour, lastprovider);
+        print_msg(PRT_NORMAL, "DEBUG::tz=%d, zone=%d, Hour=%02d, P=%d, %s  lasthour=%d, lastprovider=%d\n", tz, *p, hour, provider, getProvidername(provider), lasthour, lastprovider);
 #endif
 
         if (lastprovider == -1)
@@ -598,7 +616,7 @@ retry:
 
         if (provider != lastprovider) {
           print_msg(PRT_NORMAL, "\t\t%02d:00 .. %02d:59 010%02d:%s\n",
-            lasthour, hour - 1, lastprovider, realProvidername(lastprovider));
+            lasthour, hour - 1, lastprovider, getProvidername(lastprovider));
 
           used[lastprovider] = 1;
 
@@ -614,12 +632,12 @@ retry:
 	hour++;
       	if (hour == 24)
           hour = 0;
-      	else if (hour == 8)
+      	else if (hour == 7)
           break;
       } /* for */
 
       print_msg(PRT_NORMAL, "\t\t%02d:00 .. %02d:59 010%02d:%s\n",
-        lasthour, hour - 1, lastprovider, realProvidername(lastprovider));
+        lasthour, hour - 1, lastprovider, getProvidername(lastprovider));
       used[lastprovider] = 1;
 
       if (lasthour >= hour)
@@ -638,7 +656,7 @@ retry:
 
   for (provider = 0; provider < 100; provider++)
     if (used[provider]) {
-      print_msg(PRT_NORMAL, "010%02d:%s\t(%d hours)\n", provider, realProvidername(provider), hours[provider]);
+      print_msg(PRT_NORMAL, "010%02d:%s\t(%d hours)\n", provider, getProvidername(provider), hours[provider]);
       useds++;
 
       if (hours[provider] < maxhour) {
@@ -649,7 +667,7 @@ retry:
 
   if (useds > 5) {
     print_msg(PRT_NORMAL, "OOOPS: More than 5 providers used. Retry with 010%02d:%s ignored\n",
-      leastprovider, realProvidername(leastprovider));
+      leastprovider, getProvidername(leastprovider));
 
     p1 = strchr(ignoreprovider, 0);
     *p1 = leastprovider;
@@ -820,27 +838,28 @@ int main(int argc, char *argv[], char *envp[])
 
 	if (areacode[0] != '\0')
 	{
-		char *ptr, msg[BUFSIZ], snfile[BUFSIZ];
+		char *ptr, snfile[BUFSIZ];
+#if 0 /* FIXME */
+		char msg[BUFSIZ];
+#endif
 		int len, i, zone;
 
 
 		strcpy(snfile, "/usr/lib/isdn/sonderrufnummern.dat"); /* FIXME */
 	    	initSondernummern(snfile, &ptr);
-            	initTarife(msg);
-#if 0
-	    	print_msg(PRT_NORMAL, "%s\n", ptr);
-	    	print_msg(PRT_NORMAL, "%s\n", msg);
-#endif
+ 		initHoliday(holifile, NULL);
+ 		initRate(rateconf, ratefile, NULL);
 
 		if ((strlen(areacode) == 1) || (ptr = get_areacode(areacode,&len,quiet?C_NO_ERROR|C_NO_WARN:0)) != NULL)
 		{
 			if (!isdnmon)
 			{
 				const char *area;
+#if 0 /* FIXME */
                                 auto  char  info[BUFSIZ];
+#endif
 
-
-				if ((i = is_sondernummer(areacode, DTAG)) > -1) {
+				if ((i = is_sondernummer(areacode, DTAG)) > -1) { /* Fixme: DTAG is specific to Germany */
 				  print_msg(PRT_NORMAL, "%s\n", sondernummername(i));
 
   				  if (!memcmp(areacode, "01610", 5) ||
@@ -897,7 +916,9 @@ int main(int argc, char *argv[], char *envp[])
 
 
 				print_msg(PRT_NORMAL,"Zone: %s\n", zonen[zone]);
+#if 0 /* Fixme: use RATE */
                                 (void)showcheapest(zone, 181, "\0", info, -1, -1, 1);
+#endif
 
 				exit(0);
 			}

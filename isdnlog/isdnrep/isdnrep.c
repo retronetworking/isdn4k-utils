@@ -24,6 +24,13 @@
  *
  *
  * $Log$
+ * Revision 1.60  1999/03/24 19:38:33  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.59  1999/03/20 14:33:53  akool
  * - isdnlog Version 3.08
  * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
@@ -832,13 +839,15 @@ int read_logfile(char *myname)
   auto     FILE      *fi, *ftmp = NULL;
   auto     char       string[BUFSIZ], s[BUFSIZ];
   one_call            cur_call;
+#if 0 /* FIXME */
   auto     char       msg[BUFSIZ];
+#endif
 
 
   initSondernummern(snfile, NULL);
   initHoliday(holifile, NULL);
   initRate(rateconf, ratefile, NULL);
-  initTarife(msg);
+  /* initTarife(msg); FIXME */
   interns0 = 3; /* FIXME */
 
   msn_sum = calloc(mymsns + 1, sizeof(double));
@@ -990,15 +999,7 @@ int read_logfile(char *myname)
 		} /* if */
 
 		if (!cur_call.currency_factor)
-#ifdef ISDN_NL
-			einheit = 0.0011; /* cost of one second local tariff during office hours */
-#elif defined(ISDN_CH)
-			einheit = 0.01;
-#elif defined(ISDN_AT)
-			einheit = 1.056;
-#else
-			einheit = Tarif96 ? 0.12 : 0.23;
-#endif
+		                einheit = 1.0;
 			else
 				einheit = cur_call.currency_factor;
 
@@ -1193,7 +1194,7 @@ static int print_bottom(double unit, char *start, char *stop)
                     else
                       *sx = 0;
 
-		    print_line3(NULL, "Provider", string, Providername(i),
+		    print_line3(NULL, "Provider", string, getProvidername(i),
 		      usage_provider[i],
 		      double2clock(duration_provider[i]),
                       print_currency(pay_provider[i], 0), sx);
@@ -1253,7 +1254,7 @@ static int print_bottom(double unit, char *start, char *stop)
 
                        print_msg(PRT_NORMAL,"%s ", unknown[i].called ? "Called by" : "  Calling");
 
-                       if (is_sondernummer(unknown[i].num, DTAG) > 0)
+                       if (is_sondernummer(unknown[i].num, DTAG) > 0) /* Fixme: DTAG is specific to Germany */
                          ;
 		       else
                        if ((p = get_areacode(unknown[i].num, &l, flag)) != 0) {
@@ -1648,7 +1649,7 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 				          	{
                                                         register char *p;
 
-                                                        p = (cur_call->provider > 0) ? Providername(cur_call->provider) : "";
+                                                        p = (cur_call->provider > 0) ? getProvidername(cur_call->provider) : "";
 
                                                         if (cur_call->dir == DIALIN)
                                                           p = "";
@@ -2405,13 +2406,13 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 				if (unknown[i].connects + 1 < MAXCONNECTS)
 					unknown[i].connects++;
 				else
-					print_msg(PRT_ERR, "%s: WARNING: Too many unknown connection's from %s\n", myname, unknown[i].num);
+					print_msg(PRT_ERR, "%s: WARNING: Too many unknown connections from %s\n", myname, unknown[i].num);
 
 				if (!hit) {
 					if (unknowns < MAXUNKNOWN)
 						unknowns++;
 					else
-						print_msg(PRT_ERR, "%s: WARNING: Too many unknown number's\n", myname);
+						print_msg(PRT_ERR, "%s: WARNING: Too many unknown numbers\n", myname);
 				} /* if */
 			} /* if */
 		} /* else */
@@ -2422,11 +2423,13 @@ static int set_alias(one_call *cur_call, int *nx, char *myname)
 
 static void repair(one_call *cur_call)
 {
+#if 0 /* FIXME */
   auto char why[BUFSIZ], hint[BUFSIZ];
+#endif
 
 
 #if 0 /* FIXME */
-  if (cur_call->provider == DTAG)
+  if (cur_call->provider == DTAG)  /* Fixme: DTAG is specific to Germany */
     return;
 #endif
 
@@ -2434,13 +2437,15 @@ static void repair(one_call *cur_call)
   call[0].disconnect = cur_call->t + cur_call->duration;
   call[0].intern[CALLED] = strlen(cur_call->num[CALLED]) < interns0;
   call[0].provider = cur_call->provider;
-  call[0].sondernummer[CALLED] = is_sondernummer(cur_call->num[CALLED], DTAG);
+  call[0].sondernummer[CALLED] = is_sondernummer(cur_call->num[CALLED], DTAG); /* Fixme: DTAG is specific to Germany */
   call[0].aoce = cur_call->eh;
   call[0].dialin = 0;
   strcpy(call[0].num[CALLED], cur_call->num[CALLED]);
   strcpy(call[0].onum[CALLED], cur_call->num[CALLED]);
 
+#if 0 /* Fixme: use RATE */
   preparecint(0, why, hint, 1);
+#endif
 
   if (call[0].zone == GLOBALCALL) {
 #if DEBUG
@@ -2450,7 +2455,9 @@ static void repair(one_call *cur_call)
     call[0].zone = WELT_4;
   } /* if */
 
+#if 0 /* Fixme: use RATE */
   price(0, why, 1);
+#endif
 
 #if DEBUG
   if (fabs(cur_call->pay - call[0].pay) > 0.01)
@@ -2957,7 +2964,7 @@ static int add_one_call(sum_calls *s1, one_call *s2, double units)
 
   s1->ibytes += s2->ibytes;
   s1->obytes += s2->obytes;
-#ifdef ISDN_NL
+#ifdef ISDN_NL /* Fixme: never defined! */
   s1->pay    += 0.0825; /* add call setup charge */
   s2->pay    += 0.0825;
 #endif

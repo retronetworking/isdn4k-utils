@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.39  1999/03/25 19:39:51  akool
+ * - isdnlog Version 3.11
+ * - make isdnlog compile with egcs 1.1.7 (Bug report from Christophe Zwecker <doc@zwecker.com>)
+ *
  * Revision 1.38  1999/03/24 19:37:46  akool
  * - isdnlog Version 3.10
  * - moved "sondernnummern.c" from isdnlog/ to tools/
@@ -263,6 +267,12 @@
 
 #define FD_SET_MAX(desc, set, max) { if (desc > max) max=desc; FD_SET(desc,set); }
 
+#ifdef Q931
+#define Q931dmp q931dmp
+#else
+#define Q931dmp 0
+#endif
+
 /*****************************************************************************/
 
  /* Letzte Exit-Nummer: 47 */
@@ -270,12 +280,6 @@
 /*****************************************************************************/
 
 #define X_FD_ISSET(fd, mask)    ((fd) >= 0 && FD_ISSET(fd,mask))
-
-#ifdef Q931
-#define DO(action)  if (!q931dmp) action
-#else
-#define DO(action)  action
-#endif
 
 static void loop(void);
 static void init_variables(int argc, char* argv[]);
@@ -392,13 +396,14 @@ static void loop(void)
         Exit(12);
       } /* if */
 
-      processrate();
+      processflow();
 
       if (!Cnt) /* Abbruch durch Timeout -> Programm starten */
         Start_Interval();
 
       now();
 
+      /* processRate(-1); */
       processcint();
 
       for (Cnt = first_descr; Cnt < socket_size(sockets); Cnt++) {
@@ -1028,7 +1033,7 @@ int main(int argc, char *argv[], char *envp[])
   register int    i, res = 0;
   auto     int    lastarg;
   auto     char   rlogfile[PATH_MAX];
-  auto	   char	  msg[BUFSIZ], *version;
+  auto	   char	  *version;
   auto     char **devices = NULL;
   sigset_t        unblock_set;
 #ifdef TESTCENTER
@@ -1202,11 +1207,8 @@ int main(int argc, char *argv[], char *envp[])
           else
 #endif
           {
-	    DO(print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION));
-
-#ifdef Q931
-      	      if (!q931dmp)
-#endif
+      	    if (!Q931dmp)
+    	      print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION);
 
             if (readconfig(myshortname) < 0)
               Exit(30);
@@ -1248,16 +1250,21 @@ int main(int argc, char *argv[], char *envp[])
 #endif
 
 	    initSondernummern(snfile, &version);
-	    DO(if (*version) print_msg(PRT_NORMAL, "%s\n", version));
+	    if (!Q931dmp && *version)
+	      print_msg(PRT_NORMAL, "%s\n", version);
 
 	    initHoliday(holifile, &version);
-	    DO(if (*version) print_msg(PRT_NORMAL, "%s\n", version));
+	    if (!Q931dmp && *version)
+	      print_msg(PRT_NORMAL, "%s\n", version);
 
 	    initRate(rateconf, ratefile, &version);
-	    DO(if (*version) print_msg(PRT_NORMAL, "%s\n", version));
+	    if (!Q931dmp && *version)
+	      print_msg(PRT_NORMAL, "%s\n", version);
 
+#if 0
             initTarife(msg);
-            DO(if (*msg) print_msg(PRT_NORMAL, "%s\n", msg));
+      	    if (!Q931dmp && *msg) print_msg(PRT_NORMAL, "%s\n", msg);
+#endif
 
             loop();
 
@@ -1300,7 +1307,8 @@ int main(int argc, char *argv[], char *envp[])
       res = 2;
     } /* else */
 
-    DO(print_msg(PRT_NORMAL, "%s Version %s exiting\n", myshortname, VERSION));
+    if (!Q931dmp)
+      print_msg(PRT_NORMAL, "%s Version %s exiting\n", myshortname, VERSION);
 
   } /* else */
 

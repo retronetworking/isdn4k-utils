@@ -19,6 +19,17 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1998/11/24 20:51:17  akool
+ *  - changed my email-adress
+ *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
+ *  - made Provider-Prefix 6 digits long
+ *  - full support for internal S0-bus implemented (-A, -i Options)
+ *  - isdnlog now ignores unknown frames
+ *  - added 36 allocated, but up to now unused "Auskunft" Numbers
+ *  - added _all_ 122 Providers
+ *  - Patch from Jochen Erwied <mack@Joker.E.Ruhr.DE> for Quante-TK-Anlagen
+ *    (first dialed digit comes with SETUP-Frame)
+ *
  * Revision 1.2  1997/03/23 20:58:09  luethje
  * some bugfixes
  *
@@ -28,7 +39,11 @@
 #define _ISDN_CONF_H_
 
 #define PUBLIC extern
-#include "tools.h"
+
+#include <tools.h>
+#include <sondernummern.h>
+#include <holiday.h>
+#include <rate.h>
 
 #ifdef _ISDN_CONF_C_
 #define _EXTERN

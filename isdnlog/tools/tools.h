@@ -20,6 +20,19 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.34  1999/04/03 12:47:50  akool
+ * - isdnlog Version 3.12
+ * - "%B" tag in ILABEL/OLABEL corrected
+ * - isdnlog now register's incoming calls when there are no free B-channels
+ *   (idea from sergio@webmedia.es)
+ * - better "samples/rate.conf.de" (suppress provider without true call-by-call)
+ * - "tarif.dat" V:1.17 [03-Apr-99]
+ * - Added EWE-Tel rates from Reiner Klaproth <rk1@msjohan.dd.sn.schule.de>
+ * - isdnconf can now be used to generate a Least-cost-router table
+ *   (try "isdnconf -c .")
+ * - isdnlog now simulate a RELEASE COMPLETE if nothing happpens after a SETUP
+ * - CHARGEMAX Patches from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *
  * Revision 1.33  1999/03/24 19:39:06  akool
  * - isdnlog Version 3.10
  * - moved "sondernnummern.c" from isdnlog/ to tools/
@@ -357,6 +370,8 @@
 #include "policy.h"
 #include "libisdn.h"
 #include "sondernummern.h"
+#include "holiday.h"
+#include "rate.h"
 
 /****************************************************************************/
 
@@ -443,6 +458,7 @@
 #define INTERNET     17
 #define	GLOBALCALL   18
 
+/* Fixme: this is specific to Germany */
 #define	DTAG	     33
 
 /****************************************************************************/
@@ -736,6 +752,7 @@ typedef struct {
   int     huptimeout;
   char	  service[32];
   double  pay;
+  double  aocpay;
   char	  digits[NUMSIZE];
   int	  oc3;
   int	  takteChargeInt;
@@ -750,6 +767,7 @@ typedef struct {
   int	  hint;
   int	  tz;
   int	  tarifknown;
+  RATE    Rate;
 } CALL;
 
 /****************************************************************************/
@@ -957,18 +975,9 @@ _EXTERN char  *time2str(time_t sec);
 _EXTERN char  *double2clock(double n);
 _EXTERN char  *vnum(int chan, int who);
 _EXTERN char  *i2a(int n, int l, int base);
-_EXTERN char  *Providername(int number);
 _EXTERN int    iprintf(char *obuf, int chan, register char *fmt, ...);
 _EXTERN char  *qmsg(int type, int version, int val);
 _EXTERN char  *Myname;
-_EXTERN void   initTarife(char *msg);
-_EXTERN void   exitTarife(void);
-_EXTERN int    showcheapest(int zone, int duration, char *ignoreprovider, char *info, int tz, int hour, int verbose);
-_EXTERN void   price(int chan, char *hint, int viarep);
-_EXTERN char  *realProvidername(int prefix);
-_EXTERN void   preparecint(int chan, char *msg, char *hint, int viarep);
-_EXTERN	int    isInternetAccess(int provider, char *number);
-_EXTERN int    taktlaenge(int chan, char *why);
 _EXTERN	char  *zonen[MAXZONES];
 #undef _EXTERN
 

@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1999/03/24 19:39:04  akool
+ * - isdnlog Version 3.10
+ * - moved "sondernnummern.c" from isdnlog/ to tools/
+ * - "holiday.c" and "rate.c" integrated
+ * - NetCologne rates from Oliver Flimm <flimm@ph-cip.uni-koeln.de>
+ * - corrected UUnet and T-Online rates
+ *
  * Revision 1.5  1999/03/20 14:33:36  akool
  * - isdnlog Version 3.08
  * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
@@ -172,6 +179,9 @@ int initSondernummern(char *fn, char **msg)
   double  grund, takt;
 
 
+  if (msg)
+    *(*msg=message)='\0';
+
   SN = NULL;
   nSN = 0;
   strcpy(version, "unknown");
@@ -250,7 +260,7 @@ int initSondernummern(char *fn, char **msg)
   else {
     if (msg) sprintf(*msg=message, "*** Cannot load Sonderrufnummern (%s : %s)", fn, strerror(errno));
     return -1;
-}
+  }
 }
 
 int is_sondernummer(char *number, int provider)

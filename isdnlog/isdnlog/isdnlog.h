@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  1999/03/25 19:39:55  akool
+ * - isdnlog Version 3.11
+ * - make isdnlog compile with egcs 1.1.7 (Bug report from Christophe Zwecker <doc@zwecker.com>)
+ *
  * Revision 1.18  1999/03/24 19:37:49  akool
  * - isdnlog Version 3.10
  * - moved "sondernnummern.c" from isdnlog/ to tools/
@@ -305,7 +309,7 @@
 #define VERBOSE_HEX	    1  /* only "HEX:" messages from /dev/isdnctrl */
 #define VERBOSE_CTRL	    2  /* any message from /dev/isdnctrl */
 #define	VERBOSE_INFO	    4  /* any message from /dev/isdninfo */
-#define VERBOSE_RATE	    8  /* any message from ioctl(IIOCGETCPS) */
+#define VERBOSE_FLOW	    8  /* any message from ioctl(IIOCGETCPS) */
 
 /****************************************************************************/
 
@@ -404,7 +408,8 @@ _EXTERN int  morectrl(int card);
 _EXTERN void moreinfo(void);
 _EXTERN void morekbd(void);
 _EXTERN void processcint(void);
-_EXTERN void processrate(void);
+_EXTERN void processflow(void);
+_EXTERN void processRate(int chan);
 _EXTERN void clearchan(int chan, int total);
 
 #undef _EXTERN
