@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.100  2000/02/11 15:16:33  akool
+ * zred.dtag.bz2 added binary
+ * 01040:GTS Weekend 0,039/Min
+ *
  * Revision 1.99  2000/02/11 10:41:52  akool
  * isdnlog-4.10
  *  - Set CHARGEINT to 11 if < 11
@@ -912,6 +916,8 @@
 #include "telnum.h"
 #ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
 #include <linux/isdn_dwabc.h>
+#else
+static void processlcr(char *p);
 #endif
 
 #define preselect pnum2prefix(preselect, cur_time)
@@ -4416,7 +4422,9 @@ static void processctrl(int card, char *s)
         if (OUTGOING && *call[chan].num[CALLED]) {
 
  	  prepareRate(chan, &why, &hint, 0);
-
+#ifndef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
+	  processlcr(call[chan].num[CALLED]); /* fake input for testing */
+#endif
  	  if (*why)
 	    info(chan, PRT_SHOWCONNECT, STATE_CONNECT, why);
 
@@ -4862,35 +4870,48 @@ void processflow()
 } /* processflow */
 
 
-#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
 static void processlcr(char *p)
 {
   auto char                        res[BUFSIZ], s[BUFSIZ];
   register char 		  *pres = res;
   auto TELNUM  	 		   destnum;
   auto RATE    	 		   Rate, Cheap;
+  auto int     	 		   prefix, own_country = 0;
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
   auto struct ISDN_DWABC_LCR_IOCTL i;
-  auto int     	 		   prefix, cc, own_country;
+  auto int     	 		   cc;
   auto char    	 		   ji[20];
   auto char    	 		   kenn[40];
   auto char    	 		   cid[40];
   auto char    	 		   eaz[40];
+#endif
   auto char    	 		   dst[40];
   auto char    	 		   prov[TN_MAX_PROVIDER_LEN];
-  auto char    	 		   amtsholung[BUFSIZ];
+  auto char    	 		   lcr_amtsholung[BUFSIZ];
   auto int			   abort = 0;
 
 
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
   sscanf(p, "%s %s %s %s %s", ji, kenn, cid, eaz, dst);
+#else
+  strcpy(dst, p);
+#endif
+  if(amtsholung && *amtsholung) {
+    char *delim;
 
-  if (trimo)
-    strncpy(amtsholung, dst, trimo);
+    strncpy(lcr_amtsholung, amtsholung, 5);
+
+    if ((delim = strchr(lcr_amtsholung, ':')) != NULL)
+      *delim = '\0';
+  }
+  else if (trimo)
+    strncpy(lcr_amtsholung, dst, trimo);
   else
-    *amtsholung = 0;
+    *lcr_amtsholung = 0;
 
   normalizeNumber(dst + trimo, &destnum, TN_ALL);
 
-  sprintf(s, "ABC_LCR: Request for number %s", formatNumber("%l via %p", &destnum));
+  sprintf(s, "ABC_LCR: Request for number %s = %s", dst + trimo, formatNumber("%l via %p", &destnum));
   info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
 
   if (!abclcr) {
@@ -4909,6 +4930,7 @@ static void processlcr(char *p)
   time(&Rate.start);
   Rate.now = Rate.start + LCR_DURATION;
 
+  Rate.prefix = destnum.nprovider; /* old provider */
   Rate.src[0] = mycountry;
   Rate.src[1] = myarea;
   Rate.src[2] = "";
@@ -4922,12 +4944,10 @@ static void processlcr(char *p)
   if (prefix != UNKNOWN) {
     (void)prefix2provider(prefix, prov);
 
-    if (*amtsholung)
-      pres += sprintf(pres, "%s", amtsholung);
+    if (*lcr_amtsholung)
+      pres += sprintf(pres, "%s", lcr_amtsholung);
 
     pres += sprintf(pres, "%s", prov);
-
-    own_country = 0;
 
     if (strcmp(mycountry, destnum.country))
       pres += sprintf(pres, "00%s", destnum.country + 1); /* skip "+" */
@@ -4936,18 +4956,17 @@ static void processlcr(char *p)
       own_country = 1;
     } /* else */
 
-    if (strcmp(myarea, destnum.area) == 0 && own_country) {
-      if ((abclcr & 2) == 2) {
-        sprintf(s, "ABC_LCR: \"%s\" is a local number -- no action", destnum.msn);
-    	abort = 1;
-    	goto action;
-      } /* if */
+    if ((strcmp(myarea, destnum.area) == 0) && own_country && ((abclcr & 2) == 2)) {
+      sprintf(s, "ABC_LCR: \"%s\" is a local number -- no action", destnum.msn);
+      abort = 1;
+      goto action;
     } /* if */
 
     /* always append area */
     pres += sprintf(pres, "%s", destnum.area);
     pres += sprintf(pres, "%s", destnum.msn);
 
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
     if (strlen(res) < sizeof(i.lcr_ioctl_nr)) {
       sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s)\n",
         res, prov, getProvider(prefix));
@@ -4956,13 +4975,18 @@ static void processlcr(char *p)
       sprintf(s, "ABC_LCR: Resulting new number \"%s\" too long -- aborting", res);
       abort = 1;
     } /* else */
+#else
+    sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s)\n",
+      res, prov, getProvider(prefix));
+#endif
   }
   else {
-    sprintf(s, "ABC_LCR: Can't find cheaper provider");
+    sprintf(s, "ABC_LCR: Can't find cheaper booked provider");
     abort = 1;
   } /* else */
 
 action:
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
   memset(&i, 0, sizeof(i));
 
   i.lcr_ioctl_sizeof = sizeof(i);
@@ -4979,10 +5003,12 @@ action:
 
     cc = ioctl(sockets[ISDNCTRL].descriptor, IIOCNETLCR, &i);
   } /* else */
+#else
+  strcat(s, " (but ABC_LCR not installed - simulation)");
+#endif
 
   info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
 } /* processlcr */
-#endif
 
 
 int morectrl(int card)

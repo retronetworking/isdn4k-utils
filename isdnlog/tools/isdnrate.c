@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.32  2000/02/03 18:24:51  akool
+ * isdnlog-4.08
+ *   isdnlog/tools/rate.c ... LCR patch again
+ *   isdnlog/tools/isdnrate.c ... LCR patch again
+ *   isdnbill enhanced/fixed
+ *   DTAG AktivPlus fixed
+ *
  * Revision 1.31  1999/12/31 13:57:20  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -663,7 +670,7 @@ static char *printrate(RATE * Rate)
   static char message[BUFSIZ];
 
   if (Rate->Basic > 0)
-    sprintf(message, "%s + %s/%.4fs = %s + %s/Min (%s)",
+    sprintf(message, "%s + %s/%.1fs = %s + %s/Min (%s)",
 	    printRate(Rate->Basic),
 	    printRate(Rate->Price),
 	    Rate->Duration,
@@ -671,7 +678,7 @@ static char *printrate(RATE * Rate)
 	    printRate(60 * Rate->Price / Rate->Duration),
 	    short_explainRate(Rate));
   else
-    sprintf(message, "%s/%.4fs = %s/Min (%s)",
+    sprintf(message, "%s/%.1fs = %s/Min (%s)",
 	    printRate(Rate->Price),
 	    Rate->Duration,
 	    printRate(60 * Rate->Price / Rate->Duration),
