@@ -46,7 +46,6 @@ KHOME=/home/kernel
 # "x25-on-top-of-isdn"-extensions is located. (To override the default
 # location set the environment variable KERNEL before calling this script)
 #
-KERNEL=${KERNEL:-linux-ix25}
 #
 #Where the x25 utility package is located
 #
