@@ -149,3 +149,8 @@ VBOXDOBJS	= vboxd.o streamio.o
 vboxd:		  $(VBOXDOBJS)
 		  $(CC) $(CFLAGS) $(VBOXDOBJS) -o vboxd -L. -lvbox
 
+distclean: clean
+
+clean:
+	-rm -f *.o
+	-rm -f vboxd vbox vboxgetty vboxconvert vboxctrl vboxbeep
