@@ -20,6 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/03/20 14:33:15  akool
+ * - isdnlog Version 3.08
+ * - more tesion)) Tarife from Michael Graw <Michael.Graw@bartlmae.de>
+ * - use "bunzip -f" from Franz Elsner <Elsner@zrz.TU-Berlin.DE>
+ * - show another "cheapest" hint if provider is overloaded ("OVERLOAD")
+ * - "make install" now makes the required entry
+ *     [GLOBAL]
+ *     AREADIFF = /usr/lib/isdn/vorwahl.dat
+ * - README: Syntax description of the new "rate-at.dat"
+ * - better integration of "sondernummern.c" from mario.joussen@post.rwth-aachen.de
+ * - server.c: buffer overrun fix from Michael.Weber@Post.RWTH-Aachen.DE (Michael Weber)
+ *
  * Revision 1.4  1998/09/22 20:59:22  luethje
  * isdnrep:  -fixed wrong provider report
  *           -fixed wrong html output for provider report
@@ -208,7 +220,7 @@ int new_client(int sock)
 				}
 			}
 
-	if (Old_Prints != NULL && User_Get_Message(sockets[sock].f_username,sockets[sock].f_hostname,NULL,T_PROTOCOL) == 0)
+	if (Old_Prints != NULL && User_Get_Message(sockets[sock].f_username,sockets[sock].f_hostname,NULL,T_PROTOCOL) == 0) {
 		for (Cnt = 0; Cnt < xlog; Cnt++)
 			if (Old_Prints[Cnt] != NULL)
 			{
@@ -223,7 +235,7 @@ int new_client(int sock)
 			}
 			else
 				break;
-
+	}
 
 	return 0;
 }

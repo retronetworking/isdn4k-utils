@@ -8,9 +8,16 @@ SHELL			= /bin/sh
 AWK				= @AWK@
 SED				= @SED@
 MANDIR			= @CONFIG_MANDIR@
-MANPAGES		= ttyI.4 isdninfo.4 isdn_audio.4 isdnctrl.4 isdn_cause.7
+MANPAGES		= ttyI.4 isdninfo.4 isdn_audio.4 isdnctrl.4 isdn_cause.7 \
+	isdnrate.1 rate-files.5
 INSTALL_MAN		= @INSTALL@ -o 0 -g 0 -m 0644
 prefix			= @prefix@
+
+%.1: %.man
+	cp $< $@
+
+%.5: %.man
+	cp $< $@
 
 %.4: %.man
 	MANDATE=`grep CHECKIN $< | $(AWK) '{print $$4}'`; \

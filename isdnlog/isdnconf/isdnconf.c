@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.39  1999/10/22 19:57:59  akool
+ * isdnlog-3.56 (for Karsten)
+ *
  * Revision 1.38  1999/09/26 10:55:20  akool
  * isdnlog-3.55
  *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -558,24 +561,27 @@ int look_data(section **conf_dat)
 			_number = _alias = NULL;
 			_si[0] = '\0';
 
-			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_NUM)) != NULL)
+			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_NUM)) != NULL) {
 				if (del)
 					_number = strdup(Replace_Variable(CEPtr->value));
 				else
 					_number = strdup(CEPtr->value);
+			}		
 
-			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_ALIAS)) != NULL)
+			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_ALIAS)) != NULL) {
 				if (del)
 					_alias = strdup(Replace_Variable(CEPtr->value));
 				else
 					_alias = strdup(CEPtr->value);
+			}		
 
-			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_SI)) != NULL &&
-			    CEPtr->value != NULL)
+			if ((CEPtr = Get_Entry((*conf_dat)->entries,CONF_ENT_SI)) != NULL && 
+			    CEPtr->value != NULL) {
 				if (del)
 					sprintf(_si,"%ld",strtol(Replace_Variable(CEPtr->value), NIL, 0));
 				else
 					sprintf(_si,"%ld",strtol(CEPtr->value, NIL, 0));
+			}		
 
 			if (and)
 				Ret = 1;

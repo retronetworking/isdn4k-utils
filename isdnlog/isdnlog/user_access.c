@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/04/03 22:34:52  luethje
+ * splitt the files callerid.conf and ~/.isdn.
+ *
  */
 
 /* Alle Funktionen liefern im Fehlerfall -1 oder NULL */
@@ -130,13 +133,13 @@ int read_user_access( void )
 	/* Erster Durchlauf von read_user_access() */
 	if (ModTime == -2)
 	{
-		if (stat(userfile(),&FileStat) != 0 && errno == ENOENT)
+		if (stat(userfile(),&FileStat) != 0 && errno == ENOENT) {
 			if ((RetCode = create_new_file()) == 0)
 				stat(userfile(),&FileStat);
 			else
 				/* Return, weil keine Date existiert und nicht angelegt werden kann */
 				return RetCode;
-
+		}
 		ModTime = FileStat.st_mtime;
 	}
 	else
@@ -543,7 +546,7 @@ static int _Set_Entry (char* Name, char* User, char *Host, char *Flags)
 				print_msg(PRT_WARN,"Warning: User \"%s\" has no Flags!\n",User);
 		}
 
-		if (*Host != '\0')
+		if (*Host != '\0') {
 			if ((NewHost = GetHostByName(Host)) != NULL)
 			{
 				Ptr = &((*Cursor)->hosts);
@@ -561,6 +564,7 @@ static int _Set_Entry (char* Name, char* User, char *Host, char *Flags)
 			}
 			else
 				print_msg(PRT_WARN,"Warning: unknown host \"%s\"!\n",Host);
+		}		
 	}
 
 	return 0;

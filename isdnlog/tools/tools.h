@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.47  1999/06/28 19:16:54  akool
+ * isdnlog Version 3.38
+ *   - new utility "isdnrate" started
+ *
  * Revision 1.46  1999/06/16 23:38:09  akool
  * fixed zone-processing
  *
@@ -541,10 +545,14 @@
 #define MAXCONNECTS  50
 
 /****************************************************************************/
-
+#if 0 /* Fixme: remove */
 #define SONDERNUMMER -2 /* FIXME: set by readconfig(), but unused by now */
+#endif
+
 #define INTERN	      0
 #define FREECALL      0
+
+#if 0 /* Fixme: remove */
 #define	LOCALCALL     1
 #define CITYCALL      2
 #define REGIOCALL     3
@@ -561,6 +569,7 @@
 
 /* Fixme: this is specific to Germany */
 #define	DTAG	     33
+#endif
 
 #define	LCR_DURATION 153
 
@@ -641,8 +650,9 @@
 #define QUOTE   	       0200
 #define QMASK      (QCMASK &~QUOTE)
 #define NOT                     '!'
-
+#if 0 /* Fixme: remove */
 #define	AVON	             "avon"
+#endif
 #define INFO	    "/dev/isdninfo"
 
 #define	BIGBUFSIZ              2048
@@ -724,6 +734,7 @@
 #define CONF_ENT_IGNORERR  "IGNORERR"
 #define CONF_ENT_IGNORECOLP "IGNORECOLP"
 #define	CONF_ENT_VBN	   "VBN"
+#define	CONF_ENT_VBNLEN	   "VBNLEN"
 
 /****************************************************************************/
 
@@ -756,6 +767,7 @@
 #define CONF_ENT_CALLFMT  "CALLFMT"
 
 #define CONF_ENT_HOLIFILE    "HOLIDAYS"
+#define CONF_ENT_DESTFILE    "DESTFILE"
 #define CONF_ENT_COUNTRYFILE "COUNTRYFILE"
 #define CONF_ENT_ZONEFILE    "ZONEFILE"
 #define CONF_ENT_RATECONF    "RATECONF"
@@ -867,7 +879,7 @@ typedef struct {
   float	  cint;
   int     cinth;
   int	  ctakt;
-  int	  zone;
+  int	  zone; /* Fixme: zone is in Rate : _zone */
   int	  uid;
   int	  hint;
   int	  tz;
@@ -948,7 +960,7 @@ typedef struct {
   char	 currency[32];
   double pay;
   int	 provider;
-  int	 zone;
+  int	 zone; /* fixme: zones may vary over time */
 } one_call;
 
 /****************************************************************************/
@@ -1007,7 +1019,9 @@ _EXTERN CALL    	call[MAXCHAN];
 #ifdef Q931
 _EXTERN int     	q931dmp;
 #endif
+#if 0 /* Fixme: remove */				
 _EXTERN int     	CityWeekend;
+#endif
 _EXTERN	int	 preselect;
 _EXTERN int	dual;
 _EXTERN char    	mlabel[BUFSIZ];
@@ -1016,6 +1030,7 @@ _EXTERN int	ignoreRR;
 _EXTERN int	ignoreCOLP;
 _EXTERN int 	interns0;
 _EXTERN	char    *vbn;
+_EXTERN	char    *vbnlen;
 _EXTERN char	*mynum;
 _EXTERN int	myicountry;
 #undef _EXTERN
@@ -1037,6 +1052,7 @@ _EXTERN char* logfile   = LOGFILE;
 _EXTERN char* callfile  = NULL;
 _EXTERN char* callfmt   = NULL;
 _EXTERN char* holifile  = NULL;
+_EXTERN char* destfile  = NULL;
 _EXTERN char* countryfile = NULL;
 _EXTERN char* zonefile  = NULL;
 _EXTERN char* rateconf  = NULL;
@@ -1061,6 +1077,7 @@ _EXTERN char* logfile;
 _EXTERN char* callfile;
 _EXTERN char* callfmt;
 _EXTERN char* holifile;
+_EXTERN char* destfile;
 _EXTERN char* countryfile;
 _EXTERN char* zonefile;
 _EXTERN char* rateconf;

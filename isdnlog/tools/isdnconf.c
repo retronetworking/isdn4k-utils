@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.29  1999/06/15 20:05:08  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.28  1999/05/13 11:39:47  akool
  * isdnlog Version 3.28
  *
@@ -723,6 +729,7 @@ static section* writeglobal(section *SPtr)
 		}
 	}
 
+#if 0 /* Fixme: remove */				
 	if (CityWeekend != 0)
 	{
 		strcpy(s, CONF_ENT_CW);
@@ -733,7 +740,7 @@ static section* writeglobal(section *SPtr)
 			return NULL;
 		}
 	}
-
+#endif
 	if (chargemax != 0)
 	{
 		strcpy(s, CONF_ENT_CHARGE);
@@ -1056,7 +1063,9 @@ static int _readconfig(char *_myname)
   mycountry      = "";
   myarea         = "";
   currency       = NULL;
+#if 0 /* Fixme: remove */				
   CityWeekend    = 0;
+#endif  
   chargemax      = 0.0;
   connectmax     = 0;
   connectmaxmode = 0;
@@ -1229,12 +1238,24 @@ static int Set_Globals(section *SPtr)
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_RATEFILE)) != NULL)
 			ratefile = CEPtr->value;
 
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_DESTFILE)) != NULL)
+			destfile = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_PRESELECT)) != NULL)
+			preselect = atoi(CEPtr->value);
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_VBN)) != NULL)
+			vbn = CEPtr->value;
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_VBNLEN)) != NULL)
+			vbnlen = CEPtr->value;
+
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_LCDFILE)) != NULL)
 			lcdfile = CEPtr->value;
 
+#if 0 /* Fixme: remove */				
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CW)) != NULL)
 			CityWeekend = toupper(*(CEPtr->value)) == 'Y'?1:0;
-
+#endif
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CHARGE)) != NULL)
 			chargemax = strtod(CEPtr->value,NULL);
 

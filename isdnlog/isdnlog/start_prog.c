@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  1998/11/21 14:03:39  luethje
+ * isdnctrl: added dialmode into the config file
+ *
  * Revision 1.12  1998/10/22 18:22:43  luethje
  * isdnrep: suppress some messages
  * isdnlog: remove function Pathfind()
@@ -709,13 +712,13 @@ int Print_Cmd_Output( int sock )
 
 int Get_Sock_From_Info_Args( info_args *Ptr, int Cnt )
 {
-	if (socket_size(sockets) > Cnt || Cnt < 0)
+	if (socket_size(sockets) > Cnt || Cnt < 0) {
 		while (sockets[Cnt].descriptor != -2)
 			if (sockets[Cnt].info_arg == Ptr)
 				return Cnt;
 			else
 				Cnt++;
-
+	}
 	return -1;
 }
 
@@ -723,13 +726,13 @@ int Get_Sock_From_Info_Args( info_args *Ptr, int Cnt )
 
 int Get_Sock_From_Call( int chan, int Cnt )
 {
-	if (socket_size(sockets) > Cnt || Cnt < 0)
+	if (socket_size(sockets) > Cnt || Cnt < 0) {
 		while (sockets[Cnt].descriptor != -2)
 			if (sockets[Cnt].chan == chan)
 				return Cnt;
 			else
 				Cnt++;
-
+	}
 	return -1;
 }
 
@@ -737,13 +740,13 @@ int Get_Sock_From_Call( int chan, int Cnt )
 
 int Get_Sock_From_Call_And_Info_Args( int chan, info_args *Ptr, int Cnt )
 {
-	if (socket_size(sockets) > Cnt || Cnt < 0)
+	if (socket_size(sockets) > Cnt || Cnt < 0) {
 		while (sockets[Cnt].descriptor != -2)
 			if (sockets[Cnt].chan == chan && sockets[Cnt].info_arg == Ptr)
 				return Cnt;
 			else
 				Cnt++;
-
+	}
 	return -1;
 }
 
@@ -1076,12 +1079,13 @@ int Start_Ring(int chan, info_args *infoarg, int event, int intervalflag)
 
 	if (intervalflag & RING_INTERVAL)
 	{
-		if (f & RING_KILL)
+		if (f & RING_KILL) {
 			while ((sock = Get_Sock_From_Call_And_Info_Args(chan,infoarg,sock)) != -1)
 				if (sockets[sock].call_event == event)
 					Ring(NULL, NULL, sock++, 0);
 				else
 					sock++;
+		}			
 	}
 	else
 	{

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.49  1999/10/22 19:57:59  akool
+ * isdnlog-3.56 (for Karsten)
+ *
  * Revision 1.48  1999/09/26 10:55:20  akool
  * isdnlog-3.55
  *   - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
@@ -364,7 +367,11 @@ extern const char *basename (const char *name);
 
 #include "holiday.h"
 #include "zone.h"
-#include "country.h"
+#ifdef USE_DESTINATION
+#include "dest.h"
+#else
+#include "telnum.h"
+#endif
 #include "rate.h"
 
 #define LENGTH 1024            /* max length of lines in data file */
@@ -458,7 +465,7 @@ static void notice (char *fmt, ...)
 #ifdef STANDALONE
   fprintf(stderr, "%s\n", msg);
 #else
-  print_msg(PRT_ERR, "%s\n", msg);
+  print_msg(PRT_NORMAL, "%s\n", msg);
 #endif
 }
 
@@ -470,7 +477,26 @@ static void warning (char *file, char *fmt, ...)
   va_start (ap, fmt);
   vsnprintf (msg, BUFSIZ, fmt, ap);
   va_end (ap);
-  notice ("WARNING: %s line %3d: %s", basename(file), line, msg);
+#ifdef STANDALONE
+  fprintf(stderr, "%s\n", msg);
+#else
+  print_msg(PRT_WARN, "%s\n", msg);
+#endif
+}
+
+static void error (char *file, char *fmt, ...)
+{
+  va_list ap;
+  char msg[BUFSIZ];
+
+  va_start (ap, fmt);
+  vsnprintf (msg, BUFSIZ, fmt, ap);
+  va_end (ap);
+#ifdef STANDALONE
+  fprintf(stderr, "%s\n", msg);
+#else
+  print_msg(PRT_ERR, "%s\n", msg);
+#endif
 }
 
 static void whimper (char *file, char *fmt, ...)
@@ -623,7 +649,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 {
   static char message[LENGTH];
   FILE    *stream;
+#ifndef USE_DESTINATION  
   COUNTRY *Country;
+  int      d;
+#endif  
   bitfield day, hour;
   double   price, divider, duration;
   char     buffer[LENGTH], path[LENGTH], Version[LENGTH]="";
@@ -633,7 +662,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   int      ignore=0, where=0, prefix=UNKNOWN;
   int      zone, zone1, zone2, day1, day2, hour1, hour2, freeze, delay;
   int     *number, numbers;
-  int      d, i, n, t, u, v, z;
+  int      i, n, t, u, v, z;
 
 
   if (msg)
@@ -851,7 +880,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       if (initZone(prefix, path, &c)==0) {
 	if (msg && *c) notice ("%s", c);
       } else {
-	warning (dat, c);
+	error (dat, c);
       }
       break;
 
@@ -956,6 +985,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       s+=2;
       while(1) {
 	if (*(c=strip(str2list(&s)))) {
+#ifndef USE_DESTINATION	
 	  if (!isdigit(*c) && (d=getCountry(c, &Country)) != UNKNOWN) {
 	    if (*c=='+') {
 	      Areas += appendArea (prefix, c, Country->Name, zone, &where, dat);
@@ -968,9 +998,13 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 		Areas += appendArea (prefix, Country->Code[i], Country->Name, zone, &where, dat);
 	    }
 	  } else { /* unknown country or Sondernummer */
+#endif	  
+/* append areas as they are -lt- */
 	    Areas += appendArea (prefix, c, NULL, zone, &where, dat);
 	    Specials++;
+#ifndef USE_DESTINATION	
 	  }
+#endif	  
 	} else {
 	  warning (dat, "Ignoring empty areacode");
 	}
@@ -1307,15 +1341,12 @@ char *getProvider (int prefix)
 {
   static char s[BUFSIZ];
 
-
-  if (prefix<0 || prefix>=nProvider || !Provider[prefix].used) {
-    if (prefix < 100)
-      sprintf(s, "%s%02d ???", vbn, prefix);
-    else
-      sprintf(s, "%s%03d ???", vbn, prefix - 100);
-
-    return(s);
-  }
+  if (prefix<0 || prefix>=nProvider || !Provider[prefix].used || 
+  	!Provider[prefix].Name || !*Provider[prefix].Name) {
+    prefix2provider(prefix, s);
+    strcat(s," ???");
+    return s;
+  }  
   return Provider[prefix].Name;
 }
 
@@ -1396,13 +1427,37 @@ int getRate(RATE *Rate, char **msg)
 
   if (Rate->_area==UNKNOWN) {
     int a, x=0;
+    TELNUM num;
     char *number=strcat3(Rate->dst);
-    for (a=0; a<Provider[prefix].nArea; a++) {
-      int m=strmatch(Provider[prefix].Area[a].Code, number);
-      if (m>x) {
-	x=m;
-	Rate->_area = a;
-	Rate->domestic = strcmp(Provider[prefix].Area[a].Code, mycountry)==0 || *(Rate->dst[0])=='\0';
+    if (*Rate->dst[0] && getDest(number, &num) == 0 && num.keys && *num.keys) {
+      char *p;
+#if 0
+    printf("%s(%d) %s(%s) %s - %s\n",
+	   num.country, num.ncountry, num.sarea, num.area,
+	   num.msn, num.keys);
+#endif	   
+      p=strtok(num.keys, "/");
+      while (p) {
+        for (a=0; a<Provider[prefix].nArea; a++) {
+          if (strcmp(Provider[prefix].Area[a].Code, p)==0) {
+	    Rate->_area=a;
+	    Rate->domestic=atoi(mycountry+1)==num.ncountry;
+	    break;
+	  }
+        }		  
+	if(Rate->_area!=UNKNOWN)
+	  break;
+        p=strtok(0, "/");
+      }	
+    }  
+    if (Rate->_area==UNKNOWN) {
+      for (a=0; a<Provider[prefix].nArea; a++) {
+        int m=strmatch(Provider[prefix].Area[a].Code, number);
+        if (m>x) {
+	  x=m;
+	  Rate->_area = a;
+	  Rate->domestic = strcmp(Provider[prefix].Area[a].Code, mycountry)==0 || *(Rate->dst[0])=='\0';
+        }
       }
     }
     if (Rate->_area==UNKNOWN) {
@@ -1664,11 +1719,9 @@ char *explainRate (RATE *Rate)
   static char buffer[BUFSIZ];
   char       *p=buffer;
 
-  if (Rate->Provider && *Rate->Provider)
-    p+=sprintf (p, "%s", Rate->Provider);
-  else
-    p+=sprintf (p, "%s%02d", vbn, Rate->prefix);
-
+  strcpy(p, getProvider(Rate->prefix));
+  p += strlen(p);
+  
   if (Rate->Zone && *Rate->Zone)
     p+=sprintf (p, ", %s", Rate->Zone);
   else
@@ -1706,7 +1759,11 @@ void getNumber (char *s, char *num[3])
   num[2]=strsep(&s,"-");
 }
 
-void main (int argc, char *argv[])
+/* char *vbn;
+char *mycountry;
+char *myarea; */
+
+int main (int argc, char *argv[])
 {
   int i;
   char *msg;
@@ -1714,12 +1771,20 @@ void main (int argc, char *argv[])
 
   RATE Rate, LCR;
 
+//  vbn="01"; 
+  myarea="02555"; 
+//  mycountry="+43";
   initHoliday ("../holiday-at.dat", &msg);
   printf ("%s\n", msg);
 
+#ifdef USE_DESTINATION
+  initDest ("dest/dest.gdbm", &msg);
+  printf ("%s\n", msg);
+  initTelnum();
+#else  
   initCountry ("../country-de.dat", &msg);
   printf ("%s\n", msg);
-
+#endif
   initRate ("/etc/isdn/rate.conf", "../rate-at.dat", "../zone-at-%s.gdbm", &msg);
   printf ("%s\n", msg);
 
@@ -1846,5 +1911,6 @@ void main (int argc, char *argv[])
     sleep(1);
   }
 #endif
+ return EXIT_SUCCESS;
 }
 #endif

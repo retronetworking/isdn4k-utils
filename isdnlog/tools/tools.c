@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.36  1999/09/19 14:16:27  akool
+ * isdnlog-3.53
+ *
  * Revision 1.35  1999/09/13 09:09:44  akool
  * isdnlog-3.51
  *   - changed getProvider() to not return NULL on unknown providers
@@ -714,11 +717,11 @@ char *vnum(int chan, int who)
     return(retstr[retnum]);
   }
   else {
+#ifndef USE_DESTINATION
     if (!memcmp(call[chan].num[who], countryprefix, strlen(countryprefix)) &&
          memcmp(call[chan].num[who], mycountry, strlen(mycountry))) { /* Ausland */
       register int   i;
       auto     char *s;
-
 
       if ((i = getCountrycode(call[chan].num[who], &s)) != UNKNOWN) {
         Strncpy(call[chan].areacode[who], call[chan].num[who], i + 1);
@@ -734,8 +737,10 @@ char *vnum(int chan, int who)
   	  return(retstr[retnum]);
       } /* if */
     } /* if */
+#endif      
 
     normalizeNumber(call[chan].num[who], &number, TN_ALL);
+    /* Fixme: use number fields directly, no need to format a string -lt- */
     strcpy(s, formatNumber("%F", &number));
 
     /* +49 6441/443431, Wetzlar */
@@ -940,19 +945,7 @@ int iprintf(char *obuf, int chan, register char *fmt, ...)
     } /* if */
 
     if (c != '%') {
-      if (c == '\\') {
-	c = *fmt++;
-	switch (c) {
-	case 't':
-	  *op++ = '\t';
-	  break;
-	default:
-	  *op++ = '\\';
-	  *op++ = c;
-	}
-      } else {
-	*op++ = c;
-      }
+      *op++ = c;
       continue;
     } /* if */
 
@@ -1131,7 +1124,7 @@ go:   	         if (!ndigit)
                  break;
 
       case 'P' : s = sx;
-      	         if (call[chan].provider != UNKNOWN)
+      	         if (call[chan].provider != -1)
       	       	   sprintf(sx, " via %s", getProvider(call[chan].provider));
       		 else
                    *sx = 0;
