@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.190  2000/12/23 10:36:29  leo
+## Fixed makeing with ILP
+##
 ## Revision 1.189  2000/12/21 09:56:46  leo
 ## modilp, ilp - show duration, bugfix
 ## s. isdnlog/ilp/README for more information isdnlog 4.48
@@ -1424,7 +1427,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.48
+VERSION     = 4.49
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \

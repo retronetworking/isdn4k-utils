@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.49  2000/06/29 17:38:28  akool
+ *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
+ *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
+ *
  * Revision 1.48  2000/04/02 17:35:07  akool
  * isdnlog-4.18
  *  - isdnlog/isdnlog/isdnlog.8.in  ... documented hup3
@@ -775,17 +779,24 @@ char *vnum(int chan, int who)
     return(retstr[retnum]);
   } /* if */
 
-  if (*call[chan].num[who] == '#') { /* Eurocom Befehl ... */
+  if (*call[chan].num[who] == '#') { /* Euracom Befehl ... */
     auto char arg1[BUFSIZ], arg2[BUFSIZ], arg3[BUFSIZ];
 
     if (!memcmp(call[chan].num[who] + 1, "*421", 4)) {
       Strncpy(arg1, call[chan].num[who] + 5, 4 + 1);
       Strncpy(arg2, call[chan].num[who] + 9, 2 + 1);
 
-      strcpy(arg3, num2nam(arg2, 1));
+      if (!strcmp(arg2, "00"))
+        strcpy(arg3, "alle TN");
+      else {
+        strcpy(arg3, num2nam(arg2, 1));
+
+        if (cnf == UNKNOWN)
+          strcpy(arg3, arg2);
+      } /* else */
 
       sprintf(retstr[retnum], "[TK:Morgen Terminruf um %c%c:%c%c Uhr an %s]",
-        arg1[0], arg1[1], arg1[2], arg1[3], (cnf != UNKNOWN) ? arg3 : arg2);
+        arg1[0], arg1[1], arg1[2], arg1[3], arg3);
 
       return(retstr[retnum]);
     }
