@@ -32,7 +32,7 @@ static char rcsid[] = "$Id$";
 #include <sys/utsname.h>
 
 #include "fsm.h"
-#include "pppd.h"
+#include "ipppd.h"
 #include "magic.h"
 
 #if 0

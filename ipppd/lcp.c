@@ -40,7 +40,7 @@ static char rcsid[] = "$Id$";
 #include <sys/time.h>
 #include <netinet/in.h>
 
-#include "pppd.h"
+#include "ipppd.h"
 #include "fsm.h"
 #include "lcp.h"
 #include "magic.h"

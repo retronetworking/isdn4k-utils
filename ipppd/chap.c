@@ -33,7 +33,7 @@ static char rcsid[] = "$Id$";
 #include <syslog.h>
 
 #include "fsm.h"
-#include "pppd.h"
+#include "ipppd.h"
 #include "chap.h"
 #ifdef USE_MSCHAP
 #include "chap_ms.h"

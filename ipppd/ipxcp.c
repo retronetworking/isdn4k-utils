@@ -33,7 +33,7 @@ static char rcsid[] = "$Id$";
 #include <unistd.h>
 #include <netinet/in.h>
 
-#include "pppd.h"
+#include "ipppd.h"
 #include "fsm.h"
 #include "ipxcp.h"
 #include "pathnames.h"

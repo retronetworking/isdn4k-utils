@@ -30,7 +30,7 @@ static char rcsid[] = "$Id$";
 #include <sys/time.h>
 #include <syslog.h>
 
-#include "pppd.h"
+#include "ipppd.h"
 #include "cbcp.h"
 #include "fsm.h"
 #include "lcp.h"

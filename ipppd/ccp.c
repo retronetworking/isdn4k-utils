@@ -37,7 +37,7 @@ static char rcsid[] = "$Id$";
 #include <linux/ppp-comp.h>
 
 #include "fsm.h"
-#include "pppd.h"
+#include "ipppd.h"
 #include "ccp.h"
 
 /*

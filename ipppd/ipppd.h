@@ -71,6 +71,7 @@ struct link_struct {
   int initfdflags;
   int hungup;
   struct pppcallinfo pci;
+  int has_proxy_arp;
 };
 
 extern struct link_struct lns[NUM_PPP];

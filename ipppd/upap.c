@@ -32,7 +32,7 @@ static char rcsid[] = "$Id$";
 #include <syslog.h>
 
 #include "fsm.h"
-#include "pppd.h"
+#include "ipppd.h"
 #include "upap.h"
 
 extern int log_raw_password;
