@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.113  2000/08/17 21:34:43  akool
+ * isdnlog-4.40
+ *  - README: explain possibility to open the "outfile=" in Append-Mode with "+"
+ *  - Fixed 2 typos in isdnlog/tools/zone/de - many thanks to
+ *      Tobias Becker <tobias@talypso.de>
+ *  - detect interface (via IIOCNETGPN) _before_ setting CHARGEINT/HUPTIMEOUT
+ *  - isdnlog/isdnlog/processor.c ... fixed wrong init of IIOCNETGPNavailable
+ *  - isdnlog/isdnrep/isdnrep.c ... new option -S summary
+ *  - isdnlog/isdnrep/rep_main.c
+ *  - isdnlog/isdnrep/isdnrep.1.in
+ *  - isdnlog/tools/NEWS
+ *  - isdnlog/tools/cdb/debian ... (NEW dir) copyright and such from orig
+ *  - new "rate-de.dat" from sourceforge (hi and welcome: Who is "roro"?)
+ *
  * Revision 1.112  2000/08/14 18:41:43  akool
  * isdnlog-4.39
  *  - fixed 2 segfaults in processor.c
@@ -1795,8 +1809,8 @@ static void decode(int chan, register char *p, int type, int version, int tei)
       } /* if */
 
       if ((l > 50) || (l < 0)) {
-      	sprintf(sx, "Invalid length %d -- complete frame ignored!", l);
-        info(chan, PRT_SHOWNUMBERS, STATE_RING, sx);
+      	sprintf(s, "Invalid length %d -- complete frame ignored!", l);
+        info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
         return;
       } /* if */
 
@@ -4589,7 +4603,7 @@ static void processctrl(int card, char *s)
 
         chan = call[chan].channel - 1;
 
-        if (!chanused[chan] || interns0) {
+        if (!chanused[chan]) {
           /* nicht --channel, channel muss unveraendert bleiben! */
           memcpy((char *)&call[chan], (char *)&call[5], sizeof(CALL));
           Change_Channel(5, chan);
