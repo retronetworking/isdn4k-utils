@@ -359,7 +359,7 @@ static void justify(char *fromnum, char *tonum, int dialout, TELNUM number)
 int main(int argc, char *argv[], char *envp[])
 {
   register char    *pl, *pr, *p;
-  auto     FILE    *f = fopen("/www/log/isdn.log", "r");
+  auto     FILE    *f = fopen("/var/log/isdn.log", "r");
   auto     char     s[BUFSIZ], sx[BUFSIZ], home[BUFSIZ];
   auto     int      z, i, l, col, homei, month = -1;
   auto     TELNUM   number[2];
