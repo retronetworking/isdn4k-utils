@@ -76,6 +76,20 @@ N:19440
 .IP
 e.g.
 U:%.3f DEM
+.P
+.B X:num_wildcard = provider[zZone] [,...]
+.IP
+Define exception. If a certain number is always routed to a certain provider
+and not to the preselected provider, you should use this tag.
+.br
+e.g. in Austria, online service numbers 194x or 07189 go always via Telekom,
+ignoring your preselection:
+.br
+X: 194*=1,07189*=1 
+.br
+or
+.br
+X: 194*=1z6	# Provider 1 Zone 6
 .SS Provider entries
 A new provider starts always with a
 .B P:
