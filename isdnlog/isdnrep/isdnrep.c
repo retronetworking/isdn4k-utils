@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.35  1998/03/29 19:54:11  luethje
+ * idnrep: added html feature (incoming/outgoing calls)
+ *
  * Revision 1.34  1998/03/25 20:58:46  luethje
  * isdnrep: added html feature (verbose on/off)
  * processor.c: Patch of Oliver Lauer
@@ -747,6 +750,12 @@ int read_logfile(char *myname)
 
 	if (lday == -1 && html)
 	{
+		if (begintime == 0)
+			begintime = time(NULL);
+
+		if (endtime == 0)
+			endtime = time(NULL);
+
 		get_time_value(begintime,&lday,SET_TIME);
 		sprintf(start, "%s %s", get_time_value(0,NULL,GET_DATE),
 		                        get_time_value(0,NULL,GET_YEAR));
