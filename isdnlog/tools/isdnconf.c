@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  1999/01/24 19:02:45  akool
+ *  - second version of the new chargeint database
+ *  - isdnrep reanimated
+ *
  * Revision 1.20  1998/11/24 20:53:03  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -1164,7 +1168,7 @@ static int Set_Globals(section *SPtr)
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_BYTE)) != NULL)
 	  {
 	    if (sscanf(CEPtr->value,"%lg,%d", &bytemax, &bytemaxmode) != 2)
-	      _print_msg("%s: WARNING: Syntax error in `%s' in Line %d, ignored\n", Myname, CONF_ENT_CONNECT, ln);
+	      _print_msg("%s: WARNING: Syntax error in `%s' in Line %d, ignored\n", Myname, CONF_ENT_BYTE, ln);
 	  }
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CURR)) != NULL)
@@ -1416,18 +1420,19 @@ static int Set_Numbers(section *SPtr, char *Section, int msn)
 
 			if ((CEPtr = Get_Entry(SPtr->entries,CONF_ENT_ZONE)) != NULL)
 				known[Index]->zone = atoi(CEPtr->value);
-			else
-			{
-				if (msn < 0)
-				{
-                                       if((known[Index]->zone=area_diff(NULL, num))<1)
-                                       {
-					_print_msg("%s: WARNING: There is no variable `%s' for number `%s'!\n", Myname, CONF_ENT_ZONE, num);
-					known[Index]->zone = 4;
-                                       }
+			else {
+			  if (msn < 0) {
+                            if ((known[Index]->zone = area_diff(NULL, num)) < 1) {
+                              if (is_sondernummer(num, DTAG))
+			        known[Index]->zone = SONDERNUMMER;
+                              else {
+			        _print_msg("%s: WARNING: There is no variable `%s' for number `%s' -- assuming GermanCall!\n", Myname, CONF_ENT_ZONE, num);
+			      	known[Index]->zone = GERMANCALL;
+                              } /* else */
+                            } /* if */
 				}
 				else
-					known[Index]->zone = 1;
+			    known[Index]->zone = CITYCALL; /* sich selbst anrufen kostet CityCall */
 			}
 
 			if ((CEPtr = Get_Entry(SPtr->entries,CONF_ENT_INTFAC)) != NULL)

@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.17  1999/01/10 15:24:31  akool
+ *  - "message = 0" bug fixed (many thanks to
+ *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
+ *  - CITYWEEKEND via config-file possible
+ *  - fixes from Michael Reinelt <reinelt@eunet.at>
+ *  - fix a typo in the README from Sascha Ziemann <szi@aibon.ping.de>
+ *  - Charge for .at optimized by Michael Reinelt <reinelt@eunet.at>
+ *  - first alpha-Version of the new chargeinfo-Database
+ *    ATTENTION: This version requires the following manual steps:
+ *      cp /usr/src/isdn4k-utils/isdnlog/tarif.dat /usr/lib/isdn
+ *      cp /usr/src/isdn4k-utils/isdnlog/samples/tarif.conf /etc/isdn
+ *
  * Revision 1.16  1998/12/09 20:40:19  akool
  *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
  *  - new option "-o" to suppress causes of other ISDN-Equipment
@@ -530,7 +542,7 @@ char *vnum(int chan, int who)
     if (cnf > -1)
       strcpy(retstr[retnum], call[chan].alias[who]);
     else if (call[chan].sondernummer[who] != -1)
-      strcpy(retstr[retnum], SN[call[chan].sondernummer[who]].sinfo);
+      strcpy(retstr[retnum], SN[call[chan].sondernummer[who]].info);
     else
       sprintf(retstr[retnum], "TN %s", call[chan].num[who]);
 

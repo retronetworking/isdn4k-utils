@@ -74,7 +74,7 @@ Isdn network interface. This information is required with the
 .B START
 You can define a subsection here. The whole section is ignored unless you
 gave the "-S" / start=yes option. Each subsection should have the name
-[FLAGS]. It may hold these values:
+[FLAG]. It may hold these values:
 
 .RS
 .TP 4

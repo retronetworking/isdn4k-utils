@@ -19,6 +19,10 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.34  1999/01/24 19:01:31  akool
+ *  - second version of the new chargeint database
+ *  - isdnrep reanimated
+ *
  * Revision 1.33  1999/01/10 15:23:13  akool
  *  - "message = 0" bug fixed (many thanks to
  *    Sebastian Kanthak <sebastian.kanthak@muehlheim.de>)
@@ -1150,19 +1154,34 @@ int main(int argc, char *argv[], char *envp[])
           else
 #endif
           {
+#ifdef Q931
+      	    if (!q931dmp)
+#endif
+    	      print_msg(PRT_NORMAL, "%s Version %s starting\n", myshortname, VERSION);
+
+	    if ((i = initSondernummern()) > -1) {
+#ifdef Q931
+      	      if (!q931dmp) {
+#endif
+    	        sprintf(msg, "Sonderrufnummern Version 1/99 loaded [%d entries]", i);
+              	  print_msg(PRT_NORMAL, "%s\n", msg);
+
+#ifdef Q931
+       	      } /* if */
+#endif
+            } /* if */
+
             if (readconfig(myshortname) < 0)
               Exit(30);
 
             restoreCharge();
           } /* if */
 
-    			if (replay)
-					{
+    	  if (replay) {
 						sprintf(rlogfile, "%s.rep", logfile);
 			      logfile = rlogfile;
 					}
-					else
-          {
+	  else {
           	append_element(&devices,isdnctrl);
 
             switch (i = handle_runfiles(myshortname,devices,START_PROG)) {
@@ -1184,11 +1203,6 @@ int main(int argc, char *argv[], char *envp[])
 
             now();
 
-#ifdef Q931
-      	    if (!q931dmp)
-#endif
-    	      print_msg(PRT_NORMAL, "%s Version %s loaded\n", myshortname, VERSION);
-
 #ifdef POSTGRES
             dbOpen();
 #endif
@@ -1196,7 +1210,6 @@ int main(int argc, char *argv[], char *envp[])
 	    mysql_dbOpen();
 #endif
 
-	    initSondernummern();
             initTarife(msg);
 
 #ifdef Q931
