@@ -13,8 +13,8 @@
 
 /** Prototypes ***********************************************************/
 
-extern char *ctrl_exists(char *, char *);
-extern int	 ctrl_create(char *, char *, char *);
-extern int	 ctrl_remove(char *, char *);
+extern char *ctrl_exists(char *, char *, char *);
+extern int	 ctrl_create(char *, char *, char *, char *);
+extern int	 ctrl_remove(char *, char *, char *);
 
 #endif /* _VBOX_CONTROL_H */

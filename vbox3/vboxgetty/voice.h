@@ -27,7 +27,10 @@
 
 /** Defines **************************************************************/
 
-#define VBOXVOICE_BUFFER_SIZE		32
+#define VBOXVOICE_BUFEXP   5
+#define VBOXVOICE_NUMFRAGS 4
+#define VBOXVOICE_FRAGFACT 5
+#define VBOXVOICE_BUFSIZE  ((1 << VBOXVOICE_BUFEXP) * VBOXVOICE_FRAGFACT)
 
 #define VBOXVOICE_STAT_OK			0
 #define VBOXVOICE_STAT_TIMEOUT	1

@@ -16,6 +16,8 @@
 #define LOG_D	(128)															/* Debug	*/
 #define LOG_X	(255)													 /* Full debug	*/
 
+#define log log_line										 /* It looks better :-)	*/
+
 /** Structures ***********************************************************/
 
 struct logsequence

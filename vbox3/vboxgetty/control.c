@@ -4,6 +4,15 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.1  1998/07/06 09:05:18  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 */
 
 #include "../config.h"
@@ -34,12 +43,15 @@ static char ctrllastline[VBOX_CTRL_MAX_RCLINE + 1];
 /**						oder ein Zeiger auf deren Initstring.					**/
 /*************************************************************************/
 
-char *ctrl_exists(char *home, char *name)
+char *ctrl_exists(char *home, char *name, char *ttyd)
 {
 	FILE *cptr;
 	char *stop;
 
-	printstring(ctrlpathname, "%s/vboxctrl-%s", home, name);
+	if (!ttyd)
+		printstring(ctrlpathname, "%s/vboxctrl-%s", home, name);
+	else
+		printstring(ctrlpathname, "%s/vboxctrl-%s-%s", home, name, ttyd);
 
 	if ((cptr = fopen(ctrlpathname, "r")))
 	{
@@ -71,16 +83,19 @@ char *ctrl_exists(char *home, char *name)
 /**						einem Fehler.													**/
 /*************************************************************************/
 
-int ctrl_create(char *home, char *name, char *init)
+int ctrl_create(char *home, char *name, char *ttyd, char *init)
 {
 	FILE *cptr = NULL;
 	int	loop = 5;
 
-	printstring(ctrlpathname, "%s/vboxctrl-%s", home, name);
+	if (!ttyd)
+		printstring(ctrlpathname, "%s/vboxctrl-%s", home, name);
+	else
+		printstring(ctrlpathname, "%s/vboxctrl-%s-%s", home, name, ttyd);
 
 	while (loop > 0)
 	{
-		log_line(LOG_D, "Creating control \"vboxctrl-%s:%s\"...\n", name, init);
+		log_line(LOG_D, "Creating control \"vboxctrl-%s:%s\" (%s)...\n", name, init, ttyd ? ttyd : "global");
 
 		if ((cptr = fopen(ctrlpathname, "w")))
 		{
@@ -109,15 +124,18 @@ int ctrl_create(char *home, char *name, char *init)
 /**						bei einem Fehler.												**/
 /*************************************************************************/
 
-int ctrl_remove(char *home, char *name)
+int ctrl_remove(char *home, char *name, char *ttyd)
 {
 	int loop = 5;
 
-	printstring(ctrlpathname, "%s/vboxctrl-%s", home, name);
+	if (!ttyd)
+		printstring(ctrlpathname, "%s/vboxctrl-%s", home, name);
+	else
+		printstring(ctrlpathname, "%s/vboxctrl-%s-%s", home, name, ttyd);
 
 	while (loop > 0)
 	{
-		log_line(LOG_D, "Removing control \"vboxctrl-%s\"...\n", name);
+		log_line(LOG_D, "Removing control \"vboxctrl-%s\" (%s)...\n", name, ttyd ? ttyd : "global");
 
 		if (remove(ctrlpathname) == 0) return(0);
 

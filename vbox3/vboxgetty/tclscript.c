@@ -4,6 +4,15 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.4  1998/07/06 09:05:31  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 ** Revision 1.3  1998/06/18 12:38:17  michael
 ** - 2nd part of the automake/autoconf implementation (now compiles again).
 **
@@ -358,14 +367,14 @@ int vbox_voice(VBOX_TCLFUNC)
 				}
 				break;
 
-				case 'H':
-				case 'h':
+				case 'A':
+				case 'a':
 				{
 						/* Eingehende Audiodaten zum mithören an ein	*/
 						/* anderes Device schicken.						*/
 
-					if (strcasecmp(arg,  "stop") == 0) rc = voice_hear(0);
-					if (strcasecmp(arg, "local") == 0) rc = voice_hear(1);
+					if (strcasecmp(arg, "stop") == 0) rc = voice_hear(0);
+					if (strcasecmp(arg, "hear") == 0) rc = voice_hear(1);
 
 					switch (rc)
 					{
@@ -381,21 +390,11 @@ int vbox_voice(VBOX_TCLFUNC)
 				break;
 
 				default:
-				{
 					Tcl_SetResult(intp, "ERROR", NULL);
-				}
-				break;
+					break;
 			}
 		}
 	}
 
 	return(TCL_OK);
 }
-
-
-
-
-
-
-
-

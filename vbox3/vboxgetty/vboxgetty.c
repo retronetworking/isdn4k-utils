@@ -4,6 +4,15 @@
 ** Copyright 1996-1998 Michael 'Ghandi' Herold <michael@abadonna.mayn.de>
 **
 ** $Log$
+** Revision 1.4  1998/07/06 09:05:35  michael
+** - New control file code added. The controls are not longer only empty
+**   files - they can contain additional informations.
+** - Control "vboxctrl-answer" added.
+** - Control "vboxctrl-suspend" added.
+** - Locking mechanism added.
+** - Configuration parsing added.
+** - Some code cleanups.
+**
 ** Revision 1.3  1998/06/18 12:38:18  michael
 ** - 2nd part of the automake/autoconf implementation (now compiles again).
 **
@@ -44,6 +53,7 @@ static char *progbasename;
 static char *isdnttyname;
 
 char temppathname[PATH_MAX + 1];
+char savettydname[NAME_MAX + 1];
 
 /** Structures ***********************************************************/
 
@@ -174,6 +184,7 @@ void main(int argc, char **argv)
 	{
 		if ((stop = rindex(isdnttyname, '/'))) isdnttyname = ++stop;
 
+		printstring(savettydname, "%s"     , isdnttyname);
 		printstring(temppathname, "/dev/%s", isdnttyname);
 		
 		if (access(temppathname, F_OK|R_OK|W_OK) != 0)
@@ -526,6 +537,7 @@ static int process_incoming_call(void)
 	int					 ringsetup;
 	int					 inputisok;
 	char					*stop;
+	char					*todo;
 
 	memset(&vboxuser, 0, sizeof(vboxuser));
 	memset(&vboxcall, 0, sizeof(vboxcall));
@@ -547,9 +559,18 @@ static int process_incoming_call(void)
 		{
 			if (waitrings >= 0)
 			{
-				if ((stop = ctrl_exists(vboxuser.home, "answer")))
+				todo = savettydname;
+				stop = ctrl_exists(vboxuser.home, "answer", todo);
+
+				if (!stop)
 				{
-					log_line(LOG_D, "Control \"vboxctrl-answer:%s\" found...\n", stop);
+					todo = NULL;
+					stop = ctrl_exists(vboxuser.home, "answer", todo);
+				}
+
+				if (stop)
+				{
+					log_line(LOG_D, "Control \"vboxctrl-answer\" detected: %s (%s)...\n", stop, todo ? todo : "global");
 
 					if ((strcasecmp(stop, "no") == 0) || (strcasecmp(stop, "hangup") == 0) || (strcasecmp(stop, "reject") == 0))
 					{
@@ -621,15 +642,8 @@ static int process_incoming_call(void)
 							/* ein Benutzer gefunden wurde, werden einige der	*/
 							/* Kontrolldateien gelöscht.								*/
 
-						ctrl_remove(vboxuser.home, "suspend");
-
-						if ((stop = ctrl_exists(vboxuser.home, "answer")))
-						{
-							if ((strcasecmp(stop, "no") == 0) || (strcasecmp(stop, "hangup") == 0) || (strcasecmp(stop, "reject") == 0))
-							{
-								ctrl_remove(vboxuser.home, "answer");
-							}
-						}
+						ctrl_remove(vboxuser.home, "suspend", savettydname);
+						ctrl_remove(vboxuser.home, "suspend", NULL        );
 
 							/* Die "effective Permissions" des Prozesses auf	*/
 							/* die des Benutzers setzen und dessen Konfigurat-	*/
