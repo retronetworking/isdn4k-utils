@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1999/11/03 16:13:36  paul
+ * Added { } to suppress egcs warnings.
+ *
  * Revision 1.19  1998/05/20 12:22:15  paul
  * More paranoid about freeing pointers.
  *
@@ -229,7 +232,7 @@ section *read_file(section *Section, const char *FileName, int Flags)
 static section *Read_Lines(section *Section, FILE *fp, const char *FileName, int *Line, int Flags)
 {
 	static int   InSubSection = 0;
-	char  String[BUFSIZ];
+	char  String[8192];
 	char *Sectionname, *Variable, *Value;
 	int   Res;
 	int   InInclude = 0;
@@ -238,7 +241,7 @@ static section *Read_Lines(section *Section, FILE *fp, const char *FileName, int
 	if (Section != NULL)
 		InInclude = 1;
 
-	while (FGets(String, BUFSIZ, fp, Line) != NULL)
+	while (FGets(String, sizeof(String), fp, Line) != NULL)
 	{
 		if ((Sectionname = Find_Section(String)) != NULL)
 		{
@@ -694,7 +697,7 @@ section *Del_Section(section **Section, char *Sectionname)
 static section *Insert_Section(section **main_sec, section **ins_sec, char **variables, int flags)
 {
 	section *Ptr = NULL;
-	
+
 
 	if (main_sec == NULL || ins_sec == NULL || *ins_sec == NULL)
 	{
@@ -732,7 +735,7 @@ static section *Insert_Section(section **main_sec, section **ins_sec, char **var
 	*main_sec = *ins_sec;
 	*ins_sec = NULL;
 	(*main_sec)->next = NULL;
-	
+
 	return *main_sec;
 }
 
@@ -1245,7 +1248,7 @@ static section* Get_Section_From_Path(section* NewSection, char *Path, entry **E
 	else if (Path != NULL || NewSection != NULL)
 		return NULL;
 
-	
+
 	if ((RootSection = _Get_Section_From_Path(array,RootSection,&RetSection,&RetEntry,0)) == NULL)
 		RetSection = NULL;
 
@@ -1290,7 +1293,7 @@ static entry* _Get_Entry_From_Path(char **array, entry* Entry, section **RetSect
 						    (*RetEntry == NULL || found_first != 0)      )
 						{
 							found = 1;
-							
+
 							if (flags == F_TAG)
 								Entry->flag = F_TAGGED;
 
@@ -1426,7 +1429,7 @@ section* Get_Section_Match(section* Section, char *Path,
 
 				return Entry->subsection;
 			}
-/* Die naechsten Zeilen sind fuer Syntax-DAU's auskommentiert: 
+/* Die naechsten Zeilen sind fuer Syntax-DAU's auskommentiert:
    NUMBER={
      [blabla]
    }
