@@ -32,10 +32,19 @@
 #include <sys/param.h>		/* for MAXPATHLEN and BSD4_4, if defined */
 #include <sys/types.h>		/* for u_int32_t, if defined */
 #include <sys/bitypes.h>
-#include <linux/ppp_defs.h>
-#include <linux/isdn_ppp.h>
+#if defined __GLIBC__ && __GLIBC__ >= 2
+# include <net/ppp_defs.h>
+# include <linux/isdn_ppp.h>
+#else
+# include <linux/ppp_defs.h>
+# include <linux/isdn_ppp.h>
+#endif
 #include <stdio.h>
 #include <net/if.h>
+
+#if defined __GLIBC__ && __GLIBC__ >= 2
+# include <utmp.h>
+#endif
 
 #define NUM_PPP	16		/* 16 PPP interface supported (per process) */
 
@@ -284,7 +293,7 @@ int cifproxyarp (int unit, u_int32_t his_adr);
 int sipxfaddr (int unit, u_int32_t network, unsigned char * node );
 int cipxfaddr (int linkunit);
 int ppp_available(void);
-int logwtmp (int unit,char *line, char *name, char *host);
+int logwtmputmp (int unit,char *line, char *name, char *host);
 int lock (char *dev);
 void unlock(void);
 void setifip(int);

@@ -1553,6 +1553,11 @@ static int setnetmask(int slot,char **argv)
 {
     u_int32_t mask;
 
+	if (strcmp(*argv, "255.255.255.255") == 0) {
+		netmask = 0xffffffff;
+		return 1;
+	}
+
     if ((mask = inet_addr(*argv)) == -1 || (netmask & ~mask) != 0) {
 	fprintf(stderr, "Invalid netmask %s\n", *argv);
 	return 0;

@@ -48,8 +48,13 @@ char lcp_rcsid[] = "$Id$";
 #include "ipxcp.h"
 
 #ifdef __linux__		/* Needs ppp ioctls */
-#include <net/if.h>
-#include <linux/if_ppp.h>
+#if defined __GLIBC__ && __GLIBC__ >= 2
+# include <net/if.h>
+# include <net/if_ppp.h>
+#else
+# include <net/if.h>
+# include <linux/if_ppp.h>
+#endif
 #endif
 
 u_char our_discr_class = 4; /* 0x2; */

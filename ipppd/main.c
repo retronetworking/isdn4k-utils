@@ -243,9 +243,27 @@ void main(int argc,char **argv)
      * Detach ourselves from the terminal, if required,
      * and identify who is running us.
      */
-	if (!nodetach && daemon(0, 0) < 0) {
-		perror("Couldn't detach from controlling terminal");
-		exit(1);
+	if (!nodetach) {
+		int a,f;
+
+        f = fork();
+        if(f < 0) {
+			perror("Couldn't detach from controlling terminal");
+			exit(1);
+		}
+		if(f)
+			exit(0);
+		setsid();
+		chdir("/");
+		a = open("/dev/null",O_RDWR);
+		if(a < 0) {
+			perror("Couldn't open /dev/null");
+			exit(1);
+		}
+		dup2(a,0);
+		dup2(a,1);
+		dup2(a,2);
+		close(a);
 	}
 
 	pid = getpid();
