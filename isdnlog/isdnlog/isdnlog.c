@@ -19,6 +19,11 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.13  1997/06/22 23:03:23  luethje
+ * In subsection FLAGS it will be checked if the section name FLAG is korrect
+ * isdnlog recognize calls abroad
+ * bugfix for program starts
+ *
  * Revision 1.12  1997/05/25 19:40:58  luethje
  * isdnlog:  close all files and open again after kill -HUP
  * isdnrep:  support vbox version 2.0
@@ -138,6 +143,8 @@ static void hup_handler(int isig)
 
 /*****************************************************************************/
 
+#define X_FD_ISSET(fd, mask)	((fd) >= 0 && FD_ISSET(fd,mask))
+
 static void loop(void)
 {
   auto fd_set readmask;
@@ -218,8 +225,9 @@ static void loop(void)
 
       now();
 
+
       for (Cnt = first_descr; Cnt < socket_size(sockets); Cnt++) {
-        if (FD_ISSET(sockets[Cnt].descriptor, &exceptmask)) {
+        if (X_FD_ISSET(sockets[Cnt].descriptor, &exceptmask)) {
           if (sockets[Cnt].fp == NULL) {
             disconnect_client(Cnt);
             break;
@@ -237,7 +245,7 @@ static void loop(void)
             break;
           } /* else */
         }
-        else if (FD_ISSET(sockets[Cnt].descriptor, &readmask))
+        else if (X_FD_ISSET(sockets[Cnt].descriptor, &readmask))
           if (sockets[Cnt].fp == NULL) {
             eval_message(Cnt);
             /* Arbeite immer nur ein Client ab, du weisst nicht, ob der
@@ -248,7 +256,7 @@ static void loop(void)
             Print_Cmd_Output(Cnt);
       } /* for */
 
-      if (xinfo && FD_ISSET(sockets[IN_PORT].descriptor, &readmask)) {
+      if (xinfo && X_FD_ISSET(sockets[IN_PORT].descriptor, &readmask)) {
         len = sizeof(incoming);
 
         if ((NewSocket = accept(sockets[IN_PORT].descriptor, &incoming, &len)) == -1)
@@ -265,15 +273,17 @@ static void loop(void)
           NewClient = queuenumber - 1;
         } /* else */
       }
-      else if (FD_ISSET(sockets[ISDNINFO].descriptor, &readmask))
+      else if (X_FD_ISSET(sockets[ISDNINFO].descriptor, &readmask))
         moreinfo();
-      else if (FD_ISSET(sockets[ISDNCTRL].descriptor, &readmask))
+      else if (X_FD_ISSET(sockets[ISDNCTRL].descriptor, &readmask))
         (void)morectrl(0);
-      else if (FD_ISSET(sockets[ISDNCTRL2].descriptor, &readmask))
+      else if (X_FD_ISSET(sockets[ISDNCTRL2].descriptor, &readmask))
         (void)morectrl(1);
     } /* else */
   } /* while */
 } /* loop */
+
+#undef X_FD_ISSET
 
 /*****************************************************************************/
 
