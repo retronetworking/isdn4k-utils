@@ -102,6 +102,9 @@ endif
 ifeq ($(CONFIG_RCAPID),y)
 	SUBDIRS := $(SUBDIRS) rcapid
 endif
+ifeq ($(CONFIG_CAPIFAX),y)
+	SUBDIRS := $(SUBDIRS) capifax
+endif
 ifeq ($(CONFIG_GENMAN),y)
 	SUBDIRS := $(SUBDIRS) doc
 endif
