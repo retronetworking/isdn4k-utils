@@ -107,6 +107,12 @@ Downloads the protocol- and dsp-code into the card and starts operation.
 .TP
 .BI "manage " [read | exec " " <path>]
 Starts Management-Interface.
+.TP
+.BI "xlog " [cont]
+Retrieving XLOG entries of adapter.
+With option
+.I cont
+given, it will be on a continuous cycle.
 .LP
 .SH EXAMPLE 
 .TP
