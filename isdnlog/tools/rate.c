@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.59  1999/11/08 21:09:41  akool
+ * isdnlog-3.65
+ *   - added "B:" Tag to "rate-xx.dat"
+ *
  * Revision 1.58  1999/11/07 13:29:29  akool
  * isdnlog-3.64
  *  - new "Sonderrufnummern" handling
@@ -958,6 +962,10 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 #endif
 	line++;
       }
+      else if(nProvider) { /* silently ignore empty providers */
+	free_provider(prefix);
+	nProvider--;
+      }  
       if(nProvider) {
 	if(!Provider[prefix].Vbn || !*Provider[prefix].Vbn) {
 	  error(dat, "Provider %s has no valid B:-Tag - ignored", getProvider(prefix));
@@ -1471,11 +1479,16 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
 #endif
     line++;
   }
-  if(!Provider[prefix].Vbn || !*Provider[prefix].Vbn) {
-    error(dat, "Provider %s has no valid B:-Tag - ignored", getProvider(prefix));
+  else if(nProvider) { /* silently ignore empty providers */
     free_provider(prefix);
     nProvider--;
-  }  
+  } 
+  if(nProvider) 
+    if(!Provider[prefix].Vbn || !*Provider[prefix].Vbn) {
+      error(dat, "Provider %s has no valid B:-Tag - ignored", getProvider(prefix));
+      free_provider(prefix);
+      nProvider--;
+    }  
 
   if (!*Version) {
     warning (dat, "Database version could not be identified");

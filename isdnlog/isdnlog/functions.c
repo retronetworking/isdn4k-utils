@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.25  1999/09/13 09:09:43  akool
+ * isdnlog-3.51
+ *   - changed getProvider() to not return NULL on unknown providers
+ *     many thanks to Matthias Eder <mateder@netway.at>
+ *   - corrected zone-processing when doing a internal -> world call
+ *
  * Revision 1.24  1999/06/15 20:04:01  akool
  * isdnlog Version 3.33
  *   - big step in using the new zone files
@@ -474,7 +480,7 @@ int print_msg(int Level, const char *fmt, ...)
       fflush(stderr);
     }
     else
-    if (!fout){
+    if (fcons){
       fputs(width ? s : String, fcons);
       fflush(fcons);
     } /* else */
