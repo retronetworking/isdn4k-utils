@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1997/09/07 00:43:12  luethje
+ * create new error messages for isdnrep
+ *
  * Revision 1.10  1997/08/22 12:31:21  fritz
  * isdnlog now handles chargeint/non-chargeint Kernels automatically.
  * Manually setting of CONFIG_ISDNLOG_OLD_I4L no more needed.
@@ -3387,6 +3390,7 @@ static void processctrl(int card, char *s)
   static   int         tei = BROADCAST, sapi = 0, net = 1, firsttime = 1;
   auto     char        sx[BUFSIZ], s2[BUFSIZ];
   static   char        last[BUFSIZ];
+  auto     int         isAVMB1 = 0;
 
 
   hexSeen = 1;
@@ -3545,6 +3549,25 @@ static void processctrl(int card, char *s)
 
     ps += (tei == BROADCAST) ? 1 : 4;
   }
+
+  else  if (!memcmp(ps, "D3", 2)) { /* AVMB1 */
+
+    if (firsttime) {
+      firsttime = 0;
+      print_msg (PRT_NORMAL, "(AVM B1 driver detected)\n");
+    }
+
+    if (*(ps+2) == '<')  /* this is our "direction flag" */
+      net = 1;
+    else
+      net = 0;
+
+    tei = 65;  /* we can't get a tei, so fake it */
+    isAVMB1 = 1;
+
+    ps[0] = 'h'; ps[1] = 'e'; ps[2] = 'x';  /* rewrite for the others */
+  } /* AVMB1 */
+
   else { /* Old Teles Driver */
 
     /* Tei wird gelesen und bleibt bis zum Ende des naechsten hex: stehen.
@@ -3632,8 +3655,11 @@ static void processctrl(int card, char *s)
 
     type = strtol(ps += 3, NIL, 16);
 
+    if (!isAVMB1)
+      dialin = (tei == BROADCAST); /* dialin (Broadcast), alle anderen haben schon eine Tei! */
+    else
+      dialin = (cref & 0x80);  /* first (SETUP) tells us who initiates the connection */
 
-    dialin = (tei == BROADCAST); /* dialin (Broadcast), alle anderen haben schon eine Tei! */
     /* dialin = (cref & 0x7f) < 64; */
 
     cref = (net) ? cref : cref ^ 0x80; /* cref immer aus Sicht des Amts */
@@ -3707,6 +3733,8 @@ static void processctrl(int card, char *s)
       if ((call[5].cref != cref) || (call[5].tei != tei)) {
         /* bei C_PROC/S_ACK ist cref _immer_ > 128 */
         /* keiner da, also leeren */
+        if (isAVMB1 && (call[chan].state == SETUP))  /* direction already set for AVMB1 */
+          dialin = call[chan].dialin;
         clearchan(chan, 1);
         call[chan].dialin = dialin;
         call[chan].tei = tei;
