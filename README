@@ -78,17 +78,13 @@ System prerequisites:
    
    Run "make"
 
-   This builds all utilities except the Tcl/Tk-script "isdnmon"
+   This builds all previously selected utilities.
 
 4. Installation
 
    For the following steps, root permissions are necessary
 
-   a) Create the device-inodes:
-
-     make devices
-
-   b) Install the utilities, the man pages and config-files:
+   Install the utilities, the man pages and config-files:
 
      make install
 

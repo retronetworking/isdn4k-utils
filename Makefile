@@ -3,7 +3,7 @@
 # Toplevel Makefile for isdn4k-utils
 #
 
-export I4LVERSION = 2.1
+export I4LVERSION = 2.1b1
 
 all:	do-it-all
 
