@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1999/04/19 19:25:33  akool
+ * isdnlog Version 3.18
+ *
+ * - countries-at.dat added
+ * - spelling corrections in "countries-de.dat" and "countries-us.dat"
+ * - LCR-function of isdnconf now accepts a duration (isdnconf -c .,duration)
+ * - "rate-at.dat" and "rate-de.dat" extended/fixed
+ * - holiday.c and rate.c fixed (many thanks to reinelt@eunet.at)
+ *
  * Revision 1.4  1999/04/14 13:17:21  akool
  * isdnlog Version 3.14
  *
@@ -74,17 +83,17 @@
 #ifndef _HOLIDAY_H_
 #define _HOLIDAY_H_
 
-#define MONDAY    1
-#define TUESDAY   2
-#define WEDNESDAY 3
-#define THURSDAY  4
-#define FRIDAY    5
-#define SATURDAY  6
-#define SUNDAY    7
-#define WORKDAY   8
-#define WEEKEND   9
-#define HOLIDAY  10
-#define EVERYDAY 11
+#define EVERYDAY  1
+#define WORKDAY   2
+#define WEEKEND   3
+#define MONDAY    4
+#define TUESDAY   5
+#define WEDNESDAY 6
+#define THURSDAY  7
+#define FRIDAY    8
+#define SATURDAY  9
+#define SUNDAY   10
+#define HOLIDAY  11
 
 typedef unsigned long bitfield;
 

@@ -19,6 +19,20 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1999/05/22 10:19:21  akool
+ * isdnlog Version 3.29
+ *
+ *  - processing of "sonderrufnummern" much more faster
+ *  - detection for sonderrufnummern of other provider's implemented
+ *    (like 01929:FreeNet)
+ *  - Patch from Oliver Lauer <Oliver.Lauer@coburg.baynet.de>
+ *  - Patch from Markus Schoepflin <schoepflin@ginit.de>
+ *  - easter computing corrected
+ *  - rate-de.dat 1.02-Germany [22-May-1999 11:37:33] (from rate-CVS)
+ *  - countries-de.dat 1.02-Germany [22-May-1999 11:37:47] (from rate-CVS)
+ *  - new option "-B" added (see README)
+ *    (using "isdnlog -B16 ..." isdnlog now works in the Netherlands!)
+ *
  * Revision 1.11  1999/05/09 18:24:18  akool
  * isdnlog Version 3.25
  *
@@ -123,7 +137,7 @@
 /*
  * Schnittstelle:
  *
- * int initHoliday(char *path)
+ * int initHoliday(char *path, char **msg)
  *   initialisiert die Feiertagsberechnung, liest die Feiertagsdatei
  *   und gibt die Anzahl der Feiertage zurück, im Fehlerfall -1
  *
@@ -166,7 +180,10 @@ typedef struct {
   char *name;
 } HOLIDATE;
 
-static char *defaultWeekday[] = { "", 
+static char *defaultWeekday[] = { "", /* not used */ 
+				  "", /* empty "Everyday" */
+				  "Workday",
+				  "Weekend",
 				  "Monday",
 				  "Tuesday",
 				  "Wednesday",
@@ -174,9 +191,7 @@ static char *defaultWeekday[] = { "",
 				  "Friday",
 				  "Saturday",
 				  "Sunday",
-				  "Workday",
-				  "Weekend",
-				  "Holiday" };
+				  "Holiday" }; 
 
 static int        line = 0;
 static char      *Weekday[COUNT(defaultWeekday)] = { NULL, };
@@ -202,8 +217,8 @@ static void warning (char *file, char *fmt, ...)
 
 static julian date2julian(int y, int m, int d)
 {
- if (m<3) {m+=9; y--;} else m-=3;
- return (146097*(y/100))/4+(1461*(y%100))/4+(153*m+2)/5+d;
+  if (m<3) {m+=9; y--;} else m-=3;
+  return (146097*(y/100))/4+(1461*(y%100))/4+(153*m+2)/5+d;
 }
 
 #if 0 /* not used by now */
@@ -320,10 +335,11 @@ int initHoliday(char *path, char **msg)
       s+=2; while (isblank(*s)) s++;
       if (isdigit(*s)) {
 	d=strtol(s,&s,10);
-      if (d<1 || d>7) {
-	warning(path, "invalid weekday %d", d);
+	if (d<1 || d>7) {
+	  warning(path, "invalid weekday %d", d);
 	  continue;
 	}
+	d+=MONDAY-1;
       } else if (*s=='W') {
 	d=WORKDAY;
 	s++;
@@ -362,6 +378,7 @@ int initHoliday(char *path, char **msg)
 	d=atof(strsep(&date,"."));
 	m=atof(strsep(&date,"."));
       }
+
       Holiday=(HOLIDATE*)realloc(Holiday,(nHoliday+1)*sizeof(HOLIDATE));
       Holiday[nHoliday].day=d;
       Holiday[nHoliday].month=m;
@@ -370,7 +387,8 @@ int initHoliday(char *path, char **msg)
       break;
 
     case 'V': /* V:xxx Version der Datenbank */
-      strcpy(version, s+2);
+      s+=2; while(isblank(*s)) s++;
+      strcpy(version, s);
       break;
 
     default:
@@ -380,7 +398,7 @@ int initHoliday(char *path, char **msg)
   fclose(stream);
 
   if (msg) snprintf (message, LENGTH, "Holiday Version %s loaded [%d entries from %s]",
-	   version, nHoliday, path);
+		     version, nHoliday, path);
 
   return nHoliday;
 }
@@ -407,48 +425,36 @@ static int isHoliday(struct tm *tm, char **name)
 int isDay(struct tm *tm, bitfield mask, char **name)
 {
   julian day;
-  char *s;
+  int    holiday;
+  char  *holiname;
   static char buffer[BUFSIZ];
-  int holiday;
   
-  holiday = isHoliday(tm, &s);
+  holiday=isHoliday(tm, &holiname);
 
   if ((mask & (1<<HOLIDAY)) && holiday) {
-    if (name) sprintf (*name=buffer, "%s (%s)", Weekday[HOLIDAY], s); 
+    if (name) sprintf (*name=buffer, "%s (%s)", Weekday[HOLIDAY], holiname); 
     return HOLIDAY;
   }
 
-  day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+1;
+  day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+MONDAY;
 
-  if ((mask & (1<<WEEKEND)) && day>5 && !holiday) {
+  if ((mask & (1<<WEEKEND)) && (day==SATURDAY || day==SUNDAY)) {
     if (name) sprintf (*name=buffer, "%s (%s)", Weekday[WEEKEND], Weekday[day]);
     return WEEKEND;
   }
   
-  if ((mask & (1<<WORKDAY)) && day<6 && !holiday) {
+  if ((mask & (1<<WORKDAY)) && day!=SATURDAY && day!=SUNDAY && !holiday) {
     if (name) sprintf (*name=buffer, "%s (%s)", Weekday[WORKDAY], Weekday[day]);
     return WORKDAY;
   }
   
-  if (mask & (1<<EVERYDAY)) {
-    if(name)
-    {
-      if(holiday) 
-        sprintf(*name=buffer, "%s (%s)", Weekday[day], s);
-      else
-        sprintf(*name=buffer, "%s", Weekday[day]);
-    }
+  if (mask & (1<<day)) {
+    if (name) sprintf(*name=buffer, "%s", Weekday[day]);
     return day;
   }
-
-  if (mask & (1<<day)) {
-    if(name)
-    {
-      if(holiday) 
-        sprintf(*name=buffer, "%s (%s)", Weekday[day], s);
-      else
-        sprintf(*name=buffer, "%s", Weekday[day]);
-    }
+  
+  if (mask & (1<<EVERYDAY)) {
+    if (name) sprintf(*name=buffer, "%s", Weekday[day]);
     return day;
   }
   
@@ -472,13 +478,13 @@ void main (int argc, char *argv[])
     tm.tm_year=atoi(strsep(argv+i,"."))-1900;
 
     d=isDay(&tm,1<<HOLIDAY,&name);
-    printf ("%02d.%02d.%04d\t%d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Holiday");
+    printf ("%02d.%02d.%04d\t%2d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Holiday");
     d=isDay(&tm,1<<WEEKEND,&name);
-    printf ("%02d.%02d.%04d\t%d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Weekend");
+    printf ("%02d.%02d.%04d\t%2d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Weekend");
     d=isDay(&tm,1<<WORKDAY,&name);
-    printf ("%02d.%02d.%04d\t%d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Workday");
+    printf ("%02d.%02d.%04d\t%2d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Workday");
     d=isDay(&tm,SOMEDAY,&name);
-    printf ("%02d.%02d.%04d\t%d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Day (Uh?)");
+    printf ("%02d.%02d.%04d\t%2d = %s\n", tm.tm_mday,tm.tm_mon+1,tm.tm_year+1900,d,d?name:"no Day (Uh?)");
   }
 }
 #endif

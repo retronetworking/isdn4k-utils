@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.44  1999/06/13 14:07:44  akool
+ * isdnlog Version 3.32
+ *
+ *  - new option "-U1" (or "ignoreCOLP=1") to ignore CLIP/COLP Frames
+ *  - TEI management decoded
+ *
  * Revision 1.43  1999/05/22 10:18:28  akool
  * isdnlog Version 3.29
  *
@@ -1111,7 +1117,7 @@ int main(int argc, char *argv[], char *envp[])
   register int    i, res = 0;
   auto     int    lastarg;
   auto     char   rlogfile[PATH_MAX];
-  auto	   char	  *version, *cversion;
+  auto	   char	  *version;
   auto     char **devices = NULL;
   sigset_t        unblock_set;
 #ifdef TESTCENTER
@@ -1331,11 +1337,11 @@ int main(int argc, char *argv[], char *envp[])
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
-	    initRate(rateconf, ratefile, countryfile, &version, &cversion);
+	    initCountry(countryfile, &version);
+	    if (!Q931dmp && *version)
+	      print_msg(PRT_NORMAL, "%s\n", version);
 
-	    if (!Q931dmp && *cversion)
-	      print_msg(PRT_NORMAL, "%s\n", cversion);
-
+	    initRate(rateconf, ratefile, zonefile, &version);
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 

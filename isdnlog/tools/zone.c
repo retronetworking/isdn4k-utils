@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1999/06/09 20:58:09  akool
+ * CVS-Tags added
+ *
  *
  * Interface:
  *
@@ -47,7 +50,10 @@
 /* Fixme: basename() ist bei libc5 anscheinend nicht definiert
  * könnte da mal jemand ein passende #ifdef herumstricken?
  */
+ /* lt: folgendes funkt bei mir */
+#ifndef __USE_MISC
 extern const char *basename (const char *name);
+#endif
 #else
 #include "isdnlog.h"
 #include "tools.h"
@@ -70,11 +76,14 @@ typedef unsigned short US; /* len 2 */
 typedef unsigned long  UL; /* len 4 */
 
 typedef enum {false,true} bool;
+
+#ifndef min
 #define min(a,b) (a) < (b) ? (a) : (b)
+#endif
 
 static struct sth *sthp;
 static int count;
-static char version[] = "0.91";
+static char version[] = "0.92";
 #define LINK 127
 #define INFO_LEN 80
 #define LENGTH 120
@@ -335,9 +344,16 @@ static int _getZ(struct sth *sthp, char *from, char *sto) {
 	}
 	strncpy(newfrom, from, LENGTH-1);
 	while (strlen(newfrom)) {
-		US ifrom = (US) atol(newfrom);
+		UL lifrom = (UL) atol(newfrom); /* keys could be long */
+		US ifrom = (US) lifrom;	
+		if (sthp->pack_key == 2) {
 		key.dptr = (char *) &ifrom;
 		key.dsize = sizeof(US);
+		}
+		else {
+			key.dptr = (char *) &lifrom;
+			key.dsize = sizeof(UL);
+		}
 		value = gdbm_fetch(fh, key);
 		if (value.dptr) {
 			char *p = value.dptr;
@@ -397,7 +413,7 @@ int getZone(int provider, char *from, char *to)
 }
 
 
-#ifdef STANDALONE
+#ifdef ZONETEST
 
 static int checkZone(char *zf, char* df,int num1,int num2, bool verbose)
 {

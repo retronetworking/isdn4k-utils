@@ -20,6 +20,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.28  1999/05/13 11:39:47  akool
+ * isdnlog Version 3.28
+ *
+ *  - "-u" Option corrected
+ *  - "ausland.dat" removed
+ *  - "countries-de.dat" fully integrated
+ *      you should add the entry
+ *      "COUNTRYFILE = /usr/lib/isdn/countries-de.dat"
+ *      into section "[ISDNLOG]" of your config file!
+ *  - rate-de.dat V:1.02-Germany [13-May-1999 12:26:24]
+ *  - countries-de.dat V:1.02-Germany [13-May-1999 12:26:26]
+ *
  * Revision 1.27  1999/05/04 19:33:37  akool
  * isdnlog Version 3.24
  *
@@ -1059,8 +1071,8 @@ static int _readconfig(char *_myname)
   callfile       = NULL;
   callfmt        = NULL;
   holifile       = NULL;
-  rateconf       = NULL;
   countryfile	 = NULL;
+  rateconf       = NULL;
   ratefile       = NULL;
   lcdfile        = NULL;
   start_procs.infoargs = NULL;
@@ -1202,11 +1214,14 @@ static int Set_Globals(section *SPtr)
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_CALLFMT)) != NULL)
 			callfmt = CEPtr->value;
 
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_HOLIFILE)) != NULL)
+			holifile = CEPtr->value;
+
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_COUNTRYFILE)) != NULL)
 			countryfile = CEPtr->value;
 
-		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_HOLIFILE)) != NULL)
-			holifile = CEPtr->value;
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_ZONEFILE)) != NULL)
+			zonefile = CEPtr->value;
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_RATECONF)) != NULL)
 			rateconf = CEPtr->value;

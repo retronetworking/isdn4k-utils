@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.31  1999/06/13 14:07:28  akool
+ * isdnlog Version 3.32
+ *
+ *  - new option "-U1" (or "ignoreCOLP=1") to ignore CLIP/COLP Frames
+ *  - TEI management decoded
+ *
  * Revision 1.30  1999/06/09 19:58:12  akool
  * isdnlog Version 3.31
  *  - Release 0.91 of zone-Database (aka "Verzonungstabelle")
@@ -231,6 +237,7 @@
  */
 
 #include "isdnconf.h"
+#include "tools/zone.h"
 
 /*****************************************************************************/
 #define ZAUNPFAHL  1 /* FIXME: Michi: Offset */
@@ -881,7 +888,7 @@ retry:
         DTAGRate = Rate.Charge;
 
 #if 0
-        print_msg(PRT_NORMAL, "DEBUG::tz=%d, zone=%d, Hour=%02d, P=%d, %s  lasthour=%d, lastprovider=%d, now=%s", tz, *p, hour, provider, getProvidername(provider), lasthour, lastprovider, ctime(&Rate.start));
+        print_msg(PRT_NORMAL, "DEBUG::tz=%d, zone=%d, Hour=%02d, P=%d, %s  lasthour=%d, lastprovider=%d, now=%s", tz, *p, hour, provider, getProvider(provider), lasthour, lastprovider, ctime(&Rate.start));
 #endif
 
         if (lastprovider == UNKNOWN) {
@@ -898,7 +905,7 @@ retry:
           if (lastprovider == UNKNOWN)
             px = "";
           else
-            px = getProvidername(lastprovider);
+            px = getProvider(lastprovider);
 
           print_msg(PRT_NORMAL, "    %02d:00 .. %02d:59 %s%02d:%s%*s = %s %s (%s)   [DTAG: %s %s]\n",
             lasthour, hour - 1, vbn, lastprovider, px,
@@ -930,7 +937,7 @@ retry:
       if (lastprovider == UNKNOWN)
         px = "";
       else
-      px = getProvidername(lastprovider);
+      px = getProvider(lastprovider);
 
       if ((lasthour == 7) && (hour == 7))
         print_msg(PRT_NORMAL, "    immer          %s%02d:%s%*s = %s %s (%s)   [DTAG: %s %s]\n",
@@ -959,7 +966,7 @@ retry:
 
   for (provider = 0; provider < MAXPROVIDER; provider++)
     if (used[provider]) {
-      print_msg(PRT_NORMAL, "%s%02d:%s%*s(%d hours)\n", vbn, provider, getProvidername(provider), max(WIDTH, strlen(getProvidername(provider))) - strlen(getProvidername(provider)), "", hours[provider]);
+      print_msg(PRT_NORMAL, "%s%02d:%s%*s(%d hours)\n", vbn, provider, getProvider(provider), max(WIDTH, strlen(getProvider(provider))) - strlen(getProvider(provider)), "", hours[provider]);
       useds++;
 
       if (hours[provider] < maxhour) {
@@ -973,7 +980,7 @@ retry:
     if (ignoreprovider != leastprovider) {
 
       print_msg(PRT_NORMAL, "OOOPS: More than 5 providers used. Retry with %s%02d:%s ignored\n",
-        vbn, leastprovider, getProvidername(leastprovider));
+        vbn, leastprovider, getProvider(leastprovider));
 
       ignoreprovider = leastprovider;
       goto retry;
@@ -1002,6 +1009,8 @@ static void showWorld(int duration)
       if ((p = strchr(s, '\n')))
         *p = 0;
 
+      /* Fixme */
+#define abroad(x,y) 1
       if (abroad(s, areacode)) {
 
         memset(&Rate, 0, sizeof(Rate));
@@ -1012,7 +1021,7 @@ static void showWorld(int duration)
         n = 0;
 
       	for (Rate.prefix = 0; Rate.prefix < MAXPROVIDER; Rate.prefix++) {
-      	  Rate.zone = getZone(Rate.prefix, areacode);
+      	  Rate.zone = getZone(Rate.prefix, myarea, areacode);
 
           if (Rate.zone != UNKNOWN) {
 
@@ -1030,7 +1039,7 @@ static void showWorld(int duration)
 #if 0
             if (provider = getLeastCost(&Rate, UNKNOWN)) {
               print_msg(PRT_NORMAL, "%-50s  %s %s%d:%s (%s)\n",
-                s, areacode, vbn, provider, getProvidername(provider), explainRate(&Rate));
+                s, areacode, vbn, provider, getProvider(provider), explainRate(&Rate));
               break;
             } /* if */
 #endif
@@ -1042,7 +1051,7 @@ static void showWorld(int duration)
 
           print_msg(PRT_NORMAL, "%-46s  %-9s %s%d:%s (%s)\n",
             s, areacode, vbn, sort[0].prefix,
-            getProvidername(sort[0].prefix), sort[0].explain);
+            getProvider(sort[0].prefix), sort[0].explain);
         } /* if */
 
       }
@@ -1062,9 +1071,10 @@ int main(int argc, char *argv[], char *envp[])
 	section *conf_dat = NULL;
 	char *myname = basename(argv[0]);
 	FILE *fp;
+	COUNTRY *Country;
   	RATE Rate;
 	char *msg;
-	char  country[BUFSIZ];
+	char *country;
 
 
 	static char usage[]   = "%s: usage: %s [ -%s ]\n";
@@ -1224,7 +1234,7 @@ int main(int argc, char *argv[], char *envp[])
 
 
  		initHoliday(holifile, NULL);
- 		initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL);
+ 		initRate("/etc/isdn/rate.conf", "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/zone-de-%s.gdbm", NULL);
  		/* initRate(NULL, "/usr/lib/isdn/rate-de.dat", "/usr/lib/isdn/countries-de.dat", NULL, NULL); */
 		currency = strdup("DM");
 		vbn = strdup("010");
@@ -1257,8 +1267,8 @@ int main(int argc, char *argv[], char *envp[])
                                 }
 				else {
                                   if (isalpha(*areacode)) {
-				    if (abroad(areacode, country))
-				      strcpy(areacode, country);
+				    if (getCountry(areacode, &Country))
+				      strcpy(areacode, Country->Code[0]);
                                   } /* if */
 
     				  zone = area_diff(NULL, areacode);
@@ -1282,11 +1292,11 @@ int main(int argc, char *argv[], char *envp[])
                                   zone2 = zone;
 #if 0
                                 else
-                                  zone2 = getZone(DTAG, areacode);
+                                  zone2 = getZone(DTAG, myarea, areacode);
 #endif
 
                                 if (zone2 == UNKNOWN) {
-				  if (abroad(areacode, country))
+				  if (getCountrycode(areacode, &country))
                                     print_msg(PRT_NORMAL, "Ein %d Sekunden langes Gespraech nach %s (%s) kostet am %s",
                                       duration, country, areacode, ctime(&Rate.start));
                                   else
@@ -1309,7 +1319,7 @@ int main(int argc, char *argv[], char *envp[])
                                   if (zone != UNKNOWN)
                                     Rate.zone = zone;
                                   else
-				    Rate.zone = getZone(Rate.prefix, areacode);
+				    Rate.zone = getZone(Rate.prefix, myarea, areacode);
 
                                   if (Rate.zone != UNKNOWN) {
 
