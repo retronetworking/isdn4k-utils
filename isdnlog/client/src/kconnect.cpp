@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1998/09/22 20:58:53  luethje
+ * isdnrep:  -fixed wrong provider report
+ *           -fixed wrong html output for provider report
+ *           -fixed strange html output
+ * kisdnlog: -fixed "1001 message window" bug ;-)
+ *
  * Revision 1.2  1998/05/10 23:40:04  luethje
  * some changes
  *
@@ -158,7 +164,7 @@ bool KConnection::NewConnect()
 bool KConnection::WinConnect()
 {
 	int sock;
-	KHost hostwin = KHost(this);
+	KHost hostwin(this);
 
 	if (socket != NULL)
 		return FALSE;
@@ -784,6 +790,7 @@ bool KConnection::eval_message()
 					case MSG_CALLER:
 						/* Eingabe eines Neuen Benutzers socket->msgbuf */
 						/*if (socket->servtyp & T_ADDRESSBOOK)*/
+printf("MSG_CALLER:%s\n",socket->msgbuf.buf);
 						break;
 				
 					case MSG_WHO_IS:

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/05/10 23:40:11  luethje
+ * some changes
+ *
  */
 
 #include <string.h>
@@ -160,7 +163,7 @@ double KThruput::GetRate(int dir, int index)
 
 bool KThruput::ShiftArray(int *Array)
 {
-	memmove((void*) Array,(void*) Array+sizeof(int),(ValueSize - 1)*sizeof(int));
+	memmove((void*) Array,(void*) (Array+1),(ValueSize - 1)*sizeof(int));
 
 	Array[ValueSize - 1] = 0;
 
@@ -192,7 +195,12 @@ bool KThruput::AddValue(int dir, unsigned long data)
 
 bool KThruput::AddValue(int duration, unsigned long in, unsigned long out)
 {
-	int index = CurIndex(COUNT);
+	int index = CurIndex();
+
+	if (index >= 0 && RunTime[index] == duration)
+		return TRUE;
+
+	index = CurIndex(COUNT);
 
 	RunTime[index]  = duration;
 

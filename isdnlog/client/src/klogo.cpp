@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/05/10 23:40:07  luethje
+ * some changes
+ *
  */
 
 #include<string.h>
@@ -32,7 +35,7 @@
 
 KLogo::KLogo(QWidget *mainwin, const char *newpixmap) : QFrame(mainwin)
 {
-	KIconLoader Icon = KIconLoader();
+	KIconLoader Icon;
 
 Icon.insertDirectory(6,"../pixmaps");
 

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/05/10 23:40:07  luethje
+ * some changes
+ *
  */
 
 #include <errno.h>
@@ -125,12 +128,12 @@ bool KLog::SaveToFile(const char *Name)
 		        klocale->translate("file `%s' exists.\nDo you want to overwrite, or append it?\n"),
 		        (const char*) FileName);
 		
-		KMsgBox MsgBox = KMsgBox(mainwin,klocale->translate("Warning"),
-		                         MsgTxt,
-		                         KMsgBox::EXCLAMATION,
-		                         klocale->translate("Overwrite"),
-		                         klocale->translate("Append"),
-		                         klocale->translate("Cancel"));
+		KMsgBox MsgBox(mainwin,klocale->translate("Warning"),
+		               MsgTxt,
+		               KMsgBox::EXCLAMATION,
+		               klocale->translate("Overwrite"),
+		               klocale->translate("Append"),
+		               klocale->translate("Cancel"));
 
 		switch(MsgBox.exec())
 		{
