@@ -224,7 +224,7 @@ archive: distclean
 distarch: distclean
 	(cd .. ;\
 	ln -nfs isdn4k-utils isdn4k-utils-$(I4LVERSION) ;\
-	tar -cvhz --exclude=CVS -f distisdn/isdn4k-utils-$(I4LVERSION).tar.gz \
+	tar -cvhz -X distexclude -f distisdn/isdn4k-utils-$(I4LVERSION).tar.gz \
 	isdn4k-utils-$(I4LVERSION) ;\
 	rm isdn4k-utils-$(I4LVERSION) )
 
