@@ -3,6 +3,7 @@
  * ISDN accounting for isdn4linux.
  *
  * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1997/03/31 22:43:18  luethje
+ * Improved performance of the isdnrep, made some changes of README
+ *
  * Revision 1.7  1997/03/29 09:24:34  akool
  * CLIP presentation enhanced, new ILABEL/OLABEL operators
  *
@@ -155,6 +159,10 @@
 
 #ifndef REBOOTCMD
 #	define REBOOTCMD "/sbin/reboot"
+#endif
+
+#ifndef LOGFILE
+#	define LOGFILE "/sbin/reboot"
 #endif
 
 /****************************************************************************/
@@ -357,6 +365,7 @@
 #define CONF_ENT_RELOAD  "RELOADCMD"
 #define CONF_ENT_STOP    "STOPCMD"
 #define CONF_ENT_REBOOT  "REBOOTCMD"
+#define CONF_ENT_LOGFILE "LOGFILE"
 
 #define CONF_SEC_START   "START"
 #define CONF_SEC_FLAG    "FLAG"
@@ -595,6 +604,7 @@ extern char *optarg;
 _EXTERN char* reloadcmd = RELOADCMD;
 _EXTERN char* stopcmd   = STOPCMD;
 _EXTERN char* rebootcmd = REBOOTCMD;
+_EXTERN char* logfile   = LOGFILE;
 _EXTERN int  (*_print_msg)(const char *, ...) = printf;
 _EXTERN int   use_new_config = 1;
 
@@ -604,6 +614,7 @@ _EXTERN int   use_new_config = 1;
 _EXTERN char* reloadcmd;
 _EXTERN char* stopcmd;
 _EXTERN char* rebootcmd;
+_EXTERN char* logfile;
 _EXTERN int  (*_print_msg)(const char *, ...);
 _EXTERN int   use_new_config;
 

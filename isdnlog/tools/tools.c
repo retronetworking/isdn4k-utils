@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/03/31 22:15:32  akool
+ * added support for the new glibc 2.0.x (aka libc 6.0)
+ * changed "HOWTO" to reflect the current stage of development
+ *
  * Revision 1.2  1997/03/29 09:24:33  akool
  * CLIP presentation enhanced, new ILABEL/OLABEL operators
  *
@@ -510,6 +514,7 @@ static char *itoa(register unsigned int num, register char *p, register int radi
 
 /****************************************************************************/
 
+/*
 static char *ltoa(register unsigned long num, register char *p, register int radix, int dots)
 {
   register int   i, j = 0;
@@ -541,7 +546,8 @@ static char *ltoa(register unsigned long num, register char *p, register int rad
   while (--i);
 
   return(p);
-} /* ltoa */
+} 
+*/
 
 /****************************************************************************/
 
