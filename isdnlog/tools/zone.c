@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  2001/10/15 11:35:46  leo
+ * fixed cdb zonefiles
+ *
  * Revision 1.21  2001/06/12 14:24:17  paul
  * zone.c and mkzonedb.c now understand filename "-" to mean stdin.
  *
@@ -503,6 +506,9 @@ static int _getZ(struct sth *sthp, char *from, char *sto) {
 	bool found = false;
 	char *temp;
 	int res;
+
+	if (!*from || !*sto) /* empty areacodes cannot be interpreted */
+		return UNKNOWN;
 
 	if ((res=strcmp(from, sto)) == 0)
 		return sthp->oz;
