@@ -66,6 +66,8 @@ char main_rcsid[] = "$Id$";
 #include "patchlevel.h"
 #include "protos.h"
 
+extern int readpassw(char *, int);
+
 /*
  * If REQ_SYSOPTIONS is defined to 1, pppd will not run unless
  * /etc/ppp/ioptions exists.
@@ -140,7 +142,7 @@ struct protent *protocols[] = {
 
 int main(int argc,char **argv)
 {
-	int             i,j;
+	int             i,j,l;
 	struct sigaction sa;
 	FILE            *pidfile;
 	struct timeval  timo;
@@ -242,6 +244,35 @@ int main(int argc,char **argv)
         exit(1);
     }
 
+    if (ask_passwd) {
+    	l = readpassw(passwd, MAXSECRETLEN);
+    	if (l <= 0) {
+    		fprintf(stderr, "get no password with askpassword\n");
+    		exit(1);
+    	}
+    } else if (fdpasswd) {
+ 	i=1;   
+    	l=0;
+    	while(i>0) {
+    		j = read(fdpasswd, &i, 1);
+    		if (j == -1 && (errno == EAGAIN || errno == EINTR))
+    			continue;
+    		if (j!=1)
+    			break;
+    		if (i=='\n')
+    			break;
+    		passwd[l++] = i;
+    		if (l>=MAXSECRETLEN) {
+    			l--;
+    			break;
+    		}
+    	}
+    	if (l <= 0) {
+    		fprintf(stderr, "get no password from fd(%d)\n", fdpasswd);
+    		exit(1);
+    	}
+    	passwd[l] = 0;
+    }
     remove_sys_options();
     check_auth_options();
     setipdefault();

@@ -198,6 +198,8 @@ extern char	*connector;	/* Script to establish physical link */
 extern char	*disconnector;	/* Script to disestablish physical link */
 extern char	user[];		/* Username for PAP */
 extern char	passwd[];	/* Password for PAP */
+extern int	ask_passwd;	/* Ask user for password */
+extern int	fdpasswd;	/* Password via filedescriptor */
 extern int	auth_required;	/* Peer is required to authenticate */
 extern int	proxyarp;	/* Set up proxy ARP entry for peer */
 extern int	persist;	/* Reopen link after it goes down */
