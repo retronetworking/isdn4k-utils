@@ -60,6 +60,13 @@ struct isdn_ppp_comp_data {
 #ifndef PPP_LINK_CCP
 #define PPP_LINK_CCP 0x80fb
 #endif
+#ifndef IPPP_COMP_FLAG_XMIT
+#define IPPP_COMP_FLAG_XMIT 0x1
+#endif
+#ifndef IPPP_COMP_FLAG_LINK
+#define IPPP_COMP_FLAG_LINK 0x2
+#endif
+
 
 #define NUM_PPP	64		/* 64 PPP interface supported (per process) */
 
