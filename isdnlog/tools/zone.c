@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  2001/06/12 14:24:17  paul
+ * zone.c and mkzonedb.c now understand filename "-" to mean stdin.
+ *
  * Revision 1.20  2001/06/12 13:54:47  paul
  * zone files are now created byte-order independent, so:
  * - creating the zone files works on sparc
@@ -127,13 +130,16 @@
 #ifdef STANDALONE
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef __GLIBC__
+# define __USE_GNU  /* for declaration of basename() */
+#endif
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
 #include <time.h>
 #include <unistd.h>
 #include <errno.h>
-#ifndef __GLIBC__
+#if !defined(__GLIBC__) && !defined(basename)
 extern const char *basename (const char *name);
 #endif
 #else
