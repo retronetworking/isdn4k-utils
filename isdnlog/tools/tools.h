@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.36  1999/04/14 13:17:30  akool
+ * isdnlog Version 3.14
+ *
+ * - "make install" now install's "rate-xx.dat", "rate.conf" and "ausland.dat"
+ * - "holiday-xx.dat" Version 1.1
+ * - many rate fixes (Thanks again to Michael Reinelt <reinelt@eunet.at>)
+ *
  * Revision 1.35  1999/04/10 16:36:48  akool
  * isdnlog Version 3.13
  *
@@ -445,13 +452,14 @@
 
 /****************************************************************************/
 
-#define NUMSIZE      30
-#define	FNSIZE	     64
-#define RETSIZE     128
-#define MAXRET	      5
-#define MAXZONES     19
-#define MAXCHAN       7
-#define MAXCARDS      2
+#define NUMSIZE       30
+#define	FNSIZE	      64
+#define RETSIZE      128
+#define MAXRET	       5
+#define MAXPROVIDER 1000
+#define MAXZONES     500
+#define MAXCHAN        7
+#define MAXCARDS       2
 
 #define DIGITS 	     17
 #define DEB           1
