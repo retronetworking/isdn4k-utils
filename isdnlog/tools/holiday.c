@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1999/04/29 19:03:37  akool
+ * isdnlog Version 3.22
+ *
+ *  - T-Online corrected
+ *  - more online rates for rate-at.dat (Thanks to Leopold Toetsch <lt@toetsch.at>)
+ *
  * Revision 1.9  1999/04/26 22:12:14  akool
  * isdnlog Version 3.21
  *
@@ -415,6 +421,7 @@ int isDay(struct tm *tm, bitfield mask, char **name)
   }
   
   if (mask & (1<<EVERYDAY)) {
+    if (name) *(*name=buffer)='\0';
     return day;
   }
 

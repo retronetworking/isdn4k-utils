@@ -19,6 +19,14 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.77  1999/05/04 19:32:02  akool
+## isdnlog Version 3.24
+##
+##  - fully removed "sondernummern.c"
+##  - removed "gcc -Wall" warnings in ASN.1 Parser
+##  - many new entries for "rate-de.dat"
+##  - better "isdnconf" utility
+##
 ## Revision 1.76  1999/04/30 19:07:28  akool
 ## isdnlog Version 3.23
 ##
@@ -607,7 +615,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 3.24
+VERSION     = 3.25
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \

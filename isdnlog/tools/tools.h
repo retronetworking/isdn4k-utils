@@ -20,6 +20,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.39  1999/05/04 19:33:50  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.38  1999/04/30 19:08:27  akool
  * isdnlog Version 3.23
  *
@@ -1017,7 +1025,6 @@ _EXTERN char  *double2str(double n, int l, int d, int flags);
 _EXTERN char  *double2byte(double bytes);
 _EXTERN char  *time2str(time_t sec);
 _EXTERN char  *double2clock(double n);
-_EXTERN void   abroad(char *num, char *area);
 _EXTERN char  *vnum(int chan, int who);
 _EXTERN char  *i2a(int n, int l, int base);
 _EXTERN int    iprintf(char *obuf, int chan, register char *fmt, ...);
