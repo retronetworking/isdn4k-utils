@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.25  1999/06/22 19:41:23  akool
+ * zone-1.1 fixes
+ *
  * Revision 1.24  1999/06/21 19:34:28  akool
  * isdnlog Version 3.35
  *   zone data for .nl (many thanks to Paul!)
@@ -591,7 +594,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       break;
 
     case 'P': /* P:nn[,v] Bezeichnung */
-      if (prefix!=UNKNOWN && !ignore && !domestic)
+      if (zone!=UNKNOWN && !ignore && !domestic)
 	warning (dat, "Provider %d has no default domestic zone (missing 'A:%s')", prefix, mycountry);
       v = UNKNOWN;
       zone = UNKNOWN;
@@ -1057,7 +1060,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   }
   fclose(stream);
 
-  if (prefix!=UNKNOWN && !domestic)
+  if (zone!=UNKNOWN && !domestic)
     warning (dat, "Provider %d has no default domestic zone (missing 'A:%s')", prefix, mycountry);
 
   if (!*Format) {

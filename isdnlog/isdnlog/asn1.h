@@ -21,6 +21,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1999/05/04 19:32:32  akool
+ * isdnlog Version 3.24
+ *
+ *  - fully removed "sondernummern.c"
+ *  - removed "gcc -Wall" warnings in ASN.1 Parser
+ *  - many new entries for "rate-de.dat"
+ *  - better "isdnconf" utility
+ *
  * Revision 1.2  1999/04/26 22:11:50  akool
  * isdnlog Version 3.21
  *
@@ -252,7 +260,7 @@ ELEMENT_1(ParseRESInterrogateServedUserNumbers, char, );
 #define CHECK_TAG(a) \
   int elnr = 0; \
   \
-  elnr = elnr; // makes lint happy \
+  elnr = elnr; /* makes lint happy */ \
   if (tag == ASN1_NOT_TAGGED) { \
     if ((el.tag &~ 0x20) != (a)) { \
       print_msg(PRT_DEBUG_DECODE, " DEBUG> native tag %2x not found, %2x instead\n", \
