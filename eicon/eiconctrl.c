@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.11  2000/01/24 19:57:37  armin
+ * Added INSTALL and README file.
+ * Some updates and new option for configure script.
+ *
  * Revision 1.10  2000/01/12 07:05:09  armin
  * Fixed error on loading old S card.
  *
@@ -146,8 +150,7 @@ char *spid_state[] =
 };
 
 
-#ifdef HAVE_NPCI
-#ifdef HAVE_XLOG
+#if HAVE_XLOG || HAVE_TRACE
 /*********** XLOG stuff **********/
 
 #define byte __u8
@@ -1174,7 +1177,6 @@ void spid_event(FILE * stream, struct msg_s * message, word code)
 
 /*********** XLOG stuff end **********/
 #endif /* XLOG */
-#endif /* NPCI */
 
 void usage() {
   fprintf(stderr,"usage: %s add <DriverID> <membase> <irq>              (add card)\n",cmd);
@@ -1183,7 +1185,10 @@ void usage() {
   fprintf(stderr,"   or: %s [-d <DriverID>] [-v] load <protocol> [options]\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] debug [<debug value>]\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] manage [read|exec <path>]   (management-tool)\n",cmd);
-#ifdef HAVE_NPCI
+#ifdef HAVE_TRACE
+  fprintf(stderr,"   or: %s [-d <DriverID>] xlog [cont|<filename>]      (retrieve XLOG)\n",cmd);
+  fprintf(stderr,"   or: %s [-d <DriverID>] isdnlog [on|off]            (D-Channel log)\n",cmd);
+#else
 #ifdef HAVE_XLOG
   fprintf(stderr,"   or: %s [-d <DriverID>] xlog [cont]                 (request XLOG)\n",cmd);
 #endif
@@ -2028,6 +2033,31 @@ void eicon_management(void)
 				goto redraw1;
 
 			}
+                        if (man_ent[h_line].type == 0x06) { /* Trace Event */
+                                int tcmd = 0x05;
+                                i = strlen(Man_Path);
+                                if (Man_Path[strlen(Man_Path)-1] != '\\') strcat(Man_Path, "\\");
+                                strcat(Man_Path, man_ent[h_line].Name);
+                                if (man_ent[h_line].status & 0x02)                                                                                                tcmd = 0x06;
+                                if (get_manage_element(Man_Path, tcmd) < 0) {
+                                        clear();
+                                        mvaddstr(0,0, "Error ioctl Management-interface");
+                                        refresh();
+                                        return;
+                                }
+                                sleep(1);
+                                Man_Path[i] = 0;
+                                if (get_manage_element(Man_Path, 0x02) < 0) {
+                                        clear();
+                                        mvaddstr(0,0, "Error ioctl Management-interface");
+                                        refresh();
+                                        return;
+                                }
+                                h_line = 0;
+                                stat_y = 0;
+                                goto redraw1;
+
+                        }
 			beep2();
 			goto Keyboard;
 		case 'r':
@@ -2123,7 +2153,11 @@ int main(int argc, char **argv) {
 	if (argc > 1) {
 		if (!strcmp(argv[arg_ofs], "-d")) {
 			arg_ofs++;
+                        if (arg_ofs >= argc)
+                                usage();
 			strcpy(ioctl_s.drvid, argv[arg_ofs++]);
+                        if (arg_ofs >= argc)
+                                usage();
 			if (!strcmp(argv[arg_ofs], "-v")) {
 				arg_ofs++;
 				verbose = 1;
@@ -2138,9 +2172,9 @@ int main(int argc, char **argv) {
 	} else
 		usage();
 	ac = argc - (arg_ofs - 1);
-	if (ac < 2)
+	if (arg_ofs >= argc)
 		usage();
-	fd = open("/dev/isdnctrl",O_RDWR);
+	fd = open("/dev/isdnctrl",O_RDWR | O_NONBLOCK);
 	if (fd < 0) {
 		perror("/dev/isdnctrl");
 		exit(-1);
@@ -2544,9 +2578,84 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
-#ifdef HAVE_NPCI
+#ifdef HAVE_TRACE
+	if (!strcmp(argv[arg_ofs], "xlog")) {
+		int dfd = fd;
+		int cont = 0;
+		char file[300];
+		unsigned char buffer[1000];
+		unsigned char inbuffer[1000];
+		int pos = 0, ret = 1;
+		unsigned char byte = 0;
+		char *p, *q;
+		unsigned long val, sec;
+
+		if (argc > (++arg_ofs)) {
+			if (!strcmp(argv[arg_ofs], "cont"))
+				cont = 1;
+			else {
+				strcpy(file, argv[arg_ofs]);
+				cont = 2;
+				dfd = open(file, O_RDWR);
+				if (dfd < 0) {
+					fprintf(stderr, "File not found.\n");
+					exit(-1);
+				}
+			}
+		}
+		mb = malloc(sizeof(eicon_manifbuf));
+		strcpy (Man_Path, "\\Trace\\Log Buffer");
+		if (cont < 2)
+		get_manage_element(Man_Path, 0x05);
+		while(1) {
+			memset(buffer, 0, sizeof(buffer));
+			memset(inbuffer, 0, sizeof(inbuffer));
+			fflush(stdout);
+			while((byte != 13) && (byte != 10) && (pos < 998) && (ret > 0)) {
+				if ((ret = read(dfd, &byte, 1)) == 1) {
+					inbuffer[pos++] = byte;
+				}
+			}
+			byte = 0;
+			pos = 0;
+			if ((strlen(inbuffer) > 10) && (strncmp(inbuffer, "XLOG: ", 6) == 0)) {
+				p = inbuffer + 6;
+				val = strtol(p, &q, 16);
+				sec=val/1000;
+				printf("%5ld:%04ld:%03ld - ",
+					(long)sec/3600,
+					(long)sec%3600,
+					(long)val%1000 );
+				p = q;
+				val = strtol(p, &q, 16);
+				p = q;
+				val = strtol(p, &q, 16);
+				(unsigned short) *buffer = (unsigned short) val;
+				pos = 2;
+				while ((p != q) && (*q != 0)) {
+					p = q;
+					val = strtol(p, &q, 16);
+					buffer[pos++] = val;
+				}
+				pos = 0;
+				xlog(stdout, buffer);
+			}
+			if ((ret == 0) && (cont == 2))
+				break;
+			if ((ret < 0) && (cont != 1))
+				break;
+			if ((ret < 0) && (cont == 1))
+				usleep(10000);
+			ret = 1;
+		}
+		if (cont < 2)
+			get_manage_element(Man_Path, 0x06);
+		close(fd);
+		return 0;
+	}
+#else
 #ifdef HAVE_XLOG
-        if (!strcmp(argv[arg_ofs], "xlog")) {
+	if (!strcmp(argv[arg_ofs], "xlog")) {
 		int cont = 0;
 		int ii;
 		int ret_val;
@@ -2666,7 +2775,48 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 #endif /* XLOG */
-#endif /* NPCI */
+#endif /* TRACE */
+
+#ifdef HAVE_TRACE
+	if (!strcmp(argv[arg_ofs], "isdnlog")) {
+		int tcmd = 0x05;
+		int dval = 513;
+		int ctype = -1;
+
+		if ((ctype = ioctl(fd, EICON_IOCTL_GETTYPE + IIOCDRVCTL, &ioctl_s)) < 1) {
+			perror("ioctl GETTYPE");
+			exit(-1);
+		}
+		switch (ctype) {
+			case EICON_CTYPE_MAESTRAP:
+			case EICON_CTYPE_MAESTRA:
+				break;
+			default:
+				fprintf(stderr, "Adapter type %d does not supported this.\n", ctype);
+				exit(-1);
+		}
+		mb = malloc(sizeof(eicon_manifbuf));
+
+		if (argc > (++arg_ofs)) {
+		if (!strcmp(argv[arg_ofs++], "off")) {
+				tcmd = 0x06;
+				dval = 1;
+			}
+		}
+		ioctl_s.arg = dval;
+		if (ioctl(fd, EICON_IOCTL_DEBUGVAR + IIOCDRVCTL, &ioctl_s) < 0) {
+			perror("Error changing debug value.");
+			exit(-1);
+		}
+		strcpy (Man_Path, "\\Trace\\Log Buffer");
+		if (get_manage_element(Man_Path, tcmd) < 0) {
+			fprintf(stderr, "Error or already in that state.\n");
+			exit(-1);
+		}
+		close(fd);
+		return 0;
+	}
+#endif /* TRACE */
 
         if (!strcmp(argv[arg_ofs], "manage")) {
 		mb = malloc(sizeof(eicon_manifbuf));
