@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1998/03/08 12:13:40  luethje
+ * Patches by Paul Slootman
+ *
  * Revision 1.14  1998/03/08 11:42:55  luethje
  * I4L-Meeting Wuerzburg final Edition, golden code - Service Pack number One
  *
@@ -1398,7 +1401,7 @@ static void chargemaxAction(int chan, double charge_overflow)
     } /* if */
     else
     {
-      sprintf(msg, "CHARGEMAX exhausted: stop script `%s' doesn't exist! - NO ACTION!", cmd);
+      sprintf(msg, "CHARGEMAX exhausted: stop script `%s' doesn't exist! - NO ACTION! (%s)", cmd, strerror(errno));
       info(chan, PRT_ERR, STATE_AOCD, msg);
     }
   }
