@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (log-module)
  *
- * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.EUnet.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.8  1997/05/29 17:07:19  akool
+ * 1TR6 fix
+ * suppress some noisy messages (Bearer, Channel, Progress) - can be reenabled with log-level 0x1000
+ * fix from Bodo Bellut (bodo@garfield.ping.de)
+ * fix from Ingo Schneider (schneidi@informatik.tu-muenchen.de)
+ * limited support for Info-Element 0x76 (Redirection number)
+ *
  * Revision 1.7  1997/05/09 23:30:45  luethje
  * isdnlog: new switch -O
  * isdnrep: new format %S
@@ -201,14 +208,14 @@ void logger(int chan)
 			print_msg(PRT_ERR, "Can not open file `%s': %s!\n", logfile, strerror(errno));
 		else
 		{
-			fprintf(flog, "%s|%-16s|%-16s|%5d|%10d|%10d|%5d|%c|%3d|%10ld|%10ld|%s|%d|%d|%g|%s|%8.2f|\n",
+			fprintf(flog, "%s|%-16s|%-16s|%5d|%10d|%10d|%5d|%c|%3d|%10ld|%10ld|%s|%d|%d|%g|%s|%8.2f|%-5s|\n",
 			              s + 4, call[chan].num[CALLING], call[chan].num[CALLED],
 			              (int)(call[chan].disconnect - call[chan].connect),
 			              (int)call[chan].duration, (int)call[chan].connect,
 			              call[chan].aoce, call[chan].dialin ? 'I' : 'O',
 			              call[chan].cause, call[chan].ibytes, call[chan].obytes,
 			              LOG_VERSION, call[chan].si1, call[chan].si11,
-			              currency_factor, currency, call[chan].pay);
+			              currency_factor, currency, call[chan].pay, call[chan].provider);
 
 			fclose(flog);
 		}

@@ -19,6 +19,12 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.33  1997/10/26 23:14:38  fritz
+## Get rid of including ../.config in Makefile
+## Now all configuration is done in configure.
+## Moved depend depency from install to build
+## where it belongs.
+##
 ## Revision 1.32  1997/09/26 09:13:01  fritz
 ## Set SUBDIRS always to overwrite environment.
 ##
@@ -247,7 +253,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 2.99.24
+VERSION     = 2.99.25
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES

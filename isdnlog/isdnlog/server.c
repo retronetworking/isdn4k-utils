@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/04/03 22:34:51  luethje
+ * splitt the files callerid.conf and ~/.isdn.
+ *
  */
 
 /****************************************************************************/
@@ -546,6 +549,9 @@ int append_Old_Prints(char *String)
 {
 	int Cnt = 0;
 
+	if (xlog < 1)
+		return 0;
+
 	if (Old_Prints == NULL)
 		if ((Old_Prints = (char**) calloc(xlog,sizeof(char*))) == NULL)
 			return NO_MEMORY;
@@ -584,6 +590,9 @@ int append_Old_Info(char *String)
 {
 	int Cnt = 0;
 
+
+	if (mcalls < 1)
+		return 0;
 
 	if (Old_Info == NULL)
 		if ((Old_Info = (char**) calloc(mcalls,sizeof(char*))) == NULL)

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1998/03/01 20:36:22  keil
+ * bugfixes from Florian La Roche
+ *
  * Revision 1.13  1997/06/24 23:35:33  luethje
  * isdnctrl can use a config file
  *
@@ -59,8 +62,6 @@
 
 /****************************************************************************/
 
-
-#define  PUBLIC extern
 #define  _ISDNCONF_C_
 
 /****************************************************************************/

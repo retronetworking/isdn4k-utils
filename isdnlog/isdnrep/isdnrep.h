@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux.
  *
- * Copyright 1995, 1997 by Andreas Kool (akool@Kool.f.EUnet.de)
+ * Copyright 1995, 1998 by Andreas Kool (akool@Kool.f.EUnet.de)
  *                     and Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1997/05/15 23:24:56  luethje
+ * added new links on HTML
+ *
  * Revision 1.7  1997/05/15 22:21:40  luethje
  * New feature: isdnrep can transmit via HTTP fax files and vbox files.
  *
@@ -127,7 +130,7 @@ _EXTERN time_t  endtime         _SET_0;
 
 #define LOG_VERSION_1 "1.0"
 #define LOG_VERSION_2 "2.0"
-#define LOG_VERSION_3 LOG_VERSION
+#define LOG_VERSION_3 "3.0"
 
 /*****************************************************************************/
 
@@ -140,9 +143,12 @@ _EXTERN time_t  endtime         _SET_0;
 
 typedef struct {
   char   num[NUMSIZE];
+  char   mynum[NUMSIZE];
+  int   si1;
   int	 called;
   int	 connects;
   time_t connect[MAXCONNECTS];
+  int    cause;
 } UNKNOWN;
 
 /*****************************************************************************/
