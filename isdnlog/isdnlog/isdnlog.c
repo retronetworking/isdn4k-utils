@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.64  2000/07/18 22:26:05  akool
+ * isdnlog-4.33
+ *   - isdnlog/tools/rate.c ... Bug fixed
+ *   - isdnlog/isdnlog/isdnlog.c ... check for callfmt
+ *   - "rate-de.dat" corrected (duplicates removed)
+ *
  * Revision 1.63  2000/06/29 17:38:27  akool
  *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
  *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
@@ -494,6 +500,8 @@ static int      sqldump = 0;
 
 static void exit_on_signal(int Sign)
 {
+  signal(Sign, SIG_DFL);
+
   print_msg(PRT_NORMAL, "Got signal %d\n", Sign);
 
   Exit(7);
