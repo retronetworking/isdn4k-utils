@@ -180,6 +180,7 @@ programs-i:	  ignore
 		  @echo "Installing '$(DESTDIR)$(bindir)/vboxcnvt'..."
 		  @$(INSTALL_BIN) $(TOPDIR)/src/vboxconvert $(DESTDIR)$(bindir)/vboxcnvt
 		  @cd $(DESTDIR)$(bindir); \
+		  $(LN) -f vboxcnvt rmdtovbox; \
 		  $(LN) -f vboxcnvt vboxtoau; \
 		  $(LN) -f vboxcnvt autovbox; \
 		  $(LN) -f vboxcnvt vboxmode
