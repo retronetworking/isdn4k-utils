@@ -17,6 +17,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  2004/12/13 22:06:51  keil
+ * fix ipppd/options.c
+ * fix capifax to support ALERT_REQ with and without SENDINGCOMPLETE
+ *
  * Revision 1.3  2004/06/30 08:52:29  armin
  * fixed for new extended ALERT_REQ().
  *
@@ -67,6 +71,9 @@ void Handle_Indication(void) {
 					CONNECT_RESP(CMSG, Appl_Id, CMSG->Messagenumber,
 						     CONNECT_IND_PLCI(CMSG), REJECT,
 						     0, 0, 0, NULL, NULL, NULL,
+#ifdef HAVE_GLOBALCONFIGURATION
+						     NULL,
+#endif
 						     NULL, NULL, NULL,
 						     NULL, NULL, NULL, NULL);
 					return;

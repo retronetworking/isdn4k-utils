@@ -10,6 +10,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.10  2004/10/06 15:26:13  calle
+ * - "SendingComplete-Patch" reverted.
+ *
  * Revision 1.9  2004/06/14 11:33:07  calle
  * New version of capiconn.
  *
@@ -1037,7 +1040,8 @@ static void check_incoming_complete(capi_connection *plcip)
 			    	0,	/* BChannelinformation */
 			    	0,	/* Keypadfacility */
 			    	0,	/* Useruserdata */
-			    	0	/* Facilitydataarray */
+			    	0,	/* Facilitydataarray */
+			    	0	/* SendingComplete */
 				);
 		plcip->msgid = cmsg.Messagenumber;
 		send_message(card, &cmsg);
@@ -1083,6 +1087,7 @@ ignore:
 			       card->msgid++,
 			       cmsg->adr.adrPLCI,
 			       1,	/* ignore call */
+			       0,
 			       0,
 			       0,
 			       0,
@@ -1666,6 +1671,7 @@ capi_connection *capiconn_connect(
 			      plcip->conninfo.b1config,
 			      plcip->conninfo.b2config,
 			      plcip->conninfo.b3config,
+			      0,        /* Globalconfiguration */
 			      0,	/* BC */
 			      0,	/* LLC */
 			      0,	/* HLC */
@@ -1724,6 +1730,7 @@ int capiconn_accept(
 			       plcip->conninfo.b1config,
 			       plcip->conninfo.b2config,
 			       plcip->conninfo.b3config,
+			       0,       /* Globalconfiguration */
 			       0,	/* ConnectedNumber */
 			       0,	/* ConnectedSubaddress */
 			       0,	/* LLC */
@@ -1757,6 +1764,7 @@ int capiconn_ignore(capi_connection *plcip)
 			       0,
 			       0,
 			       0,
+			       0,       /* Globalconfiguration */
 			       0,	/* ConnectedNumber */
 			       0,	/* ConnectedSubaddress */
 			       0,	/* LLC */
@@ -1790,6 +1798,7 @@ int capiconn_reject(capi_connection *plcip)
 			       0,
 			       0,
 			       0,
+			       0,       /* Globalconfiguration */
 			       0,	/* ConnectedNumber */
 			       0,	/* ConnectedSubaddress */
 			       0,	/* LLC */
