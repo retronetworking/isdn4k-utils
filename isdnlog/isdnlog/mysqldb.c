@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  2002/07/26 22:14:19  akool
+ * isdnlog-4.61:
+ *   - Support for mysql-4.0alpha -- many thanks to Jochen Erwied (jochen@erwied.de)!
+ *
  * Revision 1.2  2000/04/02 17:35:07  akool
  * isdnlog-4.18
  *  - isdnlog/isdnlog/isdnlog.8.in  ... documented hup3
@@ -207,10 +211,14 @@ int mysql_dbAdd( mysql_DbStrIn *in)
 
 int mysql_dbStatus( void)
 {
-  if ( &mysql != NULL)
+#if 1
+  return mysql_ping(&mysql) ? -1 : 0;
+#else
+  if ( &mysql != NULL) /* always true (base address of struct defined above) */
     return( 0);
   else
     return( -1);
+#endif
 }
 #endif
 
