@@ -27,12 +27,8 @@
 
 /** Defines **************************************************************/
 
-#define VBOXVOICE_BUFEXP   5
-#define VBOXVOICE_NUMFRAGS 4
-#define VBOXVOICE_FRAGFACT 5
-#define VBOXVOICE_BUFSIZE  32
-
-	/*  ((1 << VBOXVOICE_BUFEXP) * VBOXVOICE_FRAGFACT)*/
+#define VBOXVOICE_BUFSIZE  		32
+#define VBOXVOICE_SAMPLERATE		8000
 
 #define VBOXVOICE_STAT_OK			0
 #define VBOXVOICE_STAT_TIMEOUT	1
@@ -51,15 +47,17 @@
 #define CAN  (0x18)
 
 #define VBOXSAVE_NAME				64
-#define VBOXSAVE_ID					64
+#define VBOXSAVE_CAID				64
+#define VBOXSAVE_VBOX				 6
 
 /** Structures ***********************************************************/
 
 struct vboxsave
 {
-	time_t	time;
+	char		vbox[VBOXSAVE_VBOX + 1];
 	char		name[VBOXSAVE_NAME + 1];
-	char		id[VBOXSAVE_ID + 1];
+	char		caid[VBOXSAVE_CAID + 1];
+	time_t	time;
 };
 
 /** Prototypes ***********************************************************/

@@ -38,7 +38,8 @@ vboxgetty_SOURCES	= log.c log.h \
 			  vboxgetty.c vboxgetty.h \
 			  voice.c voice.h \
 			  control.c control.h \
-			  lock.c lock.h
+			  lock.c lock.h \
+			  audio.c audio.h
 
 ## other directories to process ###########################################
 
@@ -48,3 +49,9 @@ SUBDIRS			= examples
 
 CLEANFILES		= *~
 MAINTAINERCLEANFILES	= Makefile.in
+
+## Local install routines ################################################
+
+install-exec-local:
+			  $(mkinstalldirs) $(sbindir)
+			  $(INSTALL) -s -m 700 vboxgetty $(sbindir)/

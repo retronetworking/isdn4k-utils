@@ -4,12 +4,16 @@
 
 ## The tcl scripts to install ############################################
 
-pkgdata_DATA		= initmodem.tcl
-
-EXTRA_DIST		= $(pkgdata_DATA)
+EXTRA_DIST		= initmodem.tcl answercall.tcl
 
 ## Clean & Maintenance ###################################################
 
 CLEANFILES              = *~
 MAINTAINERCLEANFILES    = Makefile.in
 
+## Local install routines ################################################
+
+install-data-local:
+			  $(mkinstalldirs) $(pkgdatadir)/tcl
+			  $(INSTALL) -m 644 initmodem.tcl $(pkgdatadir)/tcl/
+			  $(INSTALL) -m 644 answercall.tcl $(pkgdatadir)/tcl/
