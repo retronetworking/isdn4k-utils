@@ -23,6 +23,13 @@ do-it-all:      config
 endif
 
 SUBDIRS :=
+ifeq ($(CONFIG_ISDNLOG),y)
+	SUBDIRS := $(SUBDIRS) lib
+else
+	ifeq ($(CONFIG_CTRL_CONF),y)
+		SUBDIRS := $(SUBDIRS) lib
+	endif
+endif
 ifeq ($(CONFIG_ISDNCTRL),y)
 	SUBDIRS := $(SUBDIRS) isdnctrl
 endif
@@ -55,7 +62,7 @@ ifeq ($(CONFIG_IMONTTY),y)
 	SUBDIRS := $(SUBDIRS) imontty
 endif
 ifeq ($(CONFIG_ISDNLOG),y)
-	SUBDIRS := $(SUBDIRS) areacode lib isdnlog
+	SUBDIRS := $(SUBDIRS) areacode isdnlog
 else
 	ifeq ($(CONFIG_LIB_AREACODE),y)
 		SUBDIRS := $(SUBDIRS) areacode

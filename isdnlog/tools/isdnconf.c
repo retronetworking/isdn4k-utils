@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1997/06/22 23:03:34  luethje
+ * In subsection FLAGS it will be checked if the section name FLAG is korrect
+ * isdnlog recognize calls abroad
+ * bugfix for program starts
+ *
  * Revision 1.11  1997/05/25 19:41:13  luethje
  * isdnlog:  close all files and open again after kill -HUP
  * isdnrep:  support vbox version 2.0
@@ -1226,8 +1231,10 @@ static info_args** Set_Flags(section *SPtr, int *Flags)
 		{
  		  RetCode[NumArgs]->time = EPtr->value;
 		}
+/*
 		else
    		_print_msg("Error: Invalid variable `%s'!\n",EPtr->name);
+*/
 
 		EPtr = EPtr->next;
 	}
