@@ -57,6 +57,10 @@ struct isdn_ppp_comp_data {
 };
 #endif
 
+#ifndef PPP_LINK_CCP
+#define PPP_LINK_CCP 0x80fb
+#endif
+
 #define NUM_PPP	64		/* 64 PPP interface supported (per process) */
 
 struct wordlist {
