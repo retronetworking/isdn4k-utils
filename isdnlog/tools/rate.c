@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1999/04/16 14:40:03  akool
+ * isdnlog Version 3.16
+ *
+ * - more syntax checks for "rate-xx.dat"
+ * - isdnrep fixed
+ *
  * Revision 1.6  1999/04/15 19:15:17  akool
  * isdnlog Version 3.15
  *
@@ -242,7 +248,7 @@ static int strmatch (const char *pattern, const char *string)
 {
   int length=0;
   while (*pattern) {
-    if (*pattern!=*string || !*string)
+    if ((*pattern!=*string && *pattern!='?') || !*string)
       return 0;
     pattern++;
     string++;
@@ -336,13 +342,13 @@ int initRate(char *conf, char *dat, char **msg)
     variant[i]=UNKNOWN;
   }
 
-    line=0;
   if (conf && *conf) {
     if ((stream=fopen(conf,"r"))==NULL) {
       if (msg) snprintf (message, LENGTH, "Error: could not load rate configuration from %s: %s",
 			 conf, strerror(errno));
       return -1;
-    } else {
+    }
+    line=0;
     while ((s=fgets(buffer,LENGTH,stream))!=NULL) {
       line++;
       if (*(s=strip(s))=='\0')
@@ -391,7 +397,6 @@ int initRate(char *conf, char *dat, char **msg)
     }
     fclose (stream);
   }
-  }
 
   if (!dat || !*dat) {
     if (msg) snprintf (message, LENGTH, "Warning: no rate database specified!",
@@ -419,8 +424,8 @@ int initRate(char *conf, char *dat, char **msg)
     switch (*s) {
 
     case 'P': /* P:nn[,v] Bezeichnung */
-      ignore = 0;
       v = UNKNOWN;
+      ignore = 1;
       empty(&zones);
 
       s+=2; while (isblank(*s)) s++;
@@ -440,18 +445,14 @@ int initRate(char *conf, char *dat, char **msg)
 	  warning (dat, "Invalid variant '%c'", *s);
 	  continue;
 	}
-	if ((v=strtol(s, &s ,10))<1) {
-	  warning (dat, "Invalid variant %d", v);
-	  continue;
+	v=strtol(s, &s, 10);
       }
-      }
-#if 0 /* Fixme: is this correct? */
-      if ((variant[prefix]!=UNKNOWN) && (v!=UNKNOWN) && (variant[prefix]!=v)) {
-#else
-	if (variant[prefix]!=v) {
-#endif
+      /* Fixme: is this correct? */
+      /* if ((variant[prefix]!=UNKNOWN) && (v!=UNKNOWN) && (variant[prefix]!=v)) { */
+      if (variant[prefix]==v) {
+	ignore = 0;
+      } else {
 	v = UNKNOWN;
-	ignore = 1;
 	continue;
       }
       if (prefix>=nProvider) {

@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1999/04/16 14:39:58  akool
+ * isdnlog Version 3.16
+ *
+ * - more syntax checks for "rate-xx.dat"
+ * - isdnrep fixed
+ *
  * Revision 1.5  1999/04/14 13:17:15  akool
  * isdnlog Version 3.14
  *
@@ -103,6 +109,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include <unistd.h>
+#include <errno.h>
 extern const char *basename (const char *name);
 #else
 #include "isdnlog.h"
@@ -111,7 +118,7 @@ extern const char *basename (const char *name);
 
 #include "holiday.h"
 
-#define SOMEDAY (1<<MONDAY | 1<<THUESDAY | 1<<WEDNESDAY | 1<<THURSDAY | 1<<FRIDAY | 1<<SATURDAY | 1<<SUNDAY)
+#define SOMEDAY (1<<MONDAY | 1<<TUESDAY | 1<<WEDNESDAY | 1<<THURSDAY | 1<<FRIDAY | 1<<SATURDAY | 1<<SUNDAY)
 #define LENGTH 120  /* max length of lines in data file */
 #define COUNT(array) sizeof(array)/sizeof(array[0])
 
@@ -390,7 +397,11 @@ int isDay(struct tm *tm, bitfield mask, char **name)
     return WORKDAY;
   }
   
-  if (mask & SOMEDAY) {
+  if (mask & (1<<EVERYDAY)) {
+    return day;
+  }
+
+  if (mask & (1<<day)) {
     sprintf (buffer, "%s", Weekday[day]);
   return day;
 }

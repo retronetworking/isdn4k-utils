@@ -19,6 +19,30 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.21  1999/04/10 16:35:22  akool
+ * isdnlog Version 3.13
+ *
+ * WARNING: This is pre-ALPHA-dont-ever-use-Code!
+ * 	 "tarif.dat" (aka "rate-xx.dat"): the next generation!
+ *
+ * You have to do the following to test this version:
+ *   cp /usr/src/isdn4k-utils/isdnlog/holiday-de.dat /etc/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/rate-de.dat /usr/lib/isdn
+ *   cp /usr/src/isdn4k-utils/isdnlog/samples/rate.conf.de /etc/isdn/rate.conf
+ *
+ * After that, add the following entries to your "/etc/isdn/isdn.conf" or
+ * "/etc/isdn/callerid.conf" file:
+ *
+ * [ISDNLOG]
+ * SPECIALNUMBERS = /usr/lib/isdn/sonderrufnummern.dat
+ * HOLIDAYS       = /usr/lib/isdn/holiday-de.dat
+ * RATEFILE       = /usr/lib/isdn/rate-de.dat
+ * RATECONF       = /etc/isdn/rate.conf
+ *
+ * Please replace any "de" with your country code ("at", "ch", "nl")
+ *
+ * Good luck (Andreas Kool and Michael Reinelt)
+ *
  * Revision 1.20  1999/03/25 19:39:48  akool
  * - isdnlog Version 3.11
  * - make isdnlog compile with egcs 1.1.7 (Bug report from Christophe Zwecker <doc@zwecker.com>)
@@ -461,6 +485,7 @@ void info(int chan, int reason, int state, char *msg)
   static int    lstate = 0, lchan = -1;
 
 
+#if 0
   if (!newline) {
 
     if (state == STATE_BYTE) {
@@ -486,6 +511,22 @@ void info(int chan, int reason, int state, char *msg)
     lstate = state;
     lchan = chan;
   } /* if */
+#else
+  if (!newline) {
+    left = "";
+    right = "\r";
+
+    if ((lchan != chan) || (lstate != state) || (state != STATE_BYTE))
+      left = "\n";
+
+    lstate = state;
+    lchan = chan;
+  }
+  else {
+    left = "";
+    right = "\n";
+  } /* else */
+#endif
 
   if (allflags & PRT_DEBUG_GENERAL)
     if (allflags & PRT_DEBUG_INFO)

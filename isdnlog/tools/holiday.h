@@ -19,6 +19,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1999/04/14 13:17:21  akool
+ * isdnlog Version 3.14
+ *
+ * - "make install" now install's "rate-xx.dat", "rate.conf" and "ausland.dat"
+ * - "holiday-xx.dat" Version 1.1
+ * - many rate fixes (Thanks again to Michael Reinelt <reinelt@eunet.at>)
+ *
  * Revision 1.3  1999/04/10 16:36:35  akool
  * isdnlog Version 3.13
  *
@@ -68,7 +75,7 @@
 #define _HOLIDAY_H_
 
 #define MONDAY    1
-#define THUESDAY  2
+#define TUESDAY   2
 #define WEDNESDAY 3
 #define THURSDAY  4
 #define FRIDAY    5
