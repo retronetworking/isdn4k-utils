@@ -17,6 +17,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  2004/06/30 08:52:29  armin
+ * fixed for new extended ALERT_REQ().
+ *
  * Revision 1.2  1998/10/23 12:50:46  fritz
  * Added RCS keywords and GPL notice.
  *
@@ -26,6 +29,7 @@
 #include <linux/capi.h>
 #include <capi20.h>
 
+#include "config.h"
 #include "connect.h"
 #include "data.h"
 #include "init.h"
@@ -78,8 +82,11 @@ void Handle_Indication(void) {
 			 * (Assumed that no CONNECT_RESPonse is sent in this time)
 			 * of the application
 			 */
-			ALERT_REQ (CMSG, Appl_Id, 0, CONNECT_IND_PLCI(CMSG),
-				   NULL, NULL, NULL, NULL, NULL);
+#ifdef HAVE_ALERT_SENDING_COMPLETE
+			ALERT_REQ (CMSG, Appl_Id, 0, CONNECT_IND_PLCI(CMSG), NULL, NULL, NULL, NULL, NULL);
+#else
+			ALERT_REQ (CMSG, Appl_Id, 0, CONNECT_IND_PLCI(CMSG), NULL, NULL, NULL, NULL);
+#endif
 			/* inform the user application */
 			SetState(Connection, D_ConnectPending);
 			IncomingCall(Connection, GetCallingPartyNumber (Connection));

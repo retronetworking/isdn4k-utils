@@ -2635,7 +2635,7 @@ static int setforcedriver(int dummy)
 
 #ifndef DLT_PPP_WITHDIRECTION
 #define DLT_PPP_WITHDIRECTION	DLT_PPP
-#warning "please update your pcap version to support in/outbound DLT_PPP_WITHDIRECTION filter */
+#warning "please update your pcap version to support in/outbound DLT_PPP_WITHDIRECTION filter"
 #endif
 
 /*
