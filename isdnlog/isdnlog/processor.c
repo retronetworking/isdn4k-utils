@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.67  1999/06/15 20:04:09  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.66  1999/06/13 14:07:50  akool
  * isdnlog Version 3.32
  *
@@ -971,7 +977,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
     switch (oc3 & 0x70) { /* Calling party number Information element, Octet 3 - Table 4-11/Q.931 */
       case 0x00 : if (*num) {                  /* 000 Unknown */
                     if (*num != '0') {
-                      sprintf(result, "%s%s", mycountry, myarea);
+                      strcpy(result, mynum);
                       *local = 1;
                     }
                     else {
@@ -1001,7 +1007,7 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
       case 0x30 : break;                       /* 011 Network specific number */
 
       case 0x40 : if (*num != '0') {           /* 100 Subscriber number */
-                    sprintf(result, "%s%s", mycountry, myarea);
+                    strcpy(result, mynum);
                     *local = 1;
     		  }
                   else {
@@ -3560,8 +3566,33 @@ static void prepareRate(int chan, char **msg, char **tip, int viarep)
   } /* if */
 
   call[chan].Rate.prefix = call[chan].provider;
-  call[chan].Rate.src    = call[chan].num[CALLING];
-  call[chan].Rate.dst    = call[chan].num[CALLED];
+
+  if (call[chan].intern[CALLING])
+    call[chan].Rate.src    = mynum;
+  else {
+    static char src[BUFSIZ];
+    auto   int	l;
+
+
+    if ((get_areacode(call[chan].num[CALLING], &l, C_NO_WARN | C_NO_EXPAND | C_NO_ERROR)))
+      Strncpy(src, call[chan].num[CALLING], l + 1);
+    else
+      strcpy(src, call[chan].num[CALLING]);
+
+    call[chan].Rate.src = src;
+  }
+
+  {
+    static char dst[BUFSIZ];
+    auto   int	l;
+
+    if ((get_areacode(call[chan].num[CALLED], &l, C_NO_WARN | C_NO_EXPAND | C_NO_ERROR)))
+      Strncpy(dst, call[chan].num[CALLED], l + 1);
+    else
+      strcpy(dst, call[chan].num[CALLED]);
+
+    call[chan].Rate.dst = dst;
+  }
 
   if (getRate(&call[chan].Rate, msg)==UNKNOWN)
     return;

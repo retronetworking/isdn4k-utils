@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.45  1999/06/15 20:04:03  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.44  1999/06/13 14:07:44  akool
  * isdnlog Version 3.32
  *
@@ -1116,7 +1122,7 @@ int main(int argc, char *argv[], char *envp[])
   register char  *p;
   register int    i, res = 0;
   auto     int    lastarg;
-  auto     char   rlogfile[PATH_MAX];
+  auto     char   rlogfile[PATH_MAX], s[BUFSIZ];
   auto	   char	  *version;
   auto     char **devices = NULL;
   sigset_t        unblock_set;
@@ -1333,15 +1339,21 @@ int main(int argc, char *argv[], char *envp[])
 	    mysql_dbOpen();
 #endif
 
+	    sprintf(s, "%s%s", mycountry, myarea);
+            mynum = strdup(s);
+
 	    initHoliday(holifile, &version);
+
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
 	    initCountry(countryfile, &version);
+
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
 	    initRate(rateconf, ratefile, zonefile, &version);
+
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 

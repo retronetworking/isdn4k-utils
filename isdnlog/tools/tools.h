@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.45  1999/06/15 20:05:22  akool
+ * isdnlog Version 3.33
+ *   - big step in using the new zone files
+ *   - *This*is*not*a*production*ready*isdnlog*!!
+ *   - Maybe the last release before the I4L meeting in Nuernberg
+ *
  * Revision 1.44  1999/06/13 14:08:28  akool
  * isdnlog Version 3.32
  *
@@ -1007,6 +1013,7 @@ _EXTERN int	ignoreRR;
 _EXTERN int	ignoreCOLP;
 _EXTERN int 	interns0;
 _EXTERN	char    *vbn;
+_EXTERN char	*mynum;
 #undef _EXTERN
 
 /****************************************************************************/
