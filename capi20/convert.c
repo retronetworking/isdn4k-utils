@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.15  2005/02/22 11:39:43  keil
+ * for backward compatibility the libcapi20 can now compiled to support the
+ * old (buggy) version2 ABI. This is not for future developments. This is only
+ * to support old binaries, which are linked against the old V2 lib.
+ *
  * Revision 1.14  2005/02/21 17:37:07  keil
  * libcapi20 version 3.0.0
  *  - add SENDING COMPLETE in ALERT_REQ
@@ -356,7 +361,7 @@ static _cdef cdef[] = {
 
 static unsigned char *cpars[] = {
     /*00*/ 0,
-#ifdef CAPI_LIBRARY_V2
+#ifndef CAPI_LIBRARY_V2
     /*01 ALERT_REQ*/            (unsigned char*)"\x03\x04\x0c\x28\x30\x1c\x32\x01\x01",
     /*02 CONNECT_REQ*/          (unsigned char*)"\x03\x14\x0e\x10\x0f\x11\x0d\x06\x08\x0a\x05\x07\x09\x33\x01\x0b\x29\x23\x04\x0c\x28\x30\x1c\x01\x01",
 #else
@@ -370,7 +375,7 @@ static unsigned char *cpars[] = {
     /*07*/ 0,
     /*08 INFO_REQ*/             (unsigned char*)"\x03\x0e\x04\x0c\x28\x30\x1c\x01\x01",
     /*09 FACILITY_REQ*/         (unsigned char*)"\x03\x20\x1e\x01",
-#ifdef CAPI_LIBRARY_V2
+#ifndef CAPI_LIBRARY_V2
     /*0a SELECT_B_PROTOCOL_REQ*/ (unsigned char*)"\x03\x0d\x06\x08\x0a\x05\x07\x09\x33\x01\x01",
 #else
     /*0a SELECT_B_PROTOCOL_REQ*/ (unsigned char*)"\x03\x0d\x06\x08\x0a\x05\x07\x09\x01\x01",
@@ -420,7 +425,7 @@ static unsigned char *cpars[] = {
     /*35 CONNECT_B3_T90_ACTIVE_IND*/ (unsigned char*)"\x03\x2c\x01",
     /*36*/ 0,
     /*37*/ 0,
-#ifdef CAPI_LIBRARY_V2
+#ifndef CAPI_LIBRARY_V2
     /*38 CONNECT_RESP*/         (unsigned char*)"\x03\x2f\x0d\x06\x08\x0a\x05\x07\x09\x33\x01\x16\x17\x29\x04\x0c\x28\x30\x1c\x01\x01",
 #else
     /*38 CONNECT_RESP*/         (unsigned char*)"\x03\x2f\x0d\x06\x08\x0a\x05\x07\x09\x01\x16\x17\x29\x04\x0c\x28\x30\x1c\x01\x01",
