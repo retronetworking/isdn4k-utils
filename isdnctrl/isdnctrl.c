@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.41  2000/04/12 21:49:40  detabc
+ * add test for maybe undefined IIOCNETDWRSET define
+ *
  * Revision 1.40  2000/01/27 15:08:09  paul
  * Error messages from addlink/removelink are now userfriendly.
  *
@@ -770,7 +773,13 @@ int exec_args(int fd, int argc, char **argv)
 #else
 		if (id != NULL && i != RESET) {
 #endif /* I4L_CTRL_CONF */
-			if (strlen(id) > 8) {
+			if (i == BUSREJECT || i == MAPPING) {
+			   if (strlen(id) > sizeof(iocts.drvid)-1) {
+				fprintf(stderr, "DriverId must not exceed %d characters!\n", sizeof(iocts.drvid)-1);
+				close(fd);
+				return -1;
+			   }
+			} else if (strlen(id) > 8) {
 				fprintf(stderr, "Interface name must not exceed 8 characters!\n");
 				close(fd);
 				return -1;
