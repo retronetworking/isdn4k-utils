@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.16  2005/03/04 10:57:05  calle
+ * Bugfix: CAPI_LIBRARY_V2 sone ifdef/ifndef where wrong.
+ *
  * Revision 1.15  2005/02/22 11:39:43  keil
  * for backward compatibility the libcapi20 can now compiled to support the
  * old (buggy) version2 ABI. This is not for future developments. This is only
@@ -369,7 +372,11 @@ static unsigned char *cpars[] = {
     /*02 CONNECT_REQ*/          (unsigned char*)"\x03\x14\x0e\x10\x0f\x11\x0d\x06\x08\x0a\x05\x07\x09\x01\x0b\x29\x23\x04\x0c\x28\x30\x1c\x01\x01",
 #endif
     /*03*/ 0,
+#ifndef CAPI_LIBRARY_V2
+    /*04 DISCONNECT_REQ*/       (unsigned char*)"\x03\x04\x0c\x28\x30\x1c\x32\x01\x01",
+#else
     /*04 DISCONNECT_REQ*/       (unsigned char*)"\x03\x04\x0c\x28\x30\x1c\x01\x01",
+#endif
     /*05 LISTEN_REQ*/           (unsigned char*)"\x03\x26\x12\x13\x10\x11\x01",
     /*06*/ 0,
     /*07*/ 0,

@@ -10,6 +10,13 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.11  2005/02/21 17:37:09  keil
+ * libcapi20 version 3.0.0
+ *  - add SENDING COMPLETE in ALERT_REQ
+ *  - add Globalconfiguration to CONNECT_REQ/RESP and SELECT_B_PROTOCOL_REQ
+ *
+ * * NOTE: incompatible to 2.X.Y versions
+ *
  * Revision 1.10  2004/10/06 15:26:13  calle
  * - "SendingComplete-Patch" reverted.
  *
@@ -822,7 +829,8 @@ static void n0(capi_contr * card, capi_ncci * ncci)
 				 0,	/* BChannelinformation */
 				 0,	/* Keypadfacility */
 				 0,	/* Useruserdata */   /* $$$$ */
-				 0	/* Facilitydataarray */
+				 0,	/* Facilitydataarray */
+			    	 0	/* SendingComplete */
 	);
 	send_message(card, &cmsg);
 	plci_change_state(card, ncci->plcip, EV_PLCI_DISCONNECT_REQ);
@@ -1848,7 +1856,8 @@ int capiconn_disconnect(capi_connection *plcip, _cstruct ncpi)
 					 0,	/* BChannelinformation */
 					 0,	/* Keypadfacility */
 					 0,	/* Useruserdata */
-					 0	/* Facilitydataarray */
+					 0,	/* Facilitydataarray */
+			    	         0	/* SendingComplete */
 					);
 		plci_change_state(card, plcip, EV_PLCI_DISCONNECT_REQ);
 		send_message(card, &cmdcmsg);
