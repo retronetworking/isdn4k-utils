@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.30  1997/07/22 22:36:17  luethje
+ * isdnrep:  Use "&nbsp;" for blanks
+ * isdnctrl: Add the option "reset"
+ *
  * Revision 1.29  1997/06/15 23:49:45  luethje
  * Some new variables for the isdnlog
  * isdnlog starts programs noe with the file system rights
@@ -2612,6 +2616,11 @@ static int set_dir_entries(char *directory, int (*set_fct)(const char *, const c
 
 			closedir(dptr);
 		}
+		else
+		{
+			print_msg(PRT_ERR,"Can not open directory `%s': %s!\n", directory, strerror(errno));
+			return -1;
+		}
 	}
 
 	return 0;
@@ -2633,7 +2642,10 @@ static int set_vbox_entry(const char *path, const char *file)
 	sprintf(string,"%s%c%s",path,C_SLASH,file);
 
 	if ((fp = fopen(string,"r")) == NULL)
+	{
+		print_msg(PRT_ERR,"Can not open file `%s': %s!\n", string, strerror(errno));
 		return -1;
+	}
 
 	fread(&ptr,sizeof(vaheader_t),1,fp);
 	fclose(fp);
@@ -2716,7 +2728,10 @@ static int set_mgetty_entry(const char *path, const char *file)
 	sprintf(string,"%s%c%s",path,C_SLASH,file);
 
 	if (access(string,R_OK))
+	{
+		print_msg(PRT_ERR,"Can not open file `%s': %s!\n", string, strerror(errno));
 		return -1;
+	}
 
 	if ((lptr = (file_list*) calloc(1,sizeof(file_list))) == NULL)
 	{

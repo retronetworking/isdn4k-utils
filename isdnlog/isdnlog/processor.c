@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1997/08/22 12:31:21  fritz
+ * isdnlog now handles chargeint/non-chargeint Kernels automatically.
+ * Manually setting of CONFIG_ISDNLOG_OLD_I4L no more needed.
+ *
  * Revision 1.9  1997/06/22 23:03:25  luethje
  * In subsection FLAGS it will be checked if the section name FLAG is korrect
  * isdnlog recognize calls abroad
@@ -3379,7 +3383,7 @@ static void processctrl(int card, char *s)
   register char       *ps = s;
   register int         i, c;
   register int         wegchan; /* fuer gemakelte */
-  auto     int         dialin, type, cref = -1, creflen, version;
+  auto     int         dialin, type = 0, cref = -1, creflen, version;
   static   int         tei = BROADCAST, sapi = 0, net = 1, firsttime = 1;
   auto     char        sx[BUFSIZ], s2[BUFSIZ];
   static   char        last[BUFSIZ];
