@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.4  2000/06/30 14:08:45  calle
+ * - creat /dev/capi if not exist, and mount capifs if available and devfs
+ *   not availabe or not mounted on /dev.
+ * - better error messages
+ *
  * Revision 1.3  2000/06/29 15:17:21  calle
  * Mount capifs on /dev/capi if available.
  *
@@ -1083,7 +1088,7 @@ static int check_for_capifs_mounted(void)
 {
 	char *mp;
 	if (filesystem_available("devfs")) {
-		if ((mp = mounted("devfs")) != 0 && strcmp(mp, "/dev/") == 0)
+		if ((mp = mounted("devfs")) != 0 && strcmp(mp, "/dev") == 0)
 			return 0;
 	}
 	if (filesystem_available("capifs")) {
