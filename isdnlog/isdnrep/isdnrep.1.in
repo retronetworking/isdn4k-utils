@@ -117,6 +117,14 @@ If the flag 'n' is given, the given number is
 to be displayed.
 
 .TP
+.B \-U [_][.]'number'  default source number
+Use 'number' as source number for outgoing calls with an unknown source
+number ("?").  '.' is replaced by country and area code from @CONFFILE@.
+
+With '_' the default source number is used internally (e.g. for fetching
+the right zone names from the ratefile) but it is not displayed.
+
+.TP
 .B \-i	incoming
 Only incoming connections are displayed.
 

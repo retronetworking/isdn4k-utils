@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.19  2004/07/25 14:21:13  tobiasb
+ * New isdnrep option -m [*|/]number.  It multiplies or divide the cost of
+ * each call by the given number.  `-m/1.16' for example displays the costs
+ * without the German `Umsatzsteuer'.
+ *
  * Revision 1.18  2004/07/24 17:58:06  tobiasb
  * New isdnrep options: `-L:' controls the displayed call summaries in the
  * report footer.  `-x' displays only call selected or not deselected by
@@ -306,7 +311,7 @@ static char  fnbuff[512] = "";
 static char  usage[]     = "%s: usage: %s [ -%s ]\n";
 static char  wrongdate[] = "unknown date: %s\n";
 static char  wrongxopt[] = "error in -x option starting at: %s\n";
-static char  options[]   = "abcd:f:him:nop:r:s:t:uvw:x:EF:L:M:NR:SV";
+static char  options[]   = "abcd:f:him:nop:r:s:t:uvw:x:EF:L:M:NR:SU:V";
 static char *linefmt     = "";
 static char *htmlreq     = NULL;
 static char *phonenumberarg = NULL;
@@ -326,7 +331,7 @@ int main(int argc, char *argv[], char *envp[])
 
 	recalc.mode = '\0'; recalc.prefix = UNKNOWN; recalc.input = NULL;
 	recalc.count = recalc.unknown = recalc.cheaper = 0;
-	modcost.mode = 0;
+	modcost.mode = defsrc.mode = 0;
 	select_summaries(sel_sums, NULL); /* default: all summaries */
 
 	/* we don't need this at the moment:
@@ -384,6 +389,21 @@ int main(int argc, char *argv[], char *envp[])
 		set_msnlist(phonenumberarg);
 		free(phonenumberarg);
 	}
+
+	if (defsrc.mode > 0 && *defsrc.number == '.') {
+		/* prefix country and area code from isdn.conf */
+		ptr = calloc(strlen(mycountry) + strlen(myarea) + strlen(defsrc.number),
+		             sizeof(char));
+		if (ptr == NULL) {
+			printf("No memory for complete default source number (-U)\n");
+			return 1;
+		}
+		strcat(ptr, mycountry);
+		strcat(ptr, myarea);
+		strcat(ptr, defsrc.number + 1);
+		free(defsrc.number);
+		defsrc.number = ptr;
+	}	
 
   if (htmlreq)
   {
@@ -553,6 +573,17 @@ static int parse_options(int argc, char *argv[], char *myname)
 			           }
 			           if (ptr && *ptr)
 			             *ptr = 0;		
+			           break;
+
+			case 'U' : defsrc.mode = (*optarg == '_') ? 2 : 1;
+			           ptr = optarg - 1 + defsrc.mode;
+			           /* mycountry and myarea may not yet known */
+			           defsrc.number = calloc(strlen(ptr) + 1, sizeof(char));
+			           if (!defsrc.number) {
+			             printf("No memory for default source number (-U)\n");
+			             return 1;
+			           }
+			           strcat(defsrc.number, ptr);
 			           break;
 
       case '?' : printf(usage, argv[0], argv[0], options);
