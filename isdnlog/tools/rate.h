@@ -19,6 +19,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  2000/05/07 11:29:32  akool
+ * isdnlog-4.21
+ *  - isdnlog/tools/rate.{c,h} ...     new X:tag for exclusions
+ *  - isdnlog/tools/telnum.c ... 	    new X:tag for exclusions
+ *  - isdnlog/tools/rate-files.man ... -"-
+ *  - isdnlog/tools/NEWS ... 	    -"-
+ *  - isdnlog/README ... 		    -"-
+ *  - new rates
+ *
  * Revision 1.20  2000/01/16 12:36:59  akool
  * isdnlog-4.03
  *  - Patch from Gerrit Pape <pape@innominate.de>
@@ -248,6 +257,7 @@ int   initRate(char *conf, char *dat, char *dom, char **msg);
 char *getProvider(int prefix);
 char *getProviderVBN(int prefix);
 int   getSpecial(char *number);
+int   getSpecialLen(char *number);
 char* getSpecialName(char *number);
 char *getServiceNum(char *name);
 char *getServiceNames(int first);

@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.131  2004/12/16 22:40:30  tobiasb
+ * Fix for rate computation of outgoing calls from other devices and for logging
+ * of calls from and to the observed card (simultaneous SETUP messages).
+ * Area code setting also in parameterfile.
+ *
  * Revision 1.130  2004/09/29 21:02:01  tobiasb
  * Changed handling of multiple "calling party number" information elements.
  * The network provided number is now preferred in any case.  The other
@@ -1543,11 +1548,16 @@ void buildnumber(char *num, int oc3, int oc3a, char *result, int version,
 #endif
 
   if (!*intern) {
+    int l;
     if (*provider == UNKNOWN)
       *provider = preselect;
 
-    if (*num && !dir && (who == CALLED) && getSpecial(num) && (*sondernummer == UNKNOWN))
-      *sondernummer = strlen(num);
+    if ( *num && !dir && (who == CALLED) && (l=getSpecialLen(num)) ) {
+      if (*sondernummer == UNKNOWN)
+        *sondernummer = l; 	/* before: strlen(num); */
+      else if (*sondernummer < l)
+        *sondernummer = l;	/* longer match */
+    } /* /if special number */
   } /* if */
 
   if (Q931dmp) {
