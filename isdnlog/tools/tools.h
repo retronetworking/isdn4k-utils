@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.10  1997/04/15 22:37:13  luethje
+ * allows the character `"' in the program argument like the shell.
+ * some bugfixes.
+ *
  * Revision 1.9  1997/04/03 22:40:21  luethje
  * some bugfixes.
  *
@@ -505,6 +509,8 @@ typedef struct {
   double  sonline;
   double  bytes;
   double  sbytes;
+  double  ibytes[2];
+  double  obytes[2];
 } KNOWN;
 
 /****************************************************************************/

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/03/31 20:50:59  akool
+ * fixed the postgres95 part of isdnlog
+ *
  * Revision 1.4  1997/03/30 15:42:10  akool
  * Ignore invalid time from VSt
  *
@@ -1525,7 +1528,7 @@ static void decode(int chan, register char *p, int type, int version)
 
                         switch (c & 0xf0) {
                           case 0x00 :
-                          case 0x80 : sprintf(ps, "CCITT standartisierte Codierung");     break;
+                          case 0x80 : sprintf(ps, "CCITT standardisierte Codierung");     break;
                           case 0x20 :
                           case 0xa0 : sprintf(ps, "Reserve");                             break;
                           case 0x40 :

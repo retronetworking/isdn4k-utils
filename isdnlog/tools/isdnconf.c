@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.6  1997/04/17 20:09:57  luethje
+ * patch of Ingo Schneider
+ *
  */
 
 /****************************************************************************/
@@ -761,9 +764,9 @@ void setDefaults()
 #if defined(ISDN_NL)
     currency = "NLG";
 #elif defined(ISDN_CH)
-    currency = "FR.";
+    currency = "SFR";
 #else
-    currency = " DM";
+    currency = "DM";
 #endif
 
   } /* if */

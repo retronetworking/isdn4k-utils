@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  1997/04/16 22:23:00  luethje
+ * some bugfixes, README completed
+ *
  * Revision 1.4  1997/04/03 22:30:03  luethje
  * improved performance
  *
@@ -45,6 +48,11 @@
 #undef  MAXCONNECTS
 #endif
 #define MAXCONNECTS  500
+
+/*****************************************************************************/
+
+#define H_PRINT_HTML   1
+#define H_PRINT_HEADER 2
 
 /*****************************************************************************/
 
@@ -90,6 +98,8 @@ _EXTERN int     phonenumberonly _SET_0;
 _EXTERN int     compute         _SET_0;
 _EXTERN int     delentries      _SET_0;
 _EXTERN int     numbers         _SET_0;
+_EXTERN int     html         		_SET_0;
+_EXTERN int     seeunknowns  		_SET_0;
 _EXTERN int     header          _SET_1;
 _EXTERN char	  timestring[256] _SET_EMPTY;
 _EXTERN char	  *lineformat     _SET_NULL;
