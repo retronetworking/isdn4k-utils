@@ -19,6 +19,12 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.12  1998/06/14 15:33:48  akool
+ * AVM B1 support (Layer 3)
+ * Telekom's new currency DEM 0,121 supported
+ * Disable holiday rates #ifdef ISDN_NL
+ * memory leak in "isdnrep" repaired
+ *
  * Revision 1.11  1998/06/07 21:08:26  akool
  * - Accounting for the following new providers implemented:
  *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
@@ -199,6 +205,7 @@ void set_time_str(void)
 
   day = tm_time->tm_mday;
   month = tm_time->tm_mon + 1;
+  hour = tm_time->tm_hour;
 } /* set_time_str */
 
 /*****************************************************************************/
@@ -530,7 +537,7 @@ int is_sondernummer(char *num)
 
   if (*num)
     for (i = 0; i < nSN; i++)
-      if (!strcmp(num, SN[i].msn))
+      if (!strncmp(num, SN[i].msn, strlen(SN[i].msn)))
         return(i);
 
   return(-1);

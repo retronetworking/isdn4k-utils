@@ -19,6 +19,41 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.12  1998/06/07 21:09:57  akool
+ * - Accounting for the following new providers implemented:
+ *     o.tel.o, Tele2, EWE TEL, Debitel, Mobilcom, Isis, NetCologne,
+ *     TelePassport, Citykom Muenster, TelDaFax, Telekom, Hutchison Telekom,
+ *     tesion)), HanseNet, KomTel, ACC, Talkline, Esprit, Interoute, Arcor,
+ *     WESTCom, WorldCom, Viag Interkom
+ *
+ *     Code shamelessly stolen from G.Glendown's (garry@insider.regio.net)
+ *     program http://www.insider.org/tarif/gebuehr.c
+ *
+ * - Telekom's 10plus implemented
+ *
+ * - Berechnung der Gebuehrenzone implementiert
+ *   (CityCall, RegioCall, GermanCall, GlobalCall)
+ *   The entry "ZONE" is not needed anymore in the config-files
+ *
+ *   you need the file
+ *     http://swt.wi-inf.uni-essen.de/~omatthes/tgeb/vorwahl2.exe
+ *   and the new entry
+ *     [GLOBAL]
+ *       AREADIFF = /usr/lib/isdn/vorwahl.dat
+ *   for that feature.
+ *
+ *   Many thanks to Olaf Matthes (olaf.matthes@uni-essen.de) for the
+ *   Data-File and Harald Milz for his first Perl-Implementation!
+ *
+ * - Accounting for all "Sonderrufnummern" (0010 .. 11834) implemented
+ *
+ *   You must install the file
+ *     "isdn4k-utils/isdnlog/sonderrufnummern.dat.bz2"
+ *   as "/usr/lib/isdn/sonderrufnummern.dat"
+ *   for that feature.
+ *
+ * ATTENTION: This is *NO* production-code! Please test it carefully!
+ *
  * Revision 1.11  1998/05/06 14:43:27  paul
  * Assumption about country codes always being 2 digits long fixed for the
  * USA case (caused strncpy to be called with length -1; ouch).
@@ -609,10 +644,12 @@ char *Providername(int number)
     case 11 : return("o.tel.o");
     case 13 : return("Tele2");
     case 14 : return("EWE TEL");
+    case 15 : return("???");
     case 18 : return("Debitel");
     case 19 : return("Mobilcom");
     case 20 : return("Isis");
     case 22 : return("NetCologne");
+    case 23 : return("Tesion");
     case 24 : return("TelePassport");
     case 25 : return("Citykom Muenster");
     case 30 : return("TelDaFax");
@@ -620,15 +657,19 @@ char *Providername(int number)
     case 36 : return("Hutchison Telekom");
     case 39 : return("tesion))");
     case 41 : return("HanseNet");
+    case 43 : return("???");
     case 46 : return("KomTel");
     case 49 : return("ACC");
     case 50 : return("Talkline");
     case 55 : return("Esprit");
     case 66 : return("Interoute");
     case 70 : return("Arcor");
+    case 79 : return("Viatel");
     case 85 : return("WESTCom");
     case 88 : return("WorldCom");
     case 90 : return("Viag Interkom");
+    case 98 : return("STAR Telecom");
+    case 99 : return("ECONOphone/Telco");
     default : return("UNKNOWN Provider");
   } /* switch */
 } /* Providername */
