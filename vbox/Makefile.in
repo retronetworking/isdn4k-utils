@@ -292,6 +292,7 @@ DISTCLEANOBJS	= $(TOPDIR)/Makefile \
 clean:		  ignore
 		  @find $(TOPDIR)/ -name '*~' -exec $(RM) {} ';'
 		  @find $(TOPDIR)/ -name '*.o' -exec $(RM) -f {} ';'
+		  @find $(TOPDIR)/ -name '*.a' -exec $(RM) -f {} ';'
 
 distclean:	  clean programs-d scripts-d manuals-d
 		  @set -e; for i in `echo $(DISTCLEANOBJS)`; do \
