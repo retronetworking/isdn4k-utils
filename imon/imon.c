@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/05/17 12:23:35  fritz
+ * Corrected some Copyright notes to refer to GPL.
+ *
  * Revision 1.2  1997/03/20 00:19:01  luethje
  * inserted the line #include <errno.h> in avmb1/avmcapictrl.c and imon/imon.c,
  * some bugfixes, new structure in isdnlog/isdnrep/isdnrep.c.
@@ -296,7 +299,7 @@ int imon_draw_mask(int color) {
     wattroff(stathdr, COLOR_PAIR(WHITE_ON_BLACK));
     wattron(stathdr, COLOR_PAIR(YELLOW_ON_BLUE));
   }
-  mvaddstr(1, 2, "iMON 2.0");
+  mvaddstr(1, 2, "iMON 2.1");
   mvaddstr(1, COLS-23 , "Last Update: ");
   mvwaddstr(stathdr, 0, 0, "Nr. LineID       Status    Phone Number                Usage       Type                     ");
   wmove(stathdr, 1, 0);
@@ -337,6 +340,7 @@ int imon_draw_status(int color, time_t *current_time) {
 
   char *ptr_idmap;
   char *ptr_chmap;
+  char *ptr_drmap;
   char *ptr_usage;
   char *ptr_flags;
   char *ptr_phone;
@@ -352,16 +356,26 @@ int imon_draw_status(int color, time_t *current_time) {
 
   int  usage;
   int  chanum;
-  int  flags;
+  int  drvnum;
+  int  flags[ISDN_MAX_DRIVERS];
   int  line;
   int  len;
    
   ptr_idmap = idmap_line + 7;
   ptr_chmap = chmap_line + 7;
+  ptr_drmap = drmap_line + 7;
   ptr_usage = usage_line + 7;
   ptr_flags = flags_line + 7;
   ptr_phone = phone_line + 7;
-   
+
+  /*
+   * get flags for all drivers
+   */   
+  for(line=0; line<ISDN_MAX_DRIVERS; line++) {
+      sscanf(ptr_flags, "%d %n", &flags[line], &len);
+      ptr_flags += len;
+  }
+
   /*
    * now print info for every line
    */
@@ -375,10 +389,8 @@ int imon_draw_status(int color, time_t *current_time) {
     ptr_phone += len;
     sscanf(ptr_chmap, "%d %n", &chanum, &len);
     ptr_chmap += len;
-    if (chanum == 0) {
-      sscanf(ptr_flags, "%d %n", &flags, &len);
-      ptr_flags += len;
-    }
+    sscanf(ptr_drmap, "%d %n", &drvnum, &len);
+    ptr_drmap += len;
 
     /* A channel-number of -1 indicates an nonexistent channel */     
     if (chanum==-1) {
@@ -406,7 +418,7 @@ int imon_draw_status(int color, time_t *current_time) {
       sprintf(s_usage, "            ");
       sprintf(inout, "         ");
     } else {
-      int online = (flags & (1<<chanum));
+      int online = (flags[drvnum] & (1<<chanum));
       if (color) {
 	if (online)
 	  wattron(statwin, COLOR_PAIR(RED_ON_BLUE));
