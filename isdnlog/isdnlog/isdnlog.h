@@ -20,6 +20,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.22  1999/09/11 22:28:24  akool
+ * isdnlog-3.50
+ *   added 3. parameter to "-h" Option: Controls CHARGEHUP for providers like
+ *   DTAG (T-Online) or AOL.
+ *   Many thanks to Martin Lesser <m-lesser@lesser-com.de>
+ *
  * Revision 1.21  1999/05/04 19:32:40  akool
  * isdnlog Version 3.24
  *
@@ -530,5 +536,6 @@ _EXTERN const char *userfile(void);
 #undef _EXTERN
 
 /****************************************************************************/
+extern int prefix2pnum(int);
 
 #endif /* _ISDNLOG_H_ */

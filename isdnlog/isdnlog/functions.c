@@ -19,6 +19,17 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.26  1999/11/12 20:50:49  akool
+ * isdnlog-3.66
+ *   - Patch from Jochen Erwied <mack@joker.e.ruhr.de>
+ *       makes the "-O" and "-C" options usable at the same time
+ *
+ *   - Workaround from Karsten Keil <kkeil@suse.de>
+ *       segfault in ASN.1 parser
+ *
+ *   - isdnlog/tools/rate.c ... ignores "empty" providers
+ *   - isdnlog/tools/telnum.h ... fixed TN_MAX_PROVIDER_LEN
+ *
  * Revision 1.25  1999/09/13 09:09:43  akool
  * isdnlog-3.51
  *   - changed getProvider() to not return NULL on unknown providers
@@ -385,7 +396,8 @@ void logger(int chan)
 			              call[chan].aoce, call[chan].dialin ? 'I' : 'O',
 			              call[chan].cause, call[chan].ibytes, call[chan].obytes,
 			              LOG_VERSION, call[chan].si1, call[chan].si11,
-			              currency_factor, currency, call[chan].pay, call[chan].provider,
+			              currency_factor, currency, call[chan].pay, 
+				      prefix2pnum(call[chan].provider),
 			              call[chan].zone);
 
 			fclose(flog);
