@@ -1256,7 +1256,7 @@ static void decode_version (char *buf, int *version,
 	  }
       }
     
-    if (*buf != '\0' && strncmp(buf, "-pre", 4))  /* ignore any "-preX" part */
+    if (*buf != '\0' && strncmp(buf, "-pre", 4) && strncmp(buf, "pre", 3))  /* ignore any "-preX" part */
       {
 	*version      =
 	*modification =
