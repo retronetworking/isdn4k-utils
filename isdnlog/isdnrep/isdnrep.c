@@ -24,6 +24,12 @@
  *
  *
  * $Log$
+ * Revision 1.41  1998/09/22 20:59:53  luethje
+ * isdnrep:  -fixed wrong provider report
+ *           -fixed wrong html output for provider report
+ *           -fixed strange html output
+ * kisdnlog: -fixed "1001 message window" bug ;-)
+ *
  * Revision 1.40  1998/06/14 15:34:23  akool
  * AVM B1 support (Layer 3)
  * Telekom's new currency DEM 0,121 supported
@@ -3759,6 +3765,12 @@ static int find_format_length(char *string)
 	{
 		if (*string++ == '%')
 		{
+			if (*string == '%')
+			{
+				string++;
+				continue;
+			}
+
 			while(index("0123456789-",*string)) string++;
 
 			if (*string == '\0')
