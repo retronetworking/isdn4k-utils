@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  1998/04/28 08:34:28  paul
+ * Fixed compiler warnings from egcs.
+ *
  * Revision 1.19  1998/04/18 17:36:13  detabc
  * modify display of callbackdelay (cbdelay) value to %.1f sec.
  * if abc-extension is enabled
@@ -155,6 +158,13 @@
 #include "config.h"
 #define _ISDNCTRL_C_
 #include "isdnctrl.h"
+
+#undef HAVE_ABCEXT
+/*
+** wegen einstweiliger verfuegung gegen DW ist zur zeit
+** die abc-extension bis zur klaerung der rechtslage nicht
+** im internet verfuegbar
+*/
 
 #ifdef I4L_CTRL_CONF
 #	include "../lib/libisdn.h"
