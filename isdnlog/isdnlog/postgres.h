@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1997/03/16 20:58:46  luethje
+ * Added the source code isdnlog. isdnlog is not working yet.
+ * A workaround for that problem:
+ * copy lib/policy.h into the root directory of isdn4k-utils.
+ *
  * Revision 1.2  1996/12/05 10:18:17  admin
  * first version auf Postgres95-Interface seems to be ok
  *
@@ -78,11 +83,12 @@ struct _DbStrIn
   int     cause;              /* Kam eine Verbindung nicht zustande ist hier der Grund */
   long    ibytes;             /* Summe der uebertragenen Byte _von_ draussen (incoming) */
   long    obytes;             /* Summe der uebertragenen Byte _nach_ draussen (outgoing) */
-  int     version;            /* Versionsnummer (LOG_MAJOR_VERSION*100 + LOG_MINOR_VERSION) */
+  int     version;            /* Versionsnummer (LOG_VERSION) dieses Eintrages */
   int     si1;                /* Dienstkennung fuer diese Verbindung (1=Speech, 7=Data usw.) */
   int     si11;               /* Bei Dienstkennung 1=Speech -> analog oder digital ? */
   double  currency_factor;    /* Der Currency Factor fuer diese Verbinung (hier z.Zt. 0,12) */
   char    currency[32];       /* (16) Die Waehrung fuer diese Verbindung (in Deutschland "DM") */
+  double  pay;		      /* Der Endbetrag i.d. jeweiligen Landeswaehrung fuer diese Verbindung */
 };
 
 typedef struct _DbStrIn DbStrIn;

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/03/30 15:42:10  akool
+ * Ignore invalid time from VSt
+ *
  * Revision 1.3  1997/03/29 09:24:25  akool
  * CLIP presentation enhanced, new ILABEL/OLABEL operators
  *
@@ -1868,7 +1871,7 @@ static void decode(int chan, register char *p, int type, int version)
                     t = mktime(&tm);
 
                     if (t != (time_t)-1) {
-                      call[chan].time = mktime(&tm);
+                      call[chan].time = t;
 
                       if (settime) {
                         auto time_t     tn;
