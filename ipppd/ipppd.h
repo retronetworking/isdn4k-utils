@@ -98,6 +98,7 @@ extern char	*progname;	/* Name of this program */
  * Variables set by command-line options.
  */
 
+extern int maxconnect;
 extern int      usefirstip,useifip,useifmtu;
 extern int      numdev;		/* number of handled devices */
 extern int	debug;		/* Debug flag */

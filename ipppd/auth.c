@@ -387,14 +387,14 @@ static void callback_phase(int linkunit)
 
 /* hack here: remote is always the server for callback */
 		if (wo->neg_cbcp && !(lns[linkunit].pci.calltype & CALLTYPE_INCOMING) ) {
-				lns[linkunit].phase = PHASE_CALLBACK;
-		lns[linkunit].cbcp_unit = linkunit;        /* cbcp always corresponds to a link */
-				cbcp[ lns[linkunit].cbcp_unit ].us_unit = linkunit;
-		(*cbcp_protent.lowerup)(lns[linkunit].cbcp_unit);
-		(*cbcp_protent.open)(lns[linkunit].cbcp_unit);
+			lns[linkunit].phase = PHASE_CALLBACK;
+			lns[linkunit].cbcp_unit = linkunit;        /* cbcp always corresponds to a link */
+			cbcp[ lns[linkunit].cbcp_unit ].us_unit = linkunit;
+			(*cbcp_protent.lowerup)(lns[linkunit].cbcp_unit);
+			(*cbcp_protent.open)(lns[linkunit].cbcp_unit);
 		}
 		else 
-				network_phase(linkunit);
+			network_phase(linkunit);
 }
 
 /*
