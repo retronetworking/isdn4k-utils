@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1997/04/03 22:58:34  luethje
+ * some primitve changes.
+ *
  * Revision 1.1  1997/03/16 20:58:55  luethje
  * Added the source code isdnlog. isdnlog is not working yet.
  * A workaround for that problem:
@@ -214,7 +217,6 @@ static int GetArgs(char *Line, char *Args[], char *Opts[], int MaxArgs)
 	char	*Arg	= NULL;
 	char	*Use	= Line;
 	char  *Ptr  = NULL;
-	char  *Ptr2 = NULL;
 	char  *Org_Arg;
 	int	 MaxOpts= 0;
 	int	 i		= 0;
@@ -262,31 +264,8 @@ static int GetArgs(char *Line, char *Args[], char *Opts[], int MaxArgs)
 				Arg = NULL;
 		}
 		else
-		if (*Arg == '$')
-		{
-			if (Opts != NULL && (Num = atoi(Arg+1)) > 0 && Num <= MaxOpts)
+		if (*Arg == '$' && Opts != NULL && (Num = atoi(Arg+1)) > 0 && Num <= MaxOpts)
 				Arg = Opts[Num-1];
-			else
-			if (strlen(Arg) > 3 && Arg[1] == '{' && (Ptr = strrchr(Arg,'}')) != NULL)
-			{
-				*Ptr = '\0';
-
-				if ((Ptr2 = getenv(To_Upper(Arg+2))) != NULL)
-				{
-					strcpy(HelpString,Ptr2);
-					strcat(HelpString,Ptr+1);
-					Arg = strdup(HelpString);
-
-					MemPtr = (char**) realloc(MemPtr,sizeof(char*)*(j+2));
-					MemPtr[j++] = Arg;
-					MemPtr[j] = NULL;
-				}
-				else
-					Arg = NULL;
-			}
-			else
-				Arg = getenv(To_Upper(Arg+1));
-		}
 
 		if (Arg == NULL || *Arg == '\0')
 		{

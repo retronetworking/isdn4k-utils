@@ -19,6 +19,11 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.10  1997/04/08 21:56:42  luethje
+## Create the file isdn.conf
+## some bug fixes for pid and lock file
+## make the prefix of the code in `isdn.conf' variable
+##
 ## Revision 1.9  1997/04/08 00:02:05  luethje
 ## Bugfix: isdnlog is running again ;-)
 ## isdnlog creates now a file like /var/lock/LCK..isdnctrl0
@@ -101,6 +106,7 @@ LIBISDNDIR		:= @LIBISDNDIR@
 I4LCONFDIR		:= @I4LCONFDIR@
 CONFFILE  		:= @CONFFILE@
 OLDCONFDIR		:= @OLDCONFDIR@
+OLDCONFFILE 	:= @OLDCONFFILE@
 LIBAREA				:= @LIBAREA@
 RUNDIR				:= @RUNDIR@
 DBMLIB				:= @DBMLIB@
@@ -157,7 +163,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 2.99.6
+VERSION     = 2.99.7
 
 ifeq ($(POSTGRES),1)
 DEFS       += -DPOSTGRES
@@ -248,7 +254,8 @@ installdirs: rootperm
 install: depend all rootperm installdirs
 		if ps -x | fgrep $(ISDNLOG) >/dev/null; then kill `cat $(RUNDIR)/isdnlog.pid`; fi
 		-test ! -d $(OLDCONFDIR) || (cp -auv $(OLDCONFDIR)/* $(I4LCONFDIR) \
-		 && $(ISDNREP) 1>/dev/null 2>&1)
+		 && $(ISDNREP) 1>/dev/null 2>&1) \
+		 && mv $(I4LCONFDIR)/$(OLDCONFFILE) $(I4LCONFDIR)/$(OLDCONFFILE).old
 		$(GENCONF) $(I4LCONFDIR)/$(CONFFILE)
 		$(INSTALL_BIN) $(ISDNLOG)  $(SBINDIR)
 		$(INSTALL_BIN) $(ISDNREP)  $(BINDIR)

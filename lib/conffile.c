@@ -19,6 +19,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1997/04/03 22:39:11  luethje
+ * bug fixes: environ variables are working again, no seg. 11 :-)
+ * improved performance for reading the config files.
+ *
  * Revision 1.10  1997/03/24 03:56:30  fritz
  * Fixed 2 typos
  *
@@ -1521,6 +1525,40 @@ static char* Delete_Chars(char *String, char *Quote)
 	}
 
 	return String;
+}
+
+/****************************************************************************/
+
+int Replace_Variables(section *Section)
+{
+	entry *Entry;
+	char  *Ptr = NULL;
+
+
+	while(Section != NULL)
+	{
+		Entry = Section->entries;
+
+		while(Entry != NULL)
+		{
+			if (Entry->value != NULL && (Ptr = Replace_Variable(Entry->value)) != NULL)
+			{
+				free(Entry->value);
+
+				if ((Entry->value = strdup(Ptr)) == NULL)
+				{
+					print_msg("%s","Can not allocate memory!\n");
+					return -1;
+				}
+			}
+
+			Entry = Entry->next;
+		}
+
+		Section = Section->next;
+	}
+
+	return 0;
 }
 
 /****************************************************************************/

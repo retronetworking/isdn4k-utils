@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1997/03/20 00:28:03  luethje
+ * Inserted lines into the files for the revision tool.
+ *
  */
 
 #ifndef _LIB_TOOLS_H_
@@ -53,6 +56,8 @@ extern char *basename __P((__const char *__name));
 #define QUOTE_IGNORE 0
 #define QUOTE_DELETE 1
 
+#define C_QUOTE_CHAR '\\'
+
 /****************************************************************************/
 
 #define F_IGNORE_CASE		1024
@@ -86,6 +91,7 @@ _EXTERN int _delete_element(void ***elem, int deep);
 _EXTERN int match(register char *p, register char *s, int flags);
 _EXTERN int is_double (char *string, double *value);
 _EXTERN int is_integer (char *string, long int *value);
+_EXTERN char *Replace_Variable(char *String);
 
 #undef _EXTERN
 

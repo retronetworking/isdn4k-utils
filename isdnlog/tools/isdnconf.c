@@ -913,6 +913,9 @@ static int _readconfig(char *_myname)
 	if ((SPtr = read_isdnconf(&conf_dat)) == NULL)
 		return -1;
 
+	if (Replace_Variables(conf_dat))
+		return -1;
+
 	Set_Globals(conf_dat);
 
 	while (SPtr != NULL)
