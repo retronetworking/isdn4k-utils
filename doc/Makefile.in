@@ -43,9 +43,9 @@ install:
 	done
 
 uninstall:
-	@for i in $(MANPAGES) ; do ;\
-		MANSECT=`echo $i | cut -d. -f2` ;\
-		MANDIR=$(mandir)man$$MANSECT ;\
+	for i in $(MANPAGES) ; do \
+		MANSECT=`echo $$i | cut -d. -f2` ;\
+		MANDIR=$(mandir)/man$$MANSECT ;\
 		rm -f $$MANDIR/$$i ;\
 	done
 
