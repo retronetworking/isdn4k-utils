@@ -54,8 +54,8 @@ static char rcsid[] = "$Id$";
 #include <sys/ioctl.h>
 
 #if defined __GLIBC__ && __GLIBC__ >= 2
-# include <net/ppp_defs.h>
-# include <net/if.h>
+# include </usr/include/net/ppp_defs.h>
+# include </usr/include/net/if.h>
 #else
 # include <linux/ppp_defs.h>
 # include <linux/if.h>
@@ -65,7 +65,7 @@ static char rcsid[] = "$Id$";
 
 #ifndef STREAMS
 # if defined __GLIBC__ && __GLIBC__ >= 2
-#  include <net/if_ppp.h>
+#  include </usr/include/net/if_ppp.h>
 # else
 #  include <linux/if_ppp.h>		/* BSD, Linux, NeXT, etc. */
 # endif
