@@ -1,11 +1,14 @@
 #!/bin/sh
 # $Id$
 #
-# Makefile for iprofd
+# Makefile for isdnctrl manpage generation
 # (C) 1997 Fritz Elfert
 #
 #
 # $Log$
+# Revision 1.1  1997/06/26 21:00:29  luethje
+# Create a dynamic man page.
+#
 
 AWKFILE=/tmp/`basename $0`.$$
 MANOUTFILE=isdnctrl.man
