@@ -19,6 +19,20 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.52  1999/10/29 19:46:00  akool
+ * isdnlog-3.60
+ *  - sucessfully ported/tested to/with:
+ *      - Linux-2.3.24 SMP
+ *      - egcs-2.91.66
+ *    using -DBIG_PHONE_NUMBERS
+ *
+ *  - finally added working support for HFC-card in "echo mode"
+ *    try this:
+ *      hisaxctrl bri 10 1
+ *      hisaxctrl bri 12 1
+ *      isdnlog -21 -1
+ * -----------------^^ new option
+ *
  * Revision 1.51  1999/10/25 18:33:15  akool
  * isdnlog-3.57
  *   WARNING: Experimental version!
@@ -655,10 +669,6 @@ static void init_variables(int argc, char* argv[])
   amtsholung = NULL;
   dual = 0;
   hfcdual = 0;
-#if 0 /* Fixme: german specific there are conf entries VBN & PRESELECTED */
-  preselect = DTAG;      /* Telekomik */
-  vbn = strdup("010"); 	 /* Germany */
-#endif
   hup3 = 240;
 
   myname = argv[0];
@@ -1353,6 +1363,10 @@ int main(int argc, char *argv[], char *envp[])
   	    start_procs.infoargs = NULL;
   	    start_procs.flags    = 0;
 
+  	    preselect = 33;        /* Telekomik */
+  	    vbn = "010"; 	   /* Germany */
+	    vbnlen = "2:3";
+
 	    setDefaults();
           }
           else
@@ -1423,7 +1437,9 @@ int main(int argc, char *argv[], char *envp[])
 	    if (!Q931dmp && *version)
 	      print_msg(PRT_NORMAL, "%s\n", version);
 
+#ifndef Q931
             initTelNum();
+#endif
             loop();
 
             if (sockets[ISDNINFO].descriptor >= 0)

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.39  1999/10/29 08:17:02  akool
+ *  - new rates
+ *
  * Revision 1.38  1999/10/28 18:36:49  akool
  * isdnlog-3.59
  *  - problems with gcc-2.7.2.3 fixed
@@ -754,11 +757,15 @@ char *vnum(int chan, int who)
       } /* if */
     } /* if */
 #else
-    normalizeNumber(call[chan].num[who], &number, TN_ALL);
-    strcpy(call[chan].areacode[who], number.country);
-    strcpy(call[chan].vorwahl[who],number.area);
-    strcpy(call[chan].rufnummer[who], number.msn);
-    strcpy(s, formatNumber("%F", &number));
+    if (!q931dmp) {
+      normalizeNumber(call[chan].num[who], &number, TN_ALL);
+
+      strcpy(call[chan].areacode[who], number.country);
+      strcpy(call[chan].vorwahl[who], number.area);
+      strcpy(call[chan].rufnummer[who], number.msn);
+
+      strcpy(s, formatNumber("%F", &number));
+    } /* if */
 #endif
 #if 0
     normalizeNumber(call[chan].num[who], &number, TN_ALL);
