@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <signal.h>
 #include <netdb.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
