@@ -858,6 +858,18 @@ error: neither 'i' nor '--' given
 2003-1-4
 error: leading zeros (at month and day) must not omitted
 .RE
+
+.TP
+"y"
+yesterday,
+.TP
+"yy"
+the day before yesterday,
+.TP
+"yyy"
+three days ago and so on.
+For time spans these can also be used in conjunction
+with the notations explained above.
 .in -7
 
 .SH "FILES"

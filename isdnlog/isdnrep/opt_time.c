@@ -24,6 +24,37 @@
  *
  *
  * $Log$
+ * Revision 1.1  2003/10/29 17:41:35  tobiasb
+ * isdnlog-4.67:
+ *  - Enhancements for isdnrep:
+ *    - New option -r for recomputing the connection fees with the rates
+ *      from the current (and for a different or the cheapest provider).
+ *    - Revised output format of summaries at end of report.
+ *    - New format parameters %j, %v, and %V.
+ *    - 2 new input formats for -t option.
+ *  - Fix for dualmode workaround 0x100 to ensure that incoming calls
+ *    will not become outgoing calls if a CALL_PROCEEDING message with
+ *    an B channel confirmation is sent by a terminal prior to CONNECT.
+ *  - Fixed and enhanced t: Tag handling in pp_rate.
+ *  - Fixed typo in interface description of tools/rate.c
+ *  - Fixed typo in tools/isdnrate.man, found by Paul Slootman.
+ *  - Minor update to sample isdn.conf files:
+ *    - Default isdnrep format shows numbers with 16 chars (+ & 15 digits).
+ *    - New isdnrep format (-FNIO) without display of transfered bytes.
+ *    - EUR as currency in Austria, may clash with outdated rate-at.dat.
+ *      The number left of the currency symbol is nowadays insignificant.
+ *  - Changes checked in earlier but after step to isdnlog-4.66:
+ *    - New option for isdnrate: `-rvNN' requires a vbn starting with NN.
+ *    - Do not compute the zone with empty strings (areacodes) as input.
+ *    - New ratefile tags r: und t: which need an enhanced pp_rate.
+ *      For a tag description see rate-files(5).
+ *    - Some new and a few updated international cellphone destinations.
+ *
+ * NOTE: If there any questions, problems, or problems regarding isdnlog,
+ *    feel free to join the isdn4linux mailinglist, see
+ *    https://www.isdn4linux.de/mailman/listinfo/isdn4linux for details,
+ *    or send a mail in English or German to <tobiasb@isdn4linux.de>.
+ *
  */
 
 
@@ -47,12 +78,14 @@ char *Strncpy(char *dest, const char *src, int len);
 #endif
 
 #define END_TIME    1
+#define S_YESTERDAY "y" /* character(s) for the yesterday time specification */
 			
 /*****************************************************************************/
 
 static time_t get_month(char *String, int TimeStatus);
 static time_t get_time(char *String, int TimeStatus);
 static time_t get_gertime(char *s, int TimeStatus);
+static time_t get_ytime(time_t *base, int back, int TimeStatus);
 static time_t get_itime(char *s, int TimeStatus);
 
 /*****************************************************************************/
@@ -86,16 +119,20 @@ int get_term (char *String, time_t *Begin, time_t *End,int delentries)
 	}
 	else
 	{
-		strcpy(DateStr[0],String);
-		strcpy(DateStr[1],String);
+		Strncpy(DateStr[0], String, 256);
+		Strncpy(DateStr[1], String, 256);
 	}
 
 	for (Cnt = 0; Cnt < 2; Cnt++)
 	{
-		if ( strspn(DateStr[Cnt], idate ? "01234567890T:-" : "01234567890/.")
-				!= strlen(DateStr[Cnt]) )
+		int DateLen = strlen(DateStr[Cnt]);
+
+		if (strspn(DateStr[Cnt], S_YESTERDAY) == DateLen)
+			Date[Cnt] = get_ytime(&now, DateLen, delentries?0:Cnt);
+		else if ( strspn(DateStr[Cnt], idate ? "01234567890T:-" : "01234567890/.")
+				     != DateLen )
 			return 0;		
-		if (idate)
+		else if (idate)
 			Date[Cnt] = get_itime(DateStr[Cnt],delentries?0:Cnt);
 		else if ( (p=strchr(DateStr[Cnt],'.')) && strchr(p+1,'.') )
 			Date[Cnt] = get_gertime(DateStr[Cnt],delentries?0:Cnt);
@@ -126,7 +163,8 @@ static time_t get_month(char *String, int TimeStatus)
 
 
 	time(&now);
-	TimeStruct = localtime(&now);
+	if ( !(TimeStruct = localtime(&now)) )
+		return 0;
 	TimeStruct->tm_sec = 0;
 	TimeStruct->tm_min = 0;
 	TimeStruct->tm_hour= 0;
@@ -182,7 +220,8 @@ static time_t get_time(char *String, int TimeStatus)
 
 
 	time(&now);
-	TimeStruct = localtime(&now);
+	if ( !(TimeStruct = localtime(&now)) )
+		return 0;
 	TimeStruct->tm_sec = 0;
 	TimeStruct->tm_min = 0;
 	TimeStruct->tm_hour= 0;
@@ -266,7 +305,8 @@ static time_t get_gertime(char *s, int TimeStatus)
 		time_t now;
 		struct tm *tm;
 		time(&now);
-		tm = localtime(&now);
+		if ( !(tm = localtime(&now)) )
+			return 0;
 		year = tm->tm_year+1900;
 	}
 
@@ -275,8 +315,25 @@ static time_t get_gertime(char *s, int TimeStatus)
 	if (year>9999 || month>12 || day>31)
 		return 0;
 
+	/* expansion of two digit year value takes place in get_itime */
 	sprintf(t, "%02d-%02d-%02d", year, month, day);
 
+	return get_itime(t, TimeStatus);
+}
+
+/*****************************************************************************/
+/* parse a date like y[y[y...]] where each y(esterday) goes back one day. */
+static time_t get_ytime(time_t *base, int back, int TimeStatus) {
+	struct tm *tm;
+	time_t yesterday = *base - 24*60*60 * back;
+	char t[10+1];
+
+	tm = localtime(&yesterday);	
+	if (tm == NULL || tm->tm_year > 9999 - 1900 || tm->tm_mon > 12 - 1
+	    || tm->tm_mday > 31)
+		return 0;
+
+	sprintf(t, "%04d-%02d-%02d", 1900 + tm->tm_year, 1 + tm->tm_mon, tm->tm_mday);
 	return get_itime(t, TimeStatus);
 }
 
@@ -292,7 +349,8 @@ static time_t get_itime(char *s, int TimeStatus)
 	int n;
 
 	time(&now);
-	t = localtime(&now);
+	if ( !(t = localtime(&now)) )
+		return 0;
 	t->tm_isdst = UNKNOWN;
 	
 	p = s;

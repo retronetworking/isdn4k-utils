@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  2004/12/16 21:30:50  tobiasb
+ * New option -U: default source number for outgoing calls.
+ *
  * Revision 1.19  2004/07/25 14:21:13  tobiasb
  * New isdnrep option -m [*|/]number.  It multiplies or divide the cost of
  * each call by the given number.  `-m/1.16' for example displays the costs
@@ -484,7 +487,7 @@ static int parse_options(int argc, char *argv[], char *myname)
 
       case 'd' : delentries++;
 
-      case 't' : strcpy(timestring, optarg);
+      case 't' : Strncpy(timestring, optarg, sizeof timestring);
                  if (!get_term(timestring,&begintime,&endtime,delentries))
                  {
                    printf(wrongdate, timestring);
