@@ -1475,6 +1475,7 @@ capiconn_callbacks callbacks = {
 	received: 0, 
 	datasent: 0, 
 	chargeinfo: chargeinfo,
+	dtmf_received: 0,
 
 	capi_put_message: put_message,
 
