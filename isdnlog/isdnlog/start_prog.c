@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1999/10/25 18:33:15  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.13  1998/11/21 14:03:39  luethje
  * isdnctrl: added dialmode into the config file
  *
@@ -261,7 +266,8 @@ int Ring(info_args *Cmd, char *Opts[], int Die, int Async)
 		if (Async == 1)
 		{
 			while(fgets(String,LONG_STRING_SIZE,fp) != NULL)
-				print_msg(PRT_PROG_OUT,"%s\n",String);
+				if (!feof(fp) || String[0])
+					print_msg(PRT_PROG_OUT,"%s\n",String);
 
 			waitpid(pid,NULL,0);
 			fclose(fp);
@@ -559,8 +565,12 @@ static void KillCommand(int sock)
 
 	if (sock > 0)
 	{
-		while (fgets(String,LONG_STRING_SIZE,sockets[sock].fp))
-			print_msg(PRT_PROG_OUT,"%s\n",String);
+		if (!feof(sockets[sock].fp))
+		{
+			while (fgets(String,LONG_STRING_SIZE,sockets[sock].fp))
+				if (String[0])
+					print_msg(PRT_PROG_OUT,"%s\n",String);
+		}
 
 		kill(sockets[sock].pid, SIGTERM);
 		kill(sockets[sock].pid, SIGKILL);
@@ -703,7 +713,8 @@ int Print_Cmd_Output( int sock )
 
 	fgets(String,LONG_STRING_SIZE,sockets[sock].fp);
 
-	print_msg(PRT_PROG_OUT,"%s\n",String);
+	if (!feof(sockets[sock].fp) || String[0])
+		print_msg(PRT_PROG_OUT,"%s\n",String);
 
 	return 0;
 }
