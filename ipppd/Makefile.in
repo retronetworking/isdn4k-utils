@@ -100,7 +100,7 @@ endif
 ifdef RADIUS
 	PPPDSRCS += radius.c
 	PPPDOBJS += radius.o
-	COPTS    += -DRADIUS -I/usr/local/include 
+	COPTS    += -DRADIUS -D_linux_=1 -I/usr/local/include 
 	COPTS 	 += -DPATH_RADIUSCLIENT_CONF=\"$(RADIUS_CLIENT_CONFIG_FILE)\"
 	LIBS     += -L/usr/local/lib -lradiusclient
 	ifdef RADIUS_WTMP_LOGGING

@@ -119,7 +119,6 @@ struct link_struct {
   int rx_bytes;
   int tx_bytes;  
   time_t start_time;
-  char radius_user [MAXUSERNAME+1];
   char session_id[MAXSESSIONID+1];
   char remote_number [MAXCID+1] ;
 #endif  

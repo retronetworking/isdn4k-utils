@@ -39,7 +39,7 @@ char chap_rcsid[] = "$Id$";
 #include "md5.c"
 
 #ifdef RADIUS
-int radius_chap_auth __P((char *, u_char *, chap_state *, int));
+int radius_chap_auth __P((int,char *, u_char *, chap_state *));
 #endif
 
 
@@ -530,7 +530,7 @@ static void ChapReceiveResponse(chap_state *cstate,u_char *inp,int
 	syslog(LOG_WARNING, "No CHAP secret found for authenticating %s",
 	       rhostname);
 #ifdef RADIUS
-    } if (radius_chap_auth(rhostname, remmd, cstate, linkunit) == 0) {
+    } if (radius_chap_auth(linkunit,rhostname, remmd, cstate ) == 0) {
 		code = CHAP_SUCCESS;
 #else
     } else {

@@ -1873,14 +1873,18 @@ static int setdoradius(slot)
 {
 	static char *func = "setdoradius" ;
 	useradius = 1;
-	if(!called_radius_init && (radius_init() < 0))   
+	if(!called_radius_init)
 	{
-		syslog(LOG_WARNING, "can't init radiusclient in %s", func);
-	} 
-	else
-	{
-		called_radius_init = 1 ;
-		auth_order = rc_conf_int("auth_order");
+		if ( (radius_init() < 0))
+		{
+			syslog(LOG_WARNING, "can't init radiusclient in %s", func);
+			die (1) ;
+		} 
+		else
+		{
+			called_radius_init = 1 ;
+			auth_order = rc_conf_int("auth_order");
+		}
 	}
 	return 1;
 }
@@ -1890,14 +1894,18 @@ static int setdoradacct(slot)
 {
 	static char *func = "setdoradacct" ;
 	useradacct = 1;
-	if(!called_radius_init && (radius_init() < 0))   
+	if(!called_radius_init)
 	{
-		syslog(LOG_WARNING, "can't init radiusclient in %s", func);
-	} 
-	else
-	{
-		called_radius_init = 1 ;
-		auth_order = rc_conf_int("auth_order");
+		if ( (radius_init() < 0))  
+		{
+			syslog(LOG_WARNING, "can't init radiusclient in %s", func);
+			die (1) ;
+		} 
+		else
+		{
+			called_radius_init = 1 ;
+			auth_order = rc_conf_int("auth_order");
+		}
 	}
 	return 1;
 }

@@ -2206,8 +2206,6 @@ static void lcp_echo_lowerdown (int unit)
 		UNTIMEOUT (StopSession, (caddr_t) f );
 		session_timer_running = 0 ;
 	}
-#endif        
+#endif
 #endif
 }
-
-

@@ -1,4 +1,4 @@
- /*
+/*
  * auth.c - PPP authentication and phase control.
  *
  * Fairly patched version for isdn4linux
@@ -796,14 +796,6 @@ int radius_check_passwd(linkunit,auser,userlen,apasswd,passwdlen,msg,msglen)
 		lns[linkunit].attempts = 0;		/* Reset count */
 		*msg = "Login ok";
 		*msglen = strlen(*msg);
-		if ( useradacct )
-		{
-			if (radius_acct_start (linkunit) != OK_RC) 
-			{
-				syslog(LOG_WARNING, "RADIUS accounting failed for %s", user);
-				ret = UPAP_AUTHNAK ;
-			} ;
-		}
 	}
 
 	return ret;
