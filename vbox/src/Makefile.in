@@ -77,9 +77,12 @@ vboxbeep.o:	$(HEADERS) vboxbeep.c
 vboxd.o:	$(HEADERS) vboxd.c
 		$(CC) $(CFLAGS) -DVBOXDRC='"$(VBOX_VBOXDCONF)"' -c vboxd.c
 
+vbox.o:		$(HEADERS) vbox.c
+		$(CC) $(CFLAGS) -DPLAY='"$(VBOX_BINDIR)/vboxplay"' -c vbox.c
+
 #----------------------------------------------------------------------------#
 
-all:		  vboxlib vboxd vboxgetty vboxconvert vboxctrl vboxbeep vbox
+all:		vboxlib vboxd vboxgetty vboxconvert vboxctrl vboxbeep vbox
 
 #----------------------------------------------------------------------------#
 # Compiling vboxlib                                                          #
@@ -105,19 +108,14 @@ vboxgetty:	  $(VBOXGETTYOBJS)
 # Compiling vbox                                                             #
 #----------------------------------------------------------------------------#
 
-#ifeq ($(GOT_LIB_NCURSES),y)
-#
-#VBOXLIBS	= -lpanel -lncurses
-#
-#VBOXOBJS	= vbox.o parserc.o misc.o
-#
-#vbox:		  $(VBOXOBJS)
-#		  $(CC) $(VBOXOBJS) $(VBOXLIBS) -o vbox
-#
-#endif
+ifeq ($(HAVE_NCURSES),y)
 
-vbox:
-		touch vbox
+VBOXOBJS	= vbox.o streamio.o
+
+vbox:		  $(VBOXOBJS) libvbox.c libvbox.h
+		  $(CC) $(CFLAGS) $(VBOXOBJS) -o vbox -L. $(LIBS_NCURSES) $(LIBS_INTL) -lvbox
+
+endif
 
 #----------------------------------------------------------------------------#
 # Compiling vboxconvert                                                      #

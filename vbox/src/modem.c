@@ -35,7 +35,7 @@
 /** Defines **************************************************************/
 
 #define USE_NEW_MODEM_READER	  /* Define to use new modem read command	*/
-#undef  DBG_NEW_MODEM_READER	/* Define to debug new modem read command	*/
+#define DBG_NEW_MODEM_READER	/* Define to debug new modem read command	*/
 #undef  DBG_OLD_MODEM_READER	/* Define to debug old modem read command	*/
 
 /** Variables ************************************************************/

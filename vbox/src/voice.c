@@ -295,7 +295,7 @@ int voice_put_message(char *message)
 					{
 						log(L_DEBUG, gettext("Touchtone sequence \"%s\" found.\n"), touchtones);
 
-						if (list_find_node(&breaklist, touchtones))
+						if (breaklist_search(touchtones))
 						{
 							log(L_INFO, gettext("Sequence \"%s\" found in breaklist...\n"), touchtones);
 
@@ -514,7 +514,7 @@ int voice_get_message(char *name, char *timestr, int save)
 			{
 				log(L_DEBUG, gettext("Touchtone sequence \"%s\" found.\n"), touchtones);
 
-				if (list_find_node(&breaklist, touchtones))
+				if (breaklist_search(touchtones))
 				{
 					log(L_INFO, gettext("Sequence \"%s\" found in breaklist...\n"), touchtones);
 
