@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  1997/06/24 23:35:26  luethje
+ * isdnctrl can use a config file
+ *
  * Revision 1.3  1997/06/22 11:58:21  fritz
  * Added ability to adjust slave triggerlevel.
  *
@@ -775,11 +778,11 @@ int exec_args(int fd, int argc, char **argv)
 			        	perror(id);
 			        	exit(-1);
 			        }
-			        if (args) {
+			        if (args == 2) {
 			        	i = -1;
 			        	sscanf(arg1, "%d", &i);
 			        	if (i < 0) {
-			        		fprintf(stderr, "Slave triggerlevel must be >= 0\n");
+			        		fprintf(stderr, "Slave triggerlevel must be >= 0 (%s)\n", arg1);
 			        		exit(-1);
 			        	}
 			        	cfg.triggercps = i;
