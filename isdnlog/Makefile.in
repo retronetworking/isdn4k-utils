@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.192  2001/01/31 11:58:00  leo
+## Fixed length of Alias in ilp.c
+##
 ## Revision 1.191  2001/01/14 12:13:49  akool
 ## isdnlog-4.49
 ##  - added more Euracom decodings
@@ -1439,7 +1442,7 @@ SERVICEFILE = /etc/services
 # DON'T EDIT BELOW THIS LINE
 ######################################################################
 
-VERSION     = 4.50
+VERSION     = 4.51
 
 MANPAGES    = isdnlog/callerid.conf.5 isdnlog/isdn.conf.5 \
 	      isdnlog/isdnformat.5 isdnlog/isdnlog.5 isdnlog/isdnlog.8 \
@@ -1493,6 +1496,10 @@ ifdef ILP
 DEFS	+= -DILP=1
 endif
 
+ifdef IIOCNETGPN
+DEFS += -DIIOCNETGPN=-1
+endif
+
 PC = proc
 PCFLAGS = mode=oracle ireclen=160 lines=yes
 
@@ -1542,6 +1549,7 @@ ifdef ILP
 ISDNLOG_OBJS += isdnlog/ilp/ilp.o
 endif
 
+
 ISDNREP_OBJS =  isdnrep/rep_main.o tools/tools.o tools/isdnconf.o         \
                 isdnlog/messages.o isdnrep/isdnrep.o     		  \
 		tools/rate.o tools/zone.o tools/holiday.o tools/dest.o \
@@ -1584,6 +1592,12 @@ endif
 
 all:            depend libs mybin progs $(MANPAGES)
 
+ifdef IIOCNETGPN
+ISDNLOG_OBJS += isdnlog/kernel_2_0/iiocnetgpn.o
+isdnlog/kernel_2_0/iiocnetgpn.o:	isdnlog/kernel_2_0/iiocnetgpn.c
+	cd isdnlog/kernel_2_0 && make 
+endif	
+
 Makefile: Makefile.in config.status
 	./config.status
 
@@ -1605,6 +1619,9 @@ libs:
 clean:
 		-rm -f $(MODS)
 		set -e; for i in `echo $(SUBDIRS)`; do $(MAKE) -C $$i clean; done
+ifdef IIOCNETGPN
+	    cd isdnlog/kernel_2_0 && make clean
+endif
 
 distclean:      clean
 		-rm -f $(MANPAGES)
