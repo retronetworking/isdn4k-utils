@@ -93,7 +93,7 @@ int sockfd;			/* socket for doing interface ioctls */
 
 static char *lock_file;
 
-#define MAX_IFS		5000
+#define MAX_IFS		4096
 
 #define FLAGS_GOOD (IFF_UP          | IFF_BROADCAST)
 #define FLAGS_MASK (IFF_UP          | IFF_BROADCAST | \
