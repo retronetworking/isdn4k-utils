@@ -21,6 +21,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.87  2004/01/11 15:16:11  tobiasb
+ * Do not ignore last provider in ratefile if it contains only redirs (R:)
+ * and no real zones (Z:).
+ * Check whether the resulting zone from getZone is covered by a redir.
+ * Describe current limitations of redirs in rate-files manpage.
+ *
  * Revision 1.86  2003/10/29 17:41:35  tobiasb
  * isdnlog-4.67:
  *  - Enhancements for isdnrep:
@@ -1811,7 +1817,7 @@ again:
 	  numbers++;
 	  number=realloc(number, numbers*sizeof(int));
 	  number[numbers-1]=i;
-	skip:
+	skip: ;
 	}
 
 	while (isblank(*s)) s++;
@@ -2384,7 +2390,7 @@ static int get_area1(int prefix, RATE *Rate, char *number, TELNUM *num,
 	  }
 	}
 	return UNKNOWN;
-      done:
+      done: ;
       }
     }
   }
