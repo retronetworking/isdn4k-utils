@@ -19,6 +19,23 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.36  2000/03/09 18:50:03  akool
+ * isdnlog-4.16
+ *  - isdnlog/samples/isdn.conf.no ... changed VBN
+ *  - isdnlog/isdnlog/isdnlog.c .. ciInterval
+ *  - isdnlog/isdnlog/processor.c .. ciInterval
+ *  - isdnlog/tools/tools.h .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnconf.c .. ciInterval, abclcr conf option
+ *  - isdnlog/tools/isdnrate.c .. removed a warning
+ *  - isdnlog/NEWS ... updated
+ *  - isdnlog/README ... updated
+ *  - isdnlog/isdnlog/isdnlog.8.in ... updated
+ *  - isdnlog/isdnlog/isdnlog.5.in ... updated
+ *  - isdnlog/samples/provider ... NEW
+ *
+ *    ==> Please run a make clean, and be sure to read isdnlog/NEWS for changes
+ *    ==> and new features.
+ *
  * Revision 1.35  2000/03/06 07:03:21  akool
  * isdnlog-4.15
  *   - isdnlog/tools/tools.h ... moved one_call, sum_calls to isdnrep.h
@@ -991,7 +1008,12 @@ static int compute(char *num)
       }
       else {
 	/* kludge to suppress "impossible" Rates */
-	if (!getRate(&Rate, NULL) && (Rate.Price != 99.99)) {
+	char **message, *msg;
+	if(verbose)
+	  message = &msg;
+	else
+	  message = NULL;
+	if (!getRate(&Rate, message) && (Rate.Price != 99.99)) {
 	  if (!(Rate.Duration <= takt))
 	    continue;
 	  sort[n].prefix = Rate.prefix;
@@ -1040,6 +1062,9 @@ static int compute(char *num)
 
 	  n++;
 	}			/* if */
+	else if(verbose && *msg)
+          print_msg(PRT_V, "%s\n", msg);
+
       }				/* else 99 */
     }				/* for i */
     if (service)
@@ -1357,7 +1382,7 @@ static char * sub_sp(char *p)
   char *o = p;
   int allupper=1;
   for (; *p; p++)
-    if(!isupper(*p) && *p != '_') {
+    if(!isupper(*p) && *p != '_' && !isdigit(*p)) { /* e.g. _DEMD1 */
       allupper = 0;
       break;
   }
