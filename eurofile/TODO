@@ -14,14 +14,13 @@ Important:
 
 Not showstoppers, but should be done before a possible stable release:
 
-	- 'make install', with reasonable default config files.
 	- more casefix testing with new mangeling method
 	- selectively and automatically (for file systems not supporting
 	  symlinks) disallow symlink-based transfer name database
 	  lookup   
 	- certain disconnect scenarios result in error/warning
           messages which are harmless, but might confuse novice users.
-	  (in particular, release/wait for release seems to be buggy)
+	  (in particular, release amd wait for release seems to be buggy)
 	- scan all source files for FIXME/XXX/#if 0 labels and
 	  try cleaning this up.
 	- improve autoconf readline support (support non-default 

@@ -18,6 +18,16 @@
 #
 
 $Log$
+- [imp] config/autoconf changes. Partially changed autoconf parameter
+	names. Support `make install'. Improved integration in
+	isdn4k-utils menu config.
+- [imp] Makefile: "install" target will try to create symlinks
+	/etc/isdn/eft{access,users} to /etc/ftp{access,users} such
+	that default access control will be the same as for ftp.
+
+Revision 1.7  1999/10/06 18:16:21  he
+removed some dead code and pipe proof command line reading (eftp)
+
 
 - [imp] eftp.c: new cmd read implementation. Should now work under any
 	circumstances such as when reading from a pipe. readline()
