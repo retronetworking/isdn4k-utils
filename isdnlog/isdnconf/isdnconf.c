@@ -359,7 +359,7 @@ int look_data(section **conf_dat)
 			{
 				int Ret2 = 0;
 
-				if (!strcmp(_si,si))
+				if (*_si == '\0' || !strcmp(_si,si))
 					Ret2 = 1;
 
 				if (and)
@@ -523,6 +523,7 @@ int main(int argc, char *argv[], char *envp[])
 
 			case 'M' : isdnmon++;
 			           oneentry++;
+			           and++;
 			           quiet++;
 			           strcpy(areacode, optarg);
 			           strcpy(number, optarg);
