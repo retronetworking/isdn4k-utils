@@ -1,6 +1,6 @@
 .\" $Id$
 .\" CHECKIN $Date$
-.TH isdnrep 8 "@MANDATE_ISDNREP@" "ISDN 4 Linux @I4LVERSION@" "Linux System Administration"
+.TH isdnrep 1 "@MANDATE_ISDNREP@" "ISDN 4 Linux @I4LVERSION@" "Linux System Commands"
 
 .PD 0
 .SH NAME
@@ -684,4 +684,4 @@ aliases for telephone numbers
 
 .SH AUTHOR
 This manual page was adapted from isdnlog/README by
-Paul Slootman <paul@wurtel.demon.nl>, for Debian GNU/Linux and isdn4linux.
+Paul Slootman <paul@isdn4linux.de>, for Debian GNU/Linux and isdn4linux.
