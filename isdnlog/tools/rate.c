@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.33  1999/07/03 10:24:18  akool
+ * fixed Makefile
+ *
  * Revision 1.32  1999/07/02 19:18:11  akool
  * rate-de.dat V:1.02-Germany [02-Jul-1999 21:27:20]
  *
@@ -524,6 +527,7 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
   bitfield day, hour;
   double   price, divider, duration;
   char     buffer[LENGTH], path[LENGTH], Version[LENGTH]="<unknown>";
+  char	   sx[BUFSIZ];
   char     *c, *s;
   int      booked[MAXPROVIDER], variant[MAXPROVIDER];
   int      Providers=0, Areas=0, Services=0, Zones=0, Hours=0;
@@ -796,6 +800,13 @@ int initRate(char *conf, char *dat, char *dom, char **msg)
       s+=2;
       while(1) {
 	if (*(c=strip(str2list(&s)))) {
+
+	  if (*c == '0' && (*(c + 1) != '0')) {
+	    sprintf(sx, "%s%s", mycountry, c + 1);
+	    print_msg(PRT_NORMAL, "WARNING: Replacing %s by %s\n", c, sx);
+	    c = sx;
+	  } /* if */
+
 	  if (!isdigit(*c) && (d=getCountry(c, &Country)) != UNKNOWN) {
 	    if (*c=='+') {
 	      Areas += appendArea (prefix, c, Country->Name, zone, &domestic, dat);
