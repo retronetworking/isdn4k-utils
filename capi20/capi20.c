@@ -2,6 +2,11 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.7  1999/09/10 17:20:33  calle
+ * Last changes for proposed standards (CAPI 2.0):
+ * - AK1-148 "Linux Extention"
+ * - AK1-155 "Support of 64-bit Applications"
+ *
  * Revision 1.6  1999/09/06 17:40:07  calle
  * Changes for CAPI 2.0 Spec.
  *
@@ -33,6 +38,7 @@
 #define	CAPIMSG_LEN(m)		(m[0] | (m[1] << 8))
 #define	CAPIMSG_COMMAND(m)	(m[4])
 #define	CAPIMSG_SUBCOMMAND(m)	(m[5])
+#define CAPIMSG_DATALEN(m)	(m[16] | (m[17]<<8))
 
 
 static int                  capi_fd = -1;
@@ -182,7 +188,7 @@ capi20_put_message (unsigned char *Msg, unsigned ApplID)
         int datalen = (Msg[16] | (Msg[17] << 8));
         void *dataptr;
         if (sizeof(void *) != 4) {
-	    if (len > 22) { /* 64Bit CAPI-extention */
+	    if (len >= 30) { /* 64Bit CAPI-extention */
 	       u_int64_t data64;
 	       memcpy(&data64,Msg+22, sizeof(u_int64_t));
 	       if (data64 != 0) dataptr = (void *)data64;
@@ -251,8 +257,18 @@ capi20_get_message (unsigned ApplID, unsigned char **Buf)
 	       rcvbuf[14] = (data >> 16) & 0xff;
 	       rcvbuf[15] = (data >> 24) & 0xff;
            } else {
-	       /* 64Bit CAPI-extention */
-	       u_int64_t data = (u_int64_t)rcvbuf + CAPIMSG_LEN(rcvbuf);
+	       u_int64_t data;
+	       if (CAPIMSG_LEN(rcvbuf) < 30) {
+		  /*
+		   * grr, 64bit arch, but no data64 included,
+	           * seems to be old driver
+		   */
+	          memmove(rcvbuf+30, rcvbuf+CAPIMSG_LEN(rcvbuf),
+		          CAPIMSG_DATALEN(rcvbuf));
+	          rcvbuf[0] = 30;
+	          rcvbuf[1] = 0;
+	       }
+	       data = (u_int64_t)rcvbuf + CAPIMSG_LEN(rcvbuf);
 	       rcvbuf[12] = rcvbuf[13] = rcvbuf[14] = rcvbuf[15] = 0;
 	       rcvbuf[22] = data & 0xff;
 	       rcvbuf[23] = (data >> 8) & 0xff;
@@ -262,7 +278,7 @@ capi20_get_message (unsigned ApplID, unsigned char **Buf)
 	       rcvbuf[27] = (data >> 40) & 0xff;
 	       rcvbuf[28] = (data >> 48) & 0xff;
 	       rcvbuf[29] = (data >> 56) & 0xff;
-           }
+	   }
 	}
         return CapiNoError;
     }

@@ -2,6 +2,11 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.6  1999/09/10 17:20:33  calle
+ * Last changes for proposed standards (CAPI 2.0):
+ * - AK1-148 "Linux Extention"
+ * - AK1-155 "Support of 64-bit Applications"
+ *
  * Revision 1.5  1999/09/06 17:40:07  calle
  * Changes for CAPI 2.0 Spec.
  *
@@ -88,6 +93,7 @@ static _cdef cdef[] = {
     /*2e*/{_CWORD,      offsetof(_cmsg,Reason_B3)	},
     /*2f*/{_CWORD,      offsetof(_cmsg,Reject)	},
     /*30*/{_CSTRUCT,    offsetof(_cmsg,Useruserdata)	},
+    /*31*/{_CDWORD,     offsetof(_cmsg,Data64)	},
 };
 
 static unsigned char *cpars[] = {
