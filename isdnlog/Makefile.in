@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.32  1997/09/26 09:13:01  fritz
+## Set SUBDIRS always to overwrite environment.
+##
 ## Revision 1.31  1997/09/07 00:43:06  luethje
 ## create new error messages for isdnrep
 ##
@@ -230,7 +233,7 @@ endif
 
 CC          = $(_CC)
 
-INCLUDE     = -I./connect -I./tools -I$(PREFIXDIR) -I$(LIBISDNDIR)
+INCLUDE     = -I./connect -I./tools -I$(PREFIXDIR) -I$(LIBISDNDIR) -I@CONFIG_KERNELDIR@/include
 
 LIB         = $(DBMLIB)
 
@@ -295,7 +298,7 @@ MODS         =  *.o */*.o
 
 PROGS        =  $(ISDNLOG) $(ISDNREP) $(ISDNCONF)
 
-all:            libs mybin $(PROGS)
+all:            depend libs mybin $(PROGS)
 
 mybin:
 		-mkdir -p bin
@@ -335,7 +338,7 @@ installdirs: rootperm
 #		$(INSTALL_DIR) $(MAN1DIR)
 #		$(INSTALL_DIR) $(MAN8DIR)
 
-install: depend all rootperm installdirs
+install: all rootperm installdirs
 		@echo "Killing running isdnlog!"
 		-@if ps -x | fgrep $(ISDNLOG) >/dev/null; then kill `cat $(RUNDIR)/isdnlog.pid 2>/dev/null`; fi
 		-@test ! -d $(OLDCONFDIR) || cp -auv $(OLDCONFDIR)/$(USERFILE) $(I4LCONFDIR)
