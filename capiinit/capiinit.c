@@ -2,6 +2,13 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.1  2000/03/17 16:19:43  calle
+ * New command capiinit, this will replace avmcapictrl in the future, if
+ * called as "capiinit start" ist will load all modules, add all cards
+ * configured in "/etc/capi.conf" and load the firmware to all active
+ * cards. When called as "capiinit stop", it will deinit all cards and
+ * remove all modules. Sample config in capiinit/capi.conf.
+ *
  */
 
 #include <stdio.h>
@@ -1106,8 +1113,10 @@ int main_stop(void)
 	unload_module("capidrv");
 	unload_module("kernelcapi");
 	unload_module("capiutil");
-	if (filesystem_available("capifs"))
+	if (filesystem_available("capifs")) {
+		umount("/dev/capi");
 		unload_filesystem("capifs");
+	}
 
 	return 0;
 }
