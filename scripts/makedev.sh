@@ -11,7 +11,11 @@ if [ "`id | grep uid=0`" = "" ]; then
 fi
 echo -e "Creating device inodes ... \c"
 
-DEV=/dev
+if [ $# = 1 ] ; then
+	DEV=$1/dev
+else
+	DEV=/dev
+fi
 
 MAJ=45
 MIN=0
