@@ -24,15 +24,14 @@ CONFIGURATION = config
 do-it-all:      config
 endif
 
+EXTRADIRS = isdnlog/tools/zone isdnlog/tools/dest
+
 SUBDIRS :=
-ifeq ($(CONFIG_LIB_AREACODE),y)
-	SUBDIRS := $(SUBDIRS) areacode
-endif
 ifeq ($(CONFIG_ISDNLOG),y)
-	SUBDIRS := $(SUBDIRS) areacode lib
+	SUBDIRS := $(SUBDIRS) lib $(EXTRADIRS)
 else
 	ifeq ($(CONFIG_CTRL_CONF),y)
-		SUBDIRS := $(SUBDIRS) areacode lib
+		SUBDIRS := $(SUBDIRS) lib
 	endif
 endif
 ifeq ($(CONFIG_ISDNCTRL),y)
@@ -158,6 +157,9 @@ clean:
 	for i in `echo ${wildcard */Makefile}`; do \
 		$(MAKE) -i -C `dirname $$i` clean; \
 	done;
+	for i in `echo $(EXTRADIRS)`; do \
+		$(MAKE) -i -C $$i clean; \
+	done;
 	-rm -f *~ *.o
 
 distclean: clean
@@ -171,6 +173,9 @@ distclean: clean
 		if [ -f $$i ] ; then \
 			$(MAKE) -i -C `dirname $$i` distclean; \
 		fi ; \
+	done;
+	for i in `echo $(EXTRADIRS)`; do \
+		$(MAKE) -i -C $$i distclean; \
 	done;
 	-rm -f *~ .config .config.old scripts/autoconf.h .menuconfig \
 		Makefile.tmp .menuconfig.log scripts/defconfig.old

@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1999/08/20 19:43:48  akool
+ * removed avon-, vorwahl- and areacodes-support
+ *
  * Revision 1.10  1998/10/13 21:53:33  luethje
  * isdnrep and lib: bugfixes
  *
@@ -139,6 +142,12 @@ extern char *basename __P((__const char *__name));
 #define CONF_ENT_AREA_PREFIX    "AREAPREFIX"
 #define CONF_ENT_COUNTRY        "COUNTRYCODE"
 #define CONF_ENT_AREA           "AREACODE"
+#if 0 /* Fixme: tools.h defines these - should they be global ??? */
+#define CONF_ENT_VBN            "VBN"
+#define CONF_ENT_VBNLEN         "VBNLEN"
+#define CONF_ENT_PRESELECT      "PRESELECTED"
+#endif
+
 #if 0 /* DELETE_ME AK:18-Aug-99 */
 #define CONF_ENT_AREALIB        "AREALIB"
 #define CONF_ENT_AVONLIB        "AVON"

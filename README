@@ -39,7 +39,7 @@ This package contains the following stuff:
   Manpages for the above utilities:
   actctrl.8 avmcapictrl.8, hisaxctrl.8 icnctrl.8, eiconctrl.8, imon.8, ipppd.8,
   ipppstats.8, iprofd.8, isdnctrl.8, isdnlog.8, isdnrep.1, telesctrl.8,
-  xisdnload.1x and xmonisdn.1x
+  isdnrate.1, rate-files.5, xisdnload.1x and xmonisdn.1x
 
 COPYRIGHT/COPYING:
 

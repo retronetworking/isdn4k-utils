@@ -19,6 +19,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.21  1999/10/25 18:30:03  akool
+ * isdnlog-3.57
+ *   WARNING: Experimental version!
+ *   	   Please use isdnlog-3.56 for production systems!
+ *
  * Revision 1.20  1999/09/19 14:16:27  akool
  * isdnlog-3.53
  *
@@ -906,6 +911,7 @@ static void printTable(char *num)
   auto SORT2 wsort[MAXPROVIDER];
   static int firsttime = 1;
   int     first;
+  int prefix;
 
   memset(used, 0, sizeof(used));
   memset(hours, 0, sizeof(hours));
@@ -936,6 +942,9 @@ static void printTable(char *num)
 
     first = 1;
     while (1) {
+      destnum.nprovider = UNKNOWN;
+      if(provider2prefix(num, &prefix)) /* set provider if it is in number */
+        normalizeNumber(num, &destnum, TN_PROVIDER);
       n = compute(num);
 
       if (header && first && d == 0 && firsttime)
