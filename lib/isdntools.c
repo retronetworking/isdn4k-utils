@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.26  1999/08/20 19:43:46  akool
+ * removed avon-, vorwahl- and areacodes-support
+ *
  * Revision 1.25  1999/06/11 15:46:54  akool
  * not required references to libndbm removed
  *
@@ -619,11 +622,37 @@ static int create_runfile(const char *file, const char *format)
 	return RetCode;
 } /* create_runfile */
 
-/****************************************************************************/
 
-/* Setzt die Laendercodes, die fuer die Lib gebraucht werden. Diese Funktion
-   muss von jedem Programm aufgerufen werden!!!
-*/
+/*****************************************************************************/
+/*
+ * set_country_behaviour() - different countries have small differences in
+ * ISDN implementations. Use the COUNTRYCODE setting to select the behaviour
+ */
+
+static void set_country_behaviour(char *mycountry)
+{
+	/* amazing, strtol will also accept "+0049" */
+	mycountrynum = strtol(mycountry, (char **)0, 10);
+	switch (mycountrynum) {
+		case CCODE_NL:
+		case CCODE_CH:
+		case CCODE_AT:
+		case CCODE_DE:
+		case CCODE_LU:
+		/* any more special cases ? */
+			/* these only need to have mycountrynum set correctly */
+			break;
+		default:
+			mycountrynum = 49; /* use Germany as default for now */
+	}
+}
+
+
+/****************************************************************************/
+/*
+ * Sets the country codes that are used for the lib. This function must
+ * be called by each program!
+ */
 
 #define _MAX_VARS 8
 
@@ -700,8 +729,10 @@ int Set_Codes(section* Section)
 			ptr2 = s;
 		}
 			
-		if ((ptr[6] = mycountry = strdup(ptr2)) != NULL)
+		if ((ptr[6] = mycountry = strdup(ptr2)) != NULL) {
 			RetCode++;
+			set_country_behaviour(mycountry);
+		}
 		else
 			print_msg("Error: Variable `%s' are not set!\n",CONF_ENT_COUNTRY);
 	}

@@ -20,6 +20,21 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.56  2000/08/06 13:06:53  akool
+ * isdnlog-4.38
+ *  - isdnlog now uses ioctl(IIOCNETGPN) to associate phone numbers, interfaces
+ *    and slots in "/dev/isdninfo".
+ *    This requires a Linux-Kernel 2.2.12 or better.
+ *    Support for older Kernel's are implemented.
+ *    If IIOCNETGPN is available, the entries "INTERFACE = xxx" in
+ *    "/etc/isdn/isdn.conf" are obsolete.
+ *  - added 01013:Tele2 totally Freecall on 12. and 13. August 2000
+ *  - resolved *any* warning's from "rate-de.dat" (once more ...)
+ *  - Patch from oliver@escape.de (Oliver Wellnitz) against
+ *  	 "Ziffernwahl verschluckt Nummern"
+ *
+ *    **Please "make clean" before using this version of isdnlog!!**
+ *
  * Revision 1.55  2000/06/29 17:38:28  akool
  *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
  *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
@@ -639,10 +654,10 @@
 #define INTERNET    100
 #define	AUKUNFT_IN   40
 #define AUSKUNFT_AUS 41
-
-/* Fixme: this is specific to Germany */
-#define	DTAG	     33
 #endif
+
+/* this is specific to Germany */
+#define	DTAG	     33
 
 #define	LCR_DURATION 153
 
@@ -1081,6 +1096,7 @@ _EXTERN	char    *vbn;
 _EXTERN	char    *vbnlen;
 _EXTERN char	*mynum;
 _EXTERN int	myicountry;
+_EXTERN int	conf_country;	/* replaces the ISDN_xx defines */
 #undef _EXTERN
 
 /****************************************************************************/

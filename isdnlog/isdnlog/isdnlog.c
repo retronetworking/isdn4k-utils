@@ -19,6 +19,13 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.65  2000/07/19 19:41:32  akool
+ * isdnlog-4.34
+ *   - since around Linux-2.2.16 signals are *not* reset to their default
+ *     behavior when raised :-( (bug or feature?).
+ *   - isdnlog/rate-pl.dat ... changes from Karsten Voss <vossdoku@gmx.net>
+ *   - populated "samples/isdn.conf.de" with all german Internet-by-Call numbers
+ *
  * Revision 1.64  2000/07/18 22:26:05  akool
  * isdnlog-4.33
  *   - isdnlog/tools/rate.c ... Bug fixed
@@ -1470,6 +1477,7 @@ int main(int argc, char *argv[], char *envp[])
           if (q931dmp) {
   	    mymsns         = 3;
   	    mycountry      = "+49";
+  	    mycountrynum   = 49;
   	    myarea   	   = "6171";
             currency   	   = NULL;
             dual	   = 1;
