@@ -19,6 +19,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.20  2001/06/12 13:54:47  paul
+ * zone files are now created byte-order independent, so:
+ * - creating the zone files works on sparc
+ * - CDB files created on e.g. intel can be used without problem om sparc
+ * Our copy of CDB has also been modified for this.
+ *
  * Revision 1.19  1999/11/07 13:29:29  akool
  * isdnlog-3.64
  *  - new "Sonderrufnummern" handling
@@ -616,10 +622,15 @@ static int checkZone(char *zf, char* df,int num1,int num2, bool verbose)
 		char line[40];
 		char *p, *q;
 		int rz, i, n;
-		if ((fp = fopen(zf, "r")) == 0) {
+		if (strcmp(zf, "-")) {	/* use stdin? */
+		    if ((fp = fopen(zf, "r")) == 0) {
 			fprintf(stderr, "Can't read %s\n", zf);
 			exitZone(1);
 			exit(1);
+		    }
+		}
+		else {
+		    fp = stdin;
 		}
 		n=0;
 		while (!feof(fp)) {
@@ -654,7 +665,8 @@ static int checkZone(char *zf, char* df,int num1,int num2, bool verbose)
 				break;
 			}
 		}
-		fclose(fp);
+		if (fp != stdin)
+		    fclose(fp);
 		if (verbose)
 			printf("'%s' verified %s.\n", df, ret==0? "Ok": "NoNo");
 	}
