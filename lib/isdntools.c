@@ -2,7 +2,7 @@
  *
  * ISDN accounting for isdn4linux. (Utilities)
  *
- * Copyright 1995, 1997 and Stefan Luethje (luethje@sl-gw.lake.de)
+ * Copyright 1995, 1997 by Stefan Luethje (luethje@sl-gw.lake.de)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  1997/05/19 23:37:05  luethje
+ * bugfix for isdnconf
+ *
  * Revision 1.13  1997/05/19 22:58:28  luethje
  * - bugfix: it is possible to install isdnlog now
  * - improved performance for read files for vbox files and mgetty files.
@@ -391,7 +394,10 @@ int handle_runfiles(const char *_progname, char **_devices, int flag)
 		if ((RetCode = create_runfile(string,"%d\n")) != 0)
 		{
 			if (RetCode > 0)
+			{
 				print_msg("Another %s is running with pid %d!\n", progname, RetCode);
+				print_msg("If not delete the file `%s' nad try it again!\n", string);
+			}
 
 			return RetCode;
 		}
