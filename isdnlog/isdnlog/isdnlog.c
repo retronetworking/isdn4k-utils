@@ -19,6 +19,15 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.31  1998/12/09 20:39:28  akool
+ *  - new option "-0x:y" for leading zero stripping on internal S0-Bus
+ *  - new option "-o" to suppress causes of other ISDN-Equipment
+ *  - more support for the internal S0-bus
+ *  - Patches from Jochen Erwied <mack@Joker.E.Ruhr.DE>, fixes TelDaFax Tarif
+ *  - workaround from Sebastian Kanthak <sebastian.kanthak@muehlheim.de>
+ *  - new CHARGEINT chapter in the README from
+ *    "Georg v.Zezschwitz" <gvz@popocate.hamburg.pop.de>
+ *
  * Revision 1.30  1998/11/24 20:51:31  akool
  *  - changed my email-adress
  *  - new Option "-R" to supply the preselected provider (-R24 -> Telepassport)
@@ -188,7 +197,7 @@
 #define _ISDNLOG_C_
 
 #include <linux/limits.h>
-#include <termio.h>
+#include <termios.h>
 
 #include "isdnlog.h"
 #ifdef POSTGRES
@@ -925,11 +934,11 @@ static void restoreCharge()
 
 void raw_mode(int state)
 {
-  static struct termio newterminfo, oldterminfo;
+  static struct termios newterminfo, oldterminfo;
 
 
   if (state) {
-    ioctl(fileno(stdin), TCGETA, &oldterminfo);
+    tcgetattr(fileno(stdin), &oldterminfo);
     newterminfo = oldterminfo;
 
     newterminfo.c_iflag &= ~(INLCR | ICRNL | IUCLC | ISTRIP);
@@ -937,10 +946,10 @@ void raw_mode(int state)
     newterminfo.c_cc[VMIN] = 1;
     newterminfo.c_cc[VTIME] = 1;
 
-    ioctl(fileno(stdin), TCSETAF, &newterminfo);
+    tcsetattr(fileno(stdin), TCSAFLUSH, &newterminfo);
   }
   else
-    ioctl(fileno(stdin), TCSETA, &oldterminfo);
+    tcsetattr(fileno(stdin), TCSANOW, &oldterminfo);
 } /* raw_mode */
 
 /*****************************************************************************/
