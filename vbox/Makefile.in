@@ -156,6 +156,12 @@ GOT_LIB_NCURSES = @VBOX_LIB_NCURSES@
 
 all:		  vbox sedconvert
 
+#
+# For isdn4k-utils package compatibility
+#
+config:
+	@./configure
+
 #----------------------------------------------------------------------------#
 # vbox                                                                       #
 #----------------------------------------------------------------------------#

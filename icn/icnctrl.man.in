@@ -152,7 +152,7 @@ firmware parameters have to be supplied. The first firmware is used for the
 upper S0 connector, the second firmware is used for the lower S0 connector
 (towards the card's slot connector).
 .TP
-dump
+.B dump
 is available if the program is configured using the
 .B --enable-dump
 option only. The contents of internal driver variables is dumped on stdout.
