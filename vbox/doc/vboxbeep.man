@@ -42,5 +42,5 @@ thus it's useless. If you want to enable vboxbeep, please read the
 distribution-specific documentation how to do that (e.g. with debian
 gnu/linux read /usr/doc/isdnutils/README.debian).
 .SH AUTHOR
-This manual page was written by Andreas Jellinghaus <aj@debian.org>,
+This manual page was written by Andreas Jellinghaus <aj@dungeon.inka.de>,
 for Debian GNU/Linux and isdn4linux.

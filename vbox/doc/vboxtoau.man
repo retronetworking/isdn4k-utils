@@ -33,5 +33,5 @@ Show version of program.
 .SH SEE ALSO
 .B autovbox(1), rmdtovbox(1), vboxmode(1), vboxcnvt(1), vbox(5)
 .SH AUTHOR
-This manual page was written by Andreas Jellinghaus <aj@debian.org>,
+This manual page was written by Andreas Jellinghaus <aj@dungeon.inka.de>,
 for Debian GNU/Linux and isdn4linux.

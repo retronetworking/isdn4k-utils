@@ -35,5 +35,5 @@ the first command to the value set with --timeout.
 .B @I4LCONFDIR@/vboxd.conf
 default config file
 .SH AUTHOR
-This manual page was written by Andreas Jellinghaus <aj@debian.org>,
+This manual page was written by Andreas Jellinghaus <aj@dungeon.inka.de>,
 for Debian GNU/Linux and isdn4linux.

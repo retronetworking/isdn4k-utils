@@ -78,5 +78,5 @@ This file: isdnlog log file.
 .B isdnlog(8)
 
 .SH AUTHOR
-This manual page was written by Andreas Jellinghaus <aj@debian.org>,
+This manual page was written by Andreas Jellinghaus <aj@dungeon.inka.de>,
 for Debian GNU/Linux and isdn4linux.

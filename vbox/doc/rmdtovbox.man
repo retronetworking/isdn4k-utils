@@ -4,12 +4,13 @@
 .SH NAME
 rmdtovbox \- isdn voice box (sound converter)
 .SH SYNOPSIS
-.B autovbox
+.B rmdtovbox
 .I "[OPTION] [OPTION] [...] < INFILE > OUTFILE"
 .SH "DESCRIPTION"
 Convert rmd files (vbox 1.x voice files) to new vbox format.
 .SH OPTIONS
-Autovbox reads from stdin and writes to stdout.
+.B rmdtovbox
+reads from stdin and writes to stdout.
 .TP
 .B \-n, \-\-name NAME
 set the caller name of the new file
@@ -32,5 +33,5 @@ Show version of program.
 .SH SEE ALSO
 .B vboxtoau(1), vboxmode(1), vboxcnvt(1), vbox(5)
 .SH AUTHOR
-This manual page was written by Andreas Jellinghaus <aj@debian.org>,
+This manual page was written by Andreas Jellinghaus <aj@dungeon.inka.de>,
 for Debian GNU/Linux and isdn4linux.
