@@ -2,10 +2,14 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.1  2000/05/18 15:21:37  calle
+ * static CAPI2.0 library that loads libcapi20.so dynamicly.
+ *
  */
 
 #include <sys/types.h>
 #include <linux/capi.h>
+#include <string.h>
 #include "capi20.h"
 #include <dlfcn.h>
 

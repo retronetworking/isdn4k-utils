@@ -25,11 +25,12 @@
   This file containing stuff used for processing of file headers.
 */ 
 
-#include <stdio.h>
-#include <sys/stat.h>
-#include <pwd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
+#include <time.h>
+#include <stdio.h>
+#include <pwd.h>
 #include <string.h>
 
 

@@ -15,6 +15,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/10/23 12:50:55  fritz
+ * Added RCS keywords and GPL notice.
+ *
  */
 #include <assert.h>
 #include <malloc.h>
@@ -49,7 +52,7 @@ typedef struct _ConnectionDesc {
 	unsigned char *CallingPartyNumberStruct; /* CAPI struct */
 } ConnectionDesc;
 
-static ConnectionDesc C[maxConnections] = {0};
+static ConnectionDesc C[maxConnections] = {{0}};
 static unsigned char *EmptyStruct = (unsigned char *)"\0";
 
 /*

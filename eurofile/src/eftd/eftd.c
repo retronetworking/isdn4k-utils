@@ -25,8 +25,9 @@
 /* for strsignal() */
 #define _GNU_SOURCE       
 
+#include <sys/types.h>
 #include <sys/param.h>
-#include <sys/time.h>
+#include <time.h>
 #include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,7 +52,6 @@
 #endif
 
 #include <pwd.h>
-#include <sys/types.h>
 
 #ifdef  __USE_GNU
 /* Return a string describing the meaning of the signal number in SIG.  */

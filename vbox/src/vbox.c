@@ -1547,7 +1547,7 @@ static void draw_message_list(void)
 static void play_message(int msg)
 {
 	struct messageline *msgline;
-	char               *msgname;
+	char                msgname[sizeof("/tmp/vboxXXXXXX\0")];
 	char               *command;
 	char               *answer;
 	int                 size;
@@ -1557,19 +1557,15 @@ static void play_message(int msg)
 	if ((!messagesmp) || (messagesnr < 1)) return;
 
 	msgline = (struct messageline *)(messagesmp + (sizeof(struct messageline) * msg));
-	msgname = tmpnam(NULL);
-
-	if ((!msgline) || (!msgname))
+	if (!msgline)
 	{
-		message("\r\n", "Can't create temporary file! %s", "[RETURN]");
-
+		message("\r\n", "No message found! (can't happen?) %s", "[RETURN]");
 		return;
 	}
-
-	if ((fd = open(msgname, O_WRONLY|O_CREAT|O_TRUNC, S_IWUSR|S_IRUSR)) == -1)
+	strcpy(msgname, "/tmp/vboxXXXXXX");
+	if ((fd = mkstemp(msgname)) == -1)
 	{
 		message("\r\n", "Can't open temporary file! %s", "[RETURN]");
-
 		return;
 	}
 

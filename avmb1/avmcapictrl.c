@@ -6,6 +6,9 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.15  2000/03/08 13:40:33  calle
+ * check for /dev/isdn/capi20 if /dev/capi20 doesn't exist.
+ *
  * Revision 1.14  2000/01/28 16:36:19  calle
  * generic addcard (call add_card function of named driver)
  *
@@ -641,8 +644,8 @@ int main(int argc, char **argv)
 		if (ac >= 5) {
 			s = argv[arg_ofs + 1];
 			if (strlen(s) > sizeof(carddef.driver)) {
-				fprintf(stderr, "%s: driver name > %d\n",
-						cmd, sizeof(carddef.driver));
+				fprintf(stderr, "%s: driver name > %lu\n",
+						cmd, (unsigned long)sizeof(carddef.driver));
 				exit(1);
 			}
 			strncpy(carddef.driver, s, sizeof(carddef.driver));

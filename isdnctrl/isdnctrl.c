@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.44  2000/08/17 09:24:06  paul
+ * Added --version option to display (isdn4k-utils) version,
+ * and fixed a compile warning on alpha.
+ *
  * Revision 1.43  2000/06/29 17:38:26  akool
  *  - Ported "imontty", "isdnctrl", "isdnlog", "xmonisdn" and "hisaxctrl" to
  *    Linux-2.4 "devfs" ("/dev/isdnctrl" -> "/dev/isdn/isdnctrl")
@@ -492,7 +496,7 @@ static void listbind(char *s, int e)
                 int ch;
                 sscanf(p + 1, "%d", &ch);
                 *p = '\0';
-                printf("%s, Channel %d%s\n", s, ch, (e > 0) ? ", exclusive" : "");
+                printf("%s, channel %d%s\n", s, ch, (e > 0) ? ", exclusive" : "");
         } else
                 printf("Nothing\n");
 }

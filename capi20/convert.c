@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2000/05/18 15:02:26  calle
+ * Updated _cmsg handling added new functions need by "capiconn".
+ *
  * Revision 1.9  1999/12/06 17:08:30  calle
  * - Splitted capi20.h into capi20.h and capiutils.h.
  *   - capi20.h: the functions from the CAPI-2.0 Spec
@@ -537,7 +540,7 @@ unsigned capi_cmsg2message(_cmsg * cmsg, _cbyte * msg)
 			cmsg->Data64 = 0;
 		} else {
 			cmsg->Data32 = 0;
-			cmsg->Data64 = (_cqword) cmsg->Data;
+			cmsg->Data64 = (_cqword)(unsigned long)cmsg->Data;
 		}
 	}
 
@@ -618,7 +621,7 @@ unsigned capi_message2cmsg(_cmsg * cmsg, _cbyte * msg)
 		if (sizeof(void *) == 4) {
 				cmsg->Data = (void *) cmsg->Data32;
 		} else {
-				cmsg->Data = (void *) cmsg->Data64;
+				cmsg->Data = (void *)(unsigned long)cmsg->Data64;
 		}
 	}
 

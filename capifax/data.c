@@ -15,6 +15,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/10/23 12:50:52  fritz
+ * Added RCS keywords and GPL notice.
+ *
  */
 #include <assert.h>
 #include <sys/time.h>
@@ -38,7 +41,7 @@ unsigned SendData(ConnectionID Connection, void *Data, unsigned short DataLength
 	assert (GetState(Connection) == Connected);
 
 	DATA_B3_REQ_HEADER(&CMSG, Appl_Id, 0, GetConnectionNCCI(Connection));
-	DATA_B3_REQ_DATA(&CMSG) = (unsigned long)Data;
+	DATA_B3_REQ_DATA(&CMSG) = Data;
 	DATA_B3_REQ_DATALENGTH(&CMSG) = DataLength;
 	DATA_B3_REQ_DATAHANDLE(&CMSG) = DataHandle;
 	return CAPI_PUT_CMSG(&CMSG);

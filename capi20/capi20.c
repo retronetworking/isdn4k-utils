@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.18  2000/11/12 16:06:41  kai
+ * fix backwards compatibility in capi20 library, small other changes
+ *
  * Revision 1.17  2000/06/26 15:00:43  calle
  * - Will also compile with 2.0 Kernelheaders.
  *
@@ -281,7 +284,7 @@ capi20_put_message (unsigned ApplID, unsigned char *Msg)
 	    if (len >= 30) { /* 64Bit CAPI-extention */
 	       u_int64_t data64;
 	       memcpy(&data64,Msg+22, sizeof(u_int64_t));
-	       if (data64 != 0) dataptr = (void *)data64;
+	       if (data64 != 0) dataptr = (void *)(unsigned long)data64;
 	       else dataptr = Msg + len; /* Assume data after message */
 	    } else {
                dataptr = Msg + len; /* Assume data after message */
@@ -289,7 +292,7 @@ capi20_put_message (unsigned ApplID, unsigned char *Msg)
         } else {
             u_int32_t data;
             memcpy(&data,Msg+12, sizeof(u_int32_t));
-            if (data != 0) dataptr = (void *)data;
+            if (data != 0) dataptr = (void *)(unsigned long)data;
             else dataptr = Msg + len; /* Assume data after message */
 	}
         memcpy(sndbuf+len, dataptr, datalen);

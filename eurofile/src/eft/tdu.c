@@ -46,6 +46,7 @@
 
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
 #include "tdu_user.h"
 #include "tdu.h"
 #include "sbv.h"

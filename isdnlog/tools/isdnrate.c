@@ -19,6 +19,18 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.37  2000/07/17 16:34:23  akool
+ * isdnlog-4.32
+ *  - added new Prefixes 0160 (D1) and 0162 (D2) to "country-de.dat"
+ *  - corrected all german mobil phone numbers (many thank's to
+ *    Tobias Becker <i4l-projects@talypso.de> for the tool "fix_rates.pl")
+ *  - isdnlog/tools/rate.c ... New R:-tag
+ *  - isdnlog/tools/isdnrate.c ... print warnings from getRate if verbose
+ *  - isdnlog/tools/rate-files.man ... New R:-tag
+ *  - isdnlog/tools/NEWS ... New R:-tag
+ *  - isdnlog/README ... New R:-tag
+ *  - isdnlog/samples/rtest.dat ... example rate-file for testing R:
+ *
  * Revision 1.36  2000/03/09 18:50:03  akool
  * isdnlog-4.16
  *  - isdnlog/samples/isdn.conf.no ... changed VBN
@@ -1561,7 +1573,7 @@ static void setup_daemon()
   struct sockaddr_in client;
   fd_set  active_fd_set, read_fd_set;
   char   *sock_name = socket_file;
-  size_t  size;
+  socklen_t  size;
   struct stat stat_buf;
   int     i;
   pid_t   pid;
