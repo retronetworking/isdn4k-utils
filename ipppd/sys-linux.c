@@ -50,13 +50,13 @@ char sys_rcsid[] = "$Id$";
 #include <unistd.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <net/if.h>
-#include <net/if_arp.h>
-#include <net/route.h>
+#include </usr/include/net/if.h>
+#include </usr/include/net/if_arp.h>
+#include </usr/include/net/route.h>
 #if defined __GLIBC__ && __GLIBC__ >= 2
-# include <net/ppp_defs.h>
-# include <net/if_ppp.h>
-# include <net/ethernet.h>
+# include </usr/include/net/ppp_defs.h>
+# include </usr/include/net/if_ppp.h>
+# include </usr/include/net/ethernet.h>
 #else
 # include <linux/ppp_defs.h>
 # include <linux/if_ppp.h>

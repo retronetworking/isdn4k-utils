@@ -47,7 +47,7 @@ char main_rcsid[] = "$Id$";
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
-#include <net/if.h>
+#include </usr/include/net/if.h>
 
 #include "fsm.h"
 #include "ipppd.h"

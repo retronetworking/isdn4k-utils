@@ -32,7 +32,7 @@ char ccp_rcsid[] = "$Id$";
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #if 0
-#include <net/ppp_defs.h>
+#include </usr/include/net/ppp_defs.h>
 #endif
 #include <linux/ppp-comp.h>
 

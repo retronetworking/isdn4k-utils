@@ -49,10 +49,10 @@ char lcp_rcsid[] = "$Id$";
 
 #ifdef __linux__		/* Needs ppp ioctls */
 #if defined __GLIBC__ && __GLIBC__ >= 2
-# include <net/if.h>
-# include <net/if_ppp.h>
+# include </usr/include/net/if.h>
+# include </usr/include/net/if_ppp.h>
 #else
-# include <net/if.h>
+# include </usr/include/net/if.h>
 # include <linux/if_ppp.h>
 #endif
 #endif

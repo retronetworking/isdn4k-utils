@@ -9,9 +9,13 @@
 #ifdef HAVE_PATHS_H
 # include <paths.h>
 #else
-# define _PATH_VARRUN 	"/etc/ppp/"
 # define _PATH_DEVNULL	"/dev/null"
 #endif
+
+#ifdef _PATH_VARRUN
+#undef _PATH_VARRUN
+#endif
+#define _PATH_VARRUN 	"@CONFIG_RUNDIR@/"
 
 #define _PATH_UPAPFILE		"/etc/ppp/pap-secrets"
 #define _PATH_CHAPFILE		"/etc/ppp/chap-secrets"
