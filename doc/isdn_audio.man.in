@@ -103,11 +103,15 @@ Show current line.
 Start audio recording. See below for more information.
 .TP
 .BI AT+VSD= x , y
-No function, provided for compatibility only. Possible parameters:
+Set silence-detection parameters. 
 .RS
-.IR x " = 0 ... 31"
+Possible parameters:
 .br
-.IR y " = 0 ... 255"
+.IR x " = 0 ... 31  sensitivity threshold level."
+.br
+(default 0 , deactivated)
+.br
+.IR y " = 0 ... 255 range of interval in units of 0.1 second. (default 70)"
 .RE
 .TP
 .B AT+VSD=?
