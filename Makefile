@@ -107,6 +107,9 @@ endif
 ifeq ($(CONFIG_CAPIFAX),y)
 	SUBDIRS := $(SUBDIRS) capifax
 endif
+ifeq ($(CONFIG_PPPDCAPIPLUGIN),y)
+	SUBDIRS := $(SUBDIRS) pppdcapiplugin
+endif
 ifeq ($(CONFIG_GENMAN),y)
 	SUBDIRS := $(SUBDIRS) doc
 endif
