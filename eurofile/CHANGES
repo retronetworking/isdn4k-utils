@@ -18,6 +18,10 @@
 #
 
 $Log$
+===============
+Revision 1.2  1999/06/29 18:37:10  he
+Were initially missing or wrong
+
 - [new] doc/design.txt added (needs completion)
 - [chg] src/*: changed directory names and structure which also affects
 	#include directives and Makefiles.
