@@ -2,7 +2,9 @@
 #
 # Toplevel Makefile for isdn4k-utils
 #
-I4LVERSION=2.1
+export I4LVERSION=2.1
+export I4LCONFDIR=/etc/isdn
+
 SUBDIRS=`find . -type d -maxdepth 1`
 
 all:
