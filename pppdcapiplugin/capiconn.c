@@ -10,6 +10,9 @@
  *  2 of the License, or (at your option) any later version.
  *
  * $Log$
+ * Revision 1.5  2001/01/30 17:21:46  calle
+ * - bugfix and extention in handle_charge_info
+ *
  * Revision 1.4  2001/01/25 14:45:41  calle
  * - listen always (for info messages)
  * - show versions on startup
@@ -95,7 +98,8 @@ struct capi_contr {
 
 		unsigned incoming:1,
 			 disconnecting:1,
-			 localdisconnect:1;
+			 localdisconnect:1,
+	                 callednumbercomplete = 1;
 
 		_cword disconnectreason;
 		_cword disconnectreason_b3;
@@ -960,6 +964,12 @@ static void check_incoming_complete(capi_connection *plcip)
 			return;
 		}
 	}
+
+	if (plcip->callednumbercomplete)
+	   return;
+
+	plcip->callednumbercomplete = 1;
+
 	if (*cb->incoming)
 		(*cb->incoming)(plcip,
 				plcip->contr->contrnr,
