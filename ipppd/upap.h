@@ -87,6 +87,7 @@ typedef struct upap_state {
 extern upap_state upap[];
 extern struct protent pap_protent;
 
-void upap_authwithpeer __P((int, char *, char *));
-void upap_authpeer __P((int));
+void upap_authwithpeer(int, char *, char *);
+void upap_authpeer(int);
+void auth_reload_upap_pw(void);
 

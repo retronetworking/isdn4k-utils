@@ -401,7 +401,7 @@ void cbcp_send(cbcp_state *us, u_char code, u_char *buf, int len)
     if (len)
         BCOPY(buf, outp, len);
 
-    output(us->us_unit, outpacket_buf, outlen + PPP_HDRLEN);
+    output_ppp(us->us_unit, outpacket_buf, outlen + PPP_HDRLEN);
 }
 
 void cbcp_recvack(cbcp_state *us, char *pckt, int len)

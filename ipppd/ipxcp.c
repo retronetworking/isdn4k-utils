@@ -1217,7 +1217,7 @@ static void ipxcp_script(fsm *f,char *script)
 	argv[11] = ipparam;
 	argv[12] = strpid;
 	argv[13] = NULL;
-	run_program(script, argv, 0 , linkunit);
+	run_program(script, argv, debug , linkunit);
 }
 
 /*

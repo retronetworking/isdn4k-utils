@@ -1199,7 +1199,7 @@ static void ipcp_script(fsm *f,char *script)
     argv[5] = strremote;
     argv[6] = ipparam;
     argv[7] = NULL;
-    run_program(script, argv, 0,f->unit);
+    run_program(script, argv, debug,f->unit);
 }
 
 /*
