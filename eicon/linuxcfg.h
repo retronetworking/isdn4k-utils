@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  2000/03/25 12:56:40  armin
+ * First checkin of new version 2.0
+ * - support for 4BRI, includes orig Eicon
+ *   divautil files and firmware updated (only etsi).
+ *
  *
  */
 
@@ -30,6 +35,7 @@
 
 #define main(a,b)	Divaload_main(a,b)
 #define DIVAS_DEVICE	"/dev/isdnctrl"
+#define DIVAS_DEVICE_DFS	"/dev/isdn/isdnctrl"
 #define	ioctl(a,b,c)	Divas_ioctl(a,b,c)
 extern int Divas_ioctl(int, int, void *);
 
@@ -39,6 +45,7 @@ extern int Divas_ioctl(int, int, void *);
 /* config for standalone */
 
 #define DIVAS_DEVICE	"/dev/Divas"
+#define DIVAS_DEVICE_DFS	"/dev/Divas"
 
 #endif
 
