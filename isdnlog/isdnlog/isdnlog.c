@@ -19,6 +19,16 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.66  2000/09/05 08:05:02  paul
+ * Now isdnlog doesn't use any more ISDN_XX defines to determine the way it works.
+ * It now uses the value of "COUNTRYCODE = 999" to determine the country, and sets
+ * a variable mycountrynum to that value. That is then used in the code to set the
+ * way isdnlog works.
+ * It works for me, please check it! No configure.in / doc changes yet until
+ * it has been checked to work.
+ * So finally a version of isdnlog that can be compiled and distributed
+ * internationally.
+ *
  * Revision 1.65  2000/07/19 19:41:32  akool
  * isdnlog-4.34
  *   - since around Linux-2.2.16 signals are *not* reset to their default
@@ -993,11 +1003,17 @@ int set_options(int argc, char* argv[])
     if (syslogmessage == -1)
       syslogmessage = defaultmsg;
 
+    fflush(stdout); /* always advisable before a fork */
+    fflush(stderr);
     switch (fork()) {
       case -1 : print_msg(PRT_ERR,"%s","Can not fork()!\n");
                 Exit(18);
                 break;
-      case 0  : break;
+      case 0  : /* we're a daemon, so "close" stdout, stderr */
+                /* stdin is "closed" elsewhere */
+                freopen("/dev/null", "a+", stdout);
+                freopen("/dev/null", "a+", stderr);
+                break;
 
       default : _exit(0);
     }
@@ -1005,7 +1021,7 @@ int set_options(int argc, char* argv[])
     /* Wenn message nicht explixit gesetzt wurde, dann gibt es beim daemon auch
        kein Output auf der Console/ttyx                                   */
 
-    if (!outfile && !newmessage && (ptty == NULL))
+    if (!outfile && !newmessage && !ptty)
       message = 0;
   } /* if */
 
@@ -1660,3 +1676,4 @@ int main(int argc, char *argv[], char *envp[])
   Exit(res);
   return(res);
 } /* main */
+/* vim:set ts=2: */
