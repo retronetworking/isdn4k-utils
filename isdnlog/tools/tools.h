@@ -20,6 +20,13 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.60  2004/01/28 14:27:47  tobiasb
+ * Second step in restricting fds at isdnlog restart and script starting.
+ * The fd limit is now taken from getrlimit() instead of NR_OPEN.
+ * Close_Fds(first) which tries to close all possible fds is generally
+ * built in but the execution must be requested with "closefds=yes" in
+ * the parameterfile otherwise the isdnlog behaviour remains unchanged.
+ *
  * Revision 1.59  2003/08/26 19:46:13  tobiasb
  * isdnlog-4.66:
  *  - Added support for AVM B1 (with layer 2 d-channel trace) in point-to-
@@ -911,6 +918,7 @@
 #define CONF_ENT_TIME     "TIME"
 
 #define CONF_ENT_REPFMT   "REPFMT"
+#define CONF_ENT_REPOPTS  "REPOPTIONS"
 
 #define CONF_ENT_CALLFILE "CALLFILE"
 #define CONF_ENT_CALLFMT  "CALLFMT"
@@ -1203,6 +1211,7 @@ _EXTERN char *vboxcommand1  = NULL;
 _EXTERN char *vboxcommand2  = NULL;
 _EXTERN char *mgettypath    = NULL;
 _EXTERN char *mgettycommand = NULL;
+_EXTERN char *isdnrep_defopts = NULL;
 
 #else
 #define _EXTERN extern
@@ -1228,6 +1237,7 @@ _EXTERN char *vboxcommand1;
 _EXTERN char *vboxcommand2;
 _EXTERN char *mgettypath;
 _EXTERN char *mgettycommand;
+_EXTERN char *isdnrep_defopts;
 
 #endif
 

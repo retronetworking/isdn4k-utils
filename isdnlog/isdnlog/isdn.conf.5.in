@@ -154,6 +154,18 @@ Example: "BYTEMAX=67108864" will limit your transfer to 64 MB per
 month. Optional.
 
 .TP
+.B REPOPTIONS
+General commandline options for isdnrep. The options noted here have
+the same effect as appended to each isdnrep commandline. Options are
+seperated by
+.B ;
+instead of the usual space.
+.br
+Example: "REPOPTIONS=-LP;-E"
+will turn off the provider summary and
+show failed calls. Optional.
+
+.TP
 .B VBOXPATH
 Isdnrep can include information from the voice box system vbox in its
 report. To do this, you must specify the vbox spooldir (e.g.

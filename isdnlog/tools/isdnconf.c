@@ -20,6 +20,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.35  2004/02/06 16:58:01  tobiasb
+ * Fixed outdated source code comment.
+ *
  * Revision 1.34  2002/07/04 10:29:18  paul
  * "DEM" -> "EUR"
  *
@@ -1124,6 +1127,7 @@ static int _readconfig(char *_myname)
   vboxcommand2  = NULL;
   mgettypath    = NULL;
   mgettycommand = NULL;
+	isdnrep_defopts = NULL;
 
 
 	ClearEnv(&Environment);
@@ -1327,6 +1331,9 @@ static int Set_Globals(section *SPtr)
 
 		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_MGTYCMD)) != NULL)
 			mgettycommand = CEPtr->value;
+
+		if ((CEPtr = Get_Entry(Ptr->entries,CONF_ENT_REPOPTS)) != NULL)
+			isdnrep_defopts = CEPtr->value;
 
 		CEPtr = Ptr->entries;
 		cnt = 0;
