@@ -21,6 +21,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.24  1998/06/27 00:36:19  fritz
+ * Misc. Fixes.
+ * Added fallback to libdb for isdnctrl.
+ * Added -V version check in isdnctrl.
+ *
  * Revision 1.23  1998/06/12 12:09:53  detabc
  * cleanup abc
  *
@@ -191,6 +196,9 @@
 #define _ISDNCTRL_C_
 #include "isdnctrl.h"
 
+#ifndef INF_DV
+#define INF_DV 0
+#endif
 
 #ifdef I4L_CTRL_CONF
 #	include "../lib/libisdn.h"
