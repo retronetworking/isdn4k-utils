@@ -6,6 +6,7 @@
 HAVE_LIBDES   := @HAVE_LIBDES@
 HAVE_LIBCRYPT := @HAVE_LIBCRYPT@
 HAVE_SHADOW_H := @HAVE_SHADOW_H@
+HAVE_LZSCOMP_H:= @HAVE_LZSCOMP_H@
 SBINDIR       := @CONFIG_SBINDIR@
 MANDIR        := @CONFIG_MANDIR@
 CC            := @CC@
@@ -115,6 +116,10 @@ endif
 ifeq ($(HAVE_SHADOW_H),1)
 PPPDOBJS += isexpired.o
 PPPDSRCS += isexpired.c
+endif
+
+ifeq ($(HAVE_LZSCOMP_H),1)
+	CFLAGS += -DHAVE_LZSCOMP_H
 endif
 
 %.8: %.man

@@ -42,7 +42,11 @@ char ccp_rcsid[] = "$Id$";
 
 #include "compressions.h"
 
+#ifdef HAVE_LZSCOMP_H
 #include <linux/isdn_lzscomp.h>
+#else
+#include "../ipppcomp/isdn_lzscomp.h"
+#endif
 
 /*
  * Protocol entry points from main code.

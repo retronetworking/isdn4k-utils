@@ -13,6 +13,7 @@ MODULES			= pcbitctl.o convhexbin.o
 MANPAGE			= pcbitctl.8
 SBINDIR			= @CONFIG_SBINDIR@
 MANDIR			= @CONFIG_MANDIR@
+MAN8DIR			= $(MANDIR)/man8
 INSTALL			= @INSTALL@
 INSTALL_PROGRAM		= $(INSTALL) -o 0 -g 0 -m 0750
 INSTALL_MAN		= $(INSTALL) -o 0 -g 0 -m 0644

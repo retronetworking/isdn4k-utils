@@ -53,7 +53,11 @@ char options_rcsid[] = "$Id$";
 
 #include <linux/ppp-comp.h>
 
+#ifdef HAVE_LZSCOMP_H
 #include <linux/isdn_lzscomp.h>
+#else
+#include "../ipppcomp/isdn_lzscomp.h"
+#endif
 
 #define FALSE	0
 #define TRUE	1
