@@ -20,6 +20,16 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.13  2000/09/05 08:05:03  paul
+ * Now isdnlog doesn't use any more ISDN_XX defines to determine the way it works.
+ * It now uses the value of "COUNTRYCODE = 999" to determine the country, and sets
+ * a variable mycountrynum to that value. That is then used in the code to set the
+ * way isdnlog works.
+ * It works for me, please check it! No configure.in / doc changes yet until
+ * it has been checked to work.
+ * So finally a version of isdnlog that can be compiled and distributed
+ * internationally.
+ *
  * Revision 1.12  1999/10/26 18:17:17  akool
  * isdnlog-3.58
  *   - big cleanup ( > 1.3 Mb removed!)
@@ -195,6 +205,7 @@ extern char *basename __P((__const char *__name));
 #define	CCODE_AT	 43
 #define	CCODE_DE	 49
 #define	CCODE_LU	352
+#define	CCODE_OTHER    9999
 
 /****************************************************************************/
 
