@@ -24,6 +24,10 @@
  *
  *
  * $Log$
+ * Revision 1.76  1999/08/29 10:28:44  akool
+ * isdnlog-3.48
+ *   cosmetics
+ *
  * Revision 1.75  1999/08/21 13:00:10  akool
  * small fixes
  *
@@ -1900,7 +1904,6 @@ static int print_line(int status, one_call *cur_call, int computed, char *overla
 static void bprint(one_call *call)
 {
   register char  *p = call->num[CALLED];
-  register int	  mobil = 0;
   auto	   char	  target[BUFSIZ], s[BUFSIZ];
   auto	   TELNUM number;
 

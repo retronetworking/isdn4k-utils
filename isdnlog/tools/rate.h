@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.11  1999/08/25 17:07:18  akool
+ * isdnlog-3.46
+ *
  * Revision 1.10  1999/06/28 19:16:51  akool
  * isdnlog Version 3.38
  *   - new utility "isdnrate" started
@@ -142,6 +145,7 @@ typedef struct {
   char      *Day;       /* Wochen- oder Feiertag */
   char      *Hour;      /* Bezeichnung des Tarifs */
   double     Basic;     /* Grundpreis einer Verbindung */
+  double     Sales;     /* Mindestumsatz einer Verbindung */
   double     Price;     /* Preis eines Tarifimpulses */
   double     Duration;  /* Länge eines Tarifimpulses */
   int        Units;     /* verbrauchte Tarifimpulse */

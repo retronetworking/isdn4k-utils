@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.15  1999/07/15 16:41:49  akool
+ * small enhancement's and fixes
+ *
  * Revision 1.14  1999/06/22 19:41:19  akool
  * zone-1.1 fixes
  *
@@ -192,7 +195,7 @@ typedef struct {
 } HOLIDATE;
 
 static char *defaultWeekday[] = { "", /* not used */ 
-				  "", /* empty "Everyday" */
+				  "Everyday",
 				  "Workday",
 				  "Weekend",
 				  "Monday",
@@ -360,6 +363,9 @@ int initHoliday(char *path, char **msg)
       } else if (*s=='H') {
 	d=HOLIDAY;
 	s++;
+      } else if (*s=='*') {
+	d=EVERYDAY;
+	s++;
       } else {
 	warning(path, "invalid weekday %c", *s);
 	continue;
@@ -425,8 +431,7 @@ static int isHoliday(struct tm *tm, char **name)
   for (i=0; i<nHoliday; i++) {
     if ((Holiday[i].month==-1 && Holiday[i].day==day-easter) ||
 	(Holiday[i].month==tm->tm_mon+1  && Holiday[i].day==tm->tm_mday)) {
-      if(name)
-	*name=Holiday[i].name;
+      if(name) *name=Holiday[i].name;
       return 1;
     }
   }
@@ -459,25 +464,21 @@ static char *staticString (char *fmt, ...)
 
 int isDay(struct tm *tm, bitfield mask, char **name)
 {
-  julian day;
-  int    holiday;
-  char  *holiname;
-  
-  holiday=isHoliday(tm, &holiname);
+  char *holiname;
 
-  if ((mask & (1<<HOLIDAY)) && holiday) {
+  julian day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+MONDAY;
+
+  if ((mask & (1<<HOLIDAY)) && isHoliday(tm, &holiname)) {
     if (name) *name=staticString("%s (%s)", Weekday[HOLIDAY], holiname); 
     return HOLIDAY;
   }
-
-  day=(date2julian(tm->tm_year+1900,tm->tm_mon+1,tm->tm_mday)-6)%7+MONDAY;
 
   if ((mask & (1<<WEEKEND)) && (day==SATURDAY || day==SUNDAY)) {
     if (name) *name=staticString("%s (%s)", Weekday[WEEKEND], Weekday[day]);
     return WEEKEND;
   }
   
-  if ((mask & (1<<WORKDAY)) && day!=SATURDAY && day!=SUNDAY && !holiday) {
+  if ((mask & (1<<WORKDAY)) && day!=SATURDAY && day!=SUNDAY && !isHoliday(tm, NULL)) {
     if (name) *name=staticString("%s (%s)", Weekday[WORKDAY], Weekday[day]);
     return WORKDAY;
   }
@@ -488,7 +489,7 @@ int isDay(struct tm *tm, bitfield mask, char **name)
   }
   
   if (mask & (1<<EVERYDAY)) {
-    if (name) *name=staticString("%s", Weekday[day]);
+    if (name) *name=staticString("%s", Weekday[EVERYDAY]);
     return day;
   }
   
