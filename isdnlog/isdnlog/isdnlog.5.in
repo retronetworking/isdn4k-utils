@@ -1,8 +1,8 @@
 .\" $Id$
 .\" CHECKIN $Date$
-.TH isdnlog 5 "@MANDATE@" "ISDN 4 Linux @I4LVERSION@" "Linux System Administration"
+.TH isdnlog 5 "@MANDATE_ISDNLOG5@" "ISDN 4 Linux @I4LVERSION@" "Linux System Administration"
 .SH NAME
-/var/lib/isdn/calls \- isdn log file
+@LOGFILE@ \- isdn log file
 .SH DESCRIPTION
 The main purpose of isdnlog is to create a log file with information
 about all incoming and outgoing calls, namely: this file.
@@ -65,7 +65,7 @@ Total cost of connection
 
 .SH FILES
 .TP
-.B /var/lib/isdn/calls
+.B @LOGFILE@
 This file: isdnlog log file.
 
 .SH SEE ALSO
