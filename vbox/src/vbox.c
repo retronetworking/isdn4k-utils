@@ -1381,7 +1381,8 @@ static void draw_message_line(int y, int nr, int selected)
 		mvprintw(y, 1, "%s", msgline->mtime > 0 ? "+" : "");
 		mvprintw(y, 1, "%s", msgline->delete ? "-" : "");
 		
-		strcpy(strtime, "??-???-???? ??:??:??");
+                /* I hate trigraphs */
+		strcpy(strtime, "??""-??""?-""??""??"" ??"":??"":??");
 
 		if ((msgtime = localtime(&msgline->ctime)))
 		{
