@@ -52,6 +52,10 @@ typedef struct ipcp_options {
     int old_vj : 1;		/* use old (short) form of VJ option? */
     int accept_local : 1;	/* accept peer's value for ouraddr */
     int accept_remote : 1;	/* accept peer's value for hisaddr */
+	int	neg_dns1 : 1;		/* Negotiate MS DNS entries */
+	int	neg_dns2 : 1;		/* Negotiate MS DNS entries */
+	int	neg_wins1 : 1;		/* Negotiate MS WINS entries */
+	int	neg_wins2 : 1;		/* Negotiate MS WINS entries */
     u_short vj_protocol;	/* protocol value to use in VJ option */
     u_char maxslotindex, cflag;	/* values for RFC1332 VJ compression neg. */
     u_int32_t ouraddr, hisaddr;	/* Addresses in NETWORK BYTE ORDER */
