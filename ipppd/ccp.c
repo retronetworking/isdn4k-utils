@@ -45,7 +45,7 @@ char ccp_rcsid[] = "$Id$";
 #if 0
 #include <linux/isdn_lzscomp.h>
 #else
-#include <../ipppcomp/isdn_lzscomp.h>
+#include "../ipppcomp/isdn_lzscomp.h"
 #endif
 
 /*
