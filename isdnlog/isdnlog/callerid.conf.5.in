@@ -4,7 +4,7 @@
 .PD 0
 
 .SH NAME
-@I4LCONFDIR@/@CALLERIDFILE@ \- config file for isdn tools
+@I4LCONFDIR@/@CALLERIDFILE@ \- config file for isdnlog numbers and scripts
 
 .SH FORMAT
 This file has the format described in isdnformat(5). It must be owned by
