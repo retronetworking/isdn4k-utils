@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.7  1997/10/03 21:48:09  fritz
+ * Added cisco-hk encapsulation.
+ *
  * Revision 1.6  1997/08/21 14:47:02  fritz
  * Added Version-Checking of NET_DV.
  *
@@ -118,12 +121,20 @@ cmd_struct cmds[] =
 };
 
 char *l2protostr[] = {
-        "x75i", "x75ui", "x75bui", "hdlc", "\0"
+	"x75i", "x75ui", "x75bui", "hdlc", 
+#ifdef ISDN_PROTO_L2_X25DTE
+	"x25dte", "x25dce",
+#endif
+	"\0"
 };
 
 int l2protoval[] = {
         ISDN_PROTO_L2_X75I, ISDN_PROTO_L2_X75UI,
-        ISDN_PROTO_L2_X75BUI, ISDN_PROTO_L2_HDLC, -1
+        ISDN_PROTO_L2_X75BUI, ISDN_PROTO_L2_HDLC,
+#ifdef ISDN_PROTO_L2_X25DTE
+	ISDN_PROTO_L2_X25DTE, ISDN_PROTO_L2_X25DCE,
+#endif
+	-1
 };
 
 char *l3protostr[] = {
@@ -144,6 +155,9 @@ char *pencapstr[] = {
 #if HAVE_CISCOKEEPALIVE
 	"cisco-hk",
 #endif
+#ifdef ISDN_NET_ENCAP_X25IFACE
+	"x25iface",
+#endif
 	"\0"
 };
 
@@ -156,6 +170,9 @@ int pencapval[] = {
 	ISDN_NET_ENCAP_UIHDLC,
 #if HAVE_CISCOKEEPALIVE
 	ISDN_NET_ENCAP_CISCOHDLCK,
+#endif
+#ifdef ISDN_NET_ENCAP_X25IFACE  
+	ISDN_NET_ENCAP_X25IFACE,
 #endif
 	-1
 };
