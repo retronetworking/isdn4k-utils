@@ -28,7 +28,7 @@ EXTRADIRS = isdnlog/tools/zone isdnlog/tools/dest isdnlog/tools/cdb
 
 SUBDIRS :=
 ifeq ($(CONFIG_ISDNLOG),y)
-	SUBDIRS := $(SUBDIRS) lib $(EXTRADIRS)
+	SUBDIRS := $(SUBDIRS) lib $(EXTRADIRS) isdnlog
 else
 	ifeq ($(CONFIG_CTRL_CONF),y)
 		SUBDIRS := $(SUBDIRS) lib
@@ -78,9 +78,6 @@ ifeq ($(CONFIG_IMON),y)
 endif
 ifeq ($(CONFIG_IMONTTY),y)
 	SUBDIRS := $(SUBDIRS) imontty
-endif
-ifeq ($(CONFIG_ISDNLOG),y)
-	SUBDIRS := $(SUBDIRS) isdnlog
 endif
 ifeq ($(CONFIG_IPPPSTATS),y)
 	SUBDIRS := $(SUBDIRS) ipppstats
