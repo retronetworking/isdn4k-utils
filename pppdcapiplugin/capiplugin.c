@@ -1452,7 +1452,7 @@ static capi_connection *setupconnection(char *num, int awaitingreject)
 	} else if (proto == PROTO_MODEM) {
 		cp = capiconn_connect(ctx,
 				controller, /* contr */
-				1, /* cipvalue */
+				4, /* cipvalue */
 				opt_channels ? 0 : number, 
 				opt_channels ? 0 : opt_msn,
 				8, 1, 0,
