@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  *
  * $Log$
+ * Revision 1.7  1999/09/06 08:03:24  fritz
+ * Changed my mail-address.
+ *
  * Revision 1.6  1999/08/18 20:20:45  armin
  * Added XLOG functions for all cards.
  *
@@ -45,6 +48,8 @@
  *
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/ioctl.h>
@@ -55,7 +60,18 @@
 #include <string.h>
 #include <malloc.h>
 #include <signal.h>
-#include <ncurses.h>
+#ifdef HAVE_NCURSES_H
+#	include <ncurses.h>
+#endif
+#ifdef HAVE_CURSES_H
+#	include <curses.h>
+#endif
+#ifdef HAVE_CURSES_NCURSES_H
+#	include <curses/ncurses.h>
+#endif
+#ifdef HAVE_NCURSES_CURSES_H
+#	include <ncurses/curses.h>
+#endif
 
 
 #include <linux/types.h>
@@ -119,6 +135,7 @@ char *spid_state[] =
 };
 
 
+#ifdef HAVE_XLOG
 /*********** XLOG stuff **********/
 
 #define byte __u8
@@ -1144,7 +1161,7 @@ void spid_event(FILE * stream, struct msg_s * message, word code)
 }
 
 /*********** XLOG stuff end **********/
-
+#endif
 
 void usage() {
   fprintf(stderr,"usage: %s add <DriverID> <membase> <irq>              (add card)\n",cmd);
@@ -1153,7 +1170,9 @@ void usage() {
   fprintf(stderr,"   or: %s [-d <DriverID>] [-v] load <protocol> [options]\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] debug [<debug value>]\n",cmd);
   fprintf(stderr,"   or: %s [-d <DriverID>] manage [read|exec <path>]   (management-tool)\n",cmd);
+#ifdef HAVE_XLOG
   fprintf(stderr,"   or: %s [-d <DriverID>] xlog [cont]                 (request XLOG)\n",cmd);
+#endif
   fprintf(stderr,"load firmware:\n");
   fprintf(stderr," basics  : -d <DriverID> ID defined when eicon module was loaded/card added\n");
   fprintf(stderr,"         : -v            verbose\n");
@@ -2460,6 +2479,7 @@ int main(int argc, char **argv) {
 		return 0;
 	}
 
+#ifdef HAVE_XLOG
         if (!strcmp(argv[arg_ofs], "xlog")) {
 		int cont = 0;
 		int ii;
@@ -2579,6 +2599,7 @@ int main(int argc, char **argv) {
                 close(fd); 
 		return 0;
 	}
+#endif
 
         if (!strcmp(argv[arg_ofs], "manage")) {
 		mb = malloc(sizeof(eicon_manifbuf));
