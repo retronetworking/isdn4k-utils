@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.9  2002/05/23 12:52:36  calle
+ * - Uaah. Bugfix for c2 patchvalues.
+ *
  * Revision 1.8  2001/04/18 10:21:42  calle
  * support for "AVM ISDN Controller C2" added.
  *
@@ -585,6 +588,7 @@ struct capicard *load_config(char *fn)
 		p->protoname = strdup(t);
 		if (!p->protoname) goto nomem;
 		p->proto = dchan_protocol(t);
+		p->patchinfo.protocol = p->proto;
 		s = skip_whitespace(s);
 
 		/* ioaddr */
