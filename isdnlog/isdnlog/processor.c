@@ -19,6 +19,28 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.97  2000/01/23 22:31:13  akool
+ * isdnlog-4.04
+ *  - Support for Luxemburg added:
+ *   - isdnlog/country-de.dat ... no +352 1 luxemburg city
+ *   - isdnlog/rate-lu.dat ... initial LU version NEW
+ *   - isdnlog/holiday-lu.dat ... NEW - FIXME
+ *   - isdnlog/.Config.in  ... LU support
+ *   - isdnlog/configure.in ... LU support
+ *   - isdnlog/samples/isdn.conf.lu ... LU support NEW
+ *
+ *  - German zone-table enhanced
+ *   - isdnlog/tools/zone/de/01033/mk ...fixed, with verify now
+ *   - isdnlog/tools/zone/redzone ... fixed
+ *   - isdnlog/tools/zone/de/01033/mzoneall ... fixed, faster
+ *   - isdnlog/tools/zone/mkzonedb.c .... data Version 1.21
+ *
+ *  - Patch from Philipp Matthias Hahn <pmhahn@titan.lahn.de>
+ *   - PostgreSQL SEGV solved
+ *
+ *  - Patch from Armin Schindler <mac@melware.de>
+ *   - Eicon-Driver Support for isdnlog
+ *
  * Revision 1.96  2000/01/20 07:30:09  kai
  * rewrote the ASN.1 parsing stuff. No known problems so far, apart from the
  * following:
@@ -875,7 +897,7 @@
 #include "asn1_comp.h"
 #include "zone.h"
 #include "telnum.h"
-#if HAVE_ABCEXT
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
 #include <linux/isdn_dwabc.h>
 #endif
 
@@ -1238,7 +1260,7 @@ static int parseRemoteOperationProtocol(char **asnp, struct Aoc *aoc)
   while (*asnp < asne) {
     *p++ = strtol(*asnp, NIL, 16);
     *asnp += 3;
-  } 
+  }
   ParseASN1(msg, p, 0);
   if (ParseComponent(aoc, msg, p) < 0)
     return 0;
@@ -4822,7 +4844,7 @@ void processflow()
 } /* processflow */
 
 
-#if HAVE_ABCEXT
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
 static void processlcr(char *p)
 {
   auto char                        res[BUFSIZ], s[BUFSIZ];
@@ -4851,6 +4873,21 @@ static void processlcr(char *p)
 
   sprintf(s, "ABC_LCR: Request for number %s\n", formatNumber("%l via %p", &destnum));
   info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
+
+  if (!*destnum.msn) { /* BUG: Leo: Bei Sonderrufnummern steht die ganze Nummer in destnum.area, die restlichen Felder sind "" */
+    memset(&i, 0, sizeof(i));
+
+    i.lcr_ioctl_sizeof = sizeof(i);
+    i.lcr_ioctl_callid = atol(cid);
+    i.lcr_ioctl_flags = 0;
+
+    cc = ioctl(sockets[ISDNCTRL].descriptor, IIOCNETLCR, &i);
+
+    sprintf(s, "ABC_LCR: \"%s\" is a Sonderrufnummer -- no action -- RESULT=%d\n", destnum.area, cc);
+    info(chan, PRT_SHOWNUMBERS, STATE_RING, s);
+
+    return;
+  } /* if */
 
   clearRate(&Rate);
   time(&Rate.start);
@@ -4893,7 +4930,7 @@ static void processlcr(char *p)
       i.lcr_ioctl_flags = DWABC_LCR_FLG_NEWNUMBER;
       strcpy(i.lcr_ioctl_nr, res);
 
-      cc = ioctl(sockets[ISDNCTRL].descriptor, IIOCNETLCR, &i));
+      cc = ioctl(sockets[ISDNCTRL].descriptor, IIOCNETLCR, &i);
 
       sprintf(s, "ABC_LCR: New number \"%s\" (via %s:%s) -- RESULT=%d\n",
         res, prov, getProvider(prefix), cc);
@@ -4979,7 +5016,7 @@ retry:
           processctrl(atoi(p3), p3 + 3);
       }
       else {
-#if HAVE_ABCEXT
+#ifdef CONFIG_ISDN_WITH_ABC_LCR_SUPPORT
         if (!memcmp(p1 + 9, "DW_ABC_LCR", 10))
           processlcr(p1);
         else
