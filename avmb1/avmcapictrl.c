@@ -6,6 +6,9 @@
  * Copyright 1996 by Carsten Paeth (calle@calle.in-berlin.de)
  * 
  * $Log$
+ * Revision 1.8  1998/02/24 17:56:23  calle
+ * changes for T1.
+ *
  * Revision 1.7  1998/02/07 20:32:00  calle
  * update man page, remove old cardtype M1, add is done via avm_cs.o
  *
@@ -62,6 +65,7 @@ void usage(void)
 	fprintf(stderr, "usage: %s add <portbase> <irq> [B1|T1 [<cardnr>]] (Add a new card)\n", cmd);
 	fprintf(stderr, "   or: %s load <bootcode> [contrnr [protocol [P2P | DN1:SPID1 [DN2:SPID2]]]] (load firmware)\n", cmd);
 	fprintf(stderr, "   or: %s reset [contrnr] (reset controller)\n", cmd);
+	fprintf(stderr, "   or: %s remove [contrnr] (reset controller)\n", cmd);
 	exit(1);
 }
 
@@ -82,6 +86,7 @@ void usage(void)
 #define DP_1TR6MOBIL	13
 #define DP_GSM		14
 #define DP_1TR6		15
+#define DP_T1		16
 
 static struct pmap {
   char *name;
@@ -98,6 +103,7 @@ static struct pmap {
   { "AUSTEL", DP_AUSTEL },
   { "5ESS", DP_5ESS },
   { "NI1", DP_NI1 },
+  { "T1", DP_T1 },
 #if 0
   { "DSS1MOBIL", DP_DSS1MOBIL },
   { "1TR6MOBIL", DP_1TR6MOBIL },
@@ -162,9 +168,14 @@ static void addpatchvalue(char *name, char *value, int len)
 int set_configuration(avmb1_t4file *t4config, int protocol, int p2p,
 		      char *dn1, char *spid1, char *dn2, char *spid2)
 {
-   addpatchvalue("AutoFrame", "\001", 1);
-   addpatchvalue("WATCHDOG", "1", 1);
+   if (protocol != DP_T1) {
+      addpatchvalue("WATCHDOG", "1", 1);
+      addpatchvalue("AutoFrame", "\001", 1);
+   } else {
+      addpatchvalue("WATCHDOG", "0", 1);
+   }
    switch (protocol) {
+      case DP_T1: 
       case DP_NONE: 
 	 break;
       case DP_DSS1: 
@@ -474,6 +485,23 @@ int main(int argc, char **argv)
 
 		rdef.contr = contr;
 		ioctl_s.cmd = AVMB1_RESETCARD;
+		ioctl_s.data = &rdef;
+		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
+			perror("\nioctl RESET");
+			exit(2);
+		}
+		close(fd);
+		return 0;
+	}
+	if (   !strcasecmp(argv[arg_ofs], "remove")
+            || !strcasecmp(argv[arg_ofs], "del")) {
+		int contr = 1;
+
+		if (ac > 2)
+			contr = atoi(argv[arg_ofs + 1]);
+
+		rdef.contr = contr;
+		ioctl_s.cmd = AVMB1_REMOVECARD;
 		ioctl_s.data = &rdef;
 		if ((ioctl(fd, CAPI_MANUFACTURER_CMD, &ioctl_s)) < 0) {
 			perror("\nioctl RESET");
