@@ -78,6 +78,7 @@ RANLIB		= @VBOX_RANLIB@
 
 prefix		= @prefix@
 exec_prefix	= @exec_prefix@
+mandir		= @CONFIG_MANDIR@
 bindir		= @CONFIG_BINDIR@
 sbindir		= @CONFIG_SBINDIR@
 sysconfdir	= @CONFIG_I4LCONFDIR@
@@ -238,7 +239,7 @@ manuals-d:	  ignore
 		  @cd doc && $(MAKE) distclean
 
 manuals-i:	  ignore
-		  @cd doc && $(MAKE) install
+		  @cd doc && $(MAKE) mandir=$(mandir) install
 
 manuals-v:	  ignore
 		  @set -e; for i in `echo $(MANUALS_V)`; do \
