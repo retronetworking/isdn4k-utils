@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1997/05/04 20:20:01  luethje
+ * README completed
+ * isdnrep finished
+ * interval-bug fixed
+ *
  * Revision 1.7  1997/04/20 22:52:32  luethje
  * isdnrep has new features:
  *   -variable format string
@@ -958,11 +963,11 @@ static char *Get_FmtStr(char *Ptr, char *name)
 	static char *RetCode = NULL;
 	char *ptr2;
 
-	if (*Ptr++ != '\"')
+	if (*Ptr != '\"')
 		return Ptr;
 
 	free(RetCode);
-	ptr2 = RetCode = strdup(Ptr);
+	ptr2 = RetCode = strdup(++Ptr);
 
 	while(*Ptr != '\"')
 	{
