@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.3  1998/08/30 09:57:17  calle
+ * I hope it is know readable for everybody.
+ *
  * Revision 1.1  1998/08/25 16:33:19  calle
  * Added CAPI2.0 library. First Version.
  *
@@ -75,7 +78,7 @@ unsigned CONNECT_B3_REQ (_cmsg *cmsg, _cword ApplId, _cword Messagenumber,
 
 unsigned DATA_B3_REQ (_cmsg *cmsg, _cword ApplId, _cword Messagenumber,
                       _cdword adr,
-                      _cdword Data,
+                      void *Data,
                       _cword DataLength,
                       _cword DataHandle,
                       _cword Flags) {

@@ -14,6 +14,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.1  1999/04/16 15:40:48  calle
+ * Added first version of capiinfo.
+ *
  *
  */
 #include <stdio.h>
@@ -92,10 +95,11 @@ int main(int argc, char **argv)
    unsigned char buf[64];
    unsigned long *vbuf;
    unsigned char *s;
-   int ncontr, i, j;
+   int ncontr, i;
+   unsigned j;
    int isAVM;
 
-   if (!CAPI20_ISINSTALLED()) {
+   if (CAPI20_ISINSTALLED() != CapiNoError) {
       fprintf(stderr, "capi not installed - %s (%d)\n", strerror(errno), errno);
       return 2;
    }

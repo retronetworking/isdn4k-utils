@@ -15,11 +15,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.2  1998/10/23 12:50:58  fritz
+ * Added RCS keywords and GPL notice.
+ *
  */
 #ifndef _init_h_
 #define _init_h_
 
-extern unsigned short Appl_Id;
+extern unsigned Appl_Id;
 
 /*
  * RegisterCAPI: Check for CAPI, allocate memory for CAPI-buffer and
