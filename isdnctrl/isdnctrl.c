@@ -21,6 +21,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.18  1998/03/21 17:10:36  detabc
+ * change to use the abc-ext-options -TU on all encapsulations
+ * the option -A (abc-router) will only works with rawip
+ *
  * Revision 1.17  1998/03/19 15:39:02  detabc
  * change define CONFIG_ISDN_WITH_ABC to HAVE_ABCEXT.
  * HAVE_ABCEXT will be set with the configure utility.
@@ -370,7 +374,11 @@ static void listif(int isdnctrl, char *name, int errexit)
                 printf("Hangup after Dial       %s\n", cfg.cbdelay ? "on" : "off");
         else
                 printf("Reject before Callback: %s\n", cfg.cbhup ? "on" : "off");
-        printf("Callback-delay:         %d\n", cfg.cbdelay / 5);
+#ifdef HAVE_ABCEXT
+        printf("Callback-delay:         %.1f\n", cfg.cbdelay / 25.0);
+#else
+        printf("Callback-delay:         %d\n",cfg.cbdelay / 5);
+#endif
         printf("Dialmax:                %d\n", cfg.dialmax);
 #ifdef HAVE_TIMRU
         printf("Dial-Timeout:           %d\n", cfg.dialtimeout);
@@ -841,7 +849,13 @@ int exec_args(int fd, int argc, char **argv)
 			        		return -1;
 			        	}
 			        }
+#ifdef HAVE_ABCEXT
+			        printf("Callback delay for %s is %.1f sec.\n",
+						cfg.name,
+						cfg.cbdelay / 25.0);
+#else
 			        printf("Callback delay for %s is %d sec.\n", cfg.name, cfg.cbdelay / 5);
+#endif
 			        break;
 
 			case CHARGEINT:
