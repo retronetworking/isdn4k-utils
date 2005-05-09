@@ -2,6 +2,10 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.26  2005/03/04 11:00:31  calle
+ * New functions: cleanup_buffers_for_ncci() and cleanup_buffers_for_plci()
+ * triggered by DISCONNECT_B3_RESP and DISCONNECT_IND to fix buffer leak.
+ *
  * Revision 1.25  2005/02/21 17:37:06  keil
  * libcapi20 version 3.0.0
  *  - add SENDING COMPLETE in ALERT_REQ
@@ -267,7 +271,8 @@ static unsigned char *get_buffer(unsigned applid, size_t *sizep, unsigned *handl
 
    assert(validapplid(applid));
    ap = applinfo[applid];
-   buf = ap->firstfree;
+   if ((buf = ap->firstfree) == 0)
+      return 0;
    ap->firstfree = buf->next;
    buf->next = 0;
    buf->used = 1;
