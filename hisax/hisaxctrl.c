@@ -34,7 +34,7 @@ unsigned char         *buffer = NULL;
 #define MAX_SIZE 0x10000
 
 unsigned char *
-read_firmware(unsigned char *fname)
+read_firmware(char *fname)
 {
 	FILE *infile;
 	int  *p, cnt;
@@ -43,7 +43,8 @@ read_firmware(unsigned char *fname)
 		fprintf(stderr, "cannot open file %s\n", fname);
 		exit(-1);
 	}
-	p = (int *) buffer = (unsigned char *) malloc(MAX_SIZE+4);
+	buffer = malloc(MAX_SIZE+4);
+	p = (int *) buffer;
 	if (!buffer) {
 		fprintf(stderr, "cannot get %d byte memory\n", MAX_SIZE+4);
 		exit(-1);

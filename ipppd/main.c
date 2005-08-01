@@ -1044,9 +1044,10 @@ void reap_kids()
 static char line[256];			/* line to be logged accumulated here */
 static char *linep;
 
+static void pr_log __P((void *, char *, ...));
+
 void log_packet(u_char *p,int len,char *prefix,int linkunit)
 {
-	static void pr_log __P((void *, char *, ...));
 
     int i, n;
     u_short proto;
