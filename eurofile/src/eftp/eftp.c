@@ -561,7 +561,7 @@ int main(int argc, char **argv)
  */
 	struct sockaddr_x25 x25bind, x25connect;
 	struct x25_route_struct x25_route;
-	int s, on=1, selval, prompt_for_pw = 1, use_readline=1;
+	int s = -1, on=1, selval, prompt_for_pw = 1, use_readline=1;
 	unsigned char called[TDU_PLEN_ADDR+1], udata[TDU_PLEN_UDATA+1];
 	uid_t ruid, euid;
 
@@ -683,7 +683,8 @@ int main(int argc, char **argv)
 			int status, err=0;
 			
 			setreuid(euid,euid);
-			close(s);
+			if (s != -1)
+				close(s);
 			eft_wait_release_route();
 			eft_release_route(&x25_route);
 			/*
