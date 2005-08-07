@@ -2633,9 +2633,9 @@ static int setforcedriver(int dummy)
 
 #ifdef IPPP_FILTER
 
-#ifndef DLT_PPP_WITHDIRECTION
-#define DLT_PPP_WITHDIRECTION	DLT_PPP
-#warning "please update your pcap version to support in/outbound DLT_PPP_WITHDIRECTION filter"
+#ifndef DLT_PPP_PPPD
+#define DLT_PPP_PPPD	DLT_PPP
+#warning "please update your pcap version to support in/outbound DLT_PPP_PPPD filter"
 #endif
 
 /*
@@ -2646,7 +2646,7 @@ setpassfilter(argc, argv)
     int argc;
     char **argv;
 {
-    if (pcap_compile_nopcap(PPP_HDRLEN, DLT_PPP_WITHDIRECTION, &pass_filter, *argv, 1, netmask) == 0)
+    if (pcap_compile_nopcap(65535, DLT_PPP_PPPD, &pass_filter, *argv, 1, netmask) == 0)
         return 1;
     option_error("error in pass-filter expression.\n");
     return 0;
@@ -2660,7 +2660,7 @@ setactivefilter(argc, argv)
     int argc;
     char **argv;
 {
-    if (pcap_compile_nopcap(PPP_HDRLEN, DLT_PPP_WITHDIRECTION, &active_filter, *argv, 1, netmask) == 0)
+    if (pcap_compile_nopcap(65535, DLT_PPP_PPPD, &active_filter, *argv, 1, netmask) == 0)
         return 1;
     option_error("error in active-filter expression.\n");
     return 0;
