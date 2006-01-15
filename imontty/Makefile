@@ -32,7 +32,7 @@ PROGS=imontty
 all: $(PROGS)
 
 imontty: imontty.c imontty.h
-	cc $(CCFLAGS) -o imontty imontty.c
+	cc $(CFLAGS) $(CCFLAGS) -o imontty imontty.c
 
 rootperm:
 	@echo 'main(int argc,char**argv){unlink(argv[0]);return(getuid()==0);}'>g

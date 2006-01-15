@@ -21,6 +21,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.4  2000/01/20 07:30:09  kai
+ * rewrote the ASN.1 parsing stuff. No known problems so far, apart from the
+ * following:
+ *
+ * I don't use buildnumber() anymore to translate the numbers to aliases, because
+ * it apparently did never work quite right. If someone knows how to handle
+ * buildnumber(), we can go ahead and fix this.
+ *
  * Revision 1.3  1999/12/31 13:30:01  akool
  * isdnlog-4.00 (Millenium-Edition)
  *  - Oracle support added by Jan Bolt (Jan.Bolt@t-online.de)
@@ -193,7 +201,7 @@ int ParsePublicPartyNumber(struct Aoc *chanp, u_char *p, u_char *end, char *str)
 
 int ParsePrivatePartyNumber(struct Aoc *chanp, u_char *p, u_char *end, char *str)
 {
-	int privateTypeOfNumber;
+	int privateTypeOfNumber = -1;
 	char numberDigits[20];
 	INIT;
 

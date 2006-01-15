@@ -11,7 +11,7 @@ EFT_OBJ = eft.o eft_dir.o eft_names.o eft_tmpfile.o
 
 OBJECTS = $(TDU_M_OBJ) $(TDU_S_OBJ) $(TDU_OBJ) $(EFT_M_OBJ) $(EFT_S_OBJ) $(EFT_OBJ) 
 
-CFLAGS += -Iinclude
+CPPFLAGS += -Iinclude
 
 all: libeft.a
 

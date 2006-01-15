@@ -9,7 +9,7 @@ RANLIB = ranlib
 LIBC   = /lib/libc.a
 IFLAGS = 
 LFLAGS = 
-CFLAGS = -O6 -fomit-frame-pointer -fno-strength-reduce -pipe ${IFLAGS} ${LFLAGS}
+MYCFLAGS = -O6 -fomit-frame-pointer -fno-strength-reduce -pipe ${IFLAGS} ${LFLAGS}
 CFLAGS = -g
 
 SRCS   = strcasestr.c access.c divfunc.c private.c acl.c main.c sigfix.c  \
@@ -30,14 +30,14 @@ ftp.h:
 	install -c -m 444 ftp.h /usr/include/arpa
 
 .c.o:
-	${CC} ${CFLAGS} -c $<
+	${CC} ${CFLAGS} ${MYCFLAGS} -c $<
 
 strcasestr.o: strcasestr.c
-	${CC} ${CFLAGS} -c strcasestr.c
+	${CC} ${CFLAGS} ${MYCFLAGS} -c strcasestr.c
 
 authuser.o: authuser.c
-	${CC} ${CFLAGS} -c authuser.c
+	${CC} ${CFLAGS} ${MYCFLAGS} -c authuser.c
 
 snprintf.o: snprintf.c
-	${CC} ${CFLAGS} -c snprintf.c
+	${CC} ${CFLAGS} ${MYCFLAGS} -c snprintf.c
 
