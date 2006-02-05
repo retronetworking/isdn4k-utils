@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.220  2006/01/15 15:08:55  keil
+## fix some issues with newer gcc (mostly aliasing)
+##
 ## Revision 1.219  2005/02/27 22:37:41  tobiasb
 ## Set version to 4.70.
 ## A brief and incomplete list of changes between versions 4.68 and 4.70:
@@ -1717,7 +1720,7 @@ SERVICEFILE = /etc/services
 
 # next line must match basic regexp "^VERSION \+= \+" and contain only
 # the isdnlog version number after it. 
-VERSION     = 4.70
+VERSION     = 4.71
 
 # fallback to I4L-Version as set at configure time
 ifndef (I4LVERSION)
