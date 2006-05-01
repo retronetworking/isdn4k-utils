@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.132  2005/01/02 16:37:27  tobiasb
+ * Improved utilization of special number information from ratefile.
+ *
  * Revision 1.131  2004/12/16 22:40:30  tobiasb
  * Fix for rate computation of outgoing calls from other devices and for logging
  * of calls from and to the observed card (simultaneous SETUP messages).
@@ -2752,7 +2755,22 @@ static void decode(int chan, register char *p, int type, int version, int tei)
                     *pd = 0;
 
                     if (dual && ((type == INFORMATION) || ((type == SETUP) && OUTGOING))) { /* Digit's beim waehlen mit ISDN-Telefon */
-                      strcat(call[chan].digits, s);
+                      /*
+                       * The SETUP for an outgoing call using the isdn card isdnlog listens to may be received
+                       * twice in dualmode.  If DUALFIX_SRCNUM is active both SETUP are decoded in the same chan
+                       * leading to a called number abcabc instead of just abc.  This situation is catched below.
+                       * A more sophisticated approach would not decode more than one outgoing setup or would
+                       * recognize the doubled D channel frame as such ... |TB|20060409|
+                       */
+                      if (dualfix & DUALFIX_SRCNUM && strlen(call[chan].digits) > 1 && !strcmp(call[chan].digits,s)) {
+                        print_msg(PRT_DEBUG_BUGS,
+                            " DEBUG> %s: Not appending already present digits %s from duped SETUP in chan %d\n",
+                            st + 4, s, chan);
+                        /* break causes problems with COLP in later CONNECT and with CHARGEMAX at DISCONNECT */
+                      }
+                      else {
+                        strcat(call[chan].digits, s);
+                      }
                       strcpy(call[chan].onum[CALLED], s);
                       call[chan].oc3 = oc3;
                       if (Q931dmp)
