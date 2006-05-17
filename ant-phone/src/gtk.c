@@ -165,6 +165,10 @@ gint timeout_callback(gpointer data) {
     free(timediff);
   }
   
+  /* use periodic timer to handle CAPI messages */
+  if (session->capi_contr)
+  	ant_capi_messages(session);
+  
   return TRUE; /* call it again */
 }
 

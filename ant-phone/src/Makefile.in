@@ -39,7 +39,8 @@ host_triplet = @host@
 bin_PROGRAMS = ant-phone$(EXEEXT)
 DIST_COMMON = $(noinst_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in calleridlexer.c calleridparser.c \
-	calleridparser.h isdnlexer.c isdnparser.c isdnparser.h
+	calleridparser.h isdnlexer.c isdnparser.c isdnparser.h \
+	isdn_capi.c isdn_capi.h capiconn.c capiconn.h 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -57,7 +58,8 @@ am_ant_phone_OBJECTS = ant-phone.$(OBJEXT) callerid.$(OBJEXT) \
 	calleridparser.$(OBJEXT) isdnlexer.$(OBJEXT) \
 	isdnparser.$(OBJEXT) gtksettings.$(OBJEXT) \
 	controlpad.$(OBJEXT) fxgenerator.$(OBJEXT) server.$(OBJEXT) \
-	client.$(OBJEXT) recording.$(OBJEXT) isdntree.$(OBJEXT)
+	client.$(OBJEXT) recording.$(OBJEXT) isdntree.$(OBJEXT) \
+	isdn_capi.$(OBJEXT) capiconn.$(OBJEXT)
 ant_phone_OBJECTS = $(am_ant_phone_OBJECTS)
 ant_phone_LDADD = $(LDADD)
 ant_phone_DEPENDENCIES =
@@ -218,7 +220,9 @@ ant_phone_SOURCES = \
 	server.c \
 	client.c \
 	recording.c \
-	isdntree.c
+	isdntree.c \
+	isdn_capi.c \
+	capiconn.c
 
 noinst_HEADERS = \
 	callerid.h \
@@ -240,7 +244,9 @@ noinst_HEADERS = \
 	globals.h \
 	gettext.h \
 	isdnlexer.h \
-	isdntree.h
+	isdntree.h \
+	isdn_capi.h \
+	capiconn.h
 
 EXTRA_DIST = \
 	pickup.xpm \
@@ -365,6 +371,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/settings.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sound.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/util.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/isdn_capi.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/capiconn.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

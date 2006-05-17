@@ -92,16 +92,17 @@
 
 int main(int argc, char *argv[]) {
   struct option long_options[] = {
-    {"help",     no_argument,       0, 'h'},
-    {"usage",    no_argument,       0, 'h'},
-    {"version",  no_argument,       0, 'v'},
-    {"cleanup",  no_argument,       0, 'r'},
-    {"debug",    optional_argument, 0, 'd'},
-    {"soundin",  required_argument, 0, 'i'},
-    {"soundout", required_argument, 0, 'o'},
-    {"msn",      required_argument, 0, 'm'},
-    {"msns",     required_argument, 0, 'l'},
-    {"call",     required_argument, 0, 'c'},
+    {"help",      no_argument,       0, 'h'},
+    {"usage",     no_argument,       0, 'h'},
+    {"version",   no_argument,       0, 'v'},
+    {"cleanup",   no_argument,       0, 'r'},
+    {"debug",     optional_argument, 0, 'd'},
+    {"soundin",   required_argument, 0, 'i'},
+    {"soundout",  required_argument, 0, 'o'},
+    {"msn",       required_argument, 0, 'm'},
+    {"msns",      required_argument, 0, 'l'},
+    {"call",      required_argument, 0, 'c'},
+    {"interface", required_argument, 0, 'f'},
     {0, 0, 0, 0}
   };
   char *short_options = "hvrd::i:o:m:l:c:";
@@ -114,6 +115,7 @@ int main(int argc, char *argv[]) {
   char *audio_device_name_out = "";
   char *msn = "";
   char *msns = "";
+  unsigned int interface=0; // 0=HiSax (ttyIx), 1..2 = capi20 controller num
 
   int gtk_result;
 
@@ -187,6 +189,9 @@ Options:\n\
                             default: *\n\
   -c, --call=NUMBER       Call specified number\n\
 \n\
+  -f, --interface=X       0=HiSax, [1..9]=capi20 controller num\n\
+                            default: 0\n\
+\n\
 Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
       sound device is needed.\n"), argv[0]);
       exit(0);
@@ -226,6 +231,13 @@ Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
       }
       exit(0);
       break;
+    case 'f':
+      if (optarg) {
+	interface = strtol(optarg, NULL, 0);
+      } else {
+	interface = 0;
+      }
+      break;
     case '?':
       exit(1);
     }
@@ -235,7 +247,7 @@ Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
   output_codeset_set("UTF-8"); /* GTK needs UTF-8 strings */
   
   if (session_init(&session, audio_device_name_in, audio_device_name_out,
-		   msn, msns))
+		   msn, msns, interface))
   {
     fprintf(stderr, "Error at session init.\n");
     exit(1);
