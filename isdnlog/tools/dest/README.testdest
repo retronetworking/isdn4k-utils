@@ -1,8 +1,0 @@
-testdest tests dest-data files or dumps them to stdout
-
-usage:
-  testdest number|name ...
-  testdest -d | sort > destdatadumped
-
-Author: Leopold Toetsch <lt@toetsch.at>
-Licence: GPL
