@@ -36,6 +36,9 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 
+/* capi support */
+#include "isdn_capi.h"
+
 /* own header files */
 #include "globals.h"
 #include "gtk.h"

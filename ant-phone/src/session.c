@@ -47,6 +47,7 @@
 #include "session.h"
 #include "sound.h"
 #include "isdn.h"
+#include "isdn_capi.h"
 #include "mediation.h"
 #include "gtk.h"
 #include "util.h"
@@ -190,15 +191,23 @@ int session_isdn_init(session_t *session) {
   /* open and init isdn device */
   if (debug)
     fprintf(stderr, "Initializing ISDN device...\n");
-  if ((session->isdn_fd =
-       open_isdn_device(&session->isdn_device_name,
-			&session->isdn_lockfile_name)) < 0) {
-    fprintf(stderr, "Error opening isdn device.\n");
-    return -1;
-  }
-  if (init_isdn_device(session->isdn_fd, &session->isdn_backup)) {
-    fprintf(stderr, "Error initializing isdn device.\n");
-    return -1;
+
+  if (session->capi_contr) {
+      if (ant_capi_init(session))  {
+        printf ("CAPI 2.0 initialization failed!\n");
+        return -1;
+      }
+  } else {
+    if ((session->isdn_fd =
+         open_isdn_device(&session->isdn_device_name,
+                          &session->isdn_lockfile_name)) < 0) {
+      fprintf(stderr, "Error opening isdn device.\n");
+      return -1;
+    }
+    if (init_isdn_device(session->isdn_fd, &session->isdn_backup)) {
+      fprintf(stderr, "Error initializing isdn device.\n");
+      return -1;
+    }
   }
 
   session->isdn_inbuf_size = session->isdn_outbuf_size = DEFAULT_ISDNBUF_SIZE;
@@ -213,10 +222,14 @@ int session_isdn_init(session_t *session) {
     return -1;
   }
   
-  if (isdn_setMSN(session->isdn_fd, session->msn) ||
-      isdn_setMSNs(session->isdn_fd, session->msns)) {
-    fprintf(stderr, "Error setting MSN properties.\n");
-    return -1;
+  if (session->capi_contr) {
+    ant_capi_listen(session);
+  } else {
+    if (isdn_setMSN(session->isdn_fd, session->msn) ||
+        isdn_setMSNs(session->isdn_fd, session->msns)) {
+      fprintf(stderr, "Error setting MSN properties.\n");
+      return -1;
+    }
   }
 
   session->isdn_inbuf_len = 0;
@@ -310,14 +323,20 @@ int session_isdn_deinit(session_t *session) {
   if (debug)
     fprintf(stderr, "Closing ISDN device...\n");
   /* de-init / restore isdn device */
-  if (deinit_isdn_device(session->isdn_fd, &session->isdn_backup)) {
-    fprintf(stderr, "Error restoring ttyI state.\n");
+  
+  if (session->capi_contr) {
+    ant_capi_free(session);
   }
-  /* close isdn device */
-  if (close_isdn_device(session->isdn_fd, 
-			session->isdn_device_name,
-			session->isdn_lockfile_name)) {
-    fprintf(stderr, "Error closing isdn device.\n");
+  else {
+    if (deinit_isdn_device(session->isdn_fd, &session->isdn_backup)) {
+      fprintf(stderr, "Error restoring ttyI state.\n");
+    }
+    /* close isdn device */
+    if (close_isdn_device(session->isdn_fd, 
+			  session->isdn_device_name,
+			  session->isdn_lockfile_name)) {
+      fprintf(stderr, "Error closing isdn device.\n");
+    }
   }
   
   return 0;
@@ -341,7 +360,8 @@ int session_isdn_deinit(session_t *session) {
 int session_init(session_t *session,
 		 char *audio_device_name_in,
 		 char *audio_device_name_out,
-		 char *msn, char *msns) {
+		 char *msn, char *msns,
+		 unsigned int interface) {
   int i;
   
   /*
@@ -415,6 +435,8 @@ int session_init(session_t *session,
 
   session->ring_time = 0;
   session->unanswered = 0;
+
+  session->capi_contr = interface;
 
   /* setup audio and isdn */
   if (!session->option_release_devices)

@@ -35,6 +35,11 @@
 /* GTK */
 #include <gtk/gtk.h>
 
+/* Capi 2.0 */
+#include <linux/capi.h>
+#include <capi20.h>
+#include "capiconn.h"
+
 /* own header files */
 #include "recording.h"
 
@@ -211,6 +216,12 @@ typedef struct {
   char* msn;  /* originating msn, allocated memory! */
   char* msns; /* comma-separated list of msns to listen on, allocated memory!*/
 
+  /* capi 2.0 control variables */
+  unsigned char capi_contr; /* 0=HiSax /dev/ttyIx, [1..?]=capi20 controller num */
+  capiconn_context *ctx;
+  capi_contrinfo cinfo;
+  unsigned applid;
+
   int unanswered; /* unanswered calls for this session */
 
   /* some options (useful for options file handling) */
@@ -252,7 +263,8 @@ int session_audio_deinit(session_t *session);
 int session_init(session_t *session,
 		 char *audio_device_name_in,
 		 char *audio_device_name_out,
-		 char *msn, char *msns);
+		 char *msn, char *msns,
+		 unsigned int interface);
 void session_audio_free(session_t *session);
 int session_deinit(session_t *session);
 
