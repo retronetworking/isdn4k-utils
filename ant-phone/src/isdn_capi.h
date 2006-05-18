@@ -19,3 +19,5 @@ int  ant_capi_init(session_t *session);
 void ant_capi_listen(session_t *session);
 void ant_capi_free(session_t *session);
 void ant_capi_messages(session_t *session);
+int  ant_capi_pickup(session_t *session);
+int  ant_capi_hangup(session_t *session);

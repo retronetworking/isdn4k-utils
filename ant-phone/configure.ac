@@ -1,6 +1,6 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(ant-phone)
-AM_INIT_AUTOMAKE(ant-phone, "0.1.12c", ant-phone-devel@nongnu.org)
+AM_INIT_AUTOMAKE(ant-phone, "0.1.12-capiconn", ant-phone-devel@nongnu.org)
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER([config.h])
@@ -20,7 +20,7 @@ AC_PROG_YACC
 # Checks for libraries.
 AC_CHECK_LIB([m], [floor])
 AC_CHECK_LIB([sndfile], [sf_open],, AC_MSG_ERROR(You need the libsndfile headers to build this package))
-AC_CHECK_LIB([capi20], [capi20_register],,  AC_MSG_ERROR(You need the capi20 headers to build this package))
+AC_CHECK_LIB([capi20],  [capi20_register])
 
 # Checks for header files.
 AC_HEADER_STDC

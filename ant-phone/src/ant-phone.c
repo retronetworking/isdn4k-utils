@@ -115,7 +115,9 @@ int main(int argc, char *argv[]) {
   char *audio_device_name_out = "";
   char *msn = "";
   char *msns = "";
+#ifdef HAVE_LIBCAPI20
   unsigned int interface=0; // 0=HiSax (ttyIx), 1..2 = capi20 controller num
+#endif
 
   int gtk_result;
 
@@ -187,13 +189,16 @@ Options:\n\
                             default: 0\n\
   -l, --msns=MSNS         MSNs to listen on, semicolon-separated list or '*'\n\
                             default: *\n\
-  -c, --call=NUMBER       Call specified number\n\
-\n\
+  -c, --call=NUMBER       Call specified number\n"), argv[0]);
+  
+#ifdef HAVE_LIBCAPI20
+      printf ("\n\
   -f, --interface=X       0=HiSax, [1..9]=capi20 controller num\n\
-                            default: 0\n\
-\n\
+                            default: 0\n");
+#endif
+      printf ("\n\
 Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
-      sound device is needed.\n"), argv[0]);
+      sound device is needed.\n");
       exit(0);
     case 'v': /* version */
       printf("ANT " VERSION "\n");
@@ -231,6 +236,7 @@ Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
       }
       exit(0);
       break;
+#ifdef HAVE_LIBCAPI20
     case 'f':
       if (optarg) {
 	interface = strtol(optarg, NULL, 0);
@@ -238,6 +244,7 @@ Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
 	interface = 0;
       }
       break;
+#endif
     case '?':
       exit(1);
     }
@@ -247,7 +254,12 @@ Note: If arguments of --soundin and --soundout are equal, a full duplex\n\
   output_codeset_set("UTF-8"); /* GTK needs UTF-8 strings */
   
   if (session_init(&session, audio_device_name_in, audio_device_name_out,
-		   msn, msns, interface))
+		   msn, msns
+#ifdef HAVE_LIBCAPI20
+		   , interface))
+#else
+		   ))
+#endif
   {
     fprintf(stderr, "Error at session init.\n");
     exit(1);

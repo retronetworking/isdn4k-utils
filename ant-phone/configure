@@ -1634,7 +1634,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=ant-phone
- VERSION="0.1.12c"
+ VERSION="0.1.12-capiconn"
 
 
 # Some tools Automake needs.
@@ -3497,10 +3497,6 @@ _ACEOF
 
   LIBS="-lcapi20 $LIBS"
 
-else
-  { { echo "$as_me:$LINENO: error: You need the capi20 headers to build this package" >&5
-echo "$as_me: error: You need the capi20 headers to build this package" >&2;}
-   { (exit 1); exit 1; }; }
 fi
 
 

@@ -37,7 +37,9 @@
 #include <gdk/gdkkeysyms.h>
 
 /* capi support */
+#ifdef HAVE_LIBCAPI20
 #include "isdn_capi.h"
+#endif
 
 /* own header files */
 #include "globals.h"
@@ -168,9 +170,13 @@ gint timeout_callback(gpointer data) {
     free(timediff);
   }
   
+#ifdef HAVE_LIBCAPI20
   /* use periodic timer to handle CAPI messages */
-  if (session->capi_contr)
+  if (session->capi_contr) {
+  	printf ("capi messages\n");
   	ant_capi_messages(session);
+  }
+#endif
   
   return TRUE; /* call it again */
 }

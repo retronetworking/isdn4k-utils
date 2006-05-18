@@ -59,6 +59,13 @@
  * Plugin for pppd to support PPP over CAPI2.0.
  *
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif /* HAVE_CONFIG_H */
+
+#ifdef HAVE_LIBCAPI20
+
 #include <string.h>
 #include "capiconn.h"
 
@@ -2102,3 +2109,5 @@ capiconn_listenstate(capiconn_context *ctx, unsigned contr)
 		return CAPICONN_WRONG_STATE;
 	return CAPICONN_OK;
 }
+
+#endif HAVE_LIBCAPI20

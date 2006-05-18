@@ -47,7 +47,6 @@
 #include "session.h"
 #include "sound.h"
 #include "isdn.h"
-#include "isdn_capi.h"
 #include "mediation.h"
 #include "gtk.h"
 #include "util.h"
@@ -56,6 +55,9 @@
 #include "settings.h"
 #include "fxgenerator.h"
 #include "server.h"
+#ifdef HAVE_LIBCAPI20
+#include "isdn_capi.h"
+#endif
 
 /*
  * This is our session. Currently just one globally.
@@ -192,12 +194,15 @@ int session_isdn_init(session_t *session) {
   if (debug)
     fprintf(stderr, "Initializing ISDN device...\n");
 
+#ifdef HAVE_LIBCAPI20
   if (session->capi_contr) {
       if (ant_capi_init(session))  {
         printf ("CAPI 2.0 initialization failed!\n");
         return -1;
       }
-  } else {
+  } else
+#endif
+  {
     if ((session->isdn_fd =
          open_isdn_device(&session->isdn_device_name,
                           &session->isdn_lockfile_name)) < 0) {
@@ -222,9 +227,12 @@ int session_isdn_init(session_t *session) {
     return -1;
   }
   
+#ifdef HAVE_LIBCAPI20
   if (session->capi_contr) {
     ant_capi_listen(session);
-  } else {
+  } else
+#endif
+  {
     if (isdn_setMSN(session->isdn_fd, session->msn) ||
         isdn_setMSNs(session->isdn_fd, session->msns)) {
       fprintf(stderr, "Error setting MSN properties.\n");
@@ -324,10 +332,13 @@ int session_isdn_deinit(session_t *session) {
     fprintf(stderr, "Closing ISDN device...\n");
   /* de-init / restore isdn device */
   
+#ifdef HAVE_LIBCAPI20
   if (session->capi_contr) {
     ant_capi_free(session);
   }
-  else {
+  else
+#endif
+  {
     if (deinit_isdn_device(session->isdn_fd, &session->isdn_backup)) {
       fprintf(stderr, "Error restoring ttyI state.\n");
     }
@@ -360,8 +371,14 @@ int session_isdn_deinit(session_t *session) {
 int session_init(session_t *session,
 		 char *audio_device_name_in,
 		 char *audio_device_name_out,
-		 char *msn, char *msns,
-		 unsigned int interface) {
+		 char *msn, char *msns
+#ifdef HAVE_LIBCAPI20
+		 , unsigned int interface)
+#else
+		 )
+#endif
+{
+		 
   int i;
   
   /*
@@ -436,7 +453,9 @@ int session_init(session_t *session,
   session->ring_time = 0;
   session->unanswered = 0;
 
+#ifdef HAVE_LIBCAPI20
   session->capi_contr = interface;
+#endif
 
   /* setup audio and isdn */
   if (!session->option_release_devices)
@@ -521,12 +540,16 @@ void session_io_handlers_start(session_t *session) {
 						      (gpointer) session,
 						      NULL);
   }
-  session->gtk_isdn_input_tag = gtk_input_add_full(session->isdn_fd,
-					           GDK_INPUT_READ,
-					           gtk_handle_isdn_input,
-						   NULL,
-					           (gpointer) session,
-						   NULL);
+
+  if (!session->capi_contr) {
+    session->gtk_isdn_input_tag = gtk_input_add_full(session->isdn_fd,
+					             GDK_INPUT_READ,
+					             gtk_handle_isdn_input,
+						     NULL,
+					             (gpointer) session,
+						     NULL);
+  }
+
 
   /* server functionality */
   session->gtk_local_input_tag = gtk_input_add_full(session->local_sock,
@@ -687,19 +710,24 @@ void session_deinit_conversation(session_t *session, int self_hangup) {
   session_io_handlers_stop(session);
   session_reset_audio(session);
   session_io_handlers_start(session);
-  
-  if (isdn_blockmode(session->isdn_fd, 0))
-    fprintf(stderr, "Warning: "
-	    "Switching back to normal isdn tty mode not successful.\n");
-  
-  /* go back to command mode */
-  if (isdn_stop_audio(session->isdn_fd, self_hangup)) {
-    fprintf(stderr, "Error switching back to command mode.\n");
-  }
-  
-  /* isdn hangup */
-  if (isdn_hangup(session->isdn_fd)) {
-    fprintf(stderr, "Error hanging up.\n");
+
+#ifdef HAVE_LIBCAPI20
+  if (!(session->capi_contr))
+#endif
+  {
+    if (isdn_blockmode(session->isdn_fd, 0))
+      fprintf(stderr, "Warning: "
+	      "Switching back to normal isdn tty mode not successful.\n");
+
+    /* go back to command mode */
+    if (isdn_stop_audio(session->isdn_fd, self_hangup)) {
+      fprintf(stderr, "Error switching back to command mode.\n");
+    }
+
+    /* isdn hangup */
+    if (isdn_hangup(session->isdn_fd)) {
+      fprintf(stderr, "Error hanging up.\n");
+    }
   }
 
   session->isdn_inbuf_len = 0;
@@ -1309,6 +1337,13 @@ void gtk_handle_pick_up_button(GtkWidget *widget _U_, gpointer data) {
   char *clear_number; /* number after un_vanity() */
   int result;
   
+#ifdef HAVE_LIBCAPI20
+  if (session->capi_contr) {
+    ant_capi_pickup(session);
+    return;
+  }
+#endif
+
   switch (session->state) {
   case STATE_READY: /* we are in command mode and want to dial */
     number = gtk_entry_get_text(GTK_ENTRY(GTK_COMBO(session->dial_number_box)
@@ -1391,6 +1426,13 @@ void gtk_handle_pick_up_button(GtkWidget *widget _U_, gpointer data) {
  */
 void gtk_handle_hang_up_button(GtkWidget *widget _U_, gpointer data) {
   session_t *session = (session_t *) data;
+
+#ifdef HAVE_LIBCAPI20
+  if (session->capi_contr) {
+    ant_capi_hangup(session);
+    return;
+  }
+#endif
 
   switch (session->state) {
   case STATE_READY: /* we are already in command mode */

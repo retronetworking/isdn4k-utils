@@ -27,9 +27,9 @@ ant_phone_SOURCES = \
 	server.c \
 	client.c \
 	recording.c \
-	isdntree.c \
-	isdn_capi.c \
-	capiconn.c
+	isdntree.c
+
+ant_phone_SOURCES += isdn_capi.c capiconn.c
 
 noinst_HEADERS = \
 	callerid.h \
@@ -51,9 +51,9 @@ noinst_HEADERS = \
 	globals.h \
 	gettext.h \
 	isdnlexer.h \
-	isdntree.h \
-	isdn_capi.h \
-	capiconn.h
+	isdntree.h
+
+noinst_HEADERS += isdn_capi.h capiconn.h
 
 EXTRA_DIST = \
 	pickup.xpm \
