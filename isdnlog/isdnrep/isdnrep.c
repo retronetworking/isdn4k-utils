@@ -24,6 +24,9 @@
  *
  *
  * $Log$
+ * Revision 1.102  2004/12/16 21:30:50  tobiasb
+ * New option -U: default source number for outgoing calls.
+ *
  * Revision 1.101  2004/07/25 14:21:13  tobiasb
  * New isdnrep option -m [*|/]number.  It multiplies or divide the cost of
  * each call by the given number.  `-m/1.16' for example displays the costs
@@ -2657,7 +2660,7 @@ static int set_caller_infos(one_call *cur_call, char *string, time_t from)
 								if (dur1 < 0)  /* wrong entry on some incoming voice calls */
 									dur1 = cur_call->duration = 0;
 			          break;
-			case  4 : dur2 = cur_call->duration = strtod(array[i],NULL)/HZ;
+			case  4 : dur2 = cur_call->duration = strtod(array[i],NULL)/100;
 			          break;
 			case  5 : /*cur_call->t = atol(array[i]);*/
 			          break;

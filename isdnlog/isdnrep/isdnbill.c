@@ -1005,7 +1005,7 @@ int main(int argc, char *argv[], char *envp[])
 
             case  3 : dur = atoi(sx);               break;
 
-            case  4 : c.duration = atol(sx) / HZ;
+            case  4 : c.duration = atol(sx) / 100;
                       break;
 
             case  5 : c.connect = atol(sx);         break;
