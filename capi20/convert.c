@@ -2,6 +2,9 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.19  2005/05/09 08:23:01  calle
+ * - added SendingComplete to CONNECT_RESP (no funktions changed).
+ *
  * Revision 1.18  2005/03/08 07:26:47  keil
  * - add SENDING_COMPLETE to INFO_REQ CONNECT_REQ and CONNECT_IND
  * - remove SENDING_COMPLETE parameter (always NULL) from capi_fill_DISCONNECT_REQ
@@ -479,14 +482,14 @@ static unsigned char *cpars[] = {
 /*-------------------------------------------------------*/
 
 #define byteTLcpy(x,y)        *(_cbyte *)(x)=*(_cbyte *)(y);
-#define wordTLcpy(x,y)        *(_cword *)(x)=*(_cword *)(y);
-#define dwordTLcpy(x,y)       memcpy(x,y,4);
+#define wordTLcpy(x,y)        capimsg_setu16(x, 0, *(_cword *)(y))
+#define dwordTLcpy(x,y)       capimsg_setu32(x, 0, *(_cdword *)(y))
 #define structTLcpy(x,y,l)    memcpy (x,y,l)
 #define structTLcpyovl(x,y,l) memmove (x,y,l)
 
 #define byteTRcpy(x,y)        *(_cbyte *)(y)=*(_cbyte *)(x);
-#define wordTRcpy(x,y)        *(_cword *)(y)=*(_cword *)(x);
-#define dwordTRcpy(x,y)       memcpy(y,x,4);
+#define wordTRcpy(x,y)        *(_cword *)(y)=CAPIMSG_U16((x), 0)
+#define dwordTRcpy(x,y)       *(_cdword *)(y)=CAPIMSG_U32((x), 0)
 #define structTRcpy(x,y,l)    memcpy (y,x,l)
 #define structTRcpyovl(x,y,l) memmove (y,x,l)
 

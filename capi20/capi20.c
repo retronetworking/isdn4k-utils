@@ -2,6 +2,9 @@
  * $Id$
  * 
  * $Log$
+ * Revision 1.27  2005/05/09 08:21:57  calle
+ * - get_buffer() now returns 0, if no buffer is available.
+ *
  * Revision 1.26  2005/03/04 11:00:31  calle
  * New functions: cleanup_buffers_for_ncci() and cleanup_buffers_for_plci()
  * triggered by DISCONNECT_B3_RESP and DISCONNECT_IND to fix buffer leak.
@@ -485,18 +488,22 @@ capi20_put_message (unsigned ApplID, unsigned char *Msg)
           void *dataptr;
           if (sizeof(void *) != 4) {
 	      if (len >= 30) { /* 64Bit CAPI-extention */
-	         u_int64_t data64;
-	         memcpy(&data64,Msg+22, sizeof(u_int64_t));
-	         if (data64 != 0) dataptr = (void *)(unsigned long)data64;
-	         else dataptr = Msg + len; /* Assume data after message */
+	          _cqword data64;
+	          data64 = CAPIMSG_U64(Msg, 22);
+	          if (data64 != 0)
+	              dataptr = (void *)(unsigned long)data64;
+	          else
+	              dataptr = Msg + len; /* Assume data after message */
 	      } else {
-                 dataptr = Msg + len; /* Assume data after message */
+                  dataptr = Msg + len; /* Assume data after message */
 	      }
           } else {
-              u_int32_t data;
-              memcpy(&data,Msg+12, sizeof(u_int32_t));
-              if (data != 0) dataptr = (void *)(unsigned long)data;
-              else dataptr = Msg + len; /* Assume data after message */
+              _cdword data;
+              data = CAPIMSG_U32(Msg, 12);
+              if (data != 0)
+              	  dataptr = (void *)(unsigned long)data;
+              else
+                  dataptr = Msg + len; /* Assume data after message */
 	  }
  	  if (len + datalen > SEND_BUFSIZ)
              return CapiMsgOSResourceErr;

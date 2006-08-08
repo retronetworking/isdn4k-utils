@@ -5,7 +5,7 @@
 
 .EXPORT_ALL_VARIABLES:
 
-export I4LVERSION = 3.9
+export I4LVERSION = 3.10
 
 all:	do-it-all
 
