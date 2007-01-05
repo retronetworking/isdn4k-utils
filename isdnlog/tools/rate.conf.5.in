@@ -76,9 +76,10 @@ carrier selection prefix and no exceptions matching.
 
 .SS Exceptions to Provider Selection
 
+.nf
 .BI X: number = pnum
-.br
 .BI X: number = pnum z zone
+.fi
 
 Connections to
 .I number
