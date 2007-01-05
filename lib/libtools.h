@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.8  1998/10/13 22:17:25  luethje
+ * isdnlog: evaluate the variable PATH for program starts.
+ *
  * Revision 1.7  1998/10/13 21:53:37  luethje
  * isdnrep and lib: bugfixes
  *
@@ -41,11 +44,15 @@
 #ifndef _LIB_TOOLS_H_
 #define _LIB_TOOLS_H_
 
+#ifdef __linux__
 #include <linux/limits.h>
+#else
+#include <limits.h>
+#endif
 
 /****************************************************************************/
 
-extern char *basename __P((__const char *__name));
+#include <libgen.h>
 
 /****************************************************************************/
 

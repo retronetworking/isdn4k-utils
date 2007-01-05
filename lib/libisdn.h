@@ -20,6 +20,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.14  2002/01/31 20:03:59  paul
+ * Add "#define CCODE_OTHER 9999" for defining behaviour in
+ * non-specified countries.
+ *
  * Revision 1.13  2000/09/05 08:05:03  paul
  * Now isdnlog doesn't use any more ISDN_XX defines to determine the way it works.
  * It now uses the value of "COUNTRYCODE = 999" to determine the country, and sets
@@ -74,7 +78,11 @@
 #ifndef _LIB_H_
 #define _LIB_H_
 
+#ifdef __linux__
 #include <linux/limits.h>
+#else
+#include <limits.h>
+#endif
 
 #include "policy.h"
 #include "conffile.h"
@@ -86,7 +94,7 @@
 
 /****************************************************************************/
 
-extern char *basename __P((__const char *__name));
+#include <libgen.h>
 
 /****************************************************************************/
 
