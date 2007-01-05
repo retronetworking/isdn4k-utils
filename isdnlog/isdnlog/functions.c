@@ -19,6 +19,35 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.33  2002/01/26 20:43:31  akool
+ * isdnlog-4.56:
+ *  - dont set the Provider-field of the MySQL DB to "?*? ???" on incoming calls
+ *
+ *  - implemented
+ *      0190029 Telebillig        (17,5 Cent/minute to any cellphone)
+ * 		 0190031 Teledump
+ * 		 0190035 TeleDiscount
+ * 		 0190037 Fonfux            (1,5 Cent/minute german-call)
+ * 		 0190087 Phonecraft
+ *
+ *    you have to change:
+ *
+ *    1. "/etc/isdn/rate.conf" - add the following:
+ *
+ *      P:229=0		#E Telebillig
+ * 		 P:231=0		#E Teledump
+ * 		 P:235=0		#E TeleDiscount
+ * 		 P:237=0		#E Fonfux
+ * 		 P:287=0		#E Phonecraft
+ *
+ *    2. "/etc/isdn/isdn.conf" (or "/etc/isdn/callerid.conf"):
+ *
+ * 	     VBN = 010
+ *
+ * 	   to
+ *
+ * 	     VBN = 010:01900
+ *
  * Revision 1.32  2001/08/18 12:04:08  paul
  * Don't attempt to write to stderr if we're a daemon.
  *
@@ -644,7 +673,7 @@ void info(int chan, int reason, int state, char *msg)
     if (allflags & PRT_DEBUG_INFO)
       print_msg(PRT_DEBUG_INFO, "%d INFO> ", chan);
 
-  (void)iprintf(s, chan, call[chan].dialin ? ilabel : olabel, left, msg, right);
+  (void)il_printf(s, chan, call[chan].dialin ? ilabel : olabel, left, msg, right);
 
   print_msg(PRT_DEBUG_INFO, "%s", s);
 
@@ -675,7 +704,7 @@ void showmsg(const char *fmt, ...)
   (void)vsnprintf(s, BUFSIZ, fmt, ap);
   va_end(ap);
 
-  (void)iprintf(s1, -1, mlabel, "", s, "");
+  (void)il_printf(s1, -1, mlabel, "", s, "");
   print_msg(PRT_SHOWNUMBERS, "%s", s1);
 } /* showmsg */
 

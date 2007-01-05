@@ -24,6 +24,10 @@
  *
  *
  * $Log$
+ * Revision 1.103  2006/07/03 15:51:27  keil
+ * - HZ is not used anymore, this value is defined as duration in
+ *   1/100 seconds independ from system HZ value
+ *
  * Revision 1.102  2004/12/16 21:30:50  tobiasb
  * New option -U: default source number for outgoing calls.
  *
@@ -212,7 +216,7 @@
 #include <sys/param.h>
 #include <dirent.h>
 #include <search.h>
-#include <linux/limits.h>
+/* included by libisdn.h: #include <linux/limits.h> */
 #include <string.h>
 
 #include "dest.h"

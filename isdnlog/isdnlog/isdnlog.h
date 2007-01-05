@@ -20,6 +20,11 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.29  2004/09/05 22:04:56  tobiasb
+ * New parameter file entry "ignoreUPD" for suppressing "Unexpected
+ * discrimator (...)" messages, demanded by Günther J. Niederwimmer
+ * on the suse-isdn mailing list.
+ *
  * Revision 1.28  2004/01/28 14:27:46  tobiasb
  * Second step in restricting fds at isdnlog restart and script starting.
  * The fd limit is now taken from getrlimit() instead of NR_OPEN.
@@ -328,7 +333,7 @@
 
 /****************************************************************************/
 
-#include <tools.h>
+#include <tools.h> /* includes linux/isdn.h for __linux__ */
 #include <holiday.h>
 #include <rate.h>
 #include "socket.h"

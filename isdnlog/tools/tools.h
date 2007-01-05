@@ -20,6 +20,15 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.64  2005/02/23 14:33:40  tobiasb
+ * New feature: provider skipping.
+ * Certain providers can be completely ignored (skipped) when loading the
+ * rate-file.  The selection is done by Q: tags in rate.conf or by skipProv=
+ * in the parameter file.  The syntax is explained in the new manual page
+ * rate.conf(5).  Absurd settings for provider skipping may cause trouble.
+ * The version number will change to 4.70 in a few days after an update
+ * of the rate-de.dat.
+ *
  * Revision 1.63  2004/09/29 21:02:02  tobiasb
  * Changed handling of multiple "calling party number" information elements.
  * The network provided number is now preferred in any case.  The other
@@ -635,7 +644,7 @@
 #include <math.h>
 #include <syslog.h>
 #include <sys/ioctl.h>
-#ifdef linux
+#ifdef __linux__
 #include <sys/kd.h>
 #include <linux/isdn.h>
 #else
@@ -701,6 +710,9 @@
 
 /****************************************************************************/
 
+#ifndef ISDN_MSNLEN /* if linux undefined and <linux/isdn.h> not included */
+#define ISDN_MSNLEN 32
+#endif
 #define NUMSIZE    (ISDN_MSNLEN + 1)
 #define	FNSIZE	      64
 #define RETSIZE      128
@@ -1272,7 +1284,7 @@ _EXTERN char  *time2str(time_t sec);
 _EXTERN char  *double2clock(double n);
 _EXTERN char  *vnum(int chan, int who);
 _EXTERN char  *i2a(int n, int l, int base);
-_EXTERN int    iprintf(char *obuf, int chan, register char *fmt, ...);
+_EXTERN int    il_printf(char *obuf, int chan, register char *fmt, ...);
 _EXTERN char  *qmsg(int type, int version, int val);
 _EXTERN char  *Myname;
 _EXTERN	char  *zonen[MAXZONES];

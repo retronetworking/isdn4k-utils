@@ -19,6 +19,9 @@
 ## Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 ##
 ## $Log$
+## Revision 1.223  2006/07/03 19:47:51  tobiasb
+## Fix in filelist generation for NO_UTF8=1.
+##
 ## Revision 1.222  2006/02/12 16:16:36  tobiasb
 ## Support for pre-UTF8 systems. NO_UTF8=1 in makefile, Makefile.in or the make
 ## command line will convert the data files from UTF-8 to ISO-8859-1 (latin1)
@@ -1749,8 +1752,11 @@ export NO_UTF8
 
 CSEXT = .latin1
 
-# NO_UTF8_CONV will be used as filter command
-export NO_UTF8_CONV := iconv -f UTF-8 -t ISO-8859-1
+# NO_UTF8_CONV will be used as filter command, prior overwrite possible
+ifndef NO_UTF8_CONV 
+NO_UTF8_CONV := iconv -f UTF-8 -t ISO-8859-1
+endif
+export NO_UTF8_CONV
 
 # files which have to be recoded for make all
 # use .conf.in files for selection; .conf files may not created yet
@@ -1942,6 +1948,11 @@ endif
 
 PROGS        =  $(ISDNLOG) $(ISDNREP) $(ISDNBILL) $(ISDNCONF) $(ISDNRATE)
 
+# do not build isdnlog when NO_ISDNLOG=1 is given
+ifeq ($(NO_ISDNLOG), 1)
+PROGS       := $(filter-out $(ISDNLOG),$(PROGS))
+endif
+
 ifeq ($(ORACLE),1)
 PROGS += $(ORA_LOAD)
 endif
@@ -1978,6 +1989,9 @@ $(FILES_USING_VERSION): Makefile
 options:
 	@echo Making $< with
 	@echo $(CC) $(CFLAGS) $(DEFS) $(INCLUDE)
+ifeq ($(NO_ISDNLOG), 1)
+	@echo Build of isdnlog itself disabled by NO_ISDNLOG=1
+endif
 
 progs:		options $(PROGS)
 
@@ -2012,10 +2026,12 @@ HEADERS := $(HEADERS) .depend
 endif
 
 rootperm:
+ifneq ($(NO_ROOTPERM), 1)
 	@echo 'main(int argc,char**argv){unlink(argv[0]);return(getuid()==0);}'>g
 	@if gcc -x c -o G g && rm -f g && ./G ; then \
 		echo ""; echo 'Do "make (un)install" as root!' ;echo ""; false; \
 	fi
+endif
 
 uninstall: rootperm
 		if ps x | fgrep $(ISDNLOG) >/dev/null; then kill `cat $(RUNDIR)/isdnlog.isdnctrl0.pid` 2>/dev/null; fi
@@ -2097,15 +2113,17 @@ install-conf:
 
 
 install-progs:
-		$(INSTALL_BIN) $(ISDNLOG)  $(DESTDIR)$(SBINDIR)
 		$(INSTALL_BIN) $(ISDNREP)  $(DESTDIR)$(BINDIR)
 		$(INSTALL_BIN) $(ISDNCONF) $(DESTDIR)$(BINDIR)
 		$(INSTALL_BIN) $(ISDNRATE) $(DESTDIR)$(BINDIR)
 		$(INSTALL_BIN) $(ISDNBILL) $(DESTDIR)$(BINDIR)
+ifneq ($(NO_ISDNLOG), 1)
+		$(INSTALL_BIN) $(ISDNLOG)  $(DESTDIR)$(SBINDIR)
 		-@if (ps x | fgrep $(ISDNLOG) | grep -v grep) >/dev/null; then \
 			kill -HUP `cat $(RUNDIR)/isdnlog.isdnctrl0.pid 2>/dev/null`; \
 			echo "Restarting (the first) running isdnlog!" ; \
 		fi
+endif
 
 # FIXME: "Installing /usr/local/lib/isdn/tools/dest/dest.cdb" is confusing
 # because "/tools/dest" is only right for the source location of that file.

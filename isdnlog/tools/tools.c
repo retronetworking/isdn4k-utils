@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.54  2005/01/12 16:28:05  tobiasb
+ * Fixed processing of numbers without an entry in dest.cdb like +8.
+ *
  * Revision 1.53  2005/01/02 16:37:21  tobiasb
  * Improved utilization of special number information from ratefile.
  *
@@ -1089,7 +1092,7 @@ static char *ltoa(register unsigned long num, register char *p, register int rad
 
 /****************************************************************************/
 
-int iprintf(char *obuf, int chan, register char *fmt, ...)
+int il_printf(char *obuf, int chan, register char *fmt, ...)
 {
   register char     *p, *s;
   register int       c, i, who;
@@ -1346,7 +1349,7 @@ go:   	         if (!ndigit)
     } /* while */
   } /* for */
 
-} /* iprintf */
+} /* il_printf */
 
 /****************************************************************************/
 

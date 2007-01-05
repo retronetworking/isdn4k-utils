@@ -26,7 +26,6 @@
 #include "isdnlog.h"
 #include "tools/zone.h"
 #include <unistd.h>
-#include <asm/param.h>
 #include <math.h>
 #include "dest.h"
 

@@ -19,6 +19,15 @@
  * along with this program; if not, write to the Free Software
  *
  * $Log$
+ * Revision 1.76  2005/02/23 14:33:39  tobiasb
+ * New feature: provider skipping.
+ * Certain providers can be completely ignored (skipped) when loading the
+ * rate-file.  The selection is done by Q: tags in rate.conf or by skipProv=
+ * in the parameter file.  The syntax is explained in the new manual page
+ * rate.conf(5).  Absurd settings for provider skipping may cause trouble.
+ * The version number will change to 4.70 in a few days after an update
+ * of the rate-de.dat.
+ *
  * Revision 1.75  2004/12/16 22:40:30  tobiasb
  * Fix for rate computation of outgoing calls from other devices and for logging
  * of calls from and to the observed card (simultaneous SETUP messages).
@@ -536,7 +545,8 @@
 
 #define _ISDNLOG_C_
 
-#include <linux/limits.h>
+/* included via isdnlog/isdnlog.h -> tools/tools.h -> ../lib/libisdn.h
+   #include <linux/limits.h> */
 #include <termios.h>
 
 #include "isdnlog.h"
