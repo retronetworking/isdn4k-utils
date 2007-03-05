@@ -22,6 +22,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.5  2002/01/31 18:55:45  paul
+ * #include <stdlib.h> for prototypes against warnings.
+ *
  * Revision 1.4  1999/09/06 08:03:24  fritz
  * Changed my mail-address.
  *
@@ -220,7 +223,7 @@ main(int argc, char **argv)
 	icn_cdef newcard;
 
 	cmd = strrchr(argv[0], '/');
-	cmd = (cmd == NULL) ? argv[0] : ++cmd;
+	cmd = (cmd == NULL) ? argv[0] : cmd + 1;
 	if (argc > 1) {
 		if (!strcmp(argv[1], "-d")) {
 			strcpy(ioctl_s.drvid, argv[2]);

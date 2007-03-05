@@ -88,7 +88,8 @@ static char * tdu_print_file_par( int ct, unsigned char *pkt, unsigned char *end
 	if( pkt >= end )  goto  packet_too_small; 
 	if( (len = *(pkt++)) == 0xff ) {
 		if( pkt+2 > end )  goto packet_too_small; 
-		len = 0x100 * *(pkt++)  +  *(pkt++);
+		len = 0x100 * pkt[0] + pkt[1];
+		pkt += 2;
 	}
 	tdu_printf (ct,"len=%d)", len);
 	ret = pkt + len;

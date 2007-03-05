@@ -21,6 +21,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.3  1999/09/06 08:03:26  fritz
+ * Changed my mail-address.
+ *
  * Revision 1.2  1997/05/17 12:23:41  fritz
  * Corrected some Copyright notes to refer to GPL.
  *
@@ -30,6 +33,7 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <fcntl.h>
@@ -172,7 +176,7 @@ main(int argc, char **argv)
 	isdnloop_sdef startparm;
 
 	cmd = strrchr(argv[0], '/');
-	cmd = (cmd == NULL) ? argv[0] : ++cmd;
+	cmd = (cmd == NULL) ? argv[0] : cmd + 1;
 	if (argc > 1) {
 		if (!strcmp(argv[1], "-d")) {
 			strcpy(ioctl_s.drvid, argv[2]);
