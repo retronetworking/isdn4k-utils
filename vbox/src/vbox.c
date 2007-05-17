@@ -261,7 +261,7 @@ int main(int argc, char **argv)
 		fflush(stdout);
 	}
 
-	if ((!loginname) || (!*loginname) || (!loginpass) || (!*loginpass))
+	if ((*loginname == 0) || (*loginpass == 0))
 	{
 		fprintf(stderr, "%s: you must enter a login name and a password.\n", vbasename);
 

@@ -19,6 +19,9 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
  * $Log$
+ * Revision 1.134  2007/01/05 04:23:58  tobiasb
+ * Made isdnrep and isdnrate buildable under cygwin. See ChangeLog for details.
+ *
  * Revision 1.133  2006/05/01 13:52:31  tobiasb
  * Fix for special case with DUALFIX_SRCNUM (-2/dual= includes 0x200).
  * A more general approach would do reordering of layer 2 frames.
@@ -5567,7 +5570,8 @@ doppelt:break;
             strcat(sx, " ");
             strcat(sx, qmsg(TYPE_CAUSE, version, call[chan].cause));
 
-            if (((p = location(call[chan].loc)) != "")) {
+            p = location(call[chan].loc);
+            if (p && *p) {
               strcat(sx, " (");
               strcat(sx, p);
               strcat(sx, ")");
