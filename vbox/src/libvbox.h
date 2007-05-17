@@ -8,6 +8,7 @@
 #define _VBOX_LIBVBOX_H 1
 
 #include <stdio.h>
+#include <asm/types.h>
 
 /**************************************************************************/
 /** VBOXD                                                                **/
@@ -116,8 +117,8 @@ extern char *compressions[];
 typedef struct
 {
 	char					magic[4];
-	unsigned long int	time;
-	unsigned long int	compression;
+	__u32	time;
+	__u32	compression;
 	char					callerid[VAH_MAX_CALLERID + 1];
 	char					name[VAH_MAX_NAME + 1];
 	char					phone[VAH_MAX_PHONE + 1];
