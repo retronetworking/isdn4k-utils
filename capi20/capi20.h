@@ -2,6 +2,10 @@
  * $Id$
  *
  * $Log$
+ * Revision 1.10  2000/04/03 14:27:15  calle
+ * non CAPI2.0 standard functions now named capi20ext not capi20.
+ * Extentionfunctions will work with actual driver version.
+ *
  * Revision 1.9  2000/03/03 15:56:14  calle
  * - now uses cloning device /dev/capi20.
  * - middleware extentions prepared.
@@ -16,11 +20,12 @@
 #ifndef __CAPI20_H__
 #define __CAPI20_H__
 
-#include <sys/time.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdlib.h>
+#include <sys/time.h>
 
 /* standard CAPI2.0 functions */
 
