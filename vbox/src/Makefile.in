@@ -13,6 +13,8 @@ NCURSES_HAVE    = @HAVE_NCURSES_PACK@
 TCL_LIBS	= @LINK_TCL_LIBS@
 TCL_HAVE	= @HAVE_TCL_PACK@
 
+override CFLAGS += $(VBOX_CFLAGS)
+
 #----------------------------------------------------------------------------#
 # Headers                                                                    #
 #----------------------------------------------------------------------------#
